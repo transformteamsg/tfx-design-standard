@@ -1,0 +1,134 @@
+"use client";
+
+import { useMemo, useState } from "react";
+import clsx from "clsx";
+import type { Control } from "@/lib/catalog";
+
+const tierStyles: Record<string, string> = {
+  L0: "border-red-300 bg-red-50 text-red-700",
+  L1: "border-amber-300 bg-amber-50 text-amber-700",
+  L2: "border-emerald-300 bg-emerald-50 text-emerald-700",
+};
+const tierLabels: Record<string, string> = {
+  L0: "L0 · non-negotiable",
+  L1: "L1 · mandatory",
+  L2: "L2 · recommended",
+};
+
+export function CatalogBrowser({ controls }: { controls: Control[] }) {
+  const [tier, setTier] = useState<string | null>(null);
+  const [category, setCategory] = useState<string | null>(null);
+  const [check, setCheck] = useState<string | null>(null);
+  const [copied, setCopied] = useState<string | null>(null);
+
+  const categories = useMemo(
+    () => Array.from(new Set(controls.map((c) => c.category))),
+    [controls]
+  );
+
+  const filtered = controls.filter(
+    (c) =>
+      (!tier || c.tier === tier) &&
+      (!category || c.category === category) &&
+      (!check || c.check === check)
+  );
+
+  const copy = (id: string) => {
+    navigator.clipboard?.writeText(id);
+    setCopied(id);
+    setTimeout(() => setCopied(null), 1200);
+  };
+
+  const Chip = ({
+    active,
+    onClick,
+    children,
+  }: {
+    active: boolean;
+    onClick: () => void;
+    children: React.ReactNode;
+  }) => (
+    <button
+      onClick={onClick}
+      className={clsx(
+        "rounded-full border px-3 py-1 text-[12.5px] font-medium transition-colors",
+        active
+          ? "border-foreground bg-foreground text-white"
+          : "border-border bg-surface text-muted-foreground hover:text-foreground"
+      )}
+    >
+      {children}
+    </button>
+  );
+
+  return (
+    <div className="mt-8">
+      <div className="flex flex-wrap items-center gap-2">
+        {["L0", "L1", "L2"].map((t) => (
+          <Chip key={t} active={tier === t} onClick={() => setTier(tier === t ? null : t)}>
+            {t}
+          </Chip>
+        ))}
+        <span className="mx-1 text-border">|</span>
+        {categories.map((c) => (
+          <Chip
+            key={c}
+            active={category === c}
+            onClick={() => setCategory(category === c ? null : c)}
+          >
+            {c}
+          </Chip>
+        ))}
+        <span className="mx-1 text-border">|</span>
+        {["deterministic", "judgment", "hybrid"].map((k) => (
+          <Chip key={k} active={check === k} onClick={() => setCheck(check === k ? null : k)}>
+            {k}
+          </Chip>
+        ))}
+      </div>
+
+      <p className="mt-4 text-[13px] text-muted-foreground">
+        {filtered.length} of {controls.length} controls
+      </p>
+
+      <div className="mt-3 flex flex-col gap-3">
+        {filtered.map((c) => (
+          <div
+            key={c.id}
+            id={c.id}
+            className="scroll-mt-20 rounded-lg border border-border bg-surface p-4"
+          >
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                onClick={() => copy(c.id)}
+                title="Copy control ID"
+                className="rounded-md border border-border bg-zinc-50 px-2 py-0.5 font-mono text-[12.5px] font-semibold hover:border-zinc-400"
+              >
+                {copied === c.id ? "copied ✓" : c.id}
+              </button>
+              <span
+                className={clsx(
+                  "rounded-full border px-2 py-0.5 text-[11px] font-medium",
+                  tierStyles[c.tier]
+                )}
+              >
+                {tierLabels[c.tier]}
+              </span>
+              <span className="rounded-full border border-border px-2 py-0.5 text-[11px] text-muted-foreground">
+                {c.check}
+              </span>
+              <span className="text-[11px] text-muted-foreground">{c.category}</span>
+            </div>
+            <p className="mt-2 text-[15px] font-medium">{c.statement}</p>
+            {c.fails_when && (
+              <p className="mt-1.5 text-[13.5px] text-muted-foreground">
+                <span className="font-semibold text-red-700">Fails when:</span>{" "}
+                {c.fails_when.join(" · ")}
+              </p>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
