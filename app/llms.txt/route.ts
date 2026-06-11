@@ -18,6 +18,7 @@ export function GET() {
     ["guidelines/web-interface.mdx", "GUIDELINES — WEB INTERFACE"],
     ["guidelines/data-viz.mdx", "GUIDELINES — DATA VISUALIZATION"],
     ["guidelines/illustration.mdx", "GUIDELINES — ILLUSTRATION"],
+    ["guidelines/product-icons.mdx", "GUIDELINES — PRODUCT ICONS"],
     ["foundations/colour.mdx", "FOUNDATIONS — COLOUR"],
     ["foundations/typography.mdx", "FOUNDATIONS — TYPOGRAPHY"],
     ["foundations/spacing-radius.mdx", "FOUNDATIONS — SPACING & RADIUS"],

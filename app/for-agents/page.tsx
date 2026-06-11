@@ -1,0 +1,31 @@
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { getDoc } from "@/lib/content";
+import { DocPage } from "@/components/doc-page";
+import { Illo } from "@/components/illo";
+
+export const metadata = { title: "For agents" };
+
+export default function Page() {
+  const doc = getDoc("sections", "for-agents");
+  if (!doc) notFound();
+  return (
+    <DocPage doc={doc}>
+      {doc.illustration && <Illo subject={doc.illustration} />}
+      <div className="mt-8 flex flex-wrap gap-3">
+        <Link
+          href="/llms.txt"
+          className="rounded-lg border border-border bg-surface px-4 py-2.5 text-[14px] font-medium hover:border-zinc-400"
+        >
+          /llms.txt — the whole standard
+        </Link>
+        <a
+          href="/standards/catalog.yaml"
+          className="rounded-lg border border-border bg-surface px-4 py-2.5 text-[14px] font-medium hover:border-zinc-400"
+        >
+          catalog.yaml — just the controls
+        </a>
+      </div>
+    </DocPage>
+  );
+}

@@ -15,10 +15,8 @@ export function TopBar() {
             v0.1 draft
           </span>
         </Link>
-        <nav className="flex items-center gap-5 text-[13.5px] font-medium text-muted-foreground">
-          <Link href="/standards" className="hover:text-foreground">Standards</Link>
-          <Link href="/harness" className="hover:text-foreground">Harness</Link>
-          <Link href="/llms.txt" className="hover:text-foreground">For agents</Link>
+        <nav className="flex items-center text-[13.5px] font-medium text-muted-foreground">
+          <Link href="/for-agents" className="hover:text-foreground">For agents</Link>
         </nav>
       </div>
     </header>
