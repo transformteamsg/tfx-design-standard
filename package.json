@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "gen:icons": "node scripts/generate-ink-icons.mjs"
   },
   "dependencies": {
     "@fontsource-variable/inter": "^5.2.8",
@@ -14,6 +15,7 @@
     "clsx": "^2.1.1",
     "gray-matter": "^4.0.3",
     "lucide-react": "^0.460.0",
+    "motion": "^12.40.0",
     "next": "^15.3.0",
     "next-mdx-remote": "^5.0.0",
     "react": "^19.0.0",
@@ -26,6 +28,7 @@
     "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
+    "roughjs": "^4.6.6",
     "tailwindcss": "^4.0.0",
     "typescript": "^5.6.0"
   }
