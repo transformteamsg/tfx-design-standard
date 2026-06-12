@@ -96,12 +96,13 @@ but differs in two ways:
   (a manual audit, recurring waivers) would fail that audit. A catalog-change record
   states: the triggering incident with evidence, the change, the tier rationale, and
   who approved. `validate.py` cross-checks control IDs referenced in these records.
-- **The change set is the detail file, `standards/catalog.yaml`, plus every synced
-  surface**: the website mirror (regenerate with
-  `python3 checks/catalog-sync.py --write`), and any skill or check that restates
-  the control (grep the old title to find them). The record lists what was synced.
+- **The change set is the detail file, `standards/catalog.yaml`, plus every surface
+  that restates the control**: any skill or check that summarises it (grep the old
+  title to find them). The website needs no separate sync — it reads this catalog
+  directly. The record lists what was touched.
 
-Gates are the same: `checks/validate.py` and `checks/catalog-sync.py` must pass, and
+Gates are the same: `checks/validate.py` must pass (the site repo's
+`scripts/check-standards.mjs` build gate re-verifies the catalog on deploy), and
 the design lead approves.
 
 ### (f) Approval

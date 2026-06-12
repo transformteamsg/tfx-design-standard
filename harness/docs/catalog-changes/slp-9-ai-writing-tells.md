@@ -39,12 +39,10 @@ they broaden SLP-9 rather than create a new control.
   duplicated here — slp-9.md is canonical.
 - `.claude/skills/design-ui/SKILL.md` — the implement phase's SLP-9 summary
   updated to the broadened scope (caught in review as a missed sync target).
-- `checks/catalog-sync.py` — new: generates/verifies the website mirror from the
-  harness catalog, replacing hand-syncing.
-- Website mirrors: `content/standards/catalog.yaml` (served at
-  /standards/catalog.yaml), `content/guidelines/voice-tone.mdx`,
-  `content/harness/skills.mdx` (table reconciled to the real skill inventory),
-  root `CLAUDE.md` (prose hook for agents editing `content/`).
+- Website surfaces (the site reads this catalog directly; no mirror to sync):
+  `content/guidelines/voice-tone.mdx`, `content/harness/skills.mdx` (table
+  reconciled to the real skill inventory), root `CLAUDE.md` (prose hook for
+  agents editing `content/`).
 - `checks/README.md` — planned `content-lint` spec inherits the new lint lists.
 - `evals/evaluator-recall/planted-copy.md` + `expected-findings-copy.yaml` — new
   recall fixture with planted SLP-9 tells and precision decoys.
@@ -59,7 +57,8 @@ split it out at L1.
 ## Verification
 
 - `python3 checks/validate.py` — catalog ↔ detail consistency.
-- Site `pnpm build` — mirrors parse and render.
+- Site `pnpm build` — the prebuild gate (`scripts/check-standards.mjs`) and MDX
+  parse pass.
 - Calibration smoke test: "Glow serves as a testament to our commitment to
   empowering teachers" must trip the Flag list; "Centre optically, not
   mathematically" must not.

@@ -9,15 +9,6 @@ on failure, silent on success.
 
 `python3 checks/validate.py` — validates `standards/catalog.yaml` against the schema in `standards/README.md`: field presence and allowed values, tier→waiver pairing, `detail:` file existence, detail-frontmatter ↔ catalog consistency, and that every control ID referenced in skills/docs exists in the catalog. Exit 0 on pass, exit 1 with `ERROR` lines on failure. This is the repo's verification baseline — run it before committing any `standards/` change.
 
-## Catalog sync (built)
-
-`python3 checks/catalog-sync.py` — verifies the website mirror
-(`content/standards/catalog.yaml` in the site repo) matches what the harness
-catalog generates (field mapping: `title` → `statement`, category from the
-control-id prefix via `meta.categories`, reduced field set). Exit 1 on drift;
-`--write` regenerates the mirror in place; SKIP (exit 0) when the harness is
-used standalone without the site repo. Run it after any `standards/catalog.yaml`
-edit, alongside `validate.py`.
 
 ## Token audit (built)
 
