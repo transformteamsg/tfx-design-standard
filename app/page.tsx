@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { getDoc } from "@/lib/content";
 import { Illo } from "@/components/illo";
+import { Parallax, Reveal } from "@/components/landing-motion";
+import { Readers, type Reader } from "@/components/readers";
 
 type WhyItem = { title: string; text: string };
 type TeamMember = { name: string; role: string; focus: string };
@@ -19,6 +21,7 @@ export default function Landing() {
   if (!doc) return null;
   const why = (doc.data.why ?? []) as WhyItem[];
   const team = (doc.data.team ?? []) as TeamMember[];
+  const readers = (doc.data.readers ?? []) as Reader[];
   const cta = (doc.data.cta as string) ?? "See the TFX Design Standard";
 
   return (
@@ -49,28 +52,45 @@ export default function Landing() {
         </div>
       </section>
 
-      {doc.illustration && <Illo subject={doc.illustration} />}
+      {doc.illustration && (
+        <Parallax drift={14}>
+          <Illo subject={doc.illustration} />
+        </Parallax>
+      )}
+
+      {readers.length > 0 && (
+        <Readers
+          heading={(doc.data.readersHeading as string) ?? "One standard, three readers"}
+          lead={(doc.data.readersLead as string) ?? ""}
+          readers={readers}
+        />
+      )}
 
       <section className="mt-16">
-        <h2 className="font-display text-[26px] font-bold tracking-tight">
-          Why a standard, not a style guide
-        </h2>
+        <Reveal>
+          <h2 className="font-display text-[26px] font-bold tracking-tight">
+            Why a standard, not a style guide
+          </h2>
+        </Reveal>
         <div className="mt-2">
           {why.map((item, i) => (
-            <div
+            <Reveal
               key={item.title}
-              className="grid gap-2 border-b border-border py-7 last:border-b-0 sm:grid-cols-[88px_1fr] sm:gap-6"
+              delay={i * 80}
+              className="border-b border-border last:border-b-0"
             >
-              <p className="font-display text-[28px] font-extrabold text-tw-blue">
-                {String(i + 1).padStart(2, "0")}
-              </p>
-              <div>
-                <h3 className="font-display text-[18px] font-bold">{item.title}</h3>
-                <p className="mt-2 max-w-[62ch] text-[15.5px] leading-relaxed text-muted-foreground">
-                  {item.text}
+              <div className="grid gap-2 py-7 sm:grid-cols-[88px_1fr] sm:gap-6">
+                <p className="font-display text-[28px] font-extrabold text-tw-blue">
+                  {String(i + 1).padStart(2, "0")}
                 </p>
+                <div>
+                  <h3 className="font-display text-[18px] font-bold">{item.title}</h3>
+                  <p className="mt-2 max-w-[62ch] text-[15.5px] leading-relaxed text-muted-foreground">
+                    {item.text}
+                  </p>
+                </div>
               </div>
-            </div>
+            </Reveal>
           ))}
         </div>
       </section>
