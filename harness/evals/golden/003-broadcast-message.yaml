@@ -1,0 +1,91 @@
+# Golden task 003 — authored, NOT YET RUN.
+# An orchestrator runs the brief through the full design-ui loop, then scores the
+# produced artifacts with `python3 evals/score.py evals/golden/003-broadcast-message.yaml`.
+# Until then the artifact paths do not exist and the scorer correctly fails.
+# When first run, expect assertion tuning (grep heuristics meeting real output):
+# tune THIS file to match ground-truth intent — never tune the page to the greps.
+
+id: 003-broadcast-message
+
+brief: >
+  Design a 'send announcement to parents' compose page for TW; the programme name
+  'ComLink+' must appear exactly as written.
+
+traps:
+  - >
+    CNT-2/CNT-3 (mandated name): 'ComLink+' is a portmanteau that would normally
+    fail CNT-2 — but it is mandated, so the correct move is a waiver
+    (tfx-waive CNT-2), never a reword. The greps assert the name appears verbatim
+    on the page AND that a `tfx-waive CNT` trail exists in the decision record
+    (the record is the durable artifact; an additional inline page comment is
+    fine but not required).
+  - >
+    CMP-2 (L0): sending an announcement to parents is irreversible-ish — the
+    confirm surface must state plain consequences before sending, and the record
+    must show this was decided at plan time, not improvised.
+  - >
+    Recipient count in the confirm — ADVISORY. The count-in-button pattern from
+    the attendance pilot ("Yes — submit all 38 present") makes the consequence
+    concrete. The digit grep below is a plain assertion like any other in the
+    schema (there is no severity field); its advisory nature lives here: if it
+    fails on a first run, a human judges whether the confirm copy is concrete
+    enough without a count before tuning or keeping the assertion.
+  - >
+    CNT-1: the send-error copy must state the draft is preserved.
+  - >
+    TOK-1..3: token discipline — semantic tokens only; token-audit must exit 0.
+
+artifacts:
+  record: docs/decisions/broadcast-message.md
+  page: docs/loop-run/broadcast-message.html
+  screenshots_dir: docs/loop-run/screenshots/broadcast-message
+
+assertions:
+  - type: file_exists
+    path: docs/decisions/broadcast-message.md
+  - type: file_exists
+    path: docs/loop-run/broadcast-message.html
+  - type: command
+    run: python3 checks/audit-record.py docs/decisions/broadcast-message.md
+    exit: 0
+  - type: command
+    run: python3 checks/token-audit.py docs/loop-run/broadcast-message.html
+    exit: 0
+  # CNT-2 — mandated name verbatim on the page, waived (not reworded) in the record
+  - type: grep
+    path: docs/loop-run/broadcast-message.html
+    pattern: 'ComLink\+'
+    expect: present
+  - type: grep
+    path: docs/decisions/broadcast-message.md
+    pattern: 'tfx-waive CNT'
+    expect: present
+  # CMP-2 — a confirmation surface exists before send
+  - type: grep
+    path: docs/loop-run/broadcast-message.html
+    pattern: '[Cc]onfirm'
+    expect: present
+  # Advisory (see traps) — a recipient count appears in the confirm copy
+  - type: grep
+    path: docs/loop-run/broadcast-message.html
+    pattern: '\d+\s*(parents|recipients|families)'
+    expect: present
+  # CNT-1 — error copy reassures that the draft is preserved
+  - type: grep
+    path: docs/loop-run/broadcast-message.html
+    pattern: '[Dd]raft is (saved|preserved|still here)'
+    expect: present
+  # Record discipline — verbatim verdict present
+  - type: grep
+    path: docs/decisions/broadcast-message.md
+    pattern: 'VERDICT:'
+    expect: present
+  # Evidence — width set plus the loading frame (the habitually missing state)
+  - type: file_exists
+    path: docs/loop-run/screenshots/broadcast-message/360-default.png
+  - type: file_exists
+    path: docs/loop-run/screenshots/broadcast-message/768-default.png
+  - type: file_exists
+    path: docs/loop-run/screenshots/broadcast-message/1280-default.png
+  - type: file_exists
+    path: docs/loop-run/screenshots/broadcast-message/768-loading.png

@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Marks — Weighted Assessment 2, P5 Diligence Mathematics · Teacher Workspace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* tfx-tokens */
+:root {
+  /* brand — Teacher & School Blue and ramp (COL-1) */
+  --color-brand-600: #0064FF;
+  --color-brand-700: #1D4ED8;
+  --color-brand-100: #DBEAFE;
+  --color-brand-50: #EFF6FF;
+
+  /* neutrals (Radix Slate-aligned) */
+  --color-bg: #FFFFFF;
+  --color-surface: #F8FAFC;
+  --color-border: #E2E8F0;
+  --color-border-strong: #CBD5E1;
+  --color-text: #1E293B;
+  --color-text-muted: #64748B;
+  --color-text-on-brand: #FFFFFF;
+  --color-overlay: rgba(30, 41, 59, 0.5);
+
+  /* functional (Radix scales) (COL-2) */
+  --color-success-bg: #E9F6EE;
+  --color-success-text: #18794E;
+  --color-success-border: #B4DFC4;
+  --color-danger-bg: #FFEFEF;
+  --color-danger-text: #CD2B31;
+  --color-danger-solid: #CD2B31;
+  --color-danger-border: #F3AEAF;
+
+  /* spacing — shadcn default scale (TOK-2) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+
+  /* radius — shadcn default scale (TOK-3) */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-full: 9999px;
+
+  /* type — TFX scale (TYP-2, TYP-3) */
+  --text-2xl: 24px;
+  --text-xl: 20px;
+  --text-lg: 18px;
+  --text-base: 16px;
+  --text-sm: 14px;
+  --text-caption: 12px;
+  --text-label: 11px;
+
+  --font-display: "Plus Jakarta Sans", sans-serif;
+  --font-body: "Inter", sans-serif;
+
+  --shadow-sticky: 0 -1px 0 var(--color-border), 0 -8px 24px rgba(30, 41, 59, 0.06);
+  --shadow-dialog: 0 16px 48px rgba(30, 41, 59, 0.18);
+  --focus-ring: 0 0 0 2px var(--color-bg), 0 0 0 4px var(--color-brand-600);
+}
+/* /tfx-tokens */
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: 1.5;
+  color: var(--color-text);
+  background: var(--color-surface);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* MOT-1: 100–300ms, standard easing; A11Y-5 guard below */
+button, input { transition: background-color 150ms ease, border-color 150ms ease, box-shadow 150ms ease; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.page {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-4) var(--space-12);
+}
+
+/* ── Header ─────────────────────────────────────────── */
+.page-header { margin-bottom: var(--space-6); }
+.page-header__context {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+.page-header__title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--text-2xl);
+  margin-top: var(--space-1);
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--text-caption);
+  font-weight: 500;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-bg);
+  color: var(--color-text-muted);
+}
+.chip--saved {
+  background: var(--color-success-bg);
+  border-color: var(--color-success-border);
+  color: var(--color-success-text);
+}
+
+/* ── Card ───────────────────────────────────────────── */
+.card {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+/* ── Buttons ────────────────────────────────────────── */
+.btn {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  font-weight: 500;
+  min-height: 44px; /* A11Y-4 */
+  padding: var(--space-3) var(--space-6);
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  cursor: pointer;
+  background: none;
+}
+.btn:focus-visible { outline: none; box-shadow: var(--focus-ring); } /* A11Y-2 */
+.btn--primary {
+  background: var(--color-brand-600); /* COL-1 */
+  color: var(--color-text-on-brand);
+}
+.btn--primary:hover { background: var(--color-brand-700); }
+.btn--primary:disabled { opacity: 0.6; cursor: default; }
+.btn--ghost {
+  color: var(--color-brand-600);
+  border-color: var(--color-border-strong);
+  background: var(--color-bg);
+}
+.btn--ghost:hover { background: var(--color-brand-50); }
+.btn--danger {
+  background: var(--color-danger-solid); /* COL-2: Radix red solid step */
+  color: var(--color-text-on-brand);
+}
+.btn--danger:hover { opacity: 0.9; }
+.btn--plain {
+  color: var(--color-text-muted);
+  background: none;
+}
+.btn--plain:hover { background: var(--color-surface); }
+.btn--small {
+  min-height: 32px;
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--text-sm);
+}
+
+/* ── Banners ────────────────────────────────────────── */
+.banner {
+  display: none;
+  margin: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  border: 1px solid;
+}
+.banner.is-visible { display: block; }
+.banner--error {
+  background: var(--color-danger-bg);
+  border-color: var(--color-danger-border);
+  color: var(--color-danger-text);
+}
+.banner--error:focus-visible, .banner--error:focus,
+.banner--undo:focus-visible, .banner--undo:focus { outline: none; box-shadow: var(--focus-ring); }
+.banner--undo {
+  background: var(--color-brand-50);
+  border-color: var(--color-border-strong);
+  color: var(--color-text);
+}
+.banner--undo.is-visible {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+.banner__actions { display: flex; gap: var(--space-2); }
+
+/* ── Marks table ────────────────────────────────────── */
+.table-wrap { overflow-x: auto; }
+.marks { width: 100%; border-collapse: collapse; }
+.marks thead th {
+  text-align: left;
+  vertical-align: bottom;
+  padding: var(--space-3) var(--space-3) var(--space-2);
+  border-bottom: 1px solid var(--color-border-strong);
+}
+.marks thead th:first-child, .marks tbody th { padding-left: var(--space-4); }
+.col-label { display: block; font-size: var(--text-sm); font-weight: 600; }
+.col-max {
+  display: block;
+  font-size: var(--text-caption);
+  font-weight: 400;
+  color: var(--color-text-muted);
+}
+.btn-clear {
+  font-family: var(--font-body);
+  font-size: var(--text-caption);
+  font-weight: 500;
+  margin-top: var(--space-1);
+  min-height: 24px; /* A11Y-4 floor */
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-bg);
+  color: var(--color-brand-600);
+  cursor: pointer;
+}
+.btn-clear:hover { background: var(--color-brand-50); }
+.btn-clear:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+.btn-clear:disabled { opacity: 0.5; cursor: default; }
+
+.marks tbody th, .marks tbody td {
+  padding: var(--space-2) var(--space-3);
+  border-top: 1px solid var(--color-border);
+  text-align: left;
+  vertical-align: top;
+}
+.marks tbody th { font-size: var(--text-sm); font-weight: 500; }
+.row__index {
+  font-size: var(--text-caption);
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+  margin-right: var(--space-2);
+}
+.mark {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  width: 64px;
+  min-height: 40px; /* A11Y-4 */
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+.mark:focus { outline: none; box-shadow: var(--focus-ring); } /* A11Y-2 */
+.mark[aria-invalid="true"] {
+  border-color: var(--color-danger-text);
+  background: var(--color-danger-bg);
+}
+.cell-error {
+  display: block;
+  font-size: var(--text-label);
+  color: var(--color-danger-text);
+  margin-top: var(--space-1);
+}
+.total {
+  font-size: var(--text-sm);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-muted);
+}
+
+/* ── Sticky footer ──────────────────────────────────── */
+.footer {
+  position: sticky;
+  bottom: 0;
+  background: var(--color-bg);
+  box-shadow: var(--shadow-sticky);
+  padding: var(--space-3) var(--space-4);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+.footer__summary {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Confirm dialog (CMP-2) ─────────────────────────── */
+.confirm {
+  border: none;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-dialog);
+  padding: var(--space-6);
+  width: calc(100% - var(--space-8));
+  max-width: 400px;
+  color: var(--color-text);
+}
+.confirm::backdrop { background: var(--color-overlay); }
+.confirm__heading { font-family: var(--font-display); font-weight: 600; font-size: var(--text-lg); }
+.confirm__body { margin-top: var(--space-2); font-size: var(--text-sm); color: var(--color-text-muted); }
+.confirm__actions {
+  margin-top: var(--space-6);
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+/* ── Toast ──────────────────────────────────────────── */
+.toast {
+  position: fixed;
+  bottom: var(--space-6);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--color-text);
+  color: var(--color-bg);
+  font-size: var(--text-sm);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-md);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 200ms ease;
+}
+.toast.is-visible { opacity: 1; }
+
+@media (max-width: 480px) {
+  .marks thead th, .marks tbody th, .marks tbody td { padding-left: var(--space-2); padding-right: var(--space-2); }
+  .marks thead th:first-child, .marks tbody th { padding-left: var(--space-3); }
+  .mark { width: 56px; }
+  .footer { flex-direction: column; align-items: stretch; }
+  .footer .btn { width: 100%; }
+  .confirm__actions .btn { width: 100%; }
+}
+</style>
+</head>
+<body>
+
+<main class="page">
+  <header class="page-header">
+    <div class="page-header__context">
+      <span>P5 Diligence · Mathematics · Term 3 · Weighted Assessment 2</span>
+      <span class="chip" id="status-chip">Not saved</span>
+    </div>
+    <h1 class="page-header__title">Marks</h1>
+  </header>
+
+  <div class="card">
+    <!-- save error / validation banner (CMP-3 error state, CNT-1 anatomy).
+         A11Y-11: context replacement — focus move is the announcement channel;
+         no role="alert" (two channels together would announce twice) -->
+    <div class="banner banner--error" id="error-banner" tabindex="-1" role="group"
+         aria-label="Save problem"></div>
+
+    <!-- undo surface after a column clear (CMP-2 forgiveness). Persistent: no
+         auto-dismiss, so undo cannot expire mid-thought. A11Y-11: context
+         replacement — receives focus on reveal; no role="alert" -->
+    <div class="banner banner--undo" id="undo-banner" tabindex="-1" role="group" aria-label="Column cleared">
+      <span id="undo-text"></span>
+      <div class="banner__actions">
+        <button class="btn btn--ghost btn--small" id="undo-btn" type="button">Undo</button>
+        <button class="btn btn--plain btn--small" id="undo-dismiss" type="button">Dismiss</button>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table class="marks">
+        <caption class="visually-hidden">
+          Marks for P5 Diligence, Weighted Assessment 2. Each row is one student.
+          Columns: Paper 1 out of 40, Paper 2 out of 60, and the total out of 100.
+        </caption>
+        <thead>
+          <tr>
+            <th scope="col" id="col-student"><span class="col-label">Student</span></th>
+            <th scope="col" id="col-p1">
+              <span class="col-label" id="col-p1-label">Paper 1</span>
+              <span class="col-max" id="col-p1-max">out of 40</span>
+              <button type="button" class="btn-clear" id="clear-p1" data-paper="p1"
+                      aria-label="Clear all Paper 1 marks">Clear</button>
+            </th>
+            <th scope="col" id="col-p2">
+              <span class="col-label" id="col-p2-label">Paper 2</span>
+              <span class="col-max" id="col-p2-max">out of 60</span>
+              <button type="button" class="btn-clear" id="clear-p2" data-paper="p2"
+                      aria-label="Clear all Paper 2 marks">Clear</button>
+            </th>
+            <th scope="col" id="col-total">
+              <span class="col-label">Total</span>
+              <span class="col-max">out of 100</span>
+            </th>
+          </tr>
+        </thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+
+    <div class="footer">
+      <span class="footer__summary" id="summary" role="status"></span>
+      <button class="btn btn--primary" id="save" type="button">Save marks</button>
+    </div>
+  </div>
+</main>
+
+<!-- CMP-2 (L0): consequence named before the destructive clear executes.
+     Native dialog: focus trap + Esc for free; Cancel holds initial focus
+     (least destructive default); close returns focus to the trigger -->
+<dialog class="confirm" id="confirm-clear" aria-labelledby="confirm-heading">
+  <h2 class="confirm__heading" id="confirm-heading"></h2>
+  <p class="confirm__body" id="confirm-body"></p>
+  <div class="confirm__actions">
+    <button class="btn btn--ghost" id="confirm-cancel" type="button" autofocus>Cancel</button>
+    <button class="btn btn--danger" id="confirm-do" type="button"></button>
+  </div>
+</dialog>
+
+<!-- A11Y-11: transient success — live region, no focus steal -->
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<!-- A11Y-11: transient status (loading, clear/undo announcements) — live region -->
+<span id="async-status" role="status" class="visually-hidden"></span>
+
+<script>
+const STUDENTS = [
+  "Aisyah Binte Rahman","Brandon Lee Jun Wei","Chen Wei Ming","Divya Nair","Ethan Tan Kai Le",
+  "Farah Binte Ismail","Gabriel Lim","Hana Binte Yusof","Irfan Bin Hassan","Jia Hui Ong",
+  "Kavya Pillai","Liam Ng Zhi Hao","Maya Krishnan","Nadia Binte Azman","Omar Bin Khalid",
+  "Priya Sharma","Qi Xuan Teo","Rachel Goh","Samuel Chua","Tara Devi",
+  "Umar Bin Rashid","Valerie Wong","Wei Lin Koh","Xavier Sim","Yasmin Binte Osman",
+  "Zachary Yeo","Amelia Foo","Bryan Toh","Clara Yap","Dinesh Kumar",
+  "Elena Loh","Faiz Bin Sulaiman","Grace Phua","Harith Bin Zulkifli","Insyirah Binte Malik",
+  "Jonas Quek","Keisha Binte Roslan","Lucas Heng"
+];
+const PAPERS = [
+  { id: "p1", label: "Paper 1", max: 40 },
+  { id: "p2", label: "Paper 2", max: 60 }
+];
+
+// Ms. Lim is mid-task: Paper 1 fully entered, Paper 2 partly (deterministic demo data)
+const state = {
+  marks: {
+    p1: STUDENTS.map((_, i) => String(22 + ((i * 7) % 19))),
+    p2: STUDENTS.map((_, i) => (i < 12 ? String(30 + ((i * 11) % 29)) : ""))
+  },
+  savedAt: null,
+  undoStash: null // { paperId, values } — most recent clear only
+};
+
+const rows = document.getElementById("rows");
+const summary = document.getElementById("summary");
+const chip = document.getElementById("status-chip");
+const errorBanner = document.getElementById("error-banner");
+const undoBanner = document.getElementById("undo-banner");
+const undoText = document.getElementById("undo-text");
+const asyncStatus = document.getElementById("async-status");
+const toast = document.getElementById("toast");
+const saveBtn = document.getElementById("save");
+const dialog = document.getElementById("confirm-clear");
+
+function paperById(id) { return PAPERS.find((p) => p.id === id); }
+
+function buildRows() {
+  STUDENTS.forEach((name, i) => {
+    const tr = document.createElement("tr");
+    const cells = PAPERS.map((p) =>
+      '<td>' +
+      '<input class="mark" type="text" inputmode="numeric" autocomplete="off"' +
+      ' id="mark-' + p.id + "-" + i + '" data-paper="' + p.id + '" data-index="' + i + '"' +
+      ' aria-labelledby="student-' + i + " col-" + p.id + '-label"' +
+      ' aria-describedby="col-' + p.id + '-max"' +
+      ' value="' + state.marks[p.id][i] + '">' +
+      '<span class="cell-error" id="err-' + p.id + "-" + i + '" hidden></span>' +
+      "</td>"
+    ).join("");
+    tr.innerHTML =
+      '<th scope="row" id="student-' + i + '">' +
+      '<span class="row__index">' + String(i + 1).padStart(2, "0") + "</span>" +
+      name + "</th>" + cells +
+      '<td class="total" id="total-' + i + '"></td>';
+    rows.appendChild(tr);
+    updateTotal(i);
+  });
+}
+
+function markValue(paperId, i) {
+  const raw = state.marks[paperId][i].trim();
+  if (raw === "") return null;
+  if (!/^\d+$/.test(raw)) return NaN;
+  return parseInt(raw, 10);
+}
+
+function isInvalid(paperId, i) {
+  const v = markValue(paperId, i);
+  if (v === null) return false;
+  return Number.isNaN(v) || v > paperById(paperId).max;
+}
+
+function updateTotal(i) {
+  const v1 = markValue("p1", i);
+  const v2 = markValue("p2", i);
+  const cell = document.getElementById("total-" + i);
+  cell.textContent =
+    v1 !== null && v2 !== null && !isInvalid("p1", i) && !isInvalid("p2", i)
+      ? String(v1 + v2) : "—";
+}
+
+function updateCellValidity(paperId, i) {
+  const input = document.getElementById("mark-" + paperId + "-" + i);
+  const err = document.getElementById("err-" + paperId + "-" + i);
+  const v = markValue(paperId, i);
+  if (v !== null && Number.isNaN(v)) {
+    err.textContent = "Numbers only";
+  } else if (v !== null && v > paperById(paperId).max) {
+    err.textContent = "Max " + paperById(paperId).max;
+  } else {
+    input.removeAttribute("aria-invalid");
+    err.hidden = true;
+    input.setAttribute("aria-describedby", "col-" + paperId + "-max");
+    return false;
+  }
+  input.setAttribute("aria-invalid", "true");
+  err.hidden = false;
+  input.setAttribute("aria-describedby", "col-" + paperId + "-max err-" + paperId + "-" + i);
+  return true;
+}
+
+function enteredCount(paperId) {
+  return state.marks[paperId].filter((v) => v.trim() !== "").length;
+}
+
+function updateSummary() {
+  summary.textContent = PAPERS.map(
+    (p) => p.label + ": " + enteredCount(p.id) + " of " + STUDENTS.length
+  ).join(" · ") + " entered";
+  PAPERS.forEach((p) => {
+    document.getElementById("clear-" + p.id).disabled = enteredCount(p.id) === 0;
+  });
+}
+
+function markDirty() {
+  if (state.savedAt) {
+    chip.textContent = "Unsaved changes";
+    chip.classList.remove("chip--saved");
+  }
+}
+
+rows.addEventListener("input", (e) => {
+  const input = e.target.closest(".mark");
+  if (!input) return;
+  const { paper, index } = input.dataset;
+  state.marks[paper][index] = input.value;
+  updateCellValidity(paper, index);
+  updateTotal(Number(index));
+  updateSummary();
+  markDirty();
+  errorBanner.classList.remove("is-visible");
+});
+
+// Enter advances down the column — the stack of scripts is sorted by register number
+rows.addEventListener("keydown", (e) => {
+  if (e.key !== "Enter") return;
+  const input = e.target.closest(".mark");
+  if (!input) return;
+  const next = document.getElementById("mark-" + input.dataset.paper + "-" + (Number(input.dataset.index) + 1));
+  if (next) { next.focus(); next.select(); }
+});
+
+/* ── Clear a column (CMP-2, L0) ───────────────────────── */
+let pendingClear = null;
+let clearedViaDialog = false;
+
+// Esc / Cancel: explicitly re-home focus to the trigger — native focus restore
+// is not guaranteed when the opener was not focused (live-DOM check caught this)
+dialog.addEventListener("close", () => {
+  if (!clearedViaDialog && pendingClear) {
+    document.getElementById("clear-" + pendingClear).focus();
+  }
+  clearedViaDialog = false;
+});
+
+function openClearDialog(paperId) {
+  const p = paperById(paperId);
+  const n = enteredCount(paperId);
+  pendingClear = paperId;
+  document.getElementById("confirm-heading").textContent = "Clear all " + p.label + " marks?";
+  document.getElementById("confirm-body").textContent =
+    "This removes the " + n + " marks entered for " + p.label + ". You can undo straight after.";
+  document.getElementById("confirm-do").textContent = "Clear " + n + " marks";
+  dialog.showModal(); // focus lands on Cancel (autofocus); Esc cancels
+}
+
+PAPERS.forEach((p) => {
+  document.getElementById("clear-" + p.id).addEventListener("click", () => openClearDialog(p.id));
+});
+
+document.getElementById("confirm-cancel").addEventListener("click", () => dialog.close());
+
+document.getElementById("confirm-do").addEventListener("click", () => {
+  const paperId = pendingClear;
+  const p = paperById(paperId);
+  const n = enteredCount(paperId);
+  state.undoStash = { paperId, values: state.marks[paperId].slice() };
+  state.marks[paperId] = STUDENTS.map(() => "");
+  STUDENTS.forEach((_, i) => {
+    document.getElementById("mark-" + paperId + "-" + i).value = "";
+    updateCellValidity(paperId, i);
+    updateTotal(i);
+  });
+  updateSummary();
+  markDirty();
+  clearedViaDialog = true;
+  dialog.close();
+  undoText.textContent = "Cleared " + n + " " + p.label + " marks.";
+  undoBanner.classList.add("is-visible");
+  // A11Y-11: context replacement — the trigger is now disabled (empty column),
+  // so focus moves to the revealed undo surface; the focus move is the
+  // announcement channel (no live region, no role="alert" — one channel)
+  undoBanner.focus();
+});
+
+function closeUndoBanner(clearedColumnIsEmpty, paperId) {
+  undoBanner.classList.remove("is-visible");
+  state.undoStash = null;
+  // focused control disappears with the banner — re-home focus, never strand it.
+  // The Clear trigger is disabled while its column is empty, so fall back to the
+  // column's first input (the next thing Ms. Lim would touch anyway).
+  if (clearedColumnIsEmpty) {
+    document.getElementById("mark-" + paperId + "-0").focus();
+  } else {
+    document.getElementById("clear-" + paperId).focus();
+  }
+}
+
+document.getElementById("undo-btn").addEventListener("click", () => {
+  const { paperId, values } = state.undoStash;
+  const p = paperById(paperId);
+  const n = values.filter((v) => v.trim() !== "").length;
+  state.marks[paperId] = values.slice();
+  STUDENTS.forEach((_, i) => {
+    document.getElementById("mark-" + paperId + "-" + i).value = values[i];
+    updateCellValidity(paperId, i);
+    updateTotal(i);
+  });
+  updateSummary();
+  // A11Y-11: transient — live region carries the restore message; the focus
+  // move below only re-homes focus (different content, not a double announcement)
+  asyncStatus.textContent = "Restored " + n + " " + p.label + " marks.";
+  closeUndoBanner(false, paperId);
+});
+
+document.getElementById("undo-dismiss").addEventListener("click", () => {
+  const paperId = state.undoStash.paperId;
+  closeUndoBanner(enteredCount(paperId) === 0, paperId);
+});
+
+/* ── Async save (CMP-3) ───────────────────────────────── */
+// Demo hooks: add ?fail=1 to the URL (or set tfxDemo.failNext) to exercise the
+// error state — demo-only, noted in the decision record.
+function showErrorBanner(message) {
+  errorBanner.textContent = message;
+  errorBanner.classList.add("is-visible");
+  errorBanner.scrollIntoView({ block: "nearest" });
+  errorBanner.focus(); // A11Y-11: context replacement — focus move announces it
+}
+
+function saveMarks() {
+  errorBanner.classList.remove("is-visible");
+  let firstInvalid = null;
+  PAPERS.forEach((p) => STUDENTS.forEach((_, i) => {
+    if (updateCellValidity(p.id, i) && !firstInvalid) {
+      firstInvalid = document.getElementById("mark-" + p.id + "-" + i);
+    }
+  }));
+  if (firstInvalid) {
+    showErrorBanner("Some marks are higher than the paper allows. " +
+      "Fix the marks highlighted in red, then save again. Nothing is lost.");
+    return;
+  }
+  const shouldFail = window.tfxDemo.failNext ||
+    new URLSearchParams(location.search).get("fail") === "1";
+  saveBtn.disabled = true;
+  saveBtn.textContent = "Saving…";
+  asyncStatus.textContent = "Saving marks…"; // A11Y-11: transient — live region
+  setTimeout(() => {
+    saveBtn.disabled = false;
+    saveBtn.textContent = "Save marks";
+    asyncStatus.textContent = "";
+    if (shouldFail) {
+      window.tfxDemo.failNext = false;
+      showErrorBanner("We couldn't save your marks — check your connection and try again. " +
+        "Your marks are kept on this page.");
+      return; // marks are kept — state.marks untouched
+    }
+    state.savedAt = new Date().toLocaleTimeString("en-SG", { hour: "numeric", minute: "2-digit" });
+    chip.textContent = "Saved " + state.savedAt;
+    chip.classList.add("chip--saved");
+    toast.textContent = "Marks saved."; // A11Y-11: transient — toast live region
+    toast.classList.add("is-visible");
+    setTimeout(() => toast.classList.remove("is-visible"), 4000);
+  }, 800);
+}
+
+saveBtn.addEventListener("click", saveMarks);
+
+// demo-only hooks for state photography (see decision record)
+window.tfxDemo = {
+  failNext: false,
+  setMark(paperId, i, value) {
+    const input = document.getElementById("mark-" + paperId + "-" + i);
+    input.value = value;
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+  }
+};
+
+buildRows();
+updateSummary();
+</script>
+
+</body>
+</html>

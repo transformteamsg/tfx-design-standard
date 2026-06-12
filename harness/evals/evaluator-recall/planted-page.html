@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student notes — 4B · Teacher Workspace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* tfx-tokens */
+:root {
+  /* brand — Teacher & School Blue and ramp (COL-1) */
+  --color-brand-600: #0064FF;
+  --color-brand-700: #1D4ED8;
+  --color-brand-50: #EFF6FF;
+
+  /* neutrals (Radix Slate-aligned) */
+  --color-bg: #FFFFFF;
+  --color-surface: #F8FAFC;
+  --color-border: #E2E8F0;
+  --color-border-strong: #CBD5E1;
+  --color-text: #1E293B;
+  --color-text-muted: #64748B;
+  --color-text-on-brand: #FFFFFF;
+
+  /* functional (Radix scales) (COL-2) */
+  --color-danger-bg: #FFEFEF;
+  --color-danger-text: #CD2B31;
+  --color-danger-border: #F3AEAF;
+  --color-success-bg: #E9F6EE;
+  --color-success-text: #18794E;
+  --color-success-border: #B4DFC4;
+
+  /* spacing — shadcn default scale (TOK-2) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+
+  /* radius — shadcn default scale (TOK-3) */
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  /* type — TFX scale (TYP-2, TYP-3) */
+  --text-2xl: 24px;
+  --text-base: 16px;
+  --text-sm: 14px;
+  --text-caption: 12px;
+
+  --font-display: "Plus Jakarta Sans", sans-serif;
+  --font-body: "Inter", sans-serif;
+
+  --focus-ring: 0 0 0 2px var(--color-bg), 0 0 0 4px var(--color-brand-600);
+}
+/* /tfx-tokens */
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: 1.5;
+  color: var(--color-text);
+  background: var(--color-surface);
+  -webkit-font-smoothing: antialiased;
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}
+
+.page { max-width: 720px; margin: 0 auto; padding: var(--space-6) var(--space-4) var(--space-8); }
+
+.page-header { margin-bottom: var(--space-6); }
+.page-header__context { font-size: var(--text-sm); color: var(--color-text-muted); }
+.page-header__title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--text-2xl);
+  margin-top: var(--space-1);
+}
+
+.toolbar { display: flex; gap: var(--space-3); margin-bottom: var(--space-4); flex-wrap: wrap; }
+
+.input {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  min-height: 44px;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+  color: var(--color-text);
+  flex: 1;
+}
+.input:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+
+.btn {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  font-weight: 500;
+  min-height: 44px;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  cursor: pointer;
+  background: none;
+}
+.btn:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+.btn--primary { background: var(--color-brand-600); color: var(--color-text-on-brand); }
+.btn--primary:hover { background: var(--color-brand-700); }
+.btn--ghost { color: var(--color-brand-600); border-color: var(--color-border-strong); background: var(--color-bg); }
+.btn--ghost:hover { background: var(--color-brand-50); }
+.btn--danger { background: var(--color-bg); color: var(--color-danger-text); border-color: var(--color-danger-border); }
+.btn--danger:hover { background: var(--color-danger-bg); }
+
+.card { background: var(--color-bg); border: 1px solid var(--color-border); border-radius: var(--radius-lg); overflow: hidden; }
+.note { padding: var(--space-4); }
+.note + .note { border-top: 1px solid var(--color-border); }
+.note__meta { font-size: var(--text-caption); color: var(--color-text-muted); }
+.note__title { font-size: var(--text-sm); font-weight: 600; margin-top: var(--space-1); }
+
+.banner {
+  margin-bottom: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  border: 1px solid var(--color-danger-border);
+  background: var(--color-danger-bg);
+  color: var(--color-danger-text);
+}
+
+.status {
+  margin-top: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  border: 1px solid var(--color-success-border);
+  background: var(--color-success-bg);
+  color: var(--color-success-text);
+}
+.status:empty { display: none; }
+.status:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+</style>
+</head>
+<body>
+<main class="page">
+  <header class="page-header">
+    <p class="page-header__context">Class 4B · 38 students</p>
+    <h1 class="page-header__title">Student notes</h1>
+  </header>
+
+  <!-- PLANT 1: CNT-1 — error message is a raw code; no what-happened, no what-to-do-next -->
+  <div class="banner">Error 500</div>
+
+  <div class="toolbar">
+    <!-- PLANT 2: A11Y-3 — input has no associated visible label -->
+    <input class="input" type="text" id="search" placeholder="Search notes">
+    <!-- PLANT 5: CNT-2 — feature named "SyncFlow", an invented portmanteau a teacher cannot parse -->
+    <button class="btn btn--ghost" type="button">Open SyncFlow</button>
+    <!-- PLANT 3: CMP-2 — destructive action executes immediately; no consequence shown, no confirm, no undo -->
+    <button class="btn btn--danger" type="button" onclick="document.getElementById('notes').innerHTML='';">Delete all notes</button>
+  </div>
+
+  <section class="card" aria-label="Notes for class 4B">
+    <ol id="notes" style="list-style: none;">
+      <li class="note">
+        <p class="note__meta">2 Jun 2026 · Ms. Lim</p>
+        <h2 class="note__title">Reading group progress</h2>
+        <!-- PLANT 6: TYP-2 — body copy at raw 12px, below the 14px body minimum -->
+        <p style="font-size: 12px;">Group 3 finished the chapter early. Consider moving Wei Jie up a group after the next assessment.</p>
+      </li>
+      <li class="note">
+        <p class="note__meta">28 May 2026 · Mr. Tan</p>
+        <h2 class="note__title">Follow up with parents</h2>
+        <p style="font-size: var(--text-sm);">Called home about missing homework. Mum will check the planner each evening this week.</p>
+      </li>
+    </ol>
+  </section>
+
+  <button class="btn btn--primary" type="button" onclick="saveNote()">Save note</button>
+
+  <!-- PLANT 4: A11Y-11 — the same message is announced twice: role="alert" (live region) AND a script focus() move -->
+  <div class="status" id="save-status" role="alert" tabindex="-1"></div>
+</main>
+
+<script>
+  function saveNote() {
+    var status = document.getElementById("save-status");
+    status.textContent = "Note saved.";
+    status.focus();
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,72 @@
+# Evaluator-recall fixture — ground truth for planted-page.html
+#
+# The page carries EXACTLY six planted violations, each marked in the HTML with
+# an adjacent comment of the form  "PLANT n: <control-id> — <what>"  so ground
+# truth is auditable by grep. Everything else on the page is deliberately
+# compliant (token block, focus rings, semantic structure, labelled buttons).
+
+how_to_run: >
+  FIRST strip the ground-truth markers — the PLANT comments are in the page so
+  this file's ground truth is auditable, but the evaluator must never see them
+  (found in the first run's review: dispatching the marked page makes recall
+  trivial). Create a blind copy:
+  `grep -v "PLANT" evals/evaluator-recall/planted-page.html > /tmp/recall-page-blind.html`
+  and verify `grep -c "PLANT" /tmp/recall-page-blind.html` is 0.
+  Then spawn the design-evaluator subagent (it follows the design-review skill) with:
+  (1) the absolute path to the BLIND copy,
+  (2) a minimal sprint contract — "all 6 controls below are in scope:
+  CNT-1, CNT-2, A11Y-3, A11Y-11, CMP-2, TYP-2",
+  (3) the absolute path to the harness standards/ directory, and
+  (4) an explicit note that this is a CODE-ONLY review — no screenshots are
+  provided, say so in the dispatch so the evaluator does not block on missing
+  evidence. Then score the returned verdict against this file by hand or with
+  grep: each plant counts as caught if the verdict names the control (or
+  unambiguously describes the violation) as a finding. Record the scores in
+  evals/evaluator-recall/RESULTS.md per run so evaluator drift is visible.
+
+plants:
+  - n: 1
+    control: CNT-1
+    description: Error banner shows the raw code "Error 500" — no what happened, no what to do next.
+  - n: 2
+    control: A11Y-3
+    description: The search input has no programmatically associated, visible label (placeholder only).
+  - n: 3
+    control: CMP-2
+    description: >-
+      "Delete all notes" executes immediately — no consequence shown, no
+      confirmation, no undo. L0.
+  - n: 4
+    control: A11Y-11
+    description: >-
+      The "Note saved." status is announced twice — the element has
+      role="alert" AND the script moves focus() to it for the same message.
+  - n: 5
+    control: CNT-2
+    description: Feature named "SyncFlow" — an invented portmanteau a teacher cannot parse without explanation.
+  - n: 6
+    control: TYP-2
+    description: First note's body copy is inline raw font-size 12px — below the 14px body minimum.
+
+scoring:
+  recall:
+    formula: plants caught / 6
+    target: ">= 5 of 6"
+  precision:
+    formula: count of invented BLOCKING findings (violations asserted that are not one of the six plants)
+    target: 0
+    note: >
+      Close-call advisories do not count against precision — only invented
+      blocking findings do. An evaluator may reasonably flag, e.g., the inline
+      style attributes as a maintainability advisory; that is not a precision
+      failure unless it is raised as a blocking violation of a control the page
+      actually satisfies.
+
+# Documented token-audit ground truth for this fixture.
+# checks/token-audit.py scans raw colour (TOK-1/COL), off-scale spacing (TOK-2)
+# and off-scale radius (TOK-3) — it does NOT scan font-size. Plant 6's raw
+# "font-size: 12px" is therefore invisible to token-audit (it belongs to the
+# not-yet-built checks/type-scan, per TYP-2's verify field). Expected output:
+# no ERROR lines, exit 0. Any token-audit ERROR on this page is NOT a plant —
+# it is fixture slop and must be fixed in the page.
+token_audit_expected: []

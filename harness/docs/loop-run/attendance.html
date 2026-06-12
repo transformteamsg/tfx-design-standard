@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Attendance — P3 Integrity · Teacher Workspace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* tfx-tokens */
+:root {
+  /* brand — Teacher & School Blue and ramp (COL-1) */
+  --color-brand-600: #0064FF;
+  --color-brand-700: #1D4ED8;
+  --color-brand-100: #DBEAFE;
+  --color-brand-50: #EFF6FF;
+
+  /* neutrals (Radix Slate-aligned) */
+  --color-bg: #FFFFFF;
+  --color-surface: #F8FAFC;
+  --color-border: #E2E8F0;
+  --color-border-strong: #CBD5E1;
+  --color-text: #1E293B;
+  --color-text-muted: #64748B;
+  --color-text-on-brand: #FFFFFF;
+
+  /* functional (Radix scales) (COL-2) */
+  --color-success-bg: #E9F6EE;
+  --color-success-text: #18794E;
+  --color-success-border: #B4DFC4;
+  --color-warning-bg: #FFF7C2;
+  --color-warning-text: #946800;
+  --color-warning-border: #F3D673;
+  --color-danger-bg: #FFEFEF;
+  --color-danger-text: #CD2B31;
+  --color-danger-border: #F3AEAF;
+
+  /* spacing — shadcn default scale (TOK-2) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+
+  /* radius — shadcn default scale (TOK-3) */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-full: 9999px;
+
+  /* type — TFX scale (TYP-2, TYP-3) */
+  --text-2xl: 24px;
+  --text-xl: 20px;
+  --text-lg: 18px;
+  --text-base: 16px;
+  --text-sm: 14px;
+  --text-caption: 12px;
+  --text-label: 11px;
+
+  --font-display: "Plus Jakarta Sans", sans-serif;
+  --font-body: "Inter", sans-serif;
+
+  --shadow-sticky: 0 -1px 0 var(--color-border), 0 -8px 24px rgba(30, 41, 59, 0.06);
+  --focus-ring: 0 0 0 2px var(--color-bg), 0 0 0 4px var(--color-brand-600);
+}
+/* /tfx-tokens */
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: 1.5;
+  color: var(--color-text);
+  background: var(--color-surface);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* MOT-1: 100–300ms, standard easing; A11Y-5 guard below */
+button, .row { transition: background-color 150ms ease, border-color 150ms ease, box-shadow 150ms ease; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}
+
+.page {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-4) var(--space-12);
+}
+
+/* ── Header ─────────────────────────────────────────── */
+.page-header { margin-bottom: var(--space-6); }
+.page-header__context {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+.page-header__title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--text-2xl);
+  margin-top: var(--space-1);
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--text-caption);
+  font-weight: 500;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-bg);
+  color: var(--color-text-muted);
+}
+.chip--submitted {
+  background: var(--color-success-bg);
+  border-color: var(--color-success-border);
+  color: var(--color-success-text);
+}
+
+/* ── Card ───────────────────────────────────────────── */
+.card {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+/* ── State 1: the question ──────────────────────────── */
+.question {
+  padding: var(--space-12) var(--space-6);
+  text-align: center;
+}
+.question__heading {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--text-xl);
+}
+.question__register {
+  margin-top: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+.question__actions {
+  margin-top: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+/* ── Buttons ────────────────────────────────────────── */
+.btn {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  font-weight: 500;
+  min-height: 44px; /* A11Y-4 */
+  padding: var(--space-3) var(--space-6);
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  cursor: pointer;
+  background: none;
+}
+.btn:focus-visible { outline: none; box-shadow: var(--focus-ring); } /* A11Y-2 */
+.btn--primary {
+  background: var(--color-brand-600); /* COL-1 */
+  color: var(--color-text-on-brand);
+}
+.btn--primary:hover { background: var(--color-brand-700); }
+.btn--primary:disabled { opacity: 0.6; cursor: default; }
+.btn--ghost {
+  color: var(--color-brand-600);
+  border-color: var(--color-border-strong);
+  background: var(--color-bg);
+}
+.btn--ghost:hover { background: var(--color-brand-50); }
+/* "Make a correction" is the recovery path — full button affordance, matching
+   the State-1 ghost button (evaluator advisory, run 2) */
+
+/* ── State 2: roster ────────────────────────────────── */
+.roster { display: none; }
+.roster.is-open { display: block; }
+.roster__list { list-style: none; }
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-top: 1px solid var(--color-border);
+}
+.row--exception { background: var(--color-brand-50); }
+.row__name { font-size: var(--text-sm); font-weight: 500; }
+.row__index {
+  font-size: var(--text-caption);
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+  margin-right: var(--space-2);
+}
+
+/* segmented status control (Base UI ToggleGroup pattern) */
+.seg { display: inline-flex; border: 1px solid var(--color-border-strong); border-radius: var(--radius-md); overflow: hidden; }
+.seg__btn {
+  font-family: var(--font-body);
+  font-size: var(--text-caption);
+  font-weight: 500;
+  min-width: 44px;
+  min-height: 32px;
+  padding: var(--space-1) var(--space-2);
+  border: none;
+  background: var(--color-bg);
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+.seg__btn + .seg__btn { border-left: 1px solid var(--color-border); }
+.seg__btn:focus-visible { outline: none; box-shadow: inset var(--focus-ring); position: relative; z-index: 1; }
+.seg__btn[aria-pressed="true"][data-status="present"] { background: var(--color-success-bg); color: var(--color-success-text); }
+.seg__btn[aria-pressed="true"][data-status="absent"]  { background: var(--color-danger-bg); color: var(--color-danger-text); }
+.seg__btn[aria-pressed="true"][data-status="late"]    { background: var(--color-warning-bg); color: var(--color-warning-text); }
+
+/* ── Sticky footer ──────────────────────────────────── */
+.footer {
+  position: sticky;
+  bottom: 0;
+  background: var(--color-bg);
+  box-shadow: var(--shadow-sticky);
+  padding: var(--space-3) var(--space-4);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+.footer__summary { font-size: var(--text-sm); color: var(--color-text-muted); font-variant-numeric: tabular-nums; }
+
+/* ── Feedback ───────────────────────────────────────── */
+.banner {
+  display: none;
+  margin: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  border: 1px solid;
+}
+.banner.is-visible { display: block; }
+.banner--error {
+  background: var(--color-danger-bg);
+  border-color: var(--color-danger-border);
+  color: var(--color-danger-text);
+}
+.toast {
+  position: fixed;
+  bottom: var(--space-6);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--color-text);
+  color: var(--color-bg);
+  font-size: var(--text-sm);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-md);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 200ms ease;
+}
+.toast.is-visible { opacity: 1; }
+
+/* post-submit panel */
+.done { display: none; padding: var(--space-8) var(--space-6); text-align: center; }
+.done.is-visible { display: block; }
+.done__heading { font-family: var(--font-display); font-weight: 600; font-size: var(--text-lg); }
+.done__detail { margin-top: var(--space-2); font-size: var(--text-sm); color: var(--color-text-muted); }
+.done__actions { margin-top: var(--space-4); }
+
+@media (max-width: 480px) {
+  .question__actions .btn { width: 100%; }
+  .footer { flex-direction: column; align-items: stretch; }
+  .footer .btn { width: 100%; }
+}
+</style>
+</head>
+<body>
+
+<main class="page">
+  <header class="page-header">
+    <div class="page-header__context">
+      <span>P3 Integrity · Wed 11 Jun</span>
+      <span class="chip" id="status-chip">Not submitted</span>
+    </div>
+    <h1 class="page-header__title">Attendance</h1>
+  </header>
+
+  <div class="card">
+    <!-- error banner (CMP-3 error state, CNT-1 anatomy) -->
+    <!-- A11Y-11: context replacement — focus move is the announcement channel;
+         no role="alert" (the two channels together announce twice) -->
+    <div class="banner banner--error" id="error-banner" tabindex="-1" role="group"
+         aria-label="Submission error">
+      We couldn't submit attendance — check your connection and try again.
+      Your marks are saved on this device.
+    </div>
+
+    <!-- State 1: the question -->
+    <section class="question" id="question" aria-labelledby="question-heading">
+      <h2 class="question__heading" id="question-heading">Is everyone present today?</h2>
+      <p class="question__register">38 students on the register.</p>
+      <div class="question__actions">
+        <button class="btn btn--primary" id="submit-all" type="button">Yes — submit all 38 present</button>
+        <button class="btn btn--ghost" id="open-roster" type="button">No — mark exceptions</button>
+      </div>
+    </section>
+
+    <!-- State 2: roster -->
+    <section class="roster" id="roster" aria-label="Class register — mark each student's status">
+      <ol class="roster__list" id="roster-list"></ol>
+      <div class="footer">
+        <span class="footer__summary" id="summary" role="status">38 present</span>
+        <button class="btn btn--primary" id="submit-roster" type="button">Submit attendance</button>
+      </div>
+    </section>
+
+    <!-- post-submit -->
+    <section class="done" id="done" aria-labelledby="done-heading">
+      <h2 class="done__heading" id="done-heading">Attendance submitted</h2>
+      <p class="done__detail" id="done-detail"></p>
+      <div class="done__actions">
+        <button class="btn btn--ghost" id="correct" type="button">Make a correction</button>
+      </div>
+    </section>
+  </div>
+</main>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<!-- A11Y-11: transient status (loading) — live region, no focus steal -->
+<span id="async-status" role="status" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;"></span>
+
+<script>
+const STUDENTS = [
+  "Aisyah Binte Rahman","Brandon Lee Jun Wei","Chen Wei Ming","Divya Nair","Ethan Tan Kai Le",
+  "Farah Binte Ismail","Gabriel Lim","Hana Binte Yusof","Irfan Bin Hassan","Jia Hui Ong",
+  "Kavya Pillai","Liam Ng Zhi Hao","Maya Krishnan","Nadia Binte Azman","Omar Bin Khalid",
+  "Priya Sharma","Qi Xuan Teo","Rachel Goh","Samuel Chua","Tara Devi",
+  "Umar Bin Rashid","Valerie Wong","Wei Lin Koh","Xavier Sim","Yasmin Binte Osman",
+  "Zachary Yeo","Amelia Foo","Bryan Toh","Clara Yap","Dinesh Kumar",
+  "Elena Loh","Faiz Bin Sulaiman","Grace Phua","Harith Bin Zulkifli","Insyirah Binte Malik",
+  "Jonas Quek","Keisha Binte Roslan","Lucas Heng"
+];
+const STATUSES = ["present", "absent", "late"];
+const state = { marks: STUDENTS.map(() => "present"), submittedAt: null };
+
+const rosterList = document.getElementById("roster-list");
+const summary = document.getElementById("summary");
+const chip = document.getElementById("status-chip");
+const errorBanner = document.getElementById("error-banner");
+const toast = document.getElementById("toast");
+
+function renderRoster() {
+  // exceptions pin to top, register order preserved within groups
+  const order = STUDENTS.map((_, i) => i)
+    .sort((a, b) => (state.marks[a] === "present") - (state.marks[b] === "present"));
+  rosterList.innerHTML = "";
+  order.forEach((i) => {
+    const li = document.createElement("li");
+    li.className = "row" + (state.marks[i] !== "present" ? " row--exception" : "");
+    const nameId = "student-" + i;
+    li.innerHTML =
+      '<span class="row__name" id="' + nameId + '">' +
+      '<span class="row__index">' + String(i + 1).padStart(2, "0") + "</span>" +
+      STUDENTS[i] + "</span>" +
+      '<span class="seg" role="group" aria-labelledby="' + nameId + '">' +
+      STATUSES.map((s) =>
+        '<button type="button" class="seg__btn" data-status="' + s + '" data-index="' + i + '"' +
+        ' aria-pressed="' + (state.marks[i] === s) + '"' +
+        ' aria-label="' + s.charAt(0).toUpperCase() + s.slice(1) + " — " + STUDENTS[i] + '">' +
+        s.charAt(0).toUpperCase() + s.slice(1) + "</button>"
+      ).join("") + "</span>";
+    rosterList.appendChild(li);
+  });
+  updateSummary();
+}
+
+function updateSummary() {
+  const counts = { present: 0, absent: 0, late: 0 };
+  state.marks.forEach((m) => counts[m]++);
+  const parts = [counts.present + " present"];
+  if (counts.absent) parts.push(counts.absent + " absent");
+  if (counts.late) parts.push(counts.late + " late");
+  summary.textContent = parts.join(" · ");
+}
+
+rosterList.addEventListener("click", (e) => {
+  const btn = e.target.closest(".seg__btn");
+  if (!btn) return;
+  state.marks[btn.dataset.index] = btn.dataset.status;
+  renderRoster();
+});
+
+document.getElementById("open-roster").addEventListener("click", () => {
+  document.getElementById("question").style.display = "none";
+  document.getElementById("roster").classList.add("is-open");
+  renderRoster();
+  const first = rosterList.querySelector(".seg__btn");
+  if (first) first.focus();
+});
+
+function showToast(message) {
+  toast.textContent = message;
+  toast.classList.add("is-visible");
+  setTimeout(() => toast.classList.remove("is-visible"), 4000);
+}
+
+// CMP-3: async submit with loading / success / error.
+// Demo hook: add ?fail=1 to the URL to exercise the error state.
+function submitAttendance(triggerBtn) {
+  const shouldFail = new URLSearchParams(location.search).get("fail") === "1";
+  const original = triggerBtn.textContent;
+  triggerBtn.disabled = true;
+  triggerBtn.textContent = "Submitting…";
+  document.getElementById("async-status").textContent = "Submitting attendance…";
+  errorBanner.classList.remove("is-visible");
+
+  setTimeout(() => {
+    triggerBtn.disabled = false;
+    triggerBtn.textContent = original;
+    document.getElementById("async-status").textContent = "";
+    if (shouldFail) {
+      errorBanner.classList.add("is-visible");
+      errorBanner.scrollIntoView({ block: "nearest" });
+      errorBanner.focus(); // focus moves to the revealed surface (A11Y-6 draft)
+      return; // marks are kept — state.marks untouched
+    }
+    state.submittedAt = new Date().toLocaleTimeString("en-SG", { hour: "numeric", minute: "2-digit" });
+    chip.textContent = "Submitted " + state.submittedAt;
+    chip.classList.add("chip--submitted");
+    document.getElementById("question").style.display = "none";
+    document.getElementById("roster").classList.remove("is-open");
+    const counts = { present: 0, absent: 0, late: 0 };
+    state.marks.forEach((m) => counts[m]++);
+    document.getElementById("done-detail").textContent =
+      counts.present + " present · " + counts.absent + " absent · " + counts.late +
+      " late. You can edit attendance any time today.";
+    document.getElementById("done").classList.add("is-visible");
+    // focus moves to the revealed surface's first actionable element (A11Y-6 draft):
+    // submit succeeded from a control that is now hidden
+    document.getElementById("correct").focus();
+    showToast("Attendance submitted.");
+  }, 800);
+}
+
+document.getElementById("submit-all").addEventListener("click", (e) => {
+  state.marks = STUDENTS.map(() => "present");
+  submitAttendance(e.currentTarget);
+});
+document.getElementById("submit-roster").addEventListener("click", (e) => submitAttendance(e.currentTarget));
+document.getElementById("correct").addEventListener("click", () => {
+  document.getElementById("done").classList.remove("is-visible");
+  document.getElementById("roster").classList.add("is-open");
+  renderRoster();
+});
+</script>
+
+</body>
+</html>
