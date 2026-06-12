@@ -6,13 +6,15 @@ Validates standards/catalog.yaml for internal consistency:
   2. Required fields present per control; allowed values enforced.
   3. Tier → waiver pairing: L0→none, L1→documented, L2→rationale.
   4. Control ID uniqueness and shape.
-  5. Every detail: path exists relative to standards/.
+  5. Every detail: path exists relative to standards/; judgment/hybrid
+     controls must carry one. meta.categories covers every ID prefix.
   6. Reverse check: every standards/controls/*.md frontmatter matches catalog.
   7. Cross-reference sweep: every control ID mentioned in prose exists in catalog.
 Exit 0 and print "OK: <n> controls valid" on success.
 Exit 1 and print "ERROR <location>: <message>" lines on failure.
 """
 
+import json
 import os
 import re
 import sys
@@ -38,19 +40,22 @@ CROSS_REF_FILES = [
 SKILLS_DIR = os.path.join(REPO_ROOT, ".claude", "skills")
 AGENTS_DIR = os.path.join(REPO_ROOT, ".claude", "agents")
 
-# ── Allowed values ─────────────────────────────────────────────────────────────
-REQUIRED_FIELDS = ["id", "source", "title", "tier", "check", "phase",
-                   "applies_to", "verify", "waiver"]
-ALLOWED_TIERS = {"L0", "L1", "L2"}
-ALLOWED_CHECKS = {"deterministic", "judgment", "hybrid"}
-ALLOWED_PHASES = {"intent", "plan", "implement", "verify"}
-ALLOWED_APPLIES_TO = {"page", "component", "flow", "content"}
-ALLOWED_WAIVERS = {"none", "documented", "rationale"}
+# ── Allowed values — from standards/schema.json, shared with the website's
+# build guard (scripts/check-standards.mjs); edit the schema, not this file. ──
+with open(os.path.join(REPO_ROOT, "standards", "schema.json")) as fh:
+    SCHEMA = json.load(fh)
 
-TIER_WAIVER = {"L0": "none", "L1": "documented", "L2": "rationale"}
+REQUIRED_FIELDS = SCHEMA["required_fields"]
+TIER_WAIVER = SCHEMA["tier_waiver"]
+ALLOWED_TIERS = set(TIER_WAIVER)
+ALLOWED_CHECKS = set(SCHEMA["checks"])
+ALLOWED_PHASES = set(SCHEMA["phases"])
+ALLOWED_APPLIES_TO = set(SCHEMA["applies_to"])
+ALLOWED_WAIVERS = set(TIER_WAIVER.values())
 
-CONTROL_ID_RE = re.compile(r"^(A11Y|TOK|TYP|COL|CMP|CNT|MOT|IDN|SLP)-\d+$")
-XREF_RE = re.compile(r"\b(A11Y|TOK|TYP|COL|CMP|CNT|MOT|IDN|SLP)-\d+\b")
+_PREFIXES = "|".join(SCHEMA["id_prefixes"])
+CONTROL_ID_RE = re.compile(rf"^({_PREFIXES})-\d+$")
+XREF_RE = re.compile(rf"\b({_PREFIXES})-\d+\b")
 
 errors = []
 
@@ -147,19 +152,31 @@ for idx, control in enumerate(controls_list):
     # 4. ID uniqueness and shape
     if ctrl_id != f"<entry {idx}>":
         if not CONTROL_ID_RE.match(str(ctrl_id)):
-            err(loc, f"id '{ctrl_id}' does not match pattern ^(A11Y|TOK|TYP|COL|CMP|CNT|MOT|IDN)-\\d+$")
+            err(loc, f"id '{ctrl_id}' does not match pattern {CONTROL_ID_RE.pattern}")
         if ctrl_id in seen_ids:
             err(loc, f"duplicate id '{ctrl_id}' (first seen at entry {seen_ids[ctrl_id]})")
         else:
             seen_ids[ctrl_id] = idx
             catalog_by_id[ctrl_id] = control
 
-    # 5. detail: path exists
+    # 5. detail: path exists; judgment/hybrid controls must have one
     detail = control.get("detail")
     if detail is not None:
         detail_abs = os.path.join(REPO_ROOT, "standards", detail)
         if not os.path.isfile(detail_abs):
             err(loc, f"detail file 'standards/{detail}' does not exist")
+    elif check in {"judgment", "hybrid"}:
+        err(loc, f"check '{check}' requires a 'detail' file (rationale + pass/fail examples)")
+
+# ── Step 5b: meta.categories covers every ID prefix ───────────────────────────
+# The TFX-DS website derives control categories from this map; a missing
+# prefix breaks the site build.
+meta_categories = (catalog_data.get("meta") or {}).get("categories") or {}
+for ctrl_id in catalog_by_id:
+    prefix = ctrl_id.split("-")[0]
+    if prefix not in meta_categories:
+        err("standards/catalog.yaml (meta.categories)",
+            f"id prefix '{prefix}' ({ctrl_id}) has no category mapping")
 
 # ── Step 6: Reverse check — controls/*.md frontmatter ─────────────────────────
 FRONTMATTER_FIELDS = ["id", "source", "title", "tier", "check", "phase",

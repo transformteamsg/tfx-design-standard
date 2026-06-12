@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import { parse } from "yaml";
+import { Document, parse, Scalar } from "yaml";
 
 export type Control = {
   id: string;
@@ -9,12 +9,80 @@ export type Control = {
   check: "deterministic" | "judgment" | "hybrid";
   category: string;
   fails_when?: string[];
-  rationale?: string;
-  status?: string;
 };
 
+type RawControl = Record<string, unknown> & { id: string };
+type RawCatalog = {
+  meta: { categories: Record<string, string> } & Record<string, unknown>;
+  controls: RawControl[];
+};
+
+/* Fields the public routes (/standards/catalog.yaml, /llms.txt) expose.
+   `refs` and `detail` are harness-internal: Notion workspace links and
+   repo-relative paths. Detail content is published via /llms-full.txt. */
+const PUBLIC_FIELDS = [
+  "id",
+  "source",
+  "title",
+  "tier",
+  "check",
+  "phase",
+  "applies_to",
+  "verify",
+  "waiver",
+  "fails_when",
+] as const;
+
+function readCatalog(): RawCatalog {
+  const file = path.join(process.cwd(), "harness", "standards", "catalog.yaml");
+  return parse(fs.readFileSync(file, "utf8")) as RawCatalog;
+}
+
 export function getCatalog(): Control[] {
-  const file = path.join(process.cwd(), "content", "standards", "catalog.yaml");
-  const data = parse(fs.readFileSync(file, "utf8"));
-  return data.controls as Control[];
+  const { meta, controls } = readCatalog();
+  return controls.map((c) => {
+    const prefix = c.id.split("-")[0];
+    const category = meta.categories?.[prefix];
+    if (!category) {
+      throw new Error(
+        `harness/standards/catalog.yaml: id prefix '${prefix}' (${c.id}) missing from meta.categories`,
+      );
+    }
+    return {
+      id: c.id,
+      statement: c.title,
+      tier: c.tier,
+      check: c.check,
+      category,
+      fails_when: c.fails_when,
+    } as Control;
+  });
+}
+
+/* meta keys the public routes expose — deny-by-default, like PUBLIC_FIELDS. */
+const PUBLIC_META = ["version", "updated", "waiver_syntax", "categories"] as const;
+
+export function getPublicCatalogYaml(): string {
+  const { meta, controls } = readCatalog();
+  const publicMeta = Object.fromEntries(
+    PUBLIC_META.filter((k) => k in meta).map((k) => [k, meta[k]]),
+  );
+  const publicControls = controls.map((c) =>
+    Object.fromEntries(
+      PUBLIC_FIELDS.filter((f) => f in c).map((f) => [f, c[f]]),
+    ),
+  );
+  const doc = new Document({ meta: publicMeta, controls: publicControls });
+  /* Quote `updated` so YAML 1.1 parsers (PyYAML, Psych) read the ISO date as
+     a string, matching the quoted source — unquoted it resolves to a date. */
+  const updated = doc.getIn(["meta", "updated"], true);
+  if (updated instanceof Scalar) updated.type = Scalar.QUOTE_DOUBLE;
+  const header = [
+    "# TFX Design Standard — control catalog",
+    "# A control is one verifiable statement. If you can't check it, it's not a standard.",
+    "# Tiers: L0 = non-negotiable (no waiver) · L1 = mandatory (documented waiver) · L2 = recommended (inline rationale)",
+    "# Control rationale and pass/fail examples: /llms-full.txt",
+    "",
+  ].join("\n");
+  return header + doc.toString();
 }

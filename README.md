@@ -3,7 +3,7 @@
 The design standard website for **TransformX** (Teacher & School portfolio, GovTech Singapore) — for human builders **and** AI agents.
 
 - Live site: (connect to Vercel — see below)
-- Full standard for agents: `/llms.txt`
+- Full standard for agents: `/llms.txt` (with control details: `/llms-full.txt`)
 - Machine-readable control catalog: `/standards/catalog.yaml`
 
 ## Architecture
@@ -14,12 +14,16 @@ The design standard website for **TransformX** (Teacher & School portfolio, GovT
 | Styling | Tailwind CSS v4, shadcn-style tokens (CSS variables in `app/globals.css`) |
 | Fonts | Plus Jakarta Sans (display) + Inter (body), self-hosted via Fontsource |
 | Content | MDX in `content/<section>/*.mdx` with frontmatter (`title`, `description`, `status: settled|proposed`) |
-| Controls | `content/standards/catalog.yaml` — single source of truth, rendered at `/standards`, served raw at `/standards/catalog.yaml` |
+| Controls | `harness/standards/catalog.yaml` — single source of truth, rendered at `/standards/catalog`, served (re-serialized, public fields only) at `/standards/catalog.yaml` |
 | Icons | Lucide |
 
 ## Editing content
 
-Edit `content/**/*.mdx` — no code changes needed. New page: add an `.mdx` file and a nav entry in `components/sidebar.tsx`. New control: add to `catalog.yaml` (id, category, tier, check, statement, fails_when).
+Edit `content/**/*.mdx` — no code changes needed; `/llms.txt` regenerates from the same files on the next build. New page: add an `.mdx` file, register it in `content/map.json` (drives the directory pages and `/llms.txt`), and add a nav entry in `components/sidebar.tsx` — the build guard (`pnpm check:standards`) fails if you miss a step. New control: add to `harness/standards/catalog.yaml` via the ratchet (see `harness/CONTRIBUTING.md`); the site reads that file directly.
+
+## Later
+
+- Catalog browser UI: surface `verify`, `waiver`, `phase`, and `applies_to` (now available from the harness schema) — a design task that must run through the design loop itself.
 
 ## Develop
 
