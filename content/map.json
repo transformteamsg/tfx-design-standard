@@ -1,0 +1,39 @@
+{
+  "principles": {
+    "label": "Principles",
+    "slugs": ["brand-principles", "product-design-principles"]
+  },
+  "standards": {
+    "label": "Standards",
+    "slugs": []
+  },
+  "guidelines": {
+    "label": "Guidelines",
+    "slugs": [
+      "voice-tone",
+      "naming",
+      "interaction",
+      "web-interface",
+      "data-viz",
+      "illustration",
+      "product-icons"
+    ]
+  },
+  "foundations": {
+    "label": "Foundations",
+    "slugs": ["colour", "typography", "spacing-radius", "iconography"]
+  },
+  "products": {
+    "label": "Products",
+    "slugs": ["teacher-workspace", "casesync", "glow"]
+  },
+  "harness": {
+    "label": "Harness",
+    "slugs": ["loop", "skills", "tools", "on-ramp"]
+  },
+  "governance": {
+    "label": "Governance",
+    "slugs": ["governance"],
+    "root": true
+  }
+}

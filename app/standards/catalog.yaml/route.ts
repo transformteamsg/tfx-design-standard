@@ -1,9 +1,9 @@
-import fs from "node:fs";
-import path from "node:path";
+import { getPublicCatalogYaml } from "@/lib/catalog";
+
+export const dynamic = "force-static";
 
 export function GET() {
-  const file = path.join(process.cwd(), "content", "standards", "catalog.yaml");
-  return new Response(fs.readFileSync(file, "utf8"), {
+  return new Response(getPublicCatalogYaml(), {
     headers: { "content-type": "text/yaml; charset=utf-8" },
   });
 }
