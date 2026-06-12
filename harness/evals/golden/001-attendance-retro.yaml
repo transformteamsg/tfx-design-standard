@@ -1,0 +1,90 @@
+# Golden task 001 — attendance page (RETROACTIVE)
+#
+# This task scores the artifacts the attendance pilot run already produced
+# in-repo. It exists to validate the scoring engine against real ground truth
+# with zero new agent runs. Do not regenerate the artifacts to satisfy an
+# assertion — if an assertion fails, the assertion is wrong (tune the task
+# file, never the page or record).
+
+id: 001-attendance-retro
+
+brief: >
+  Design the daily attendance-taking page for Teacher Workspace: a teacher
+  marks a class present/absent, handles exceptions (late, MC), and submits.
+  Submission is async (loading / success / error states). Run the full
+  design-ui loop and produce the decision record, the page, and width + state
+  screenshot evidence.
+
+traps:
+  - >
+    A11Y-11 double-announcement: the error banner is announced by a focus
+    move, so the page must NOT also carry role="alert" on a real element (the
+    two channels together announce twice). The literal string role="alert"
+    legitimately appears once inside an HTML comment documenting this fix, so
+    the absent-grep uses the pattern <[a-zA-Z][^>]*role="alert" — it matches
+    the attribute inside a real opening tag but not the comment (comments
+    start with "<!", which fails the [a-zA-Z] after "<").
+  - >
+    CNT-1 draft reassurance: the error message must state that the teacher's
+    marks are preserved ("Your marks are saved"), not just report failure.
+  - >
+    State evidence (loading frame): the screenshot set must include one frame
+    per async state — loading included (768-loading.png) — alongside the
+    360/768/1280 width evidence.
+
+artifacts:
+  record: docs/decisions/attendance.md
+  page: docs/loop-run/attendance.html
+  screenshots_dir: docs/loop-run/screenshots/attendance
+
+assertions:
+  # Decision record exists and passes the mechanical compliance audit
+  - type: file_exists
+    path: docs/decisions/attendance.md
+  - type: command
+    run: python3 checks/audit-record.py docs/decisions/attendance.md
+    exit: 0
+
+  # Verbatim evaluator verdict and waiver/approval trail in the record
+  - type: grep
+    path: docs/decisions/attendance.md
+    pattern: 'VERDICT: pass'
+    expect: present
+  - type: grep
+    path: docs/decisions/attendance.md
+    pattern: 'tfx-waive|operator proxy'
+    expect: present
+
+  # A11Y-11 trap — no real element carries role="alert" (comment-safe pattern,
+  # see traps above)
+  - type: grep
+    path: docs/loop-run/attendance.html
+    pattern: '<[a-zA-Z][^>]*role="alert"'
+    expect: absent
+
+  # CNT-1 trap — draft-reassurance copy in the error state
+  - type: grep
+    path: docs/loop-run/attendance.html
+    pattern: 'Your marks are saved'
+    expect: present
+
+  # Width + state screenshot evidence (one frame per state, loading included)
+  - type: file_exists
+    path: docs/loop-run/screenshots/attendance/360-question.png
+  - type: file_exists
+    path: docs/loop-run/screenshots/attendance/768-question.png
+  - type: file_exists
+    path: docs/loop-run/screenshots/attendance/1280-question.png
+  - type: file_exists
+    path: docs/loop-run/screenshots/attendance/768-exceptions.png
+  - type: file_exists
+    path: docs/loop-run/screenshots/attendance/768-loading.png
+  - type: file_exists
+    path: docs/loop-run/screenshots/attendance/768-success.png
+  - type: file_exists
+    path: docs/loop-run/screenshots/attendance/768-error.png
+
+  # Token discipline (TOK-1..3) — page passes the deterministic token audit
+  - type: command
+    run: python3 checks/token-audit.py docs/loop-run/attendance.html
+    exit: 0

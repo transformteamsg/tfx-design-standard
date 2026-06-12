@@ -1,0 +1,137 @@
+{
+  "_note": "ILLUSTRATIVE ONLY — this is a plausible but fabricated manifest for the spike. No real teacher-workspace component library was accessed. Component names, import paths, and props are representative of a Base UI + shadcn-style stack; they do not reflect actual teacher-workspace source.",
+  "product": "teacher-workspace",
+  "generated": "2026-06-11",
+  "source": "hand-maintained",
+  "components": [
+    {
+      "name": "Button",
+      "import": "~/components/ui/button",
+      "kind": "base-ui-wrapper",
+      "status": "stable",
+      "props_summary": "Primary action trigger; variants: primary, secondary, ghost, destructive, link; sizes: sm, md, lg; supports loading state via isLoading prop.",
+      "replaces": ["custom anchor styled as button", "hand-rolled loading spinner inside a div"],
+      "docs": "https://design.tfx.gov.sg/storybook/?path=/docs/button"
+    },
+    {
+      "name": "Dialog",
+      "import": "~/components/ui/dialog",
+      "kind": "base-ui-wrapper",
+      "status": "stable",
+      "props_summary": "Modal overlay with header, body, footer slots; traps focus; closes on Escape; composed from Base UI Dialog primitives.",
+      "replaces": ["custom modals", "inline confirm prompts", "hand-rolled overlay with backdrop"],
+      "docs": "https://design.tfx.gov.sg/storybook/?path=/docs/dialog"
+    },
+    {
+      "name": "Toast",
+      "import": "~/components/ui/toast",
+      "kind": "base-ui-wrapper",
+      "status": "stable",
+      "props_summary": "Transient notification; variants: success, warning, error, info; auto-dismisses after 5s; stacks via Toaster provider.",
+      "replaces": ["alert div at top of page", "custom snackbar", "fixed-position notification banner for transient feedback"],
+      "docs": "https://design.tfx.gov.sg/storybook/?path=/docs/toast"
+    },
+    {
+      "name": "EmptyState",
+      "import": "~/components/patterns/empty-state",
+      "kind": "pattern",
+      "status": "stable",
+      "props_summary": "Zero-data placeholder with illustration slot, heading, body copy, and optional primary action; use for list views, search results, and filtered tables with no matches.",
+      "replaces": ["inline paragraph saying 'No items found'", "custom illustration + button built per screen"],
+      "docs": "https://design.tfx.gov.sg/storybook/?path=/docs/empty-state"
+    },
+    {
+      "name": "PageHeader",
+      "import": "~/components/layout/page-header",
+      "kind": "layout",
+      "status": "stable",
+      "props_summary": "Top-of-page shell with page title (Plus Jakarta Sans 600), optional subtitle, breadcrumb slot, and trailing action slot; sets the H1 for the view.",
+      "docs": "https://design.tfx.gov.sg/storybook/?path=/docs/page-header"
+    },
+    {
+      "name": "DataTable",
+      "import": "~/components/patterns/data-table",
+      "kind": "pattern",
+      "status": "stable",
+      "props_summary": "Sortable, paginated table with column config, row selection, and empty-state slot; built on TanStack Table; handles loading skeleton internally.",
+      "replaces": ["hand-rolled HTML table with custom sort", "raw <table> with inline styles"],
+      "docs": "https://design.tfx.gov.sg/storybook/?path=/docs/data-table"
+    },
+    {
+      "name": "FormField",
+      "import": "~/components/composite/form-field",
+      "kind": "composite",
+      "status": "stable",
+      "props_summary": "Composes Label + Input (or Select/Textarea) + HelperText + ErrorMessage into a single accessible form row; associates label programmatically; satisfies A11Y-3 by construction.",
+      "replaces": ["input with sibling label not programmatically associated", "custom field wrapper"],
+      "docs": "https://design.tfx.gov.sg/storybook/?path=/docs/form-field"
+    },
+    {
+      "name": "DatePicker",
+      "import": "~/components/composite/date-picker",
+      "kind": "composite",
+      "status": "stable",
+      "props_summary": "Text input + calendar popover for date selection; supports single date and range modes; keyboard-navigable calendar; formats dates per locale.",
+      "replaces": ["raw <input type=date>", "custom calendar built with divs"],
+      "docs": "https://design.tfx.gov.sg/storybook/?path=/docs/date-picker"
+    },
+    {
+      "name": "Tabs",
+      "import": "~/components/ui/tabs",
+      "kind": "base-ui-wrapper",
+      "status": "stable",
+      "props_summary": "ARIA-compliant tab list + tab panels; variants: underline (default), pill; controlled and uncontrolled modes.",
+      "docs": "https://design.tfx.gov.sg/storybook/?path=/docs/tabs"
+    },
+    {
+      "name": "Banner",
+      "import": "~/components/patterns/banner",
+      "kind": "pattern",
+      "status": "stable",
+      "props_summary": "Persistent in-page alert strip; variants: info, success, warning, error; optional dismiss; use for page-level status that persists across actions (not transient — use Toast for that).",
+      "replaces": ["alert div with hardcoded background colour", "custom announcement bar"],
+      "docs": "https://design.tfx.gov.sg/storybook/?path=/docs/banner"
+    },
+    {
+      "name": "Select",
+      "import": "~/components/ui/select",
+      "kind": "base-ui-wrapper",
+      "status": "stable",
+      "props_summary": "Accessible custom select (not native <select>); supports search, multi-select, and grouped options; built on Base UI Select.",
+      "docs": "https://design.tfx.gov.sg/storybook/?path=/docs/select"
+    },
+    {
+      "name": "ConfirmDialog",
+      "import": "~/components/patterns/confirm-dialog",
+      "kind": "pattern",
+      "status": "stable",
+      "props_summary": "Dialog pre-wired for destructive action confirmation: title, consequence copy, cancel button, and confirm (destructive variant Button); satisfies CMP-2 by construction.",
+      "replaces": ["window.confirm()", "inline confirmation row", "custom destructive modal"],
+      "docs": "https://design.tfx.gov.sg/storybook/?path=/docs/confirm-dialog"
+    },
+    {
+      "name": "LoadingSpinner",
+      "import": "~/components/ui/loading-spinner",
+      "kind": "base-ui-wrapper",
+      "status": "deprecated",
+      "props_summary": "Full-page or inline spinner. DEPRECATED: use Button isLoading prop for button states, or Skeleton for content loading. LoadingSpinner remains only for legacy full-page loading gates being migrated.",
+      "docs": "https://design.tfx.gov.sg/storybook/?path=/docs/loading-spinner"
+    },
+    {
+      "name": "Skeleton",
+      "import": "~/components/ui/skeleton",
+      "kind": "base-ui-wrapper",
+      "status": "stable",
+      "props_summary": "Content placeholder shown during async load; shapes: text line, circle, rectangle; respects prefers-reduced-motion (satisfies A11Y-5 by construction).",
+      "docs": "https://design.tfx.gov.sg/storybook/?path=/docs/skeleton"
+    },
+    {
+      "name": "RichTextEditor",
+      "import": "~/components/composite/rich-text-editor",
+      "kind": "composite",
+      "status": "restricted",
+      "props_summary": "Full-featured prose editor (Tiptap-based); supports headings, lists, bold/italic, and link insertion. RESTRICTED: heavy bundle impact (~120 kB gzipped); use only on pages where rich formatting is a core user need. Requires CMP-1 waiver citing the use case.",
+      "docs": "https://design.tfx.gov.sg/storybook/?path=/docs/rich-text-editor"
+    }
+  ]
+}

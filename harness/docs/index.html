@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TFX Design Harness — Documentation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Schibsted+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --paper: #faf6ef;
+  --paper-deep: #f1ebe0;
+  --paper-card: #fffdf8;
+  --ink: #1c2433;
+  --ink-soft: #4d5567;
+  --ink-faint: #8a8fa0;
+  --line: #d8d0c2;
+  --line-strong: #1c2433;
+  --red: #c8102e;
+  --red-deep: #9b0c23;
+  --red-bg: #faeae8;
+  --gold: #8a6116;
+  --gold-bg: #f7efdb;
+  --green: #2e6e4e;
+  --green-bg: #e9f2ea;
+  --sans: "Schibsted Grotesk", -apple-system, sans-serif;
+  --serif: "Fraunces", Georgia, serif;
+  --mono: "IBM Plex Mono", ui-monospace, monospace;
+  --sidebar-w: 268px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 24px; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+body {
+  font-family: var(--sans);
+  font-size: 15.5px;
+  line-height: 1.7;
+  color: var(--ink-soft);
+  background: var(--paper);
+  -webkit-font-smoothing: antialiased;
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 8px;
+  background: var(--ink);
+  color: var(--paper);
+  padding: 8px 16px;
+  z-index: 100;
+  font-family: var(--mono);
+  font-size: 13px;
+}
+.skip-link:focus { left: 8px; }
+
+.shell { display: flex; min-height: 100vh; }
+
+/* ── Sidebar ────────────────────────────────────────── */
+.sidebar {
+  width: var(--sidebar-w);
+  flex: none;
+  border-right: 1.5px solid var(--line-strong);
+  background: var(--paper-deep);
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  padding: 22px 0 48px;
+}
+.sidebar__brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 2px 20px 18px;
+  border-bottom: 1.5px solid var(--line-strong);
+  margin-bottom: 14px;
+}
+.sidebar__logo {
+  width: 30px; height: 30px;
+  background: var(--ink);
+  color: var(--paper);
+  display: grid;
+  place-items: center;
+  font-family: var(--mono);
+  font-weight: 600;
+  font-size: 12px;
+  flex: none;
+  position: relative;
+}
+.sidebar__logo::after {
+  content: "";
+  position: absolute;
+  top: 3px; right: 3px;
+  width: 5px; height: 5px;
+  background: var(--red);
+}
+.sidebar__brand b { font-family: var(--serif); font-size: 15px; font-weight: 600; color: var(--ink); display: block; line-height: 1.25; }
+.sidebar__brand span { font-size: 11.5px; color: var(--ink-faint); font-family: var(--mono); }
+.sidebar nav { font-size: 13.5px; }
+.sidebar .nav-group {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--red);
+  padding: 18px 20px 5px;
+}
+.sidebar a {
+  display: block;
+  padding: 5px 20px 5px 18px;
+  color: var(--ink-soft);
+  text-decoration: none;
+  border-left: 2px solid transparent;
+}
+.sidebar a:hover { color: var(--ink); border-left-color: var(--line); }
+.sidebar a.active {
+  color: var(--ink);
+  border-left-color: var(--red);
+  background: var(--paper);
+  font-weight: 500;
+}
+.sidebar a .mono { font-family: var(--mono); font-size: 12.5px; }
+.sidebar a:focus-visible, .content a:focus-visible, .skip-link:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; }
+
+@media (max-width: 860px) {
+  .shell { flex-direction: column; }
+  .sidebar { position: static; width: auto; height: auto; border-right: none; border-bottom: 1.5px solid var(--line-strong); }
+}
+
+/* ── Content ────────────────────────────────────────── */
+.content { flex: 1; min-width: 0; }
+.content__inner { max-width: 790px; padding: 44px 52px 96px; }
+@media (max-width: 860px) { .content__inner { padding: 24px 20px 64px; } }
+
+.pill-row {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--ink-faint);
+  margin-bottom: 18px;
+  display: flex;
+  gap: 0;
+  flex-wrap: wrap;
+}
+.pill { padding: 0; border: none; background: none; }
+.pill + .pill::before { content: "\00a0\00b7\00a0\00a0"; color: var(--line); }
+.pill--accent { color: var(--red); }
+
+h1 {
+  font-family: var(--serif);
+  font-size: 38px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  line-height: 1.2;
+  margin-bottom: 12px;
+}
+.lede { font-size: 17px; color: var(--ink-soft); max-width: 62ch; }
+
+h2 {
+  font-family: var(--serif);
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--ink);
+  margin: 60px 0 8px;
+  padding-top: 18px;
+  border-top: 2px solid var(--line-strong);
+}
+h3 {
+  font-family: var(--serif);
+  font-size: 18.5px;
+  font-weight: 600;
+  color: var(--ink);
+  margin: 36px 0 6px;
+}
+h4 {
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink);
+  margin: 22px 0 4px;
+}
+h2 .anchor, h3 .anchor { color: var(--line); text-decoration: none; margin-left: 6px; font-weight: 400; font-family: var(--mono); font-size: 0.8em; }
+h2:hover .anchor, h3:hover .anchor { color: var(--red); }
+
+p { margin: 10px 0; max-width: 70ch; }
+p strong, li strong, li b { color: var(--ink); font-weight: 600; }
+ul, ol { margin: 10px 0 10px 22px; max-width: 68ch; }
+li { margin: 4px 0; }
+li::marker { color: var(--red); }
+a { color: var(--red-deep); text-decoration-color: var(--line); text-underline-offset: 2px; }
+a:hover { color: var(--red); text-decoration-color: var(--red); }
+
+code {
+  font-family: var(--mono);
+  font-size: 0.85em;
+  background: var(--paper-deep);
+  border: 1px solid var(--line);
+  padding: 1px 5px;
+  color: var(--ink);
+}
+pre {
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.65;
+  background: var(--ink);
+  color: #e8e4da;
+  border: 1.5px solid var(--line-strong);
+  padding: 14px 18px;
+  overflow-x: auto;
+  margin: 12px 0;
+  box-shadow: 4px 4px 0 var(--paper-deep), 4px 4px 0 1.5px var(--line-strong);
+}
+pre code { background: none; border: none; padding: 0; color: inherit; font-size: inherit; }
+pre .c { color: #8a8fa0; }
+pre .k { color: #f0b429; }
+pre .ok { color: #9ccfa9; }
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  table-layout: fixed;
+  margin: 14px 0;
+  font-size: 14px;
+  background: var(--paper-card);
+}
+th, td { text-align: left; padding: 8px 12px; border: 1px solid var(--line); vertical-align: top; overflow-wrap: break-word; }
+table, th { border-color: var(--line-strong); }
+th {
+  background: var(--paper-deep);
+  font-family: var(--mono);
+  font-weight: 600;
+  color: var(--ink);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border: 1px solid var(--line-strong);
+}
+table { border: 1.5px solid var(--line-strong); }
+td code { white-space: normal; overflow-wrap: break-word; }
+
+.callout {
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--red);
+  background: var(--paper-card);
+  padding: 12px 16px;
+  margin: 14px 0;
+  font-size: 14px;
+}
+.callout--warn { border-left-color: var(--gold); }
+.callout--good { border-left-color: var(--green); }
+.callout p { margin: 4px 0; }
+
+.badge {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 1px 8px;
+  border: 1px solid currentColor;
+  vertical-align: 1px;
+}
+.badge--l0 { color: var(--red-deep); background: var(--red-bg); }
+.badge--l1 { color: var(--gold); background: var(--gold-bg); }
+.badge--l2 { color: var(--green); background: var(--green-bg); }
+.badge--gate { color: var(--paper); background: var(--ink); border-color: var(--ink); }
+.badge--built { color: var(--green); background: var(--green-bg); }
+.badge--planned { color: var(--ink-faint); background: var(--paper-deep); }
+
+.meta-line { font-size: 12.5px; color: var(--ink-faint); font-family: var(--mono); margin: 2px 0 10px; }
+.meta-line a { text-decoration: none; color: var(--ink-faint); border-bottom: 1px solid var(--line); }
+.meta-line a:hover { color: var(--red-deep); border-bottom-color: var(--red); }
+
+.footer {
+  margin-top: 76px;
+  padding-top: 20px;
+  border-top: 2px solid var(--line-strong);
+  font-size: 13px;
+  color: var(--ink-faint);
+  font-family: var(--mono);
+}
+.footer p { margin: 5px 0; max-width: none; }
+</style>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<div class="shell">
+
+<!-- ════════ SIDEBAR ════════ -->
+<aside class="sidebar">
+  <div class="sidebar__brand">
+    <div class="sidebar__logo">DH</div>
+    <div><b>TFX Design Harness</b><span>docs · v0.1</span></div>
+  </div>
+  <nav aria-label="Documentation">
+    <a href="#introduction">Introduction</a>
+    <a href="#install">Install</a>
+    <a href="#architecture">Architecture</a>
+    <a href="#catalog">Control catalog</a>
+    <a href="#loop">The design loop</a>
+    <div class="nav-group">Skills</div>
+    <a href="#design-ui"><span class="mono">design-ui</span></a>
+    <a href="#design-standards"><span class="mono">design-standards</span></a>
+    <a href="#content-style"><span class="mono">content-style</span></a>
+    <a href="#design-review"><span class="mono">design-review</span></a>
+    <a href="#design-evaluator"><span class="mono">design-evaluator</span></a>
+    <div class="nav-group">Reference</div>
+    <a href="#checks">Checks &amp; commands</a>
+    <a href="#records">Decision records</a>
+    <a href="#status">Status &amp; roadmap</a>
+  </nav>
+</aside>
+
+<!-- ════════ CONTENT ════════ -->
+<main class="content" id="main">
+<div class="content__inner">
+
+<div class="pill-row">
+  <span class="pill pill--accent">TFX-DS §7 — the harness</span>
+  <span class="pill">28 controls</span>
+  <span class="pill">4 skills + 1 agent</span>
+  <span class="pill">2 checks built</span>
+</div>
+
+<h1>TFX Design Harness</h1>
+<p class="lede">A Claude Code plugin that wraps an AI agent so that everything it designs for the
+Teacher &amp; School portfolio complies with the TFX Design Standard — not by asking nicely, but by
+structure: a control catalog it must satisfy, a loop with human gates, and checks that always run.</p>
+
+<!-- ── Introduction ── -->
+<h2 id="introduction">Introduction <a class="anchor" href="#introduction">#</a></h2>
+<p>The working equation: <strong>agent = model + harness</strong>. The model generates; the harness is
+everything around it that turns generation into reliable, on-standard output.</p>
+<p>The harness makes one promise above all: <strong>intent without loss</strong>. What the builder means
+is written down as a contract in phase 1; every later phase is graded against that contract; drift from
+it is a defect. Speed comes from automation — quality comes from the contract surviving all the way to
+shipped UI.</p>
+<ul>
+  <li><strong>Normative source</strong>: the <a href="https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb">TFX Design Standard v0.1</a> (owner: Wondo Jeong). WCAG 2.2 AA is the self-imposed accessibility floor; SGDS and GOV.UK are reference points, not rules.</li>
+  <li><strong>The stack</strong> (deliberately boring, AI-legible): Base UI components · Radix Colors · shadcn/ui default tokens · Plus Jakarta Sans (600) display · Inter (400/500/600) body · Teacher &amp; School Blue <code>#0064FF</code>.</li>
+  <li><strong>Brand essence</strong>: Kind Utility — useful first, kind at the surface. The one test: does this help teachers work faster with less stress?</li>
+</ul>
+
+<!-- ── Install ── -->
+<h2 id="install">Install <a class="anchor" href="#install">#</a></h2>
+<p>The harness ships as a Claude Code plugin. In a product repo (TW, CaseSync, Glow):</p>
+<pre><code>/plugin marketplace add &lt;git-url-of-this-repo&gt;   <span class="c"># placeholder until hosted</span>
+/plugin install tfx-design-harness@tfx</code></pre>
+<p>This installs the four skills, the <code>design-evaluator</code> subagent, and the control catalog —
+the catalog ships with the plugin, not with the product repo. Working on the harness itself? Open a
+Claude Code session in this repository; skills load from <code>.claude/skills/</code> automatically.</p>
+<div class="callout">
+  <p>Adopting the harness in a product repo? Follow the step-by-step
+  <a href="ONBOARDING.md">team onboarding guide</a> (maps the TFX-DS §7.6 harness-ready checklist to
+  concrete steps).</p>
+</div>
+
+<!-- ── Architecture ── -->
+<h2 id="architecture">Architecture <a class="anchor" href="#architecture">#</a></h2>
+<p>Three layers, separated so the harness stays reusable across the whole portfolio:</p>
+<table>
+  <tr><th style="width:22%">Layer</th><th>What lives there</th><th style="width:34%">Mechanism</th></tr>
+  <tr>
+    <td><strong>Normative</strong><br><span style="font-size:12px;color:var(--text-muted)">what must be true</span></td>
+    <td>The control catalog — 28 controls (22 TFX-DS seed + 6 ratchet additions from the GovTech accessibility checklist), tiered L0/L1/L2</td>
+    <td><code>standards/catalog.yaml</code> + detail files</td>
+  </tr>
+  <tr>
+    <td><strong>Harness</strong><br><span style="font-size:12px;color:var(--text-muted)">how the agent works</span></td>
+    <td>Four skills (probabilistic — the agent applies them with judgment) orchestrating the design loop, catalog mechanics, and voice</td>
+    <td><code>.claude/skills/</code></td>
+  </tr>
+  <tr>
+    <td><strong>Enforcement</strong><br><span style="font-size:12px;color:var(--text-muted)">proof, not promises</span></td>
+    <td>Deterministic check scripts (non-skippable), the evaluator subagent for judgment calls, and human gates at plan approval and L1 waivers</td>
+    <td><code>checks/</code> + <code>.claude/agents/</code></td>
+  </tr>
+</table>
+<div class="callout--good callout">
+  <p><strong>The ratchet</strong>: every failure caught downstream becomes a new control upstream. The
+  catalog only grows from observed failures — evidence in, rule out, never speculation. Two pilot runs
+  have already fed two controls back into the catalog.</p>
+</div>
+<p>One catalog serves the whole portfolio. Per-product difference is nuance calibration (accent,
+illustration, tone weighting — TFX-DS §6), never separate rules or systems.</p>
+
+<!-- ── Catalog ── -->
+<h2 id="catalog">Control catalog <a class="anchor" href="#catalog">#</a></h2>
+<p class="meta-line">source of truth: <a href="../standards/catalog.yaml">standards/catalog.yaml</a> · format spec: <a href="../standards/README.md">standards/README.md</a></p>
+<p>Every standard is a <strong>control</strong>: one verifiable statement with an id, a tier, and a check
+type. The litmus test: <em>if you can't check it, it's a principle or a guideline — not a standard.</em>
+The index is always loaded; detail files (rationale, pass/fail examples, evaluator guidance) load only
+when a control is in scope.</p>
+<pre><code>- id: TYP-2
+  source: TFX-DS
+  title: Body text at least 14px; labels at least 11px; body line-height 1.5-1.6
+  tier: L1                      <span class="c"># L0 | L1 | L2</span>
+  check: deterministic          <span class="c"># deterministic | judgment | hybrid</span>
+  phase: [implement, verify]    <span class="c"># intent | plan | implement | verify</span>
+  applies_to: [page, component] <span class="c"># page | component | flow | content</span>
+  verify: "Type-scale scan; checks/type-scan"
+  waiver: documented            <span class="c"># follows tier — see below</span>
+  detail: controls/typ-2.md     <span class="c"># omit if the index entry is self-sufficient</span></code></pre>
+
+<h3 id="tiers">Tiers &amp; waivers <a class="anchor" href="#tiers">#</a></h3>
+<table>
+  <tr><th style="width:14%">Tier</th><th>Meaning</th><th>On failure</th><th style="width:34%">Waiver</th></tr>
+  <tr><td><span class="badge badge--l0">L0</span></td><td>Non-negotiable — trust, safety, accessibility floor</td><td>Blocks the loop; output cannot ship</td><td>None. Ever.</td></tr>
+  <tr><td><span class="badge badge--l1">L1</span></td><td>Mandatory — consistency and quality</td><td>Back to implement</td><td><code>documented</code> — named human approver, recorded in the decision record</td></tr>
+  <tr><td><span class="badge badge--l2">L2</span></td><td>Recommended — strong default</td><td>Finding, not a block</td><td><code>rationale</code> — inline at the deviation site, like an eslint-disable</td></tr>
+</table>
+<pre><code><span class="c">&lt;!-- a waiver without a specific reason is a violation, not a waiver --&gt;</span>
+&lt;!-- <span class="k">tfx-waive CNT-3</span> reason=<span class="k">"ministry programme name must appear verbatim"</span> --&gt;</code></pre>
+
+<h3 id="check-types">Check types <a class="anchor" href="#check-types">#</a></h3>
+<table>
+  <tr><th style="width:18%">Type</th><th>Verified by</th><th>Examples</th></tr>
+  <tr><td><code>deterministic</code></td><td>Script or scanner; binary pass/fail; non-skippable</td><td>Contrast ratio, raw-colour detection, label presence, reduced motion</td></tr>
+  <tr><td><code>judgment</code></td><td>Evaluator agent (or human), with quoted evidence</td><td>Plain-language naming, tone in error copy, pattern appropriateness</td></tr>
+  <tr><td><code>hybrid</code></td><td>Script narrows the surface, evaluator judges the rest</td><td>Script proves loading/success/error states exist; evaluator confirms the copy communicates</td></tr>
+</table>
+<p>Categories: <code>A11Y</code> accessibility (11 controls — mirrors the
+<a href="https://a11y.tech.gov.sg/checklist/">GovTech checklist</a> Essential tier) · <code>TOK</code>
+tokens · <code>TYP</code> typography · <code>COL</code> colour · <code>CMP</code> components ·
+<code>CNT</code> content &amp; naming · <code>MOT</code> motion · <code>IDN</code> identity.</p>
+
+<!-- ── Loop ── -->
+<h2 id="loop">The design loop <a class="anchor" href="#loop">#</a></h2>
+<p>Six phases; controls filter into every phase; two moments are <strong>human gates</strong>.
+Modifications and catalog re-audits run a scoped version of the same loop
+(see <a href="#design-ui">design-ui</a>).</p>
+<table>
+  <tr><th style="width:20%">Phase</th><th>What happens</th><th style="width:24%">Gate</th></tr>
+  <tr><td><strong>1 · Intent</strong></td><td>Purpose, <em>the teacher and the moment</em> this serves, page type, done-criteria — written as a sprint contract the evaluator later grades against. Naming checked (CNT-2) before a placeholder spreads.</td><td>—</td></tr>
+  <tr><td><strong>2 · Diverge</strong></td><td>2–3 structurally different options, no pixel code, composed only from components that exist.</td><td>User picks a direction</td></tr>
+  <tr><td><strong>3 · Plan</strong></td><td>Components per region, content outline, async states with their announcement channels, controls in scope, proposed waivers, <strong>tradeoffs named</strong>. Written to a decision record.</td><td><span class="badge badge--gate">HUMAN GATE</span> plan approved before any code</td></tr>
+  <tr><td><strong>4 · Implement</strong></td><td>Build exactly the approved plan. Manifest components, semantic tokens, the two typefaces, every field labelled. Drift from the plan is itself a defect.</td><td>—</td></tr>
+  <tr><td><strong>5 · Verify</strong></td><td>Deterministic checks first (L0 blocks, L1 loops back) → screenshots as evidence → separate evaluator grades judgment controls + design quality against the contract.</td><td><span class="badge badge--gate">SPLIT</span> generator never grades its own work</td></tr>
+  <tr><td><strong>6 · Ratchet</strong></td><td>Decision record completed; any defect no control covered becomes a proposed control.</td><td>Design lead approves new controls</td></tr>
+</table>
+
+<!-- ── Skills ── -->
+<h2 id="skills-overview">Skills <a class="anchor" href="#skills-overview">#</a></h2>
+<p>Skills are the probabilistic half of the harness — procedures the agent applies with judgment; the
+<code>checks/</code> scripts are the deterministic floor underneath. Reliability comes from the
+combination, never from either alone. Each section below documents one skill and links to its live
+definition — this page describes them, it does not copy them, so it cannot drift.</p>
+<table>
+  <tr><th style="width:26%">Skill</th><th>In one line</th></tr>
+  <tr><td><a href="#design-ui"><code>design-ui</code></a></td><td>The entry point — orchestrates every design change through the six-phase loop with gates.</td></tr>
+  <tr><td><a href="#design-standards"><code>design-standards</code></a></td><td>The rulebook — how to read, filter, apply, waive, and grow the control catalog.</td></tr>
+  <tr><td><a href="#content-style"><code>content-style</code></a></td><td>The voice — TFX tone and naming applied while writing copy, not as a cleanup pass.</td></tr>
+  <tr><td><a href="#design-review"><code>design-review</code></a></td><td>The rubric — the grading procedure the evaluator follows; findings, never patches.</td></tr>
+  <tr><td><a href="#design-evaluator"><code>design-evaluator</code></a></td><td>The grader — a genuinely separate subagent that runs design-review at verify.</td></tr>
+</table>
+
+<!-- design-ui -->
+<h3 id="design-ui">design-ui <a class="anchor" href="#design-ui">#</a></h3>
+<p class="meta-line">entry point · <a href="../.claude/skills/design-ui/SKILL.md">.claude/skills/design-ui/SKILL.md</a></p>
+<p><strong>Summary</strong>: orchestrates every design change end-to-end. Triggers when anyone asks to
+design, create, build, add to, change, fix, or restyle a page, screen, form, component, or flow.</p>
+<h4>Three entry points, same gates</h4>
+<ul>
+  <li><strong>New page or flow</strong> — all six phases.</li>
+  <li><strong>Modification</strong> — scoped loop: one-line intent, skip diverge if structure is fixed,
+  short plan naming only the controls the changed surface pulls in. "Just add a field" is still in
+  scope — a new field still triggers labels, tokens, async states.</li>
+  <li><strong>Catalog update re-audit</strong> — when controls are added, shipped surfaces are silently
+  out of date; the "change" is the catalog delta, the plan is the audit findings.</li>
+</ul>
+<h4>What it enforces beyond the phases</h4>
+<ul>
+  <li><strong>Gate protocol</strong> — the plan is presented in full first; approval is asked in plain
+  text at the end and needs an explicit typed answer. Unattended runs require up-front operator
+  authorization, recorded honestly as proxy approval.</li>
+  <li><strong>Evidence rules</strong> — two screenshot sets: widths (360/768/1280) and one frame per
+  state each hybrid control asserts, <em>loading included</em>. Demo hooks (e.g. <code>?fail=1</code>)
+  are built during implement so every state is photographable.</li>
+  <li><strong>Honesty about enforcement</strong> — controls with no built check are reported
+  "verified manually", never "passed". The manual accessibility pass walks the catalog's A11Y controls
+  in id order.</li>
+  <li><strong>Evaluator dispatch</strong> — verify spawns the separate evaluator with the contract,
+  plan, screenshots, and standards path. If the agent can't spawn subagents, its orchestrator
+  dispatches instead. The verdict lands in the decision record <em>verbatim</em> — a summary is a
+  defect.</li>
+</ul>
+
+<!-- design-standards -->
+<h3 id="design-standards">design-standards <a class="anchor" href="#design-standards">#</a></h3>
+<p class="meta-line">rulebook · <a href="../.claude/skills/design-standards/SKILL.md">.claude/skills/design-standards/SKILL.md</a></p>
+<p><strong>Summary</strong>: catalog mechanics — how to read, filter, apply, and grow the catalog.
+Triggers when applying controls, judging a deviation, writing a waiver, or proposing a control; loaded
+automatically by design-ui.</p>
+<h4>Reading &amp; filtering</h4>
+<ul>
+  <li>The catalog resolves relative to the skill itself — it ships with the plugin, not the product
+  repo. Filter by <code>phase</code> and <code>applies_to</code>: a copy edit pulls content controls,
+  not all 28.</li>
+  <li>A control without a <code>detail:</code> file is self-sufficient; a judgment/hybrid control
+  missing one is a catalog defect to raise, not a rubric to improvise.</li>
+</ul>
+<h4>Waiver protocol</h4>
+<ul>
+  <li>The agent may <em>propose</em> L1 waivers; only a named human grants them. L2 deviations carry an
+  inline <code>tfx-waive</code> with a specific reason. Content that can't host a comment (i18n, CMS)
+  records the waiver in the decision record instead.</li>
+  <li>When a control seems wrong: check its "Do not flag" exceptions → propose a waiver at the right
+  gate → surface the conflict. <strong>Never edit the catalog to make a failing check pass.</strong></li>
+</ul>
+<h4>Growing the catalog</h4>
+<ul>
+  <li>Evidence in, rule out. Lightweight PR + design-lead approval (workflow in
+  <a href="../CONTRIBUTING.md">CONTRIBUTING.md</a>); high bar for L0/L1, evidence bar for L2.</li>
+  <li>Ratified additions must name their <strong>re-audit set</strong> — which shipped surfaces the new
+  control affects.</li>
+</ul>
+
+<!-- content-style -->
+<h3 id="content-style">content-style <a class="anchor" href="#content-style">#</a></h3>
+<p class="meta-line">copy · <a href="../.claude/skills/content-style/SKILL.md">.claude/skills/content-style/SKILL.md</a></p>
+<p><strong>Summary</strong>: TFX voice &amp; tone applied at generation time, so copy ships on-voice and
+nobody — least of all non-native English speakers — carries the UX-writing burden personally. Sufficient
+alone for copy-only edits; design-ui pulls it in at implement.</p>
+<h4>Voice &amp; tone</h4>
+<ul>
+  <li><strong>Voice (constant)</strong>: warm not sappy · clear not cold · helpful not pushy ·
+  professional not stiff · confident not arrogant.</li>
+  <li><strong>Tone (by context)</strong>: success — celebratory, brief · error — calm, helpful ·
+  onboarding — encouraging · destructive — sober, no drama · empty state — inviting, lead with the
+  next action.</li>
+</ul>
+<h4>The binding rules</h4>
+<ul>
+  <li><strong>Mechanics (CNT-3)</strong> — second person, active voice, sentences ≤ 25 words; Singapore
+  English spelling; read it aloud — if it sounds robotic, rewrite it.</li>
+  <li><strong>Errors (CNT-1)</strong> — what happened → what it means → what to do next; say what
+  happened to their data ("Your marks are saved on this device"); never a raw code as the primary
+  message; never blame the user.</li>
+  <li><strong>Naming (CNT-2)</strong> — name by function in words teachers already use: "Class Planner"
+  yes, "SyncFlow" no. A name that needs explaining has already failed.</li>
+</ul>
+<h4>Calibration &amp; conflicts</h4>
+<ul>
+  <li>Same character everywhere, calibrated weight: TW calm and steady · CaseSync reserved,
+  privacy-forward · Glow warmer, more celebratory.</li>
+  <li>Statutory or ministry-mandated wording wins — waive it, don't reword it.</li>
+</ul>
+
+<!-- design-review -->
+<h3 id="design-review">design-review <a class="anchor" href="#design-review">#</a></h3>
+<p class="meta-line">rubric · <a href="../.claude/skills/design-review/SKILL.md">.claude/skills/design-review/SKILL.md</a></p>
+<p><strong>Summary</strong>: the grading procedure for finished design work, used by the
+design-evaluator subagent — not by the agent that produced the design. The grader returns findings with
+evidence, never patches.</p>
+<h4>Four grading passes</h4>
+<ol>
+  <li><strong>Contract compliance</strong> — each done-criterion: met / not / partially, with quoted
+  evidence.</li>
+  <li><strong>Plan fidelity</strong> — the build matches the human-approved plan; drift is a finding
+  even when the drifted version looks fine.</li>
+  <li><strong>Judgment controls</strong> — each in-scope control graded via its detail file's
+  "Evaluator guidance" and "Do not flag" sections.</li>
+  <li><strong>Quality criteria</strong> — design quality · originality (inverted for professional
+  tools: unwarranted novelty is flagged as readily as generic slop) · craft · functionality.</li>
+</ol>
+<h4>Output contract</h4>
+<pre><code>VERDICT: pass | pass-with-findings | fail
+BLOCKING:                <span class="c"># must fix before ship</span>
+ADVISORY:                <span class="c"># should fix</span>
+QUALITY GRADES:          <span class="c"># four criteria, with reasons</span>
+JUDGMENT CONTROL NOTES:  <span class="c"># one line per control, evidence quoted;</span>
+                         <span class="c"># CMP-1 always names its evidence source</span>
+UNCOVERED:               <span class="c"># defects no control covers — feeds the ratchet</span></code></pre>
+<p>Calibration: a screening pass, not final authority — decisive on clear violations; close calls
+escalate to a human instead of manufacturing confidence.</p>
+
+<!-- design-evaluator -->
+<h3 id="design-evaluator">design-evaluator <a class="anchor" href="#design-evaluator">#</a></h3>
+<p class="meta-line">subagent · <a href="../.claude/agents/design-evaluator.md">.claude/agents/design-evaluator.md</a></p>
+<p><strong>Summary</strong>: the agent definition that runs design-review — spawned at verify with the
+contract, approved plan, screenshots, in-scope controls, and the absolute standards path.</p>
+<h4>Why it's built this way</h4>
+<ul>
+  <li><strong>Preloaded rubric</strong> (<code>skills: design-review</code>) — the procedure is injected
+  at spawn, not left for the agent to maybe read.</li>
+  <li><strong>Pinned model</strong> (<code>model: opus</code>) — grading quality doesn't silently follow
+  whatever the main session runs.</li>
+  <li><strong>Scoped tools</strong> (Read, Grep, Glob, Bash) — it can inspect everything and edit
+  nothing.</li>
+  <li><strong>Honest limits, stated in its own prompt</strong> — same model and standards as the
+  generator, so it is a rigorous second read, not full independence; what it can't verify from the
+  evidence, it says so and routes to a human.</li>
+</ul>
+<div class="callout--good callout">
+  <p><strong>Why a separate evaluator at all?</strong> Self-evaluation skews positive — an agent grading
+  its own design finds what it hoped to build, not what it built. Track record across three pilot
+  reviews: a copy-vs-behavior gap, a non-firing 360px breakpoint, stranded keyboard focus, and a
+  double screen-reader announcement — two of its findings became catalog controls.</p>
+</div>
+
+<!-- ── Checks ── -->
+<h2 id="checks">Checks &amp; commands <a class="anchor" href="#checks">#</a></h2>
+<p class="meta-line">scripts &amp; status: <a href="../checks/README.md">checks/README.md</a></p>
+<p>Every check exits 0 on pass and 1 on violation, printing <code>file:line</code>, the control id, and
+a fix suggestion — verbose on failure, silent on success. Inline waivers never silence L1 controls;
+they downgrade the message to <code>[waiver-claimed]</code> and still fail until a human verifies the
+approver.</p>
+<table>
+  <tr><th style="width:34%">Command</th><th style="width:14%">Status</th><th>Covers</th></tr>
+  <tr>
+    <td><code>python3 checks/validate.py</code></td>
+    <td><span class="badge badge--built">BUILT</span></td>
+    <td>The harness's own verification baseline: catalog schema, tier→waiver pairing, detail-file ↔ catalog consistency, and every control id referenced anywhere. Run before committing any <code>standards/</code> change.</td>
+  </tr>
+  <tr>
+    <td><code>python3 checks/token-audit.py &lt;path&gt;</code></td>
+    <td><span class="badge badge--built">BUILT</span></td>
+    <td>TOK-1..3 + COL-1..2: raw colours, off-scale spacing/radius, Tailwind palette bypasses. Token-definition blocks are exempt. 18-case self-test (<code>--self-test</code>).</td>
+  </tr>
+  <tr>
+    <td><code>contrast</code> <code>focus</code> <code>labels</code> <code>targets</code> <code>reduced-motion</code> <code>alt-scan</code> <code>structure</code> <code>nrv</code> <code>title-lang</code> <code>skip-link</code> <code>announce</code> <code>type-scan</code> …</td>
+    <td><span class="badge badge--planned">PLANNED</span></td>
+    <td>The remaining deterministic floor (V1) — wired as hooks during implement and as the verify gate once calibrated against a real product repo.</td>
+  </tr>
+</table>
+
+<!-- ── Records ── -->
+<h2 id="records">Decision records <a class="anchor" href="#records">#</a></h2>
+<p>One record per page or significant change — started at the plan gate (the approved plan is the fixed
+artifact verify grades against), finished at the ratchet. It holds the sprint contract, tradeoffs,
+waivers with approvers, the verbatim evaluator verdict, and any control proposals.</p>
+<ul>
+  <li><a href="decisions/TEMPLATE.md">Template</a> — copy per page/change.</li>
+  <li>Worked examples from the pilot runs: <a href="decisions/student-notes-empty-state.md">Student Notes empty state</a> · <a href="decisions/attendance.md">Attendance</a> (includes a catalog re-audit and two evaluator re-reviews).</li>
+  <li>Implemented pilot pages with full state evidence: <a href="loop-run/student-notes-empty-state.html">student-notes</a> · <a href="loop-run/attendance.html">attendance</a> (<code>?fail=1</code> demos the error state) · <a href="loop-run/FRICTION-REPORT.md">friction report</a> from run 1.</li>
+</ul>
+
+<!-- ── Status ── -->
+<h2 id="status">Status &amp; roadmap <a class="anchor" href="#status">#</a></h2>
+<table>
+  <tr><th style="width:16%">Stage</th><th>Contents</th></tr>
+  <tr>
+    <td><strong>V0+ — now</strong></td>
+    <td>28-control catalog · four skills + evaluator agent · catalog validator and token-audit built · the loop piloted end-to-end twice with real evaluator verdicts; both runs fed controls back into the catalog. Testable today: ask a session in this repo to design a page.</td>
+  </tr>
+  <tr>
+    <td><strong>V1 — next</strong></td>
+    <td>The remaining deterministic floor: check scripts wired as hooks during implement and as the verify gate. MVP bet per TFX-DS: design-review as a screen-linter + content-style for on-voice copy; first user = designers.</td>
+  </tr>
+  <tr>
+    <td><strong>V2 — later</strong></td>
+    <td>Component manifest via MCP (format spec drafted — <a href="spikes/component-manifest/SPEC.md">spike</a>), screenshot-diff against approved baselines, full catalog buildout from ratchet evidence. Rollout: TW → CaseSync → Glow → TW surfaces.</td>
+  </tr>
+</table>
+
+<div class="footer">
+  <p><strong>Normative source</strong>: TFX Design Standard v0.1 (Wondo Jeong) · WCAG 2.2 AA self-imposed floor · refs: SGDS, GOV.UK, <a href="https://a11y.tech.gov.sg/checklist/">GovTech a11y checklist</a></p>
+  <p><strong>Patterns borrowed</strong>: Stripe Minions (blueprints) · Ramp Inspect (skills + visual proof) · Anthropic (generator–evaluator split)</p>
+  <p><strong>Harness lead</strong>: Reza Ilmi · This page describes the live files and links to them; the SKILL.md files are the source of truth.</p>
+</div>
+
+</div>
+</main>
+</div>
+
+<script>
+// active-section highlighting in the sidebar
+const links = [...document.querySelectorAll(".sidebar nav a")];
+const targets = links
+  .map((a) => document.getElementById(a.getAttribute("href").slice(1)))
+  .filter(Boolean);
+const byId = new Map(links.map((a) => [a.getAttribute("href").slice(1), a]));
+const io = new IntersectionObserver(
+  (entries) => {
+    for (const e of entries) {
+      if (e.isIntersecting) {
+        links.forEach((a) => a.classList.remove("active"));
+        const link = byId.get(e.target.id);
+        if (link) link.classList.add("active");
+      }
+    }
+  },
+  { rootMargin: "0px 0px -75% 0px" }
+);
+targets.forEach((t) => io.observe(t));
+</script>
+
+</body>
+</html>

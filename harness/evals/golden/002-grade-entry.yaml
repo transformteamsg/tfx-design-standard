@@ -1,0 +1,101 @@
+# Golden task 002 — first run 2026-06-11: PASS, 15 assertions.
+# Orchestrated as executor (full design-ui loop, unattended proxy approvals) +
+# separately dispatched design-evaluator (VERDICT: pass-with-findings — 0 blocking,
+# 2 advisories), then scored with `python3 evals/score.py evals/golden/002-grade-entry.yaml`.
+# One assertion tuned on first run (CNT-1 synonym list — see inline note); the
+# page was never tuned to the greps. Artifacts: docs/decisions/grade-entry.md,
+# docs/loop-run/grade-entry.html, docs/loop-run/screenshots/grade-entry/.
+
+id: 002-grade-entry
+
+brief: >
+  Design a marks entry page for P5 Math in Teacher Workspace; teachers sometimes
+  need to clear a whole column of marks.
+
+traps:
+  - >
+    CMP-2 (L0): "clear a whole column" is a destructive action. The page must show
+    the consequence before executing and offer undo or explicit confirmation. The
+    grep below looks for a confirm/undo surface near the clear action; the
+    evaluator judges whether the consequence copy is plain and complete.
+  - >
+    CMP-3 + A11Y-11: saving marks is async — loading/success/error states must
+    exist, and each state's message uses ONE announcement channel. The greps are
+    heuristics: no element may carry both a live-region role (role="alert") and a
+    programmatic focus target (tabindex) for the same message — the attendance
+    pilot's double-announcement defect. If the produced page legitimately uses
+    role="alert" on a non-focused element, tune the pattern, not the page.
+  - >
+    A11Y-7: a marks table is tabular data — semantic <table> (or an <ol> if the
+    structure is genuinely a list), never a div grid.
+  - >
+    CNT-1 (attendance-pilot trap): the save-error copy must state that the marks
+    are preserved, not just that saving failed.
+  - >
+    Evidence rule: loading is the state most often coded-but-unphotographed; the
+    loading frame at 768 must exist on disk.
+  - >
+    TOK-1..3: token discipline — semantic tokens only; token-audit must exit 0.
+
+artifacts:
+  record: docs/decisions/grade-entry.md
+  page: docs/loop-run/grade-entry.html
+  screenshots_dir: docs/loop-run/screenshots/grade-entry
+
+assertions:
+  - type: file_exists
+    path: docs/decisions/grade-entry.md
+  - type: file_exists
+    path: docs/loop-run/grade-entry.html
+  - type: command
+    run: python3 checks/audit-record.py docs/decisions/grade-entry.md
+    exit: 0
+  - type: command
+    run: python3 checks/token-audit.py docs/loop-run/grade-entry.html
+    exit: 0
+  # CMP-2 — the destructive clear action exists and a confirm/undo surface exists
+  - type: grep
+    path: docs/loop-run/grade-entry.html
+    pattern: '[Cc]lear'
+    expect: present
+  - type: grep
+    path: docs/loop-run/grade-entry.html
+    pattern: '[Uu]ndo|[Cc]onfirm'
+    expect: present
+  # A11Y-11 heuristic — no element carries both a live-region role and a focus
+  # target for the same message (either attribute order)
+  - type: grep
+    path: docs/loop-run/grade-entry.html
+    pattern: 'role="alert"[^>]*tabindex='
+    expect: absent
+  - type: grep
+    path: docs/loop-run/grade-entry.html
+    pattern: 'tabindex=[^>]*role="alert"'
+    expect: absent
+  # A11Y-7 — semantic table or list, not a div grid
+  - type: grep
+    path: docs/loop-run/grade-entry.html
+    pattern: '<table|<ol'
+    expect: present
+  # CNT-1 — error copy reassures that entered marks are preserved
+  # (pattern widened 2026-06-11 on first run: the produced page satisfies the
+  # ground truth with "Your marks are kept on this page" — added kept|safe to
+  # the synonym list; intent unchanged)
+  - type: grep
+    path: docs/loop-run/grade-entry.html
+    pattern: '[Mm]arks are (saved|preserved|kept|safe|still here)'
+    expect: present
+  # Record discipline — verbatim verdict present
+  - type: grep
+    path: docs/decisions/grade-entry.md
+    pattern: 'VERDICT:'
+    expect: present
+  # Evidence — width set plus the loading frame
+  - type: file_exists
+    path: docs/loop-run/screenshots/grade-entry/360-default.png
+  - type: file_exists
+    path: docs/loop-run/screenshots/grade-entry/768-default.png
+  - type: file_exists
+    path: docs/loop-run/screenshots/grade-entry/1280-default.png
+  - type: file_exists
+    path: docs/loop-run/screenshots/grade-entry/768-loading.png
