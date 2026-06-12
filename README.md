@@ -24,8 +24,8 @@ Edit `content/**/*.mdx` — no code changes needed. New page: add an `.mdx` file
 ## Develop
 
 ```bash
-npm install
-npm run dev
+pnpm install
+pnpm dev
 ```
 
 ## Deploy
