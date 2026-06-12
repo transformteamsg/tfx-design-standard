@@ -4,15 +4,15 @@ description: Six phases, two human gates. Intent without loss.
 status: proposed
 ---
 
-The harness wraps an AI agent so that what it designs complies with this standard — not by asking nicely, but by structure. Its central promise: **intent without loss.** What you mean is written as a contract in phase 1; every later phase is graded against it; drift is a defect.
+The harness wraps an AI agent so that what it designs complies with this standard, not by asking nicely but by structure. Its central promise: **intent without loss.** What you mean is written as a contract in phase 1; every later phase is graded against it; drift is a defect.
 
-1. **Intent** — purpose, audience, page type, done-criteria written as a contract the evaluator later grades against.
-2. **Diverge** — 2–3 structurally different options from components that exist in the product's manifest. No pixel code. You pick a direction.
-3. **Plan** *(human gate)* — components per region, content outline, error states enumerated, controls in scope, proposed waivers. Approved before any code.
-4. **Implement** — build exactly the approved plan. Manifest components only, semantic tokens only. Drift from the plan is itself a defect.
-5. **Verify** *(human gate on waivers)* — deterministic checks first (L0 blocks, L1 loops back), screenshots at 360/768/1280 as evidence, then a **separate evaluator agent** grades judgment controls against the contract. The generator never grades its own work.
-6. **Ratchet** — decision record written; defects no control covered become proposed controls; solved problems become tagged, searchable solution records.
+1. **Intent:** purpose, audience, page type, done-criteria written as a contract the evaluator later grades against.
+2. **Diverge:** 2–3 structurally different options from components that exist in the product's manifest. No pixel code. You pick a direction.
+3. **Plan** *(human gate)*: components per region, content outline, error states enumerated, controls in scope, proposed waivers. Approved before any code.
+4. **Implement:** build exactly the approved plan. Manifest components only, semantic tokens only. Drift from the plan is itself a defect.
+5. **Verify** *(human gate on waivers)*: deterministic checks first (L0 blocks, L1 loops back), screenshots at 360/768/1280 as evidence, then a **separate evaluator agent** grades judgment controls against the contract. The generator never grades its own work.
+6. **Ratchet:** decision record written; defects no control covered become proposed controls; solved problems become tagged, searchable solution records.
 
 ## The outer loop
 
-The ratchet learns from our failures; the **outer loop** learns from teachers' reality: feedback and telemetry are normalised into tagged evidence records, surfaced automatically when you touch a tagged pattern, and accumulated until they close **open pattern questions** (e.g. OPQ-1: table density). While an OPQ is open, the harness treats competing hypotheses as valid divergence directions — it never enforces a guess as if it were a standard.
+The ratchet learns from our failures; the **outer loop** learns from teachers' reality: feedback and telemetry are normalised into tagged evidence records, surfaced automatically when you touch a tagged pattern, and accumulated until they close **open pattern questions** (e.g. OPQ-1: table density). While an OPQ is open, the harness treats competing hypotheses as valid divergence directions; it never enforces a guess as if it were a standard.

@@ -205,8 +205,11 @@ Build exactly the approved plan. Constraints, non-negotiable:
   learn faster when new interactions work the way the last one did.
 - Copy follows the `content-style` skill as you write it, not as a cleanup pass
   (it ships with this harness: `../content-style/SKILL.md` relative to this skill).
-  That includes the anti-slop copy rule (SLP-9): no marketing buzzwords, no
-  em-dash chains, no label/helper pairs that restate each other.
+  That includes the anti-slop copy rule (SLP-9): no AI-writing tells — buzzwords,
+  em-dash chains, filler, chatbot artifacts, structural tells (negative
+  parallelism, forced triads, copula avoidance), or label/helper pairs that
+  restate each other. Canonical lists and calibration:
+  `standards/controls/slp-9.md`.
 - **Make every asserted state reachable for evidence.** If a hybrid control claims
   loading/success/error states, the verify phase must photograph them — build a
   clearly-marked demo-only hook where needed (e.g. a `?fail=1` query param to force

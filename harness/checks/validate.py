@@ -36,9 +36,11 @@ CROSS_REF_FILES = [
     os.path.join(REPO_ROOT, "checks", "README.md"),
     os.path.join(REPO_ROOT, "docs", "decisions", "TEMPLATE.md"),
 ]
-# Glob .claude/skills/*/SKILL.md and .claude/agents/*.md at runtime
+# Glob .claude/skills/*/SKILL.md, .claude/agents/*.md, and
+# docs/catalog-changes/*.md at runtime
 SKILLS_DIR = os.path.join(REPO_ROOT, ".claude", "skills")
 AGENTS_DIR = os.path.join(REPO_ROOT, ".claude", "agents")
+CATALOG_CHANGES_DIR = os.path.join(REPO_ROOT, "docs", "catalog-changes")
 
 # ── Allowed values — from standards/schema.json, shared with the website's
 # build guard (scripts/check-standards.mjs); edit the schema, not this file. ──
@@ -277,7 +279,14 @@ if os.path.isdir(AGENTS_DIR):
         if fname.endswith(".md"):
             agent_files.append(os.path.join(AGENTS_DIR, fname))
 
-all_xref_files = CROSS_REF_FILES + skill_files + agent_files
+# Collect catalog-change records
+catalog_change_files = []
+if os.path.isdir(CATALOG_CHANGES_DIR):
+    for fname in os.listdir(CATALOG_CHANGES_DIR):
+        if fname.endswith(".md"):
+            catalog_change_files.append(os.path.join(CATALOG_CHANGES_DIR, fname))
+
+all_xref_files = CROSS_REF_FILES + skill_files + agent_files + catalog_change_files
 
 for fpath in all_xref_files:
     if not os.path.isfile(fpath):

@@ -63,6 +63,10 @@ PR. Current traps and their origins:
 - Statutory or mandated names are waived (`tfx-waive`), never reworded
   (CNT-2/CNT-3).
 - Raw hex / off-scale values fail `checks/token-audit.py` (TOK-1..3).
+- AI-writing tells in copy are caught, and look-alike compliant copy is not
+  (SLP-9, 2026-06-12 site-wide writing audit) — `evaluator-recall/planted-copy.md`
+  + `expected-findings-copy.yaml`, with precision decoys testing the control's
+  Do-not-flag calibration.
 
 ## Deferred
 

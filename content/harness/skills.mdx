@@ -1,16 +1,16 @@
 ---
 title: Skills
-description: Each skill ships with designer-facing docs — or it doesn't ship.
+description: Each skill ships with designer-facing docs, or it doesn't ship.
 status: proposed
 ---
 
 | Skill | Status | What it does |
 | --- | --- | --- |
-| `design-consultation` | Exists | Answers design system and brand questions with citations into this standard |
-| `design-review` | Exists → upgrading | Lints a screen against the control catalog; findings prioritised P1 (must fix) / P2 (should fix) / P3 (nice to fix) |
-| `design-page` | Planned | Orchestrates the six-phase loop; refuses to skip gates |
-| `design-standards` | Planned | Catalog filtering, tier application, waiver protocol |
-| `content-style` | Planned — V1 priority | Applies voice & tone + naming at generation time, so copy arrives on-voice by default |
+| `design-ui` | Exists | Orchestrates the six-phase loop (intent → diverge → plan → implement → verify → ratchet); refuses to skip gates |
+| `design-standards` | Exists | Catalog reading and filtering, tier application, waiver protocol |
+| `design-review` | Exists | Evaluator procedure for grading a finished design; findings sort by tier into blocking (L0/L1) and advisory (L2). Used by the design-evaluator subagent, never the generator |
+| `content-style` | Exists | Applies voice & tone, naming, and the AI-writing tells (SLP-9) at generation time, so copy arrives on-voice by default |
+| `design-consultation` | Planned | Answers design system and brand questions with citations into this standard |
 
 Every skill page here will contain: what it does in one sentence · when to reach for it · the exact copy-paste invocation · one worked example (real input → real output) · what good output looks like · what to do when it goes wrong.
 

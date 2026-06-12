@@ -1,6 +1,6 @@
 ---
 title: Data visualization
-description: Teachers read charts between classes — clarity beats density. Grounded in Adobe Spectrum's data viz fundamentals.
+description: Teachers read charts between classes, so clarity beats density. Grounded in Adobe Spectrum's data viz fundamentals.
 status: proposed
 ---
 
@@ -8,7 +8,7 @@ status: proposed
 
 ## Principles
 
-- **Answer a question, don't decorate a page.** Every chart names the question it answers in its title ("Which classes have missing submissions?") — not a dataset label ("Submissions").
+- **Answer a question, don't decorate a page.** Every chart names the question it answers in its title ("Which classes have missing submissions?"), not a dataset label ("Submissions").
 - **Choose the encoding by the comparison.** Position and length (bar, dot, line) before angle and area (pie, donut). If teachers must compare values, put them on a common axis.
 - **Default to less.** Direct-label instead of legends where possible; gridlines light or absent; no 3D, shadows, or decorative gradients ever.
 
@@ -16,15 +16,15 @@ status: proposed
 
 - **Categorical:** maximum 6 distinguishable hues from the shared Radix palette; beyond that, group into "other" or use small multiples.
 - **Sequential/diverging:** single-hue Radix ramps for magnitude; diverging only when there's a meaningful midpoint.
-- **Semantic consistency:** the same metric keeps the same colour everywhere in a product. Functional colours (success/warning/danger) keep their meaning — never use red decoratively in a chart.
+- **Semantic consistency:** the same metric keeps the same colour everywhere in a product. Functional colours (success/warning/danger) keep their meaning; never use red decoratively in a chart.
 - **Never colour alone:** pair with labels, patterns, or position; verify with a colour-blindness simulator (accessible-chart baseline).
 
 ## Numbers & text
 
 - Tabular numbers in tables and axes. Locale-aware formats.
-- Round to the precision teachers act on — "78%" not "78.42%".
+- Round to the precision teachers act on: "78%", not "78.42%".
 - Empty and loading states designed: a chart with no data explains why and what to do next.
 
 ## The table question
 
-Tables are our most-used "visualization". Density vs. core-columns is an open pattern question (OPQ-1) — until evidence closes it, both directions are valid divergence options in the harness, with column-usage telemetry attached.
+Tables are our most-used "visualization". Density vs. core-columns is an open pattern question (OPQ-1). Until evidence closes it, both directions are valid divergence options in the harness, with column-usage telemetry attached.
