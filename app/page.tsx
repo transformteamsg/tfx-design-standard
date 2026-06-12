@@ -102,7 +102,7 @@ export default function Landing() {
         <p className="mt-3 max-w-[24ch] font-display text-[28px] font-bold leading-snug sm:text-[34px]">
           Does this help teachers work faster with less stress?
         </p>
-        <p className="mt-3 text-[15.5px] text-white/80">If not — we don&apos;t build it.</p>
+        <p className="mt-3 text-[15.5px] text-white/80">If not, we don&apos;t build it.</p>
       </section>
 
       <section className="mt-16">
@@ -132,7 +132,7 @@ export default function Landing() {
 
       <section className="mb-6 mt-16 border-t border-border pt-12 text-center">
         <h2 className="mx-auto max-w-[26ch] font-display text-[24px] font-bold tracking-tight">
-          Principles, controls, and a harness — one place.
+          Principles, controls, and a harness, in one place.
         </h2>
         <div className="mt-6">
           <Link
