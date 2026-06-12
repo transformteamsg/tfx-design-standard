@@ -11,7 +11,7 @@
 
 meta:
   version: "0.1"
-  updated: "2026-06-11"
+  updated: "2026-06-12"
   waiver_syntax: 'tfx-waive <ID> reason="<specific reason>"'
   categories:
     A11Y: Accessibility
@@ -538,16 +538,18 @@ controls:
 
   - id: SLP-9
     source: TFX-DS
-    title: Copy carries no marketing buzzwords, em-dash chains, or redundant label/helper pairs
+    title: Copy carries no AI-writing tells — marketing buzzwords, em-dash chains, filler, or redundant label/helper pairs
     tier: L2
     check: hybrid
     phase: [implement, verify]
     applies_to: [content]
-    verify: "Lint for the buzzword list and em-dash chains; evaluator judges redundant label/helper pairs and marketing tone"
+    verify: "Lint for the buzzword, filler, and chatbot-artifact lists and em-dash chains; evaluator judges structural tells (negative parallelism, forced triads, copula avoidance, significance inflation), redundant label/helper pairs, and marketing tone"
     waiver: rationale
     fails_when:
       - streamline/empower/supercharge/world-class
       - label, sublabel, and helper saying the same thing
+      - chatbot artifacts ("Great question!", "I hope this helps")
+      - '"It''s not just X, it''s Y" / "serves as a" / forced triads doing rhetoric, not enumeration'
     detail: controls/slp-9.md
     refs: [https://github.com/transformteamsg/tfx-design-standard]
 

@@ -84,6 +84,26 @@ A PR with a failing validator will not be reviewed.
 Copy the block from the **PR template** section and fill in all five fields. An empty
 field is a missing justification and the PR will be sent back.
 
+## Revising an existing control
+
+The flow above covers *new* controls surfaced by loop runs. A **revision** (scope
+broadening, tier change, reworded requirement) follows the same evidence-first rule
+but differs in two ways:
+
+- **The record goes in `docs/catalog-changes/<id-slug>.md`**, not `docs/decisions/`.
+  Decision records are loop-run artifacts audited by `checks/audit-record.py`
+  against the loop-run template; a catalog change that came from outside a loop run
+  (a manual audit, recurring waivers) would fail that audit. A catalog-change record
+  states: the triggering incident with evidence, the change, the tier rationale, and
+  who approved. `validate.py` cross-checks control IDs referenced in these records.
+- **The change set is the detail file, `standards/catalog.yaml`, plus every synced
+  surface**: the website mirror (regenerate with
+  `python3 checks/catalog-sync.py --write`), and any skill or check that restates
+  the control (grep the old title to find them). The record lists what was synced.
+
+Gates are the same: `checks/validate.py` and `checks/catalog-sync.py` must pass, and
+the design lead approves.
+
 ### (f) Approval
 
 Design lead: `<DESIGN_LEAD — to be named>`

@@ -1,6 +1,6 @@
 ---
 name: content-style
-description: TFX voice & tone and naming rules for UI copy in Teacher & School products — plain language, tone by context, error message anatomy, naming. Use whenever writing or reviewing any user-facing text in a page, form, notification, empty state, or error state. Sufficient on its own for copy-only edits; when designing a full page the design-ui loop already pulls this skill in at its implement phase.
+description: TFX voice & tone, naming, and anti-AI-writing rules for prose in Teacher & School products — plain language, tone by context, error message anatomy, naming, AI-writing tells (SLP-9). Use whenever writing or reviewing any user-facing text (page, form, notification, empty state, error state) AND any longer prose — site content, marketing copy, documentation, decision records. Sufficient on its own for copy-only edits; when designing a full page the design-ui loop already pulls this skill in at its implement phase.
 ---
 
 # Content style for Teacher & School products
@@ -53,6 +53,42 @@ stress, or it goes.
   triplets that restate each other — if removing one line loses nothing, remove it.
 - Read it aloud — if it sounds robotic, rewrite it.
 - Singapore English spelling (British base): organise, colour, centre.
+
+## AI writing tells (SLP-9)
+
+These rules apply to ANY prose written in a session — UI strings, site and marketing
+content, documentation, decision records — not just product UI. The buzzword,
+em-dash-chain, and redundant-pair rules above are part of the same control. The
+canonical word lists and the full Flag / Do-not-flag calibration live in
+`standards/controls/slp-9.md` (from the harness root; `harness/standards/controls/slp-9.md`
+when working from the website repo root) — that file wins if this summary drifts.
+
+- **Copula avoidance.** "Glow serves as the encouragement layer" → "Glow is the
+  encouragement layer". Say "is" when you mean is.
+- **Negative parallelism.** "It's not just a gradebook, it's a teaching companion" →
+  say what it is, once. One earned "X, not Y" per screen is fine; a pattern of them
+  is the tell.
+- **Rule-of-three padding.** "innovation, inspiration, and insights" → list only the
+  items that carry weight, however many there really are.
+- **AI vocabulary.** "delve", "testament", "pivotal" and kin — same treatment as
+  the buzzword list: say what the thing does. The canonical word list is in
+  slp-9.md's "How to verify".
+- **Filler.** "In order to save" → "To save". "It is important to note that" →
+  delete and keep the note. (Full phrase list: slp-9.md.)
+- **Hedging stacks.** "could potentially possibly affect" → "may affect". One
+  qualifier, maximum.
+- **Chatbot artifacts.** "Great question!", "I hope this helps" and kin never ship
+  anywhere. (Full phrase list: slp-9.md.)
+- **Superficial -ing tails.** "…, ensuring a seamless experience" → cut it, or state
+  the actual mechanism.
+- **Significance inflation.** "a major step forward in assessment" → the concrete
+  thing that changed.
+- **Self-audit.** After writing, re-read asking "what here reads as generated?" and
+  fix what you find — the prose twin of "Read it aloud".
+
+Not imported from generic anti-AI guides: straight-quote preference (web interface
+guidelines mandate curly quotes) and heading-case rules (sentence case is already
+required).
 
 ## Errors (CNT-1)
 

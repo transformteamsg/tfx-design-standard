@@ -1,0 +1,69 @@
+# Copy-recall fixture — ground truth for planted-copy.md
+#
+# The fixture carries EXACTLY six planted SLP-9 violations and three precision
+# decoys, each marked with an adjacent HTML comment ("PLANT n: …" / "DECOY x: …")
+# so ground truth is auditable by grep. Everything else is deliberately compliant.
+# Decoys test the Do-not-flag calibration in standards/controls/slp-9.md — they
+# look like tells but are not (an earned "X, not Y", a genuine triad, plain copy).
+
+how_to_run: >
+  FIRST strip the ground-truth markers — every one is a single-line HTML comment
+  starting at column 1, so one pattern removes them all:
+  `grep -v '^<!--' evals/evaluator-recall/planted-copy.md > /tmp/copy-recall-blind.md`.
+  Verify by comparing output, not grep's exit code (grep -c exits 1 on a zero
+  count): `test "$(grep -c -i -e plant -e decoy /tmp/copy-recall-blind.md)" = 0`.
+  Then spawn the design-evaluator subagent (it follows the design-review skill)
+  with: (1) the absolute path to the BLIND copy, (2) a minimal contract — "SLP-9
+  is the only control in scope; this is a copy-only review of the screen copy and
+  the announcement blurb", (3) the absolute path to the harness standards/
+  directory so it loads controls/slp-9.md, and (4) a note that no screenshots
+  exist — copy-only review. Score the verdict against this file: each plant
+  counts as caught if the verdict quotes the sentence (or unambiguously
+  describes it) as an SLP-9 finding. Each decoy flagged as a violation counts
+  against precision. Record scores in RESULTS.md per run.
+
+plants:
+  - n: 1
+    control: SLP-9
+    description: Chatbot artifacts in UI copy — "Welcome!" and "Great question —" in the intro.
+  - n: 2
+    control: SLP-9
+    description: Hedging stack — "could potentially possibly affect" in the confirmation.
+  - n: 3
+    control: SLP-9
+    description: Negative parallelism as rhetoric — "isn't just a faster form, it's a new way of thinking".
+  - n: 4
+    control: SLP-9
+    description: Copula avoidance + significance inflation — "serves as the centrepiece … marking a pivotal step forward".
+  - n: 5
+    control: SLP-9
+    description: Forced triad — "Plan lessons, track progress, and unlock insights" (third item is decoration).
+  - n: 6
+    control: SLP-9
+    description: Superficial -ing tail + buzzwords — "ensuring a seamless, world-class experience".
+
+decoys:
+  - x: A
+    description: >-
+      "use a dot, not a comma" with one working em dash — the contrast IS the
+      rule; the single dash does real work. Must NOT be flagged.
+  - x: B
+    description: >-
+      "by class, by student, or by assessment" — a genuine triad enumerating the
+      three actual entry modes. Must NOT be flagged.
+  - x: C
+    description: >-
+      "Scores are saved as drafts until you submit them, so a wrong tap costs
+      nothing." — plain, concrete copy. Must NOT be flagged.
+
+scoring:
+  recall:
+    formula: plants caught / 6
+    target: ">= 5 of 6"
+  precision:
+    formula: count of decoys (or other compliant copy) asserted as violations
+    target: 0
+    note: >
+      SLP-9 is L2, so all findings are advisories — a decoy flagged as an
+      advisory still counts against precision here, because the fixture exists
+      to test the Do-not-flag calibration.

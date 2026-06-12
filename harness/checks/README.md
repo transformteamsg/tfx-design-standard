@@ -9,6 +9,16 @@ on failure, silent on success.
 
 `python3 checks/validate.py` — validates `standards/catalog.yaml` against the schema in `standards/README.md`: field presence and allowed values, tier→waiver pairing, `detail:` file existence, detail-frontmatter ↔ catalog consistency, and that every control ID referenced in skills/docs exists in the catalog. Exit 0 on pass, exit 1 with `ERROR` lines on failure. This is the repo's verification baseline — run it before committing any `standards/` change.
 
+## Catalog sync (built)
+
+`python3 checks/catalog-sync.py` — verifies the website mirror
+(`content/standards/catalog.yaml` in the site repo) matches what the harness
+catalog generates (field mapping: `title` → `statement`, category from the
+control-id prefix via `meta.categories`, reduced field set). Exit 1 on drift;
+`--write` regenerates the mirror in place; SKIP (exit 0) when the harness is
+used standalone without the site repo. Run it after any `standards/catalog.yaml`
+edit, alongside `validate.py`.
+
 ## Token audit (built)
 
 `python3 checks/token-audit.py <path>...` — scans `.css`, `.html`, `.jsx`, `.tsx`, `.js`, `.ts`, `.vue`, and `.svelte` files for raw colour values, off-scale spacing, and off-scale border-radius that should be replaced with design tokens. Accepts files or directories (recursive). Exit 0 silent on pass; exit 1 with `ERROR` lines on failure.
@@ -58,7 +68,7 @@ Planned for V1 (remaining):
 | `type-scan` | TYP-1..4 | Font families/weights (PJS 600, Inter 400/500/600 only), size floors (body ≥ 14, labels ≥ 11), on-scale sizes, line-height 1.5–1.6, all-caps length |
 | `destructive` | CMP-2 (deterministic half) | Enumerate destructive actions; assert consequence surface + undo/confirm exists |
 | `async-states` | CMP-3 (deterministic half) | Enumerate async actions; assert loading/success/error states exist and are reachable |
-| `content-lint` | CNT-1 (raw codes), CNT-3 (sentence length), SLP-9 (deterministic half) | Flag raw error codes as primary copy; sentences > 25 words; buzzword list + em-dash chains in user-facing strings |
+| `content-lint` | CNT-1 (raw codes), CNT-3 (sentence length), SLP-9 (deterministic half) | Flag raw error codes as primary copy; sentences > 25 words; the SLP-9 lint lists (buzzwords + AI vocabulary, filler phrases, chatbot artifacts — see `standards/controls/slp-9.md` "How to verify") + em-dash chains in user-facing strings |
 | `motion` | MOT-1, SLP-8 | Animation durations within 100–300ms, standard easing, none decorative on critical paths; no bounce/elastic/overshoot easing |
 | `identity` | IDN-1 | Logo/lockup files resolve to the approved asset library; no inline redraws |
 | `slop-scan` | SLP-1..4 | Stylesheet/DOM scan: purple-violet gradient palettes, cyan-on-dark theming, glow accents, gradient text, thick side-tab borders on rounded cards, nested cards |
