@@ -86,6 +86,11 @@ reference lens (a judgment aid, not a checkable standard):
 - **Craft** — quality sets the tone (HIG: Craft): is each decision deliberate?
   States designed (empty, loading, error, focus), edge content lengths,
   responsive behavior between the three captured widths.
+- **Dark mode** is graded only when the product supports it and a dark frame was
+  captured. If the product has no dark mode (no toggle, no re-rendering `.dark`
+  layer), mark dark-mode checks **N/A — product has no dark mode**; never grade
+  a TOK-1 "dark-safe" pass from token resolution alone for a mode that never
+  renders.
 - **Functionality** — does the flow actually complete the teacher's task; dead ends,
   missing recovery paths. Recovering from a mistake should not cost the teacher time
   or work, and any guided flow must be skippable or escapable (HIG: Agency). For

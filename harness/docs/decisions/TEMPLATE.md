@@ -57,6 +57,8 @@ with an async or destructive action inherits the `applies_to: [flow]` controls
   asserted by each in-scope hybrid control, loading included)
 - **Token block line range:** (the `tfx-tokens` region exempt from token-audit, e.g.
   `attendance.html:12-68`)
+- **Dark mode:** supported (dark frame captured at <path>) | N/A — product has no
+  dark mode
 - **Deterministic controls:** which were script-checked vs. verified manually vs.
   left unverified — per control.
 - **Evaluator verdict:** paste the full `tfx-design-evaluator` verdict **verbatim** — a

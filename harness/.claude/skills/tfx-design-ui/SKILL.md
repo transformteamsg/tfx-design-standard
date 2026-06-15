@@ -348,6 +348,15 @@ Run in this order; do not present output to the user while a step is failing:
      activate by keyboard, confirm role + accessible name + state (A11Y-8/A11Y-3).
      Run `checks/a11y-static` (if built) as the static pre-pass, then operate what
      a static scan can't see. An un-operated control is uncovered, not clean.
+   - **Dark mode: supported?** Before grading anything as dark-safe, establish
+     whether the product actually supports dark mode: is there a visible theme
+     toggle, and does a `.dark` (or `[data-theme="dark"]`) layer re-render the
+     tokens? If **not**, record dark-mode checks as **N/A — product has no dark mode**
+     in the decision record — this is a truthful outcome, never a pass.
+     If **yes**, capture one dark frame using the capture convention above (an
+     init-script that sets `.dark` / the theme attribute *before* load, or the
+     app's own toggle); a token-resolution argument alone is not evidence that
+     the mode renders.
 3. **Evaluator review** — spawn the `tfx-design-evaluator` subagent (a genuinely separate
    agent — do not write the verdict yourself) with: the sprint contract, the approved
    plan, the screenshots, the component inventory from Phase 1, the judgment/hybrid
