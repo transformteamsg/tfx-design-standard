@@ -40,13 +40,13 @@ triggered.
 
 | Task | Use |
 |---|---|
-| Design or change a page / form / flow / component | `design-ui` skill (runs the loop) |
-| Write or review UI copy (only) | `content-style` skill (TFX voice & tone) |
-| Read, filter, apply, or grow the catalog | `design-standards` skill |
-| Grade a finished design | `design-evaluator` subagent (follows `design-review`) |
-| Onboard a new user — learn the skills and the loop | `design-onboarding` skill (guided tour) |
+| Design or change a page / form / flow / component | `tfx-design-ui` skill (runs the loop) |
+| Write or review UI copy (only) | `tfx-content-style` skill (TFX voice & tone) |
+| Read, filter, apply, or grow the catalog | `tfx-design-standards` skill |
+| Grade a finished design | `tfx-design-evaluator` subagent (follows `tfx-design-review`) |
+| Onboard a new user — learn the skills and the loop | `tfx-design-onboarding` skill (guided tour) |
 
 Architecture and roadmap: `README.md`. Control format: `standards/README.md`.
 TFX-DS source: https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb
-The generator never grades its own work — grading goes to the `design-evaluator`
+The generator never grades its own work — grading goes to the `tfx-design-evaluator`
 subagent, a rigorous second read on the same model, not a fully independent one.

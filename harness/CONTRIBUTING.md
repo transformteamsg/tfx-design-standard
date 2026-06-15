@@ -20,8 +20,8 @@ in the authoritative source for each layer.
 ## The ratchet rule
 
 The catalog only grows from evidence. The authoritative statement of *when* to propose
-and *what* a proposal must contain lives in the design-standards skill:
-`.claude/skills/design-standards/SKILL.md` — section "## Growing the catalog (the
+and *what* a proposal must contain lives in the tfx-design-standards skill:
+`.claude/skills/tfx-design-standards/SKILL.md` — section "## Growing the catalog (the
 ratchet)". Read that section before opening a branch.
 
 Short version: evidence in, rule out. If you cannot state how a control is verified,

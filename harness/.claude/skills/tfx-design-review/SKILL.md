@@ -1,6 +1,6 @@
 ---
-name: design-review
-description: Evaluator procedure for grading a designed page against the sprint contract, judgment controls, and design quality criteria. Used by the design-evaluator subagent during the verify phase — not by the agent that produced the design.
+name: tfx-design-review
+description: Evaluator procedure for grading a designed page against the sprint contract, judgment controls, and design quality criteria. Used by the tfx-design-evaluator subagent during the verify phase — not by the agent that produced the design.
 ---
 
 # Design review (evaluator procedure)

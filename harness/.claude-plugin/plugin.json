@@ -3,7 +3,7 @@
   "displayName": "TFX Design Harness",
   "version": "0.1.0",
   "license": "MIT",
-  "description": "The TFX Design Standard harness: design-ui loop, control catalog, voice & tone, and evaluator agent for Teacher & School products",
+  "description": "The TFX Design Standard harness: tfx-design-ui loop, control catalog, voice & tone, and evaluator agent for Teacher & School products",
   "author": {
     "name": "Reza Ilmi",
     "email": "reza.ilmi@gt.tech.gov.sg"
@@ -11,5 +11,5 @@
   "homepage": "https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb",
   "keywords": ["design", "tfx", "design-system", "standards", "teacher-school"],
   "skills": "./.claude/skills/",
-  "agents": ["./.claude/agents/design-evaluator.md"]
+  "agents": ["./.claude/agents/tfx-design-evaluator.md"]
 }

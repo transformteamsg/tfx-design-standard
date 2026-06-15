@@ -60,7 +60,7 @@ A waiver without a specific reason is a violation, not a waiver. L0+L1 are the
 | Check | Verified by | Examples |
 |---|---|---|
 | `deterministic` | Script / scanner (`checks/`, axe). Binary pass/fail; non-skippable. | Contrast ratio, raw colour detection, label presence, reduced-motion support |
-| `judgment` | `design-evaluator` subagent (or human), graded with quoted evidence. | Plain-language naming, tone in error copy, pattern appropriateness |
+| `judgment` | `tfx-design-evaluator` subagent (or human), graded with quoted evidence. | Plain-language naming, tone in error copy, pattern appropriateness |
 | `hybrid` | Script narrows the surface, evaluator judges the remainder. | Script proves error states exist; evaluator confirms the copy says what happened, what it means, what's next |
 
 ## Authoring rules

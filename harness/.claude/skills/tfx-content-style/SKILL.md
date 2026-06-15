@@ -1,6 +1,6 @@
 ---
-name: content-style
-description: TFX voice & tone, naming, and anti-AI-writing rules for prose in Teacher & School products — plain language, tone by context, error message anatomy, naming, AI-writing tells (SLP-9). Use whenever writing or reviewing any user-facing text (page, form, notification, empty state, error state) AND any longer prose — site content, marketing copy, documentation, decision records. Sufficient on its own for copy-only edits; when designing a full page the design-ui loop already pulls this skill in at its implement phase.
+name: tfx-content-style
+description: TFX voice & tone, naming, and anti-AI-writing rules for prose in Teacher & School products — plain language, tone by context, error message anatomy, naming, AI-writing tells (SLP-9). Use whenever writing or reviewing any user-facing text (page, form, notification, empty state, error state) AND any longer prose — site content, marketing copy, documentation, decision records. Sufficient on its own for copy-only edits; when designing a full page the tfx-design-ui loop already pulls this skill in at its implement phase.
 ---
 
 # Content style for Teacher & School products

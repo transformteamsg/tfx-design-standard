@@ -44,4 +44,4 @@ whether this tool is on their side.
 Deterministic half — `checks/content-lint` (planned): find error-state strings, flag
 raw codes appearing as primary copy. Judgment half — the evaluator quotes each error
 message and grades it against the three questions, using the tone-by-context table in
-the `content-style` skill (error tone: calm, helpful).
+the `tfx-content-style` skill (error tone: calm, helpful).
