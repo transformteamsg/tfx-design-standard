@@ -1,11 +1,11 @@
 # Adopting the TFX design harness — product team guide
 
 **Audience:** an engineer or designer on Teacher Workspace, CaseSync, or Glow making
-their repo "harness-ready" per TFX-DS §7.6.
+their repo "harness-ready".
 
 **Time:** approximately one hour plus team decisions (mainly items 5 and 6 below).
 
-This guide walks through the six §7.6 checklist items in order. Work through them
+This guide walks through the six harness-ready checklist items in order. Work through them
 once per product repo, not once per page. After setup, every design session runs the
 same loop automatically.
 
@@ -16,12 +16,12 @@ same loop automatically.
 Follow the two commands in the [README Install section](../README.md#install):
 
 ```
-/plugin marketplace add <git-url-of-this-repo>
+/plugin marketplace add transformteamsg/tfx-design-standard
 /plugin install tfx-design-harness@tfx
 ```
 
-This installs the four skills (`design-ui`, `design-standards`, `content-style`,
-`design-review`), the `design-evaluator` subagent, and the control catalog
+This installs the five skills (`tfx-design-ui`, `tfx-design-standards`, `tfx-content-style`,
+`tfx-design-review`, `tfx-design-onboarding`), the `tfx-design-evaluator` subagent, and the control catalog
 (`standards/`) — the catalog ships with the plugin, not with your repo.
 
 If you are working on the harness itself (not a product repo), open a Claude Code
@@ -32,7 +32,7 @@ automatically and no install step is needed.
 
 ## 1. The stack
 
-**What it means:** TFX-DS §7.6 item 1 requires your product to run the fixed stack:
+**What it means:** Harness-ready item 1 requires your product to run the fixed stack:
 Base UI components, Radix Colors, shadcn/ui default tokens, Plus Jakarta Sans (600)
 for display, and Inter (400/500/600) for body and UI. No parallel component library
 alongside these.
@@ -71,14 +71,14 @@ must be consistent across TW, CaseSync, and Glow.
 
 ## 3. Skills installed
 
-**What it means:** The four TFX skills (`design-ui`, `design-standards`,
-`content-style`, `design-review`) must be active in the product repo's Claude session
+**What it means:** The TFX skills (`tfx-design-ui`, `tfx-design-standards`,
+`tfx-content-style`, `tfx-design-review`, `tfx-design-onboarding`) must be active in the product repo's Claude session
 for the harness to work. Without them, the agent has no loop structure, no catalog
 filters, and no evaluator procedure to follow.
 
 **The concrete step:** After running the install commands in item 0, verify the skills
 loaded. Open a Claude Code session in your product repo and ask: "design a test page."
-The `design-ui` loop must trigger and ask intent questions — purpose, the teacher
+The `tfx-design-ui` loop must trigger and ask intent questions — purpose, the teacher
 and moment, page type, done-criteria. If it does not, run `/plugin list` and confirm
 `tfx-design-harness` is enabled. If the plugin appears but the skill does not trigger,
 check that the session is open in the product repo root, not in a subdirectory.
@@ -87,7 +87,7 @@ check that the session is open in the product repo root, not in a subdirectory.
 
 ## 4. Deterministic checks (V1)
 
-**What it means:** TFX-DS §7.6 item 4 calls for deterministic check scripts wired as
+**What it means:** Harness-ready item 4 calls for deterministic check scripts wired as
 hooks — scripts that run automatically at the implement and verify phases without
 waiting for agent judgment.
 
@@ -139,7 +139,7 @@ Recorded: 2026-06-10
 ```
 
 **No dedicated designer on your team?** The portfolio designer holds the plan and
-verify gates asynchronously, per TFX-DS §7.5. Target turnaround is less than one day.
+verify gates asynchronously. Target turnaround is less than one day.
 The portfolio designer is the correct L1 approver for teams without an embedded
 designer. Name that person explicitly — do not leave the field blank because the
 designer is not co-located.
@@ -148,7 +148,7 @@ designer is not co-located.
 
 ## First real page — what to expect
 
-Once the six items above are satisfied, run the `design-ui` loop on your first real
+Once the six items above are satisfied, run the `tfx-design-ui` loop on your first real
 page. Here is what the six phases feel like in practice:
 
 1. **Intent** — the agent asks four questions (purpose, the teacher and moment, page
@@ -163,7 +163,7 @@ page. Here is what the six phases feel like in practice:
 4. **Implement** — the agent implements against the approved plan with catalog controls
    active. You should not need to intervene unless the plan was ambiguous.
 5. **Verify** — deterministic controls are checked manually (today), screenshots are
-   captured at 360/768/1280 px, and the `design-evaluator` subagent grades the judgment
+   captured at 360/768/1280 px, and the `tfx-design-evaluator` subagent grades the judgment
    controls and four quality criteria. Note: in an unattended single-agent session, the
    evaluator spawn requires an orchestrator-level dispatch after the executor stops —
    see the friction report headline finding for the working pattern.
@@ -184,7 +184,7 @@ empty state in Teacher Workspace — is available at:
 
 The evaluator verdict in that example was produced via orchestrator-level dispatch
 after the executor stopped — not from within the executor's session. In an interactive
-session you run directly, the `design-ui` skill spawns the `design-evaluator`
+session you run directly, the `tfx-design-ui` skill spawns the `tfx-design-evaluator`
 subagent directly from Phase 5.
 
 ---
@@ -196,7 +196,7 @@ subagent directly from Phase 5.
 leaves an L0 violation unresolved.
 
 **A control seems wrong for your context** — use the waiver protocol in the
-`design-standards` skill, not silent deviation. A silent deviation is a compliance gap;
+`tfx-design-standards` skill, not silent deviation. A silent deviation is a compliance gap;
 a waiver with a reason and a named approver is an intentional decision. The catalog is
 built to evolve — if a control is wrong in principle, raise it via the ratchet.
 

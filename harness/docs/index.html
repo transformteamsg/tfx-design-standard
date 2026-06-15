@@ -306,11 +306,11 @@ td code { white-space: normal; overflow-wrap: break-word; }
     <a href="#catalog">Control catalog</a>
     <a href="#loop">The design loop</a>
     <div class="nav-group">Skills</div>
-    <a href="#design-ui"><span class="mono">design-ui</span></a>
-    <a href="#design-standards"><span class="mono">design-standards</span></a>
-    <a href="#content-style"><span class="mono">content-style</span></a>
-    <a href="#design-review"><span class="mono">design-review</span></a>
-    <a href="#design-evaluator"><span class="mono">design-evaluator</span></a>
+    <a href="#tfx-design-ui"><span class="mono">tfx-design-ui</span></a>
+    <a href="#tfx-design-standards"><span class="mono">tfx-design-standards</span></a>
+    <a href="#tfx-content-style"><span class="mono">tfx-content-style</span></a>
+    <a href="#tfx-design-review"><span class="mono">tfx-design-review</span></a>
+    <a href="#tfx-design-evaluator"><span class="mono">tfx-design-evaluator</span></a>
     <div class="nav-group">Reference</div>
     <a href="#checks">Checks &amp; commands</a>
     <a href="#records">Decision records</a>
@@ -323,9 +323,9 @@ td code { white-space: normal; overflow-wrap: break-word; }
 <div class="content__inner">
 
 <div class="pill-row">
-  <span class="pill pill--accent">TFX-DS §7 — the harness</span>
-  <span class="pill">28 controls</span>
-  <span class="pill">4 skills + 1 agent</span>
+  <span class="pill pill--accent">The harness</span>
+  <span class="pill">38 controls</span>
+  <span class="pill">5 skills + 1 agent</span>
   <span class="pill">2 checks built</span>
 </div>
 
@@ -351,14 +351,14 @@ shipped UI.</p>
 <!-- ── Install ── -->
 <h2 id="install">Install <a class="anchor" href="#install">#</a></h2>
 <p>The harness ships as a Claude Code plugin. In a product repo (TW, CaseSync, Glow):</p>
-<pre><code>/plugin marketplace add &lt;git-url-of-this-repo&gt;   <span class="c"># placeholder until hosted</span>
+<pre><code>/plugin marketplace add transformteamsg/tfx-design-standard
 /plugin install tfx-design-harness@tfx</code></pre>
-<p>This installs the four skills, the <code>design-evaluator</code> subagent, and the control catalog —
+<p>This installs the five skills, the <code>tfx-design-evaluator</code> subagent, and the control catalog —
 the catalog ships with the plugin, not with the product repo. Working on the harness itself? Open a
 Claude Code session in this repository; skills load from <code>.claude/skills/</code> automatically.</p>
 <div class="callout">
   <p>Adopting the harness in a product repo? Follow the step-by-step
-  <a href="ONBOARDING.md">team onboarding guide</a> (maps the TFX-DS §7.6 harness-ready checklist to
+  <a href="ONBOARDING.md">team onboarding guide</a> (maps the harness-ready checklist to
   concrete steps).</p>
 </div>
 
@@ -369,12 +369,12 @@ Claude Code session in this repository; skills load from <code>.claude/skills/</
   <tr><th style="width:22%">Layer</th><th>What lives there</th><th style="width:34%">Mechanism</th></tr>
   <tr>
     <td><strong>Normative</strong><br><span style="font-size:12px;color:var(--text-muted)">what must be true</span></td>
-    <td>The control catalog — 28 controls (22 TFX-DS seed + 6 ratchet additions from the GovTech accessibility checklist), tiered L0/L1/L2</td>
+    <td>The control catalog — 38 controls (22 TFX-DS seed + 6 GovTech accessibility ratchet additions + 10 anti-slop controls), tiered L0/L1/L2</td>
     <td><code>standards/catalog.yaml</code> + detail files</td>
   </tr>
   <tr>
     <td><strong>Harness</strong><br><span style="font-size:12px;color:var(--text-muted)">how the agent works</span></td>
-    <td>Four skills (probabilistic — the agent applies them with judgment) orchestrating the design loop, catalog mechanics, and voice</td>
+    <td>Five skills (probabilistic — the agent applies them with judgment) orchestrating the design loop, catalog mechanics, onboarding, and voice</td>
     <td><code>.claude/skills/</code></td>
   </tr>
   <tr>
@@ -389,7 +389,7 @@ Claude Code session in this repository; skills load from <code>.claude/skills/</
   have already fed two controls back into the catalog.</p>
 </div>
 <p>One catalog serves the whole portfolio. Per-product difference is nuance calibration (accent,
-illustration, tone weighting — TFX-DS §6), never separate rules or systems.</p>
+illustration, tone weighting), never separate rules or systems.</p>
 
 <!-- ── Catalog ── -->
 <h2 id="catalog">Control catalog <a class="anchor" href="#catalog">#</a></h2>
@@ -435,7 +435,7 @@ tokens · <code>TYP</code> typography · <code>COL</code> colour · <code>CMP</c
 <h2 id="loop">The design loop <a class="anchor" href="#loop">#</a></h2>
 <p>Six phases; controls filter into every phase; two moments are <strong>human gates</strong>.
 Modifications and catalog re-audits run a scoped version of the same loop
-(see <a href="#design-ui">design-ui</a>).</p>
+(see <a href="#tfx-design-ui">tfx-design-ui</a>).</p>
 <table>
   <tr><th style="width:20%">Phase</th><th>What happens</th><th style="width:24%">Gate</th></tr>
   <tr><td><strong>1 · Intent</strong></td><td>Purpose, <em>the teacher and the moment</em> this serves, page type, done-criteria — written as a sprint contract the evaluator later grades against. Naming checked (CNT-2) before a placeholder spreads.</td><td>—</td></tr>
@@ -454,16 +454,16 @@ combination, never from either alone. Each section below documents one skill and
 definition — this page describes them, it does not copy them, so it cannot drift.</p>
 <table>
   <tr><th style="width:26%">Skill</th><th>In one line</th></tr>
-  <tr><td><a href="#design-ui"><code>design-ui</code></a></td><td>The entry point — orchestrates every design change through the six-phase loop with gates.</td></tr>
-  <tr><td><a href="#design-standards"><code>design-standards</code></a></td><td>The rulebook — how to read, filter, apply, waive, and grow the control catalog.</td></tr>
-  <tr><td><a href="#content-style"><code>content-style</code></a></td><td>The voice — TFX tone and naming applied while writing copy, not as a cleanup pass.</td></tr>
-  <tr><td><a href="#design-review"><code>design-review</code></a></td><td>The rubric — the grading procedure the evaluator follows; findings, never patches.</td></tr>
-  <tr><td><a href="#design-evaluator"><code>design-evaluator</code></a></td><td>The grader — a genuinely separate subagent that runs design-review at verify.</td></tr>
+  <tr><td><a href="#tfx-design-ui"><code>tfx-design-ui</code></a></td><td>The entry point — orchestrates every design change through the six-phase loop with gates.</td></tr>
+  <tr><td><a href="#tfx-design-standards"><code>tfx-design-standards</code></a></td><td>The rulebook — how to read, filter, apply, waive, and grow the control catalog.</td></tr>
+  <tr><td><a href="#tfx-content-style"><code>tfx-content-style</code></a></td><td>The voice — TFX tone and naming applied while writing copy, not as a cleanup pass.</td></tr>
+  <tr><td><a href="#tfx-design-review"><code>tfx-design-review</code></a></td><td>The rubric — the grading procedure the evaluator follows; findings, never patches.</td></tr>
+  <tr><td><a href="#tfx-design-evaluator"><code>tfx-design-evaluator</code></a></td><td>The grader — a genuinely separate subagent that runs tfx-design-review at verify.</td></tr>
 </table>
 
-<!-- design-ui -->
-<h3 id="design-ui">design-ui <a class="anchor" href="#design-ui">#</a></h3>
-<p class="meta-line">entry point · <a href="../.claude/skills/design-ui/SKILL.md">.claude/skills/design-ui/SKILL.md</a></p>
+<!-- tfx-design-ui -->
+<h3 id="tfx-design-ui">tfx-design-ui <a class="anchor" href="#tfx-design-ui">#</a></h3>
+<p class="meta-line">entry point · <a href="../.claude/skills/tfx-design-ui/SKILL.md">.claude/skills/tfx-design-ui/SKILL.md</a></p>
 <p><strong>Summary</strong>: orchestrates every design change end-to-end. Triggers when anyone asks to
 design, create, build, add to, change, fix, or restyle a page, screen, form, component, or flow.</p>
 <h4>Three entry points, same gates</h4>
@@ -492,12 +492,12 @@ design, create, build, add to, change, fix, or restyle a page, screen, form, com
   defect.</li>
 </ul>
 
-<!-- design-standards -->
-<h3 id="design-standards">design-standards <a class="anchor" href="#design-standards">#</a></h3>
-<p class="meta-line">rulebook · <a href="../.claude/skills/design-standards/SKILL.md">.claude/skills/design-standards/SKILL.md</a></p>
+<!-- tfx-design-standards -->
+<h3 id="tfx-design-standards">tfx-design-standards <a class="anchor" href="#tfx-design-standards">#</a></h3>
+<p class="meta-line">rulebook · <a href="../.claude/skills/tfx-design-standards/SKILL.md">.claude/skills/tfx-design-standards/SKILL.md</a></p>
 <p><strong>Summary</strong>: catalog mechanics — how to read, filter, apply, and grow the catalog.
 Triggers when applying controls, judging a deviation, writing a waiver, or proposing a control; loaded
-automatically by design-ui.</p>
+automatically by tfx-design-ui.</p>
 <h4>Reading &amp; filtering</h4>
 <ul>
   <li>The catalog resolves relative to the skill itself — it ships with the plugin, not the product
@@ -522,12 +522,12 @@ automatically by design-ui.</p>
   control affects.</li>
 </ul>
 
-<!-- content-style -->
-<h3 id="content-style">content-style <a class="anchor" href="#content-style">#</a></h3>
-<p class="meta-line">copy · <a href="../.claude/skills/content-style/SKILL.md">.claude/skills/content-style/SKILL.md</a></p>
+<!-- tfx-content-style -->
+<h3 id="tfx-content-style">tfx-content-style <a class="anchor" href="#tfx-content-style">#</a></h3>
+<p class="meta-line">copy · <a href="../.claude/skills/tfx-content-style/SKILL.md">.claude/skills/tfx-content-style/SKILL.md</a></p>
 <p><strong>Summary</strong>: TFX voice &amp; tone applied at generation time, so copy ships on-voice and
 nobody — least of all non-native English speakers — carries the UX-writing burden personally. Sufficient
-alone for copy-only edits; design-ui pulls it in at implement.</p>
+alone for copy-only edits; tfx-design-ui pulls it in at implement.</p>
 <h4>Voice &amp; tone</h4>
 <ul>
   <li><strong>Voice (constant)</strong>: warm not sappy · clear not cold · helpful not pushy ·
@@ -553,11 +553,11 @@ alone for copy-only edits; design-ui pulls it in at implement.</p>
   <li>Statutory or ministry-mandated wording wins — waive it, don't reword it.</li>
 </ul>
 
-<!-- design-review -->
-<h3 id="design-review">design-review <a class="anchor" href="#design-review">#</a></h3>
-<p class="meta-line">rubric · <a href="../.claude/skills/design-review/SKILL.md">.claude/skills/design-review/SKILL.md</a></p>
+<!-- tfx-design-review -->
+<h3 id="tfx-design-review">tfx-design-review <a class="anchor" href="#tfx-design-review">#</a></h3>
+<p class="meta-line">rubric · <a href="../.claude/skills/tfx-design-review/SKILL.md">.claude/skills/tfx-design-review/SKILL.md</a></p>
 <p><strong>Summary</strong>: the grading procedure for finished design work, used by the
-design-evaluator subagent — not by the agent that produced the design. The grader returns findings with
+tfx-design-evaluator subagent — not by the agent that produced the design. The grader returns findings with
 evidence, never patches.</p>
 <h4>Four grading passes</h4>
 <ol>
@@ -581,14 +581,14 @@ UNCOVERED:               <span class="c"># defects no control covers — feeds t
 <p>Calibration: a screening pass, not final authority — decisive on clear violations; close calls
 escalate to a human instead of manufacturing confidence.</p>
 
-<!-- design-evaluator -->
-<h3 id="design-evaluator">design-evaluator <a class="anchor" href="#design-evaluator">#</a></h3>
-<p class="meta-line">subagent · <a href="../.claude/agents/design-evaluator.md">.claude/agents/design-evaluator.md</a></p>
-<p><strong>Summary</strong>: the agent definition that runs design-review — spawned at verify with the
+<!-- tfx-design-evaluator -->
+<h3 id="tfx-design-evaluator">tfx-design-evaluator <a class="anchor" href="#tfx-design-evaluator">#</a></h3>
+<p class="meta-line">subagent · <a href="../.claude/agents/tfx-design-evaluator.md">.claude/agents/tfx-design-evaluator.md</a></p>
+<p><strong>Summary</strong>: the agent definition that runs tfx-design-review — spawned at verify with the
 contract, approved plan, screenshots, in-scope controls, and the absolute standards path.</p>
 <h4>Why it's built this way</h4>
 <ul>
-  <li><strong>Preloaded rubric</strong> (<code>skills: design-review</code>) — the procedure is injected
+  <li><strong>Preloaded rubric</strong> (<code>skills: tfx-design-review</code>) — the procedure is injected
   at spawn, not left for the agent to maybe read.</li>
   <li><strong>Pinned model</strong> (<code>model: opus</code>) — grading quality doesn't silently follow
   whatever the main session runs.</li>
@@ -648,11 +648,11 @@ waivers with approvers, the verbatim evaluator verdict, and any control proposal
   <tr><th style="width:16%">Stage</th><th>Contents</th></tr>
   <tr>
     <td><strong>V0+ — now</strong></td>
-    <td>28-control catalog · four skills + evaluator agent · catalog validator and token-audit built · the loop piloted end-to-end twice with real evaluator verdicts; both runs fed controls back into the catalog. Testable today: ask a session in this repo to design a page.</td>
+    <td>38-control catalog · five skills + evaluator agent · catalog validator and token-audit built · the loop piloted end-to-end twice with real evaluator verdicts; both runs fed controls back into the catalog. Testable today: ask a session in this repo to design a page.</td>
   </tr>
   <tr>
     <td><strong>V1 — next</strong></td>
-    <td>The remaining deterministic floor: check scripts wired as hooks during implement and as the verify gate. MVP bet per TFX-DS: design-review as a screen-linter + content-style for on-voice copy; first user = designers.</td>
+    <td>The remaining deterministic floor: check scripts wired as hooks during implement and as the verify gate. MVP bet per TFX-DS: tfx-design-review as a screen-linter + tfx-content-style for on-voice copy; first user = designers.</td>
   </tr>
   <tr>
     <td><strong>V2 — later</strong></td>

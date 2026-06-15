@@ -1,6 +1,6 @@
 ---
-name: design-ui
-description: Design or change a Teacher & School product UI — a new page, screen, form, flow, OR a modification to an existing one (adding a field, editing copy, restyling a component). Use whenever the user asks to design, create, build, add to, change, fix, or restyle any page, screen, form, component, or user flow — and whenever they ask to re-audit, re-check, or re-verify an existing page against the standards catalog (e.g. after the catalog gains new controls). Orchestrates the full loop — intent, diverge, plan (human gate), implement, verify — with the TFX-DS standards catalog enforced throughout. For copy-only edits the content-style skill is sufficient; for questions about the catalog itself use design-standards.
+name: tfx-design-ui
+description: Design or change a Teacher & School product UI — a new page, screen, form, flow, OR a modification to an existing one (adding a field, editing copy, restyling a component). Use whenever the user asks to design, create, build, add to, change, fix, or restyle any page, screen, form, component, or user flow — and whenever they ask to re-audit, re-check, or re-verify an existing page against the standards catalog (e.g. after the catalog gains new controls). Orchestrates the full loop — intent, diverge, plan (human gate), implement, verify — with the TFX-DS standards catalog enforced throughout. For copy-only edits the tfx-content-style skill is sufficient; for questions about the catalog itself use tfx-design-standards.
 ---
 
 # Design UI
@@ -15,13 +15,20 @@ The harness's one promise: **intent without loss**. What the builder means is wr
 down as a contract in Phase 1; every later phase is graded against that contract;
 drift from it is a defect.
 
+**Non-negotiables (L0), binding even outside the loop:** AA contrast (A11Y-1); keyboard
+reach with visible focus (A11Y-2); a visible label on every field (A11Y-3); destructive
+actions show consequences and offer undo or confirm (CMP-2). These never bend — if one
+seems impossible, that is a blocking question for the user, not a judgment call. (The
+catalog carries the rest; these four are restated here because this SKILL.md travels in
+the plugin while the harness's CLAUDE.md does not.)
+
 **Load first:** the control catalog at `standards/catalog.yaml`. **Locating it:** the
 catalog ships with this harness, not with the product repo — resolve it relative to
 this SKILL.md file, three levels up: `<this-skill-dir>/../../../standards/catalog.yaml`
 (the same path works in the harness dev repo and when installed as the
 `tfx-design-harness` plugin; do not expect `standards/` in the project cwd). Filter
 controls by `phase` as you go; read a control's `detail` file (same `standards/`
-directory) before applying it. Also load the `design-standards` skill for the waiver
+directory) before applying it. Also load the `tfx-design-standards` skill for the waiver
 protocol.
 
 **The stack** (deliberately boring, AI-legible): Base UI components, Radix Colors
@@ -99,7 +106,7 @@ Establish, asking the user only what you cannot infer:
    Lim, P5 Math, entering marks the week before reports are due.") Design for the
    stressed week, not the average one.
 3. **Product and page type**: which product (TW / CaseSync / Glow / TW surface — this
-   sets tone calibration per `content-style`), and what kind of surface: workspace
+   sets tone calibration per `tfx-content-style`), and what kind of surface: workspace
    view, form, flow step, dashboard, settings, empty state, onboarding. Page type
    selects controls via `applies_to`. **Any surface with an async or destructive
    action inherits the `[flow]` controls** (CMP-2, CMP-3) even when it is a single
@@ -203,13 +210,14 @@ Build exactly the approved plan. Constraints, non-negotiable:
   behaviour or appearance is established, reuse it across the surface, and keep
   content and controls in predictable positions across the three widths — people
   learn faster when new interactions work the way the last one did.
-- Copy follows the `content-style` skill as you write it, not as a cleanup pass
-  (it ships with this harness: `../content-style/SKILL.md` relative to this skill).
+- Copy follows the `tfx-content-style` skill as you write it, not as a cleanup pass
+  (it ships with this harness: `../tfx-content-style/SKILL.md` relative to this skill).
   That includes the anti-slop copy rule (SLP-9): no AI-writing tells — buzzwords,
   em-dash chains, filler, chatbot artifacts, structural tells (negative
   parallelism, forced triads, copula avoidance), or label/helper pairs that
   restate each other. Canonical lists and calibration:
-  `standards/controls/slp-9.md`.
+  `standards/controls/slp-9.md` — resolved relative to this SKILL.md (three levels up),
+  as in the Load-first note above.
 - **Make every asserted state reachable for evidence.** If a hybrid control claims
   loading/success/error states, the verify phase must photograph them — build a
   clearly-marked demo-only hook where needed (e.g. a `?fail=1` query param to force
@@ -245,7 +253,7 @@ Run in this order; do not present output to the user while a step is failing:
    screenshot tool misbehaves (the agent-browser daemon has intermittently returned
    "os error 35" in past runs), a local Playwright script is the proven fallback —
    any tool is fine; the evidence set is not optional.
-3. **Evaluator review** — spawn the `design-evaluator` subagent (a genuinely separate
+3. **Evaluator review** — spawn the `tfx-design-evaluator` subagent (a genuinely separate
    agent — do not write the verdict yourself) with: the sprint contract, the approved
    plan, the screenshots, the judgment/hybrid controls in scope, **and the absolute
    path to the harness's `standards/` directory** (the evaluator cannot resolve it
@@ -271,5 +279,5 @@ and by whom, and the verify verdict. Then:
 
 - Any failure the evaluator or user caught that no control covered → propose a new
   control or anti-pattern entry for `standards/`. Follow the "Growing the catalog"
-  section of the `design-standards` skill — it is the single authoritative description
+  section of the `tfx-design-standards` skill — it is the single authoritative description
   of the proposal format.

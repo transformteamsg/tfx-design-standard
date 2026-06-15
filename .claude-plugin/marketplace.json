@@ -1,0 +1,14 @@
+{
+  "name": "tfx",
+  "description": "TFX design tooling for the Teacher & School portfolio — the TFX Design Standard harness and future design skills and tools",
+  "owner": {
+    "name": "TransformX, GovTech Singapore"
+  },
+  "plugins": [
+    {
+      "name": "tfx-design-harness",
+      "source": "./harness",
+      "description": "The TFX Design Standard harness: design-ui loop, control catalog, voice & tone, and evaluator agent for Teacher & School products"
+    }
+  ]
+}

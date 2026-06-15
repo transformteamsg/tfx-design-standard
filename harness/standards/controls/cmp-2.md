@@ -33,7 +33,7 @@ portfolio. That is why it is L0 — never waivable.
 - Reversible actions execute immediately with a visible, reachable undo.
 - Irreversible actions require explicit confirmation that names the object and the
   consequence — sober and precise in tone, no drama (see tone-by-context in the
-  `content-style` skill).
+  `tfx-content-style` skill).
 
 ## Fails when
 

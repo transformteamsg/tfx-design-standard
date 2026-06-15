@@ -6,6 +6,35 @@ The design standard website for **TransformX** (Teacher & School portfolio, GovT
 - Full standard for agents: `/llms.txt` (with control details: `/llms-full.txt`)
 - Machine-readable control catalog: `/standards/catalog.yaml`
 
+## Install the design harness (Claude Code plugin)
+
+The harness installs as a [Claude Code](https://code.claude.com/docs) plugin: five
+skills (`tfx-design-ui` the loop, `tfx-design-standards` catalog mechanics, `tfx-content-style`
+voice & tone, `tfx-design-review` the evaluator procedure, and `tfx-design-onboarding` a guided
+tour), the `tfx-design-evaluator` agent, and the control catalog. It ships its own catalog,
+so it works in any repo you open, not only this one.
+
+```bash
+# 1. add this repo as a plugin marketplace
+/plugin marketplace add transformteamsg/tfx-design-standard
+
+# 2. install the harness
+/plugin install tfx-design-harness@tfx
+
+# 3. later, pull new controls and skills
+/plugin update tfx-design-harness@tfx
+```
+
+Confirm it loaded with `/plugin` (look for `tfx-design-harness`, enabled). New to it?
+Run `/tfx-design-onboarding` (or just say "onboard me") for a guided tour — then ask Claude
+to design or change a page and the `tfx-design-ui` loop takes over, enforcing the catalog
+throughout. Rolling it out across a product team? Follow the
+[team onboarding guide](harness/docs/ONBOARDING.md).
+
+Updates ship as versioned releases: `/plugin update` only pulls a new version when
+`version` in `harness/.claude-plugin/plugin.json` is bumped (part of the catalog
+ratchet), so an unrelated website commit never looks like a harness update.
+
 ## Architecture
 
 | Thing | Choice |

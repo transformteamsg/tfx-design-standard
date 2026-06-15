@@ -59,7 +59,7 @@ with an async or destructive action inherits the `applies_to: [flow]` controls
   `attendance.html:12-68`)
 - **Deterministic controls:** which were script-checked vs. verified manually vs.
   left unverified — per control.
-- **Evaluator verdict:** paste the full `design-evaluator` verdict **verbatim** — a
+- **Evaluator verdict:** paste the full `tfx-design-evaluator` verdict **verbatim** — a
   summary here is a defect; this record is the durable artifact.
 
 ## Ratchet

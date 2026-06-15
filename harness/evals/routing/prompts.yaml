@@ -6,70 +6,70 @@
 #          loaded a skill cannot measure triggering).
 #   pass:  the expected skill name appears in the transcript's tool calls
 #          (a Skill tool invocation of that skill). For `expect: none`, pass
-#          means NO harness skill (design-ui / content-style / design-standards /
-#          design-review) appears in the tool calls.
-#   cost cap: a full sweep is 28 headless sessions. Spot-check a 5-case sample
+#          means NO harness skill (tfx-design-ui / tfx-content-style / tfx-design-standards /
+#          tfx-design-review / tfx-design-onboarding) appears in the tool calls.
+#   cost cap: a full sweep is 33 headless sessions. Spot-check a 5-case sample
 #          per skill edit (always include at least one modification-phrasing
-#          design-ui case and one `none` case); run the full sweep only when a
+#          tfx-design-ui case and one `none` case); run the full sweep only when a
 #          skill's frontmatter `description:` changes — that is the text that
 #          decides triggering.
 #
-# expect ∈ design-ui | content-style | design-standards | none
+# expect ∈ tfx-design-ui | tfx-content-style | tfx-design-standards | tfx-design-onboarding | none
 
 cases:
-  # ── design-ui: new page / flow ─────────────────────────────────────────
+  # ── tfx-design-ui: new page / flow ─────────────────────────────────────────
   - prompt: "Design an attendance-taking page for Teacher Workspace"
-    expect: design-ui
+    expect: tfx-design-ui
   - prompt: "Build a parent-teacher meeting booking flow for TW"
-    expect: design-ui
+    expect: tfx-design-ui
   - prompt: "Create an empty state for the student notes list in CaseSync"
-    expect: design-ui
+    expect: tfx-design-ui
   - prompt: "We need a settings screen for notification preferences in Glow"
-    expect: design-ui
+    expect: tfx-design-ui
   - prompt: "Design a form for teachers to log a student incident"
-    expect: design-ui
+    expect: tfx-design-ui
 
-  # ── design-ui: modification of an existing surface ─────────────────────
+  # ── tfx-design-ui: modification of an existing surface ─────────────────────
   - prompt: "Add a remarks field to attendance"
-    expect: design-ui
+    expect: tfx-design-ui
   - prompt: "Restyle the status chip on the attendance page"
-    expect: design-ui
+    expect: tfx-design-ui
   - prompt: "Change the submit button on the marks page to show how many students are selected"
-    expect: design-ui
+    expect: tfx-design-ui
   - prompt: "Fix the error banner on the attendance page — it overlaps the header on small screens"
-    expect: design-ui
+    expect: tfx-design-ui
   - prompt: "Add a date picker to the homework assignment form"
-    expect: design-ui
+    expect: tfx-design-ui
 
-  # ── design-ui: catalog-update re-audit ──────────────────────────────────
+  # ── tfx-design-ui: catalog-update re-audit ──────────────────────────────────
   - prompt: "The catalog gained two new controls yesterday — re-check the attendance page against them"
-    expect: design-ui
+    expect: tfx-design-ui
   - prompt: "Re-audit the student notes page against the latest catalog"
-    expect: design-ui
+    expect: tfx-design-ui
   - prompt: "The standards catalog was updated; bring the attendance page back into compliance"
-    expect: design-ui
+    expect: tfx-design-ui
 
-  # ── content-style: copy-only ────────────────────────────────────────────
+  # ── tfx-content-style: copy-only ────────────────────────────────────────────
   - prompt: "Rewrite this error message: 'Submission failed (code 0x1F4)'"
-    expect: content-style
+    expect: tfx-content-style
   - prompt: "Is this empty-state text on-voice? 'No notes yet. Create one to get started.'"
-    expect: content-style
+    expect: tfx-content-style
   - prompt: "Review the confirmation dialog copy on the marks page for tone"
-    expect: content-style
+    expect: tfx-content-style
   - prompt: "Suggest a better label for this button — 'Execute submission' feels off"
-    expect: content-style
+    expect: tfx-content-style
   - prompt: "Draft the success toast copy for when attendance is submitted"
-    expect: content-style
+    expect: tfx-content-style
 
-  # ── design-standards: catalog mechanics, waivers, proposals ─────────────
+  # ── tfx-design-standards: catalog mechanics, waivers, proposals ─────────────
   - prompt: "Can I waive TOK-1 here?"
-    expect: design-standards
+    expect: tfx-design-standards
   - prompt: "Propose a new control for table density based on the pilot finding"
-    expect: design-standards
+    expect: tfx-design-standards
   - prompt: "Does CMP-2 apply to archiving a class, or only to deleting it?"
-    expect: design-standards
+    expect: tfx-design-standards
   - prompt: "Write a waiver for the statutory programme name on the broadcast page"
-    expect: design-standards
+    expect: tfx-design-standards
 
   # ── none: pure questions, no skill should fire ──────────────────────────
   - prompt: "What does L1 mean?"
@@ -84,3 +84,17 @@ cases:
     expect: none
   - prompt: "What fonts does the harness stack use?"
     expect: none
+
+  # ── tfx-design-onboarding: explicit "onboard / teach me the harness" intent only ──
+  - prompt: "Onboard me to the TFX design harness"
+    expect: tfx-design-onboarding
+  - prompt: "I'm new to the harness — teach me how to use it"
+    expect: tfx-design-onboarding
+  - prompt: "Walk me through how the design loop works for the first time"
+    expect: tfx-design-onboarding
+
+  # ── boundary guards: onboarding must NOT capture design or pure-question intents ──
+  - prompt: "How do I add a remarks field to the attendance page?"
+    expect: tfx-design-ui
+  - prompt: "How do I design a settings screen for Glow?"
+    expect: tfx-design-ui

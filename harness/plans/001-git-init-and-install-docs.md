@@ -1,5 +1,12 @@
 # Plan 001: Initialize git and document how product teams install the harness
 
+> **Status: completed and superseded (June 2026).** Historical record. The install
+> specifics below have since changed — the marketplace now lives at the repo root
+> (`.claude-plugin/marketplace.json`, `source: ./harness`) and install uses the published
+> repo `transformteamsg/tfx-design-standard`. See the current `README.md` install section
+> for the live commands; the `<git-url-of-this-repo>` placeholders here were resolved when
+> the repo was published.
+
 > **Executor instructions**: Follow this plan step by step. Run every
 > verification command and confirm the expected result before moving to the
 > next step. If anything in the "STOP conditions" section occurs, stop and
@@ -42,7 +49,7 @@ writes the missing "Installation" section.
 - `.claude-plugin/marketplace.json` — marketplace named `tfx`, one plugin entry
   with `"source": "./"`.
 - `README.md` — has sections "Core ideas", "Repository layout",
-  "The loop (summary…)", "Status & roadmap (tracks TFX-DS §7.4)". There is NO
+  "The loop (summary…)", "Status & roadmap". There is NO
   installation/getting-started section. The "Status & roadmap" section ends
   with: `Rollout order: Teacher Workspace (flagship = reference implementation) → CaseSync →`
   `Glow → TW surfaces (Posts, PG Staff Portal).`
