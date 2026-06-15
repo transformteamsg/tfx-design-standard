@@ -94,7 +94,20 @@ RADIUS_PROP_RE = re.compile(
 # ── Tailwind palette bypass ────────────────────────────────────────────────────
 TAILWIND_PALETTE_RE = re.compile(
     r'\b(bg|text|border)-(red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|'
-    r'blue|indigo|violet|purple|fuchsia|pink|rose|slate|gray|zinc|neutral|stone)-\d{2,3}\b'
+    r'blue|indigo|violet|purple|fuchsia|pink|rose|slate|gray|zinc|neutral|stone)-(\d{1,3})\b'
+)
+
+# ── Arbitrary-value utility ────────────────────────────────────────────────────
+# Matches bg-[…], text-[…], border-[…], ring-[…], fill-[…], stroke-[…],
+# shadow-[…], from-[…], via-[…], to-[…], outline-[…], decoration-[…]
+ARBITRARY_VALUE_RE = re.compile(
+    r'(?:bg|text|border|ring|fill|stroke|shadow|from|via|to|outline|decoration)-\[([^\]]*)\]'
+)
+
+# Named colours that are raw (not inside var()) — for arbitrary value scanning
+ARBIT_NAMED_COLOUR_RE = re.compile(
+    r'(?<![\'"\w-])(white|black|red|green|blue|gray|grey|orange|yellow|purple)(?![\'"\w-])',
+    re.IGNORECASE
 )
 
 # ── var() passthrough ──────────────────────────────────────────────────────────
@@ -112,6 +125,53 @@ CUSTOM_PROP_RE = re.compile(r"^\s*--[\w-]+\s*:")
 # ── tfx-tokens region markers ─────────────────────────────────────────────────
 TFX_TOKENS_OPEN_RE = re.compile(r"/\*\s*tfx-tokens\s*\*/")
 TFX_TOKENS_CLOSE_RE = re.compile(r"/\*\s*/tfx-tokens\s*\*/")
+
+
+def collect_theme_color_names(css_paths, extra_names=None):
+    """
+    Scan CSS files for --color-<name>: declarations (Tailwind v4 @theme convention)
+    and return a set of the <name> parts.  For example --color-amber-11 → 'amber-11',
+    --color-tw-blue → 'tw-blue'.
+
+    Also merges any names supplied via `extra_names` (a list of strings, e.g.
+    from --allow CLI flag or a .allow file).
+    """
+    names = set()
+    color_token_re = re.compile(r"--color-([\w-]+)\s*:")
+
+    for path in css_paths:
+        if not os.path.isfile(path):
+            continue
+        try:
+            with open(path, encoding="utf-8", errors="replace") as fh:
+                for line in fh:
+                    m = color_token_re.search(line)
+                    if m:
+                        names.add(m.group(1))
+        except OSError:
+            pass
+
+    if extra_names:
+        for n in extra_names:
+            n = n.strip()
+            if n and not n.startswith("#"):
+                names.add(n)
+
+    return names
+
+
+def load_allow_file(path):
+    """Load a .allow file (one name per line, # comments).  Returns list of names."""
+    names = []
+    try:
+        with open(path, encoding="utf-8", errors="replace") as fh:
+            for line in fh:
+                line = line.strip()
+                if line and not line.startswith("#"):
+                    names.append(line)
+    except OSError:
+        pass
+    return names
 
 
 def nearest_spacing(value_px):
@@ -294,11 +354,17 @@ def _ends_in_block_comment(line, in_comment):
     return in_comment
 
 
-def check_file(filepath):
+def check_file(filepath, theme_names=None):
     """
     Scan a single file and return a list of error strings.
     Each string is formatted: ERROR <file>:<line> [CTL-ID] <found> — suggest: <...>
+
+    theme_names: set of colour names licensed by the project's @theme (from
+    collect_theme_color_names).  Tailwind palette utilities whose name is in this
+    set are NOT flagged as COL-2 bypasses.
     """
+    if theme_names is None:
+        theme_names = set()
     errors = []
     ext = os.path.splitext(filepath)[1].lower()
     if ext not in TARGET_EXTENSIONS:
@@ -391,7 +457,42 @@ def check_file(filepath):
 
         # ── Tailwind palette bypass (all file types — applies in class= attributes and JSX) ──
         for m in TAILWIND_PALETTE_RE.finditer(scan_line):
+            colour_name = m.group(2)  # e.g. 'amber', 'red'
+            step = m.group(3)         # e.g. '11', '500'
+            name_with_step = f"{colour_name}-{step}"  # e.g. 'amber-11'
+            # Skip if either the bare name or name+step is a project-defined theme colour
+            if colour_name in theme_names or name_with_step in theme_names:
+                continue
             emit("COL-2", f"Tailwind palette class '{m.group()}'", "use a semantic token class (e.g. bg-primary, text-destructive)")
+
+        # ── TOK-1 : raw colour inside arbitrary-value utilities (all file types) ──
+        # e.g. bg-[color-mix(in oklab, var(--tw-blue) 88%, black)] — flags 'black'
+        for arb_m in ARBITRARY_VALUE_RE.finditer(scan_line):
+            inner = arb_m.group(1)
+            # Skip if the bracket content is purely a var() reference
+            # (e.g. bg-[var(--surface)] is fine)
+            inner_no_var = re.sub(r"var\s*\(--[^)]*\)", "", inner)
+            # Check for hex colours
+            for m in HEX_COLOUR_RE.finditer(inner_no_var):
+                emit("TOK-1", f"raw colour '{m.group()}' in arbitrary value",
+                     "define it as a token and reference var(--…)")
+            # Check for rgb/rgba
+            for m in RGB_COLOUR_RE.finditer(inner_no_var):
+                emit("TOK-1", f"raw colour '{m.group().strip()}…' in arbitrary value",
+                     "define it as a token and reference var(--…)")
+            # Check for hsl/hsla
+            for m in HSL_COLOUR_RE.finditer(inner_no_var):
+                emit("TOK-1", f"raw colour '{m.group().strip()}…' in arbitrary value",
+                     "define it as a token and reference var(--…)")
+            # Check for oklch
+            for m in OKLCH_COLOUR_RE.finditer(inner_no_var):
+                emit("TOK-1", f"raw colour '{m.group().strip()}…' in arbitrary value",
+                     "define it as a token and reference var(--…)")
+            # Check for standalone named colours (white, black, red, etc.)
+            # Strip any var() refs from context first
+            for m in ARBIT_NAMED_COLOUR_RE.finditer(inner_no_var):
+                emit("TOK-1", f"raw colour '{m.group()}' in arbitrary value",
+                     "define it as a token and reference var(--…)")
 
         # ── TOK-2 : spacing checks (style contexts only) ──────────────────────
         if effective_style:
@@ -485,12 +586,14 @@ def check_file(filepath):
     return errors
 
 
-def scan_paths(paths):
+def scan_paths(paths, theme_names=None):
     """Walk the given paths (files or directories) and collect all violations."""
+    if theme_names is None:
+        theme_names = set()
     all_errors = []
     for p in paths:
         if os.path.isfile(p):
-            all_errors.extend(check_file(p))
+            all_errors.extend(check_file(p, theme_names))
         elif os.path.isdir(p):
             for root, dirs, files in os.walk(p):
                 # Skip hidden directories
@@ -498,7 +601,7 @@ def scan_paths(paths):
                 for fname in sorted(files):
                     ext = os.path.splitext(fname)[1].lower()
                     if ext in TARGET_EXTENSIONS:
-                        all_errors.extend(check_file(os.path.join(root, fname)))
+                        all_errors.extend(check_file(os.path.join(root, fname), theme_names))
         else:
             print(f"ERROR token-audit: path not found: {p}")
             all_errors.append(f"ERROR token-audit: path not found: {p}")
@@ -694,6 +797,60 @@ def run_self_test():
         ".css"
     )
 
+    # ── Case 19: theme-defined palette name passes COL-2 ──────────────────────
+    # When --color-amber-11 is defined in scanned CSS, text-amber-11 is not a bypass.
+    case_count += 1
+    with tempfile.NamedTemporaryFile(suffix=".tsx", mode="w", delete=False, encoding="utf-8") as tf:
+        tf.write('<p className="text-amber-11">hello</p>')
+        tf.flush()
+        errs = check_file(tf.name, theme_names={"amber-11"})
+    os.unlink(tf.name)
+    if errs:
+        failures.append(f"FAIL theme-defined name passes: expected no COL-2 — got: {errs}")
+
+    # ── Case 20: undefined palette class still fails COL-2 ────────────────────
+    case_count += 1
+    with tempfile.NamedTemporaryFile(suffix=".tsx", mode="w", delete=False, encoding="utf-8") as tf:
+        tf.write('<p className="text-amber-11">hello</p>')
+        tf.flush()
+        errs = check_file(tf.name, theme_names=set())  # empty allowlist
+    os.unlink(tf.name)
+    col2s = [e for e in errs if "[COL-2]" in e]
+    if not col2s:
+        failures.append(f"FAIL undefined palette fails: expected COL-2 — got: {errs}")
+
+    # ── Case 21: single-digit undefined step now caught (digit fix) ───────────
+    case_count += 1
+    with tempfile.NamedTemporaryFile(suffix=".tsx", mode="w", delete=False, encoding="utf-8") as tf:
+        tf.write('<p className="text-amber-3">hello</p>')
+        tf.flush()
+        errs = check_file(tf.name, theme_names=set())
+    os.unlink(tf.name)
+    col2s = [e for e in errs if "[COL-2]" in e]
+    if not col2s:
+        failures.append(f"FAIL single-digit step: expected COL-2 for text-amber-3 — got: {errs}")
+
+    # ── Case 22: raw colour inside arbitrary value fails (TOK-1) ──────────────
+    case_count += 1
+    with tempfile.NamedTemporaryFile(suffix=".tsx", mode="w", delete=False, encoding="utf-8") as tf:
+        tf.write('className="hover:bg-[color-mix(in_oklab,var(--tw-blue)_88%,black)]"')
+        tf.flush()
+        errs = check_file(tf.name, theme_names=set())
+    os.unlink(tf.name)
+    tok1s = [e for e in errs if "[TOK-1]" in e]
+    if not tok1s:
+        failures.append(f"FAIL arbitrary value raw colour: expected TOK-1 for black in color-mix — got: {errs}")
+
+    # ── Case 23: var() in arbitrary value passes ───────────────────────────────
+    case_count += 1
+    with tempfile.NamedTemporaryFile(suffix=".tsx", mode="w", delete=False, encoding="utf-8") as tf:
+        tf.write('className="bg-[var(--surface)]"')
+        tf.flush()
+        errs = check_file(tf.name, theme_names=set())
+    os.unlink(tf.name)
+    if errs:
+        failures.append(f"FAIL var() in arbitrary value: expected clean — got: {errs}")
+
     # ── Report ─────────────────────────────────────────────────────────────────
     if failures:
         for f in failures:
@@ -711,14 +868,34 @@ def main():
     args = sys.argv[1:]
 
     if not args:
-        print("Usage: python3 checks/token-audit.py <path>... | --self-test")
+        print("Usage: python3 checks/token-audit.py [--allow name1,name2,...] <path>... | --self-test")
         sys.exit(1)
 
     if "--self-test" in args:
         run_self_test()
         return  # run_self_test calls sys.exit
 
-    errors = scan_paths(args)
+    # Parse --allow <name1,name2,...> flag
+    extra_allow = []
+    filtered_args = []
+    i = 0
+    while i < len(args):
+        if args[i] == "--allow" and i + 1 < len(args):
+            extra_allow.extend([n.strip() for n in args[i + 1].split(",") if n.strip()])
+            i += 2
+        else:
+            filtered_args.append(args[i])
+            i += 1
+
+    # Load .allow file if present alongside the script
+    allow_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "token-audit.allow")
+    extra_allow.extend(load_allow_file(allow_file))
+
+    # Build theme allowlist from scanned CSS files + extras
+    css_paths = [p for p in filtered_args if os.path.splitext(p)[1].lower() == ".css"]
+    theme_names = collect_theme_color_names(css_paths, extra_allow)
+
+    errors = scan_paths(filtered_args, theme_names)
 
     if errors:
         for e in errors:
