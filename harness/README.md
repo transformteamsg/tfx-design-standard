@@ -1,6 +1,6 @@
 # Design Harness (TFX)
 
-The harness layer of the **TFX Design Standard** (TFX-DS §7): it wraps an AI agent
+The harness layer of the **TFX Design Standard**: it wraps an AI agent
 (Claude Code) so that what it designs for the Teacher & School portfolio complies
 with the standard — not by asking nicely, but by structure: a control catalog it must
 satisfy, a loop with human gates, and checks that always run.
@@ -13,7 +13,7 @@ surviving the whole way to shipped UI.
 ```
 NORMATIVE LAYER                       HARNESS                            ENFORCEMENT
 standards/catalog.yaml                .claude/skills/                    checks/ + evaluator agent
-├─ TFX-DS standards tier (§3)         ├─ design-ui      (the loop)       ├─ Deterministic: scripts, a11y scan,
+├─ TFX-DS standards tier              ├─ design-ui      (the loop)       ├─ Deterministic: scripts, a11y scan,
 │   38 controls (consolidated 2026-06-11)    ├─ design-standards (catalog use)  │   DOM checks — non-skippable
 ├─ WCAG 2.2 AA (self-imposed floor)   ├─ content-style  (voice & tone)   ├─ Judgment: design-evaluator subagent
 └─ References: SGDS, GOV.UK           └─ design-review  (evaluator)      └─ Human gates: plan approval, L1 waivers
@@ -38,7 +38,7 @@ Jakarta Sans + Inter; Teacher & School Blue `#0064FF`.
 3. **Human approval at the plan, not the pixels (Open SWE pattern).** The human gate
    sits after converge/plan and before implementation — the cheapest place for
    judgment. On teams with no dedicated designer, the gates are reviewed async by a
-   portfolio designer (TFX-DS §7.5) — the loop is how the quality bar stays
+   portfolio designer — the loop is how the quality bar stays
    independent of staffing.
 4. **Generator–evaluator split (Anthropic harness guidance).** A separate evaluator
    agent grades output against the sprint contract and judgment controls. The designing
@@ -46,7 +46,7 @@ Jakarta Sans + Inter; Teacher & School Blue `#0064FF`.
    generic output.
 5. **One catalog, whole portfolio.** TW, CaseSync, Glow, and TW surfaces share one
    set of controls; per-product difference is nuance calibration (accent,
-   illustration, tone weighting — TFX-DS §6), never separate rules or systems.
+   illustration, tone weighting), never separate rules or systems.
 
 ## Repository layout
 
@@ -82,7 +82,7 @@ design-harness/
 The harness ships as a Claude Code plugin. In your product repo (TW, CaseSync, Glow):
 
 ```
-/plugin marketplace add <git-url-of-this-repo>   # placeholder until hosted — see note
+/plugin marketplace add transformteamsg/tfx-design-standard
 /plugin install tfx-design-harness@tfx
 ```
 
@@ -90,7 +90,7 @@ This installs the four skills (`design-ui`, `design-standards`, `content-style`,
 
 To work on the harness itself, just open a Claude Code session in this repository: the skills load from `.claude/skills/` automatically; no install step.
 
-> **Hosting note**: until this repo is pushed to a git host, replace `<git-url-of-this-repo>` with the local path to a checkout. The marketplace source must be reachable by every installing teammate.
+> **Updates**: `/plugin update tfx-design-harness@tfx` pulls new releases — the catalog and skills are versioned together via `version` in `plugin.json`, bumped on each ratchet change.
 
 Adopting the harness in a product repo? Follow [docs/ONBOARDING.md](docs/ONBOARDING.md).
 
@@ -105,7 +105,7 @@ Adopting the harness in a product repo? Follow [docs/ONBOARDING.md](docs/ONBOARD
 | 5. Verify | Checks + evaluator | Deterministic checks pass (L0 blocks, L1 loops back) → screenshots as evidence → evaluator grades judgment controls + 4 criteria (design quality, originality, craft, functionality) |
 | 6. Ratchet | Agent + user | Decision record finished; failures become new controls, anti-patterns, or check scripts |
 
-## Status & roadmap (tracks TFX-DS §7.4)
+## Status & roadmap
 
 Aligned to TFX-DS v0.1 (June 2026). Catalog: the 22-control TFX-DS seed, plus 6
 ratchet additions (GovTech a11y checklist, 2026-06-11), plus the 10 anti-slop

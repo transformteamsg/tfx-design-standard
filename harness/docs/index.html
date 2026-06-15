@@ -323,8 +323,8 @@ td code { white-space: normal; overflow-wrap: break-word; }
 <div class="content__inner">
 
 <div class="pill-row">
-  <span class="pill pill--accent">TFX-DS §7 — the harness</span>
-  <span class="pill">28 controls</span>
+  <span class="pill pill--accent">The harness</span>
+  <span class="pill">38 controls</span>
   <span class="pill">4 skills + 1 agent</span>
   <span class="pill">2 checks built</span>
 </div>
@@ -351,14 +351,14 @@ shipped UI.</p>
 <!-- ── Install ── -->
 <h2 id="install">Install <a class="anchor" href="#install">#</a></h2>
 <p>The harness ships as a Claude Code plugin. In a product repo (TW, CaseSync, Glow):</p>
-<pre><code>/plugin marketplace add &lt;git-url-of-this-repo&gt;   <span class="c"># placeholder until hosted</span>
+<pre><code>/plugin marketplace add transformteamsg/tfx-design-standard
 /plugin install tfx-design-harness@tfx</code></pre>
 <p>This installs the four skills, the <code>design-evaluator</code> subagent, and the control catalog —
 the catalog ships with the plugin, not with the product repo. Working on the harness itself? Open a
 Claude Code session in this repository; skills load from <code>.claude/skills/</code> automatically.</p>
 <div class="callout">
   <p>Adopting the harness in a product repo? Follow the step-by-step
-  <a href="ONBOARDING.md">team onboarding guide</a> (maps the TFX-DS §7.6 harness-ready checklist to
+  <a href="ONBOARDING.md">team onboarding guide</a> (maps the harness-ready checklist to
   concrete steps).</p>
 </div>
 
@@ -369,7 +369,7 @@ Claude Code session in this repository; skills load from <code>.claude/skills/</
   <tr><th style="width:22%">Layer</th><th>What lives there</th><th style="width:34%">Mechanism</th></tr>
   <tr>
     <td><strong>Normative</strong><br><span style="font-size:12px;color:var(--text-muted)">what must be true</span></td>
-    <td>The control catalog — 28 controls (22 TFX-DS seed + 6 ratchet additions from the GovTech accessibility checklist), tiered L0/L1/L2</td>
+    <td>The control catalog — 38 controls (22 TFX-DS seed + 6 GovTech accessibility ratchet additions + 10 anti-slop controls), tiered L0/L1/L2</td>
     <td><code>standards/catalog.yaml</code> + detail files</td>
   </tr>
   <tr>
@@ -389,7 +389,7 @@ Claude Code session in this repository; skills load from <code>.claude/skills/</
   have already fed two controls back into the catalog.</p>
 </div>
 <p>One catalog serves the whole portfolio. Per-product difference is nuance calibration (accent,
-illustration, tone weighting — TFX-DS §6), never separate rules or systems.</p>
+illustration, tone weighting), never separate rules or systems.</p>
 
 <!-- ── Catalog ── -->
 <h2 id="catalog">Control catalog <a class="anchor" href="#catalog">#</a></h2>

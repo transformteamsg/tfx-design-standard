@@ -37,7 +37,7 @@ Flag, quoting the name:
 Good names name the job: "Class Planner", "Student Notes", "Mark Attendance".
 
 Do not flag: product names that passed the identity rule (Teacher Workspace,
-CaseSync, Glow — these are settled identities, §6), or terms teachers genuinely use
+CaseSync, Glow — these are settled identities), or terms teachers genuinely use
 even when they look like jargon to outsiders (e.g. "CCE", "Form Class").
 
 ## Waiver

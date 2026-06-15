@@ -60,8 +60,10 @@ These rules apply to ANY prose written in a session — UI strings, site and mar
 content, documentation, decision records — not just product UI. The buzzword,
 em-dash-chain, and redundant-pair rules above are part of the same control. The
 canonical word lists and the full Flag / Do-not-flag calibration live in
-`standards/controls/slp-9.md` (from the harness root; `harness/standards/controls/slp-9.md`
-when working from the website repo root) — that file wins if this summary drifts.
+`slp-9.md`, resolved relative to this SKILL.md three levels up at
+`../../../standards/controls/slp-9.md` (it ships with the harness — the same path works in
+the harness dev repo and when installed as the `tfx-design-harness` plugin; do not expect
+`standards/` in the project cwd) — that file wins if this summary drifts.
 
 - **Copula avoidance.** "Glow serves as the encouragement layer" → "Glow is the
   encouragement layer". Say "is" when you mean is.

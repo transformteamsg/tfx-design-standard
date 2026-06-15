@@ -15,6 +15,13 @@ The harness's one promise: **intent without loss**. What the builder means is wr
 down as a contract in Phase 1; every later phase is graded against that contract;
 drift from it is a defect.
 
+**Non-negotiables (L0), binding even outside the loop:** AA contrast (A11Y-1); keyboard
+reach with visible focus (A11Y-2); a visible label on every field (A11Y-3); destructive
+actions show consequences and offer undo or confirm (CMP-2). These never bend — if one
+seems impossible, that is a blocking question for the user, not a judgment call. (The
+catalog carries the rest; these four are restated here because this SKILL.md travels in
+the plugin while the harness's CLAUDE.md does not.)
+
 **Load first:** the control catalog at `standards/catalog.yaml`. **Locating it:** the
 catalog ships with this harness, not with the product repo — resolve it relative to
 this SKILL.md file, three levels up: `<this-skill-dir>/../../../standards/catalog.yaml`
@@ -209,7 +216,8 @@ Build exactly the approved plan. Constraints, non-negotiable:
   em-dash chains, filler, chatbot artifacts, structural tells (negative
   parallelism, forced triads, copula avoidance), or label/helper pairs that
   restate each other. Canonical lists and calibration:
-  `standards/controls/slp-9.md`.
+  `standards/controls/slp-9.md` — resolved relative to this SKILL.md (three levels up),
+  as in the Load-first note above.
 - **Make every asserted state reachable for evidence.** If a hybrid control claims
   loading/success/error states, the verify phase must photograph them — build a
   clearly-marked demo-only hook where needed (e.g. a `?fail=1` query param to force

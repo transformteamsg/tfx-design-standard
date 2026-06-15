@@ -29,7 +29,7 @@ standard.* Standards are the only layer the harness can enforce automatically. R
     - https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb
 ```
 
-Category prefixes (TFX-DS §3.5): `A11Y` accessibility · `TOK` tokens & theming ·
+Category prefixes: `A11Y` accessibility · `TOK` tokens & theming ·
 `TYP` typography · `COL` colour · `CMP` components & patterns · `CNT` content &
 naming · `MOT` motion · `IDN` identity · `SLP` anti-slop (adopted from the
 TFX-DS site seed catalog in the 2026-06-11 consolidation).
@@ -80,7 +80,7 @@ A waiver without a specific reason is a violation, not a waiver. L0+L1 are the
    enter only via ratchet evidence — these products are professional daily-use
    workspaces, not transactional citizen services.
 5. **One catalog for the whole portfolio.** No per-product control overlays;
-   per-product difference is nuance calibration (TFX-DS §6), never separate rules.
+   per-product difference is nuance calibration, never separate rules.
 
 ## Detail file format (`controls/<id>.md`)
 

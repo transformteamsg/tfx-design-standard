@@ -1,11 +1,11 @@
 # Adopting the TFX design harness — product team guide
 
 **Audience:** an engineer or designer on Teacher Workspace, CaseSync, or Glow making
-their repo "harness-ready" per TFX-DS §7.6.
+their repo "harness-ready".
 
 **Time:** approximately one hour plus team decisions (mainly items 5 and 6 below).
 
-This guide walks through the six §7.6 checklist items in order. Work through them
+This guide walks through the six harness-ready checklist items in order. Work through them
 once per product repo, not once per page. After setup, every design session runs the
 same loop automatically.
 
@@ -16,7 +16,7 @@ same loop automatically.
 Follow the two commands in the [README Install section](../README.md#install):
 
 ```
-/plugin marketplace add <git-url-of-this-repo>
+/plugin marketplace add transformteamsg/tfx-design-standard
 /plugin install tfx-design-harness@tfx
 ```
 
@@ -32,7 +32,7 @@ automatically and no install step is needed.
 
 ## 1. The stack
 
-**What it means:** TFX-DS §7.6 item 1 requires your product to run the fixed stack:
+**What it means:** Harness-ready item 1 requires your product to run the fixed stack:
 Base UI components, Radix Colors, shadcn/ui default tokens, Plus Jakarta Sans (600)
 for display, and Inter (400/500/600) for body and UI. No parallel component library
 alongside these.
@@ -87,7 +87,7 @@ check that the session is open in the product repo root, not in a subdirectory.
 
 ## 4. Deterministic checks (V1)
 
-**What it means:** TFX-DS §7.6 item 4 calls for deterministic check scripts wired as
+**What it means:** Harness-ready item 4 calls for deterministic check scripts wired as
 hooks — scripts that run automatically at the implement and verify phases without
 waiting for agent judgment.
 
@@ -139,7 +139,7 @@ Recorded: 2026-06-10
 ```
 
 **No dedicated designer on your team?** The portfolio designer holds the plan and
-verify gates asynchronously, per TFX-DS §7.5. Target turnaround is less than one day.
+verify gates asynchronously. Target turnaround is less than one day.
 The portfolio designer is the correct L1 approver for teams without an embedded
 designer. Name that person explicitly — do not leave the field blank because the
 designer is not co-located.
