@@ -78,6 +78,11 @@ reference lens (a judgment aid, not a checkable standard):
   marking it down only in this grade. Apple's
   test applies (HIG: Delight): don't mistake delight for decoration — character that
   gets between the teacher and the task is a finding, not a flourish.
+  **Do not flag** deliberate semantic colour-coding as slop: per-section or
+  per-status colour that is decorative (`aria-hidden`) wayfinding, or functional
+  status colour from the Radix scales (COL-2), is intentional design — it is not
+  the SLP-1 "rainbow"/gradient AI tell. Flag *unmotivated* multi-hue decoration,
+  not a deliberate colour system.
 - **Craft** — quality sets the tone (HIG: Craft): is each decision deliberate?
   States designed (empty, loading, error, focus), edge content lengths,
   responsive behavior between the three captured widths.

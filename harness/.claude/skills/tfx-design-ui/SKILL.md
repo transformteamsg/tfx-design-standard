@@ -214,21 +214,46 @@ modal/option dialog in the same turn as the plan, which forces a decision before
 reader has read what they're deciding on. Wait for an explicit typed answer — a vague
 "continue" is not plan sign-off; confirm what they are approving. (Option dialogs are
 fine for the Phase 2 pick, where the options are short enough to read inside the
-dialog itself.) In an **unattended run** with no human reachable, proxy approval is
+dialog itself.)
+
+At the Phase 2 option pick and at continuation/verify gates, a structured
+**Approve / Adjust** question is preferred over free text. Never use an option
+dialog in the *same turn* as the Phase 3 plan (the reader must read the plan
+first) — there, the plan goes in the message body and the ask is plain text at
+the end, as above.
+
+In an **unattended run** with no human reachable, proxy approval is
 permitted only when the operator authorized it up front — record it verbatim as
 "approved by operator proxy — unattended run" in the decision record, never as if a
-human approved. On a team with no
-dedicated designer, this gate (and the verify gate) is reviewed async by a portfolio
-designer — route the plan to them rather than treating the gate as optional. Write
-the approved plan to a decision record (`docs/decisions/<page>.md`, template in
-`docs/decisions/TEMPLATE.md`) before implementing: the approved plan is the artifact
-the verify phase grades against, so it must be fixed, not whatever you last proposed.
-Any L1 waiver granted here records its named approver in that file.
+human approved.
+
+Proxy approval is not a substitute for review. In an unattended run, still emit a
+**compact, reviewable plan + intended-diff summary** for async sign-off: the files
+to be touched, the specific visual/structural changes, and — explicitly — what is
+being **preserved**. Route it to the async reviewer (the portfolio designer) and
+record that it was sent; do not treat "operator proxy" as equivalent to a human
+having read the diff.
+
+On a team with no dedicated designer, this gate (and the verify gate) is reviewed
+async by a portfolio designer — route the plan to them rather than treating the gate
+as optional. Write the approved plan to a decision record (`docs/decisions/<page>.md`,
+template in `docs/decisions/TEMPLATE.md`) before implementing: the approved plan is
+the artifact the verify phase grades against, so it must be fixed, not whatever you
+last proposed. Any L1 waiver granted here records its named approver in that file.
 
 ## Phase 4 — Implement
 
 Build exactly the approved plan. Constraints, non-negotiable:
 
+- **Conservative, reversible defaults — do not restyle what is already
+  deliberate.** Established iconography, corner radius, layout structure, and
+  settled copy are presumed intentional: do not change them as a side effect of a
+  scoped task. If a change to one is genuinely warranted, flag it explicitly as a
+  *proposed* change with its rationale and a one-line revert note in the plan/diff
+  summary — never silently. Default to the smallest reversible change that meets
+  the contract. (Example: per-section semantic colour-coded icons that are
+  decorative `aria-hidden` wayfinding are **not** SLP-1 "rainbow slop" — preserve
+  them; neutralising them is a restyle to flag, not a default.)
 - Compose only manifest components (CMP-1); semantic shadcn tokens only — no raw
   colour, off-scale spacing, or off-scale radii (TOK-1..3); Plus Jakarta Sans /
   Inter only, on-scale sizes (TYP-1..3).
