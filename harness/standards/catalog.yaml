@@ -322,7 +322,7 @@ controls:
     check: hybrid
     phase: [plan, implement, verify]
     applies_to: [page, component]
-    verify: "Component usage diffed against the product manifest; evaluator judges 'exists for the need' edge cases"
+    verify: "Component usage diffed against the product manifest; evaluator judges 'exists for the need' edge cases; record carries one of the three fixed CMP-1 verdict forms (see controls/cmp-1.md)"
     waiver: documented
     fails_when:
       - custom dropdown/dialog/tooltip where the stack provides one

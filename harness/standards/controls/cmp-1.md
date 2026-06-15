@@ -6,7 +6,7 @@ tier: L1
 check: hybrid
 phase: [plan, implement, verify]
 applies_to: [page, component]
-verify: "Component usage diffed against the product manifest; evaluator judges 'exists for the need' edge cases"
+verify: "Component usage diffed against the product manifest; evaluator judges 'exists for the need' edge cases; record carries one of the three fixed CMP-1 verdict forms (see controls/cmp-1.md)"
 waiver: documented
 refs:
   - https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb
@@ -72,12 +72,22 @@ the need" edge cases described below.
 - A one-off that carries `tfx-waive CMP-1` with a named approver — the waiver
   process worked; record the waiver is present, do not re-flag the deviation.
 
+**CMP-1 verdict vocabulary.** Any record that lists CMP-1 in scope must carry
+**exactly one** of these three fixed forms in its Verify verdict section:
+
+- `CMP-1: verified against .tfx/component-manifest.json (generated: <date>, coverage: <complete|partial>)`
+- `CMP-1: asserted, no manifest — manifest absent for <product>`
+- `CMP-1: waived — tfx-waive CMP-1 reason="..."`
+
+Zero forms → `audit-record.py` reports an error; two or more forms → error. This is
+machine-checkable via `audit-record.py`; a paraphrase fails the check.
+
 **v0 limit — manifest not yet wired.** Without a component manifest, "exists for the
-need" cannot be asserted mechanically. The evaluator must state in its verdict which
-of these it used: (a) reviewed the product codebase directly, (b) the agent asserted
-the component exists and the evaluator accepted the assertion, or (c) the evaluator
-applied general knowledge of the Base UI / shadcn catalog. Label the evidence source
-so the verdict is auditable.
+need" cannot be asserted mechanically. When using the "asserted, no manifest" form,
+state which of these evidence sources was used: (a) reviewed the product codebase
+directly, (b) the agent asserted the component exists and the evaluator accepted the
+assertion, or (c) the evaluator applied general knowledge of the Base UI / shadcn
+catalog. Label the evidence source so the verdict is auditable.
 
 ## Waiver
 

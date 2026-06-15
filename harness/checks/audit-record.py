@@ -213,6 +213,30 @@ def audit_record(text, name, repo_root):
             "'no proposal — nothing uncovered' text"
         )
 
+    # ── 9. CMP-1 verdict vocabulary (if CMP-1 in scope) ───────────────────
+    controls_section = find_section(sections, "Controls in scope")
+    if controls_section is not None and "CMP-1" in controls_section:
+        verdict_section = find_section(sections, "Verify verdict")
+        if verdict_section is not None:
+            cmp1_forms = [
+                "CMP-1: verified against .tfx/component-manifest.json",
+                "CMP-1: asserted, no manifest",
+                "CMP-1: waived — tfx-waive CMP-1",
+            ]
+            found_forms = [f for f in cmp1_forms if f in verdict_section]
+            if len(found_forms) == 0:
+                messages.append(
+                    "record claims CMP-1 but carries no CMP-1 verdict line — "
+                    "use one of the three fixed forms: "
+                    "'CMP-1: verified against .tfx/component-manifest.json (…)', "
+                    "'CMP-1: asserted, no manifest — manifest absent for <product>', "
+                    "or 'CMP-1: waived — tfx-waive CMP-1 reason=\"...\"'"
+                )
+            elif len(found_forms) > 1:
+                messages.append(
+                    "record carries multiple CMP-1 verdict forms — exactly one allowed"
+                )
+
     return messages
 
 
@@ -469,6 +493,28 @@ def run_self_test():
             "ratchet: no proposal — nothing uncovered\n", ""
         ),
         "Ratchet section is empty",
+    )
+
+    # Case 15 (assertion 9): CMP-1 in scope, has valid verdict form — passes
+    assert_passes(
+        "CMP-1 in scope with valid verdict form",
+        PASSING_RECORD.replace(
+            "A11Y-1, A11Y-2, TOK-1, CMP-3.",
+            "A11Y-1, A11Y-2, TOK-1, CMP-3, CMP-1.",
+        ).replace(
+            "VERDICT: pass",
+            "CMP-1: asserted, no manifest — manifest absent for TW\n\nVERDICT: pass",
+        ),
+    )
+
+    # Case 16 (assertion 9): CMP-1 in scope but no CMP-1 verdict form — fails
+    assert_fails(
+        "CMP-1 in scope but no verdict form",
+        PASSING_RECORD.replace(
+            "A11Y-1, A11Y-2, TOK-1, CMP-3.",
+            "A11Y-1, A11Y-2, TOK-1, CMP-3, CMP-1.",
+        ),
+        "carries no CMP-1 verdict line",
     )
 
     if failures:
