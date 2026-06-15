@@ -1,5 +1,5 @@
 # TFX Design Standard — control catalog (single source of truth)
-# Normative source: TFX Design Standard (TFX-DS) v0.1 §3.5 seed catalog.
+# Normative source: TFX Design Standard (TFX-DS) v0.1 seed catalog.
 # Consumers: the design harness (agent enforcement — this repo's skills/checks)
 # and the TFX-DS website (human presentation — renders and serves this file raw).
 # Format: standards/README.md. Detail files: standards/controls/<id>.md
