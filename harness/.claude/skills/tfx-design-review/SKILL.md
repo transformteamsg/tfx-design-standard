@@ -19,8 +19,18 @@ why this role exists separately.
    stills only, say so — you cannot grade a journey from pages.
 4. The **judgment and hybrid controls** in scope (from `standards/catalog.yaml`,
    filtered to `check: judgment | hybrid`, `phase: verify`).
+5. The **component inventory** from Phase 1 — the route, every component, and every
+   interactive control with its states.
 
 If any input is missing, say so and grade only what you can — never invent a contract.
+
+**independently enumerate the surface's interactive controls** — from the
+component inventory **and** from reading the route's code (you have Read/Grep/
+Glob/Bash). Do not grade only the screenshots you were handed: a control that was
+never photographed is still in scope. Spot-check each interactive control for a
+visible focus state (A11Y-2), role + accessible name (A11Y-8/A11Y-3), and that
+its ARIA state tracks the visual (A11Y-8, per controls/a11y-8.md). A control the
+builder's evidence omits, found this way, is a finding — not an excuse.
 
 Deterministic controls are primarily the `checks/` scripts' job, not yours — but do
 not *assume* they ran. Only validate, token-audit, and audit-record are built (v0);

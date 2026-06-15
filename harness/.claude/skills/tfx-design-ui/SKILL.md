@@ -155,6 +155,14 @@ Establish, asking the user only what you cannot infer:
 4. **Done-criteria**: write a short sprint contract — the 3–6 statements the evaluator
    will later grade against. Include the `intent`-phase controls (CNT-2 naming applies
    here: name the feature in plain language now, before a placeholder name spreads).
+5. **Component inventory**: list the surface as a coverage checklist — the route,
+   every component it renders (by import name), and every **interactive control**
+   on it (buttons, inputs, dropdowns/combobox, toggles, tabs, links, menus). For
+   each interactive control, name the states to exercise later: open, keyboard-tab
+   (focus visible?), screen-read (role + accessible name + state?). This is the
+   list Phase 5 checks off and the evaluator independently verifies — coverage is
+   a provable checklist, not a vibe. (For an existing surface, build this during
+   "Existing surfaces: critique before you polish".)
 
 Output: the sprint contract, shown to the user.
 
@@ -305,11 +313,16 @@ Run in this order; do not present output to the user while a step is failing:
    proven fallback. If capture still keeps failing after a reasonable retry,
    **ask the user to provide the screenshot** — any source is fine; the evidence
    set is not optional, and unverified work is never presented as verified.
+   - **Inventory checkoff**: walk the Phase-1 component inventory and tick each
+     interactive control as operated — tab to it (focus visible per A11Y-2),
+     activate by keyboard, confirm role + accessible name + state (A11Y-8/A11Y-3).
+     Run `checks/a11y-static` (if built) as the static pre-pass, then operate what
+     a static scan can't see. An un-operated control is uncovered, not clean.
 3. **Evaluator review** — spawn the `tfx-design-evaluator` subagent (a genuinely separate
    agent — do not write the verdict yourself) with: the sprint contract, the approved
-   plan, the screenshots, the judgment/hybrid controls in scope, **and the absolute
-   path to the harness's `standards/` directory** (the evaluator cannot resolve it
-   from the product cwd). **If you cannot spawn subagents** (you are yourself a
+   plan, the screenshots, the component inventory from Phase 1, the judgment/hybrid
+   controls in scope, **and the absolute path to the harness's `standards/` directory**
+   (the evaluator cannot resolve it from the product cwd). **If you cannot spawn subagents** (you are yourself a
    subagent, or running unattended), stop at this step and report — the proven
    pattern is *orchestrator dispatch*: whoever orchestrates you spawns the evaluator
    and routes its verdict back to you. Never write the verdict yourself, and never

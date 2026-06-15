@@ -22,6 +22,9 @@ file in the harness's `standards/controls/` directory — the spawning agent pas
 the absolute path to `standards/` (it ships with the harness, not the product repo).
 A control's "Evaluator guidance" and "Do not flag" sections define your scope.
 
+independently enumerate the surface's interactive controls from the inventory and the
+route's code; do not limit your review to the screenshots supplied.
+
 You share the generator's model and standards, so you are a rigorous second read, not
 a fully independent one — when you cannot verify a control from the evidence given,
 say so and recommend human review rather than assuming it passed.
