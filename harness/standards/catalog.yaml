@@ -225,6 +225,8 @@ controls:
     fails_when:
       - ad-hoc radius values
       - child radius larger than parent (non-concentric nesting)
+      - peer containers of the same kind use different corner radii — anchor to the product's Card/base radius
+    detail: controls/tok-3.md
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
 
   # ── Typography ────────────────────────────────────────────────────────
