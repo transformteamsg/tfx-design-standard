@@ -63,6 +63,28 @@ This loop covers both. Choose the entry depth by change size, never skip the gat
   surface through the modification loop: the "change" is the catalog delta, the
   scoped plan is the audit findings against the new controls only.
 
+### Existing surfaces: critique before you polish
+
+Whenever the surface **already exists** (a modification, a restyle, an
+"improve / polish this", or a catalog re-audit), do not propose changes before
+you have seen and judged the current state. Before Phase 1's contract:
+
+1. **Capture the current page.** Take a screenshot of the live surface at 1280
+   (and 360 if the change is responsive). Capture mechanism: use Claude-in-Chrome
+   by default, or the user's installed browser agent of choice; the local
+   Playwright fallback from Phase 5 applies. **If capture keeps failing, ask the
+   user to provide the screenshot** — never critique a page you cannot see, and
+   never fabricate what it looks like.
+2. **Write a short design critique of what is there** — against the in-scope
+   catalog controls *and* Kind Utility: what works and should be preserved
+   (call out established iconography, radius, layout, and copy that are
+   deliberate — do not "fix" them, cf. the conservative-defaults rule in
+   Phase 3/4), and what genuinely underperforms (control violations, hierarchy,
+   friction in the teacher's task). Ground each point in the screenshot.
+3. The critique's "what underperforms" list **is** the scope of the polish; it
+   feeds the Phase 1 contract and the Phase 3 plan. Improvement is the goal —
+   the critique keeps it targeted instead of a blanket restyle.
+
 ## A flow is not a stack of pages
 
 The page is the unit of evidence, but the design is the journey. When the surface is
@@ -110,6 +132,10 @@ failure this note exists to prevent.
 ## Phase 1 — Intent (sprint contract)
 
 Establish, asking the user only what you cannot infer:
+
+> For an **existing** surface, run "Existing surfaces: critique before you polish"
+> (above) before writing the contract — the contract's done-criteria should target the
+> critique's findings, not a blanket redesign. ("Critique the current state first".)
 
 1. **Purpose**: what must the teacher accomplish on this page? One sentence. Apply
    the one test: *does this help teachers work faster with less stress?* If not,
@@ -272,10 +298,13 @@ Run in this order; do not present output to the user while a step is failing:
      mid-flow and resume. Per-step screenshots that never demonstrate a traversal
      are page evidence, not flow evidence.
    Check each frame's *actual* rendered viewport before naming it — a screenshot
-   named `768-*.png` taken at a stale viewport is mislabeled evidence. If your
-   screenshot tool misbehaves (the agent-browser daemon has intermittently returned
-   "os error 35" in past runs), a local Playwright script is the proven fallback —
-   any tool is fine; the evidence set is not optional.
+   named `768-*.png` taken at a stale viewport is mislabeled evidence.
+   Capture mechanism: **use Claude-in-Chrome by default, or the user's installed
+   browser agent of choice**. If the agent-browser daemon misbehaves (it has
+   intermittently returned "os error 35"), a local Playwright script is the
+   proven fallback. If capture still keeps failing after a reasonable retry,
+   **ask the user to provide the screenshot** — any source is fine; the evidence
+   set is not optional, and unverified work is never presented as verified.
 3. **Evaluator review** — spawn the `tfx-design-evaluator` subagent (a genuinely separate
    agent — do not write the verdict yourself) with: the sprint contract, the approved
    plan, the screenshots, the judgment/hybrid controls in scope, **and the absolute
