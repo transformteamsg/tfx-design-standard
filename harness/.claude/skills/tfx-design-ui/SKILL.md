@@ -85,12 +85,25 @@ just each screen:
 
 ## v0 reality — what actually runs today
 
-The deterministic check scripts in `checks/` are **not built yet** (see
-`checks/README.md`), and no product component manifest is wired in. Until they exist,
-the verify phase below runs **manual** checks, not scripts, and you must say so. Never
-report a `checks/`-backed control as "passed" when no script ran — report it as
-"verified manually" or "could not verify mechanically", and list what a human should
-re-check. Overstating enforcement is the failure this note exists to prevent.
+Most deterministic check scripts in `checks/` are **not built yet** (see
+`checks/README.md`), and no product component manifest is wired in. The scripts that
+ARE built:
+
+- `checks/validate.py` — catalog schema validation.
+- `checks/token-audit.py` — TOK-1..3, COL-1..2 (raw colour, off-scale spacing/radius).
+- `checks/audit-record.py` — decision-record process compliance.
+- `checks/a11y-static.py` — **static subset** of A11Y-2/3/8: focus-visible removal
+  (FOCUS), click handlers on non-focusable elements (KBD), and icon-only buttons
+  without an accessible name (NAME). Run it with
+  `python3 checks/a11y-static.py <path>...`. This does NOT cover traversal order,
+  computed hit-area, contrast, or ARIA state tracking — those still require a
+  rendered DOM and run as the manual accessibility pass below.
+
+Until the remaining scripts exist, the verify phase runs **manual** checks for
+everything else, and you must say so. Never report a `checks/`-backed control as
+"passed" when no script ran — report it as "verified manually" or "could not verify
+mechanically", and list what a human should re-check. Overstating enforcement is the
+failure this note exists to prevent.
 
 ## Phase 1 — Intent (sprint contract)
 
@@ -231,10 +244,18 @@ Build exactly the approved plan. Constraints, non-negotiable:
 Run in this order; do not present output to the user while a step is failing:
 
 1. **Deterministic controls** — all L0/L1 `deterministic` controls. Run the
-   `checks/` script and a11y scan **if they exist**; otherwise verify each by hand
-   against its detail file and label it "verified manually" (see the v0 reality note
-   above). For the manual accessibility pass, work through the catalog's A11Y
-   controls in id order — they mirror the GovTech checklist's Essential tier
+   built `checks/` scripts first:
+   - `python3 checks/token-audit.py <path>...` — TOK-1..3, COL-1..2.
+   - `python3 checks/a11y-static.py <path>...` — static subset of A11Y-2/3/8:
+     focus-visible removal, non-focusable click handlers, icon-only unnamed buttons.
+     A11Y-2, A11Y-3, and A11Y-8 are **not fully mechanically verified** by this
+     script — it covers the line-local static subset only. The traversal-order,
+     hit-area, contrast, and ARIA-state halves of A11Y-1..8 still run as the manual
+     pass below.
+   - Everything else: verify by hand against the control's detail file and label it
+     "verified manually" (see the v0 reality note above).
+   For the manual accessibility pass, work through the catalog's A11Y controls in id
+   order — they mirror the GovTech checklist's Essential tier
    (a11y.tech.gov.sg/checklist), which addresses ~96% of common web accessibility
    errors. L0 failure blocks everything; L1 failure sends you back to Phase 4.
 2. **Render and screenshot.** Evidence sets, all that apply required:
