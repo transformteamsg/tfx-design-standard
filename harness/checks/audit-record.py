@@ -216,15 +216,22 @@ def audit_record(text, name, repo_root):
     return messages
 
 
-def audit_file(path):
-    """Audit one record file. Returns list of ERROR lines."""
+def audit_file(path, repo_root=None):
+    """Audit one record file. Returns list of ERROR lines.
+
+    repo_root: the repository root to use for relative-path computation and
+    for resolving referenced docs/ paths.  Defaults to the module-level REPO_ROOT
+    (i.e. the harness repo itself) so existing callers are unaffected.
+    """
+    if repo_root is None:
+        repo_root = REPO_ROOT
     abs_path = os.path.abspath(path)
     if not os.path.isfile(abs_path):
-        candidate = os.path.join(REPO_ROOT, path)
+        candidate = os.path.join(repo_root, path)
         if os.path.isfile(candidate):
             abs_path = candidate
     try:
-        rel = os.path.relpath(abs_path, REPO_ROOT)
+        rel = os.path.relpath(abs_path, repo_root)
         if rel.startswith(".."):
             rel = path
     except ValueError:
@@ -236,16 +243,21 @@ def audit_file(path):
     except OSError as exc:
         return [f"ERROR {rel}: cannot read file — {exc}"]
 
-    return [f"ERROR {rel}: {m}" for m in audit_record(text, rel, REPO_ROOT)]
+    return [f"ERROR {rel}: {m}" for m in audit_record(text, rel, repo_root)]
 
 
-def default_records():
-    """All docs/decisions/*.md except TEMPLATE.md."""
-    if not os.path.isdir(DECISIONS_DIR):
+def default_records(decisions_dir=None):
+    """All docs/decisions/*.md except TEMPLATE.md.
+
+    decisions_dir: override the decisions directory (default: harness DECISIONS_DIR).
+    """
+    if decisions_dir is None:
+        decisions_dir = DECISIONS_DIR
+    if not os.path.isdir(decisions_dir):
         return []
     return sorted(
-        os.path.join(DECISIONS_DIR, f)
-        for f in os.listdir(DECISIONS_DIR)
+        os.path.join(decisions_dir, f)
+        for f in os.listdir(decisions_dir)
         if f.endswith(".md") and f != "TEMPLATE.md"
     )
 
@@ -480,14 +492,27 @@ def main():
         run_self_test()
         return  # run_self_test calls sys.exit
 
-    paths = args if args else default_records()
+    # Parse --repo-root <path> flag (backward-compatible; default = module REPO_ROOT)
+    repo_root = REPO_ROOT
+    filtered_args = []
+    i = 0
+    while i < len(args):
+        if args[i] == "--repo-root" and i + 1 < len(args):
+            repo_root = os.path.abspath(args[i + 1])
+            i += 2
+        else:
+            filtered_args.append(args[i])
+            i += 1
+
+    decisions_dir = os.path.join(repo_root, "docs", "decisions")
+    paths = filtered_args if filtered_args else default_records(decisions_dir)
     if not paths:
         print("ERROR audit-record: no records found in docs/decisions/")
         sys.exit(1)
 
     errors = []
     for path in paths:
-        errors.extend(audit_file(path))
+        errors.extend(audit_file(path, repo_root))
 
     if errors:
         for e in errors:

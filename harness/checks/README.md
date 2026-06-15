@@ -46,6 +46,8 @@ the eval workflow (`evals/README.md`); hook-ready for V1 (PostToolUse on
 
 **Self-test:** `python3 checks/audit-record.py --self-test` → `SELF-TEST OK (14 cases)`.
 
+Pass `--repo-root <path>` to audit a consumer repo's `docs/decisions/` (the default roots at the harness).
+
 ## A11y static scan (built — static subset)
 
 `python3 checks/a11y-static.py <path>...` — scans `.css`, `.html`, `.jsx`, `.tsx`, `.js`, `.ts`, `.vue`, and `.svelte` files for three high-confidence a11y violations that are detectable from source text alone, without a rendered DOM. Accepts files or directories (recursive). Exit 0 silent on pass; exit 1 with `ERROR` lines on failure.

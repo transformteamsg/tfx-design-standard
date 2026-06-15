@@ -236,10 +236,15 @@ having read the diff.
 
 On a team with no dedicated designer, this gate (and the verify gate) is reviewed
 async by a portfolio designer — route the plan to them rather than treating the gate
-as optional. Write the approved plan to a decision record (`docs/decisions/<page>.md`,
-template in `docs/decisions/TEMPLATE.md`) before implementing: the approved plan is
-the artifact the verify phase grades against, so it must be fixed, not whatever you
-last proposed. Any L1 waiver granted here records its named approver in that file.
+as optional. Write the approved plan to a decision record at `docs/decisions/<page>.md` in
+the **product repo**. If `docs/decisions/TEMPLATE.md` does not yet exist there,
+copy it from the plugin first — it ships at
+`<this-skill-dir>/../../../docs/decisions/TEMPLATE.md` (resolved the same way as
+the catalog in the Load-first note, three levels up) — so records conform to
+`audit-record.py` by default. Base the new record on that template. The approved
+plan is the artifact the verify phase grades against, so it must be fixed, not
+whatever you last proposed. Any L1 waiver granted here records its named approver
+in that file.
 
 ## Phase 4 — Implement
 
