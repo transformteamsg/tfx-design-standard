@@ -20,8 +20,8 @@ Follow the two commands in the [README Install section](../README.md#install):
 /plugin install tfx-design-harness@tfx
 ```
 
-This installs the four skills (`design-ui`, `design-standards`, `content-style`,
-`design-review`), the `design-evaluator` subagent, and the control catalog
+This installs the five skills (`design-ui`, `design-standards`, `content-style`,
+`design-review`, `design-onboarding`), the `design-evaluator` subagent, and the control catalog
 (`standards/`) — the catalog ships with the plugin, not with your repo.
 
 If you are working on the harness itself (not a product repo), open a Claude Code
@@ -71,8 +71,8 @@ must be consistent across TW, CaseSync, and Glow.
 
 ## 3. Skills installed
 
-**What it means:** The four TFX skills (`design-ui`, `design-standards`,
-`content-style`, `design-review`) must be active in the product repo's Claude session
+**What it means:** The TFX skills (`design-ui`, `design-standards`,
+`content-style`, `design-review`, `design-onboarding`) must be active in the product repo's Claude session
 for the harness to work. Without them, the agent has no loop structure, no catalog
 filters, and no evaluator procedure to follow.
 

@@ -44,6 +44,7 @@ triggered.
 | Write or review UI copy (only) | `content-style` skill (TFX voice & tone) |
 | Read, filter, apply, or grow the catalog | `design-standards` skill |
 | Grade a finished design | `design-evaluator` subagent (follows `design-review`) |
+| Onboard a new user — learn the skills and the loop | `design-onboarding` skill (guided tour) |
 
 Architecture and roadmap: `README.md`. Control format: `standards/README.md`.
 TFX-DS source: https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb

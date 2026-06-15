@@ -86,7 +86,7 @@ The harness ships as a Claude Code plugin. In your product repo (TW, CaseSync, G
 /plugin install tfx-design-harness@tfx
 ```
 
-This installs the four skills (`design-ui`, `design-standards`, `content-style`, `design-review`), the `design-evaluator` subagent, and the control catalog (`standards/`) — the catalog ships with the plugin, not with your repo.
+This installs the five skills (`design-ui`, `design-standards`, `content-style`, `design-review`, `design-onboarding`), the `design-evaluator` subagent, and the control catalog (`standards/`) — the catalog ships with the plugin, not with your repo.
 
 To work on the harness itself, just open a Claude Code session in this repository: the skills load from `.claude/skills/` automatically; no install step.
 

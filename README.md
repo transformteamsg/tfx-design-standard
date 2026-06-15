@@ -8,23 +8,32 @@ The design standard website for **TransformX** (Teacher & School portfolio, GovT
 
 ## Install the design harness (Claude Code plugin)
 
-The harness — the `design-ui` loop, the control catalog, and the voice & tone and
-evaluator skills — installs as a Claude Code plugin. It ships its own catalog, so the
-skills work in any project, not only this one. (Requires the repo to be public.)
+The harness installs as a [Claude Code](https://code.claude.com/docs) plugin: five
+skills (`design-ui` the loop, `design-standards` catalog mechanics, `content-style`
+voice & tone, `design-review` the evaluator procedure, and `design-onboarding` a guided
+tour), the `design-evaluator` agent, and the control catalog. It ships its own catalog,
+so it works in any repo you open, not only this one.
 
 ```bash
-# add this repo as a plugin marketplace, then install the harness
+# 1. add this repo as a plugin marketplace
 /plugin marketplace add transformteamsg/tfx-design-standard
+
+# 2. install the harness
 /plugin install tfx-design-harness@tfx
 
-# pull the latest controls and skills later
+# 3. later, pull new controls and skills
 /plugin update tfx-design-harness@tfx
 ```
 
+Confirm it loaded with `/plugin` (look for `tfx-design-harness`, enabled). New to it?
+Run `/design-onboarding` (or just say "onboard me") for a guided tour — then ask Claude
+to design or change a page and the `design-ui` loop takes over, enforcing the catalog
+throughout. Rolling it out across a product team? Follow the
+[team onboarding guide](harness/docs/ONBOARDING.md).
+
 Updates ship as versioned releases: `/plugin update` only pulls a new version when
-`version` in `harness/.claude-plugin/plugin.json` is bumped — done as part of the
-catalog ratchet (`harness/CONTRIBUTING.md`), so an unrelated website commit never looks
-like a harness update.
+`version` in `harness/.claude-plugin/plugin.json` is bumped (part of the catalog
+ratchet), so an unrelated website commit never looks like a harness update.
 
 ## Architecture
 
