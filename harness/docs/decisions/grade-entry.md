@@ -139,6 +139,7 @@ No L0 waivers (none are possible). No L2 deviations taken.
 
 ## Verify verdict
 
+- CMP-1: asserted, no manifest — manifest absent for TW
 - **Screenshots:** `docs/loop-run/screenshots/grade-entry/` — width evidence
   `360-default.png`, `768-default.png`, `1280-default.png` (rendered viewport
   widths confirmed 360/768/1280 via image inspection); state evidence at 768:

@@ -89,6 +89,8 @@ no lockup). CMP-2 n/a (no destructive action by design — see Chosen approach).
 
 ## Verify verdict
 
+- CMP-1: asserted, no manifest — manifest absent for TW
+
 ### Deterministic controls
 
 | Control | How verified | Result |

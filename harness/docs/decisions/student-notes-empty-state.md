@@ -105,6 +105,8 @@ Label: "Add a note" — `<Button variant="default">` — T&S Blue background
 
 ## Verify verdict
 
+- CMP-1: asserted, no manifest — manifest absent for Teacher Workspace
+
 **Note on scripts:** `checks/` scripts are not built (v0 reality per SKILL.md). All deterministic controls verified manually against their catalog/detail entries.
 
 Screenshots captured at 360/768/1280 px: `docs/loop-run/screenshots/{360,768,1280}.png`.
