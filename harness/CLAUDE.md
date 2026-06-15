@@ -16,7 +16,8 @@ triggered.
   test: does this help teachers work faster with less stress? If not, don't build it.
 - **The stack is fixed and boring on purpose**: Base UI components, Radix Colors,
   shadcn/ui default tokens. Plus Jakarta Sans (600) display, Inter (400/500/600)
-  body. Teacher & School Blue `#0064FF` for primary actions and brand moments.
+  body. Each product's **own** primary for primary actions and brand moments (TW →
+  T&S Blue `#0064FF`; Glow → orange; CaseSync → indigo; COL-1).
   Semantic tokens only — never raw colour/spacing/radius values (TOK-1..3).
 - **Non-negotiables (L0) that bind even outside the loop**: AA contrast (A11Y-1),
   keyboard reach + visible focus (A11Y-2), visible labels on every field (A11Y-3),

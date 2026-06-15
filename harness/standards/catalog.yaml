@@ -285,16 +285,17 @@ controls:
   # ── Colour ────────────────────────────────────────────────────────────
   - id: COL-1
     source: TFX-DS
-    title: Primary actions and brand moments use Teacher & School Blue #0064FF or its ramp
+    title: Primary actions and brand moments use the product's own primary brand colour (or its ramp)
     tier: L1
     check: deterministic
     phase: [implement, verify]
     applies_to: [page, component]
-    verify: "Primary action / brand-moment colours resolve to T&S Blue or its ramp tokens"
+    verify: "Primary action / brand-moment colours resolve to the active product's primary token or its ramp (see controls/col-1.md for the per-product table)"
     waiver: documented
     fails_when:
-      - primary CTA in a non-primary colour
-      - another product's primary used for emphasis
+      - primary CTA in a colour that is not the product's primary
+      - one product's primary used inside another product's surface
+    detail: controls/col-1.md
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
 
   - id: COL-2

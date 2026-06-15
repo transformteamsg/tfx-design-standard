@@ -33,8 +33,10 @@ protocol.
 
 **The stack** (deliberately boring, AI-legible): Base UI components, Radix Colors
 scales, shadcn/ui default tokens for spacing/radius/type. Plus Jakarta Sans (600) for
-display, Inter (400/500/600) for body/UI. Teacher & School Blue `#0064FF` anchors
-primary actions and brand moments. Build from these by default.
+display, Inter (400/500/600) for body/UI. Each product anchors primary actions and
+brand moments in its **own** primary (Teacher Workspace → Teacher & School Blue
+`#0064FF`; Glow → orange; CaseSync → indigo — see COL-1's detail file for the
+table). Build from these by default.
 
 **Judgment lens.** Where no control decides and Kind Utility alone is too coarse,
 weigh trade-offs against Apple's HIG design principles (Purpose, Agency,
