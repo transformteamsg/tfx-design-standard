@@ -23,6 +23,20 @@ honor its STOP conditions, and update your row when done.
 | 007 | `checks/token-audit` — first deterministic check | P2 | M | 002 | DONE (approved 2026-06-11; branch advisor/007-token-audit; hook wiring deferred per plan) |
 | 008 | Spike: component-manifest format (unblocks CMP-1) | P3 | M | — | DONE (approved 2026-06-11; branch advisor/008-manifest-spike; awaiting design-lead review of 6 open questions) |
 | 009 | Skill eval workflow — routing, record audit, golden tasks, evaluator recall | P2 | L | — | DONE (executed 2026-06-11; branch advisor/009-skill-evals; 3 parallel executors + orchestrator gates; live routing probe passed — design-ui fired headlessly; golden 001 PASS 14 assertions; evaluator-recall run 1 done 2026-06-11 — recall 6/6, 0 invented blockers, see evals/evaluator-recall/RESULTS.md) |
+| 010 | `checks/a11y-static` — focus-visible + role/name static scan | P1 | M | — | DONE (reviewed 2026-06-15; branch `advisor/harness-feedback-plans` @ ade4ced; self-test 14 cases, fixtures pass/fail correct, validate.py OK, scope clean, docs honest) |
+| 011 | token-audit project-token-aware + arbitrary-value scan | P1 | M | — | DONE (reviewed; @ 2e4c82f; self-test 23 cases, theme-allowlist + arbitrary-value logic verified real, `tool-card.tsx` black caught, validate.py OK) |
+| 012 | COL-1 per-product primary (not T&S Blue portfolio-wide) | P1 | S–M | — | DONE (reviewed; @ e7dea84; validate.py 38 OK, col-1.md + per-product table, stray-blue sweep clean) |
+| 013 | Critique existing pages first (screenshot + critique; capture convention) | P1 | S | — | DONE (reviewed; @ ff45318; critique-first + Claude-in-Chrome/ask-user capture, scope = SKILL only) |
+| 014 | Component inventory + evaluator independent spot-check | P1 | M | — | DONE (reviewed; @ 8cb39e6; inventory + "independently enumerate" in review skill + evaluator agent) |
+| 015 | Conservative defaults in autonomous runs + gate questions | P2 | S–M | — | DONE (reviewed; @ 3d64e71; conservative-defaults rule + intended-diff summary + semantic-icon do-not-flag — substance confirmed) |
+| 016 | TOK-3 peer-radius-consistency clause + detail file | P2 | S–M | — | DONE (reviewed; @ c1526aa; peer clause + tok-3.md, validate.py OK; README note landed in 011's commit — benign) |
+| 017 | Ship TEMPLATE.md to consumer repo + audit-record `--repo-root` | P2 | S–M | — | DONE (reviewed; @ 46d3893; --repo-root threaded backward-compatibly, self-test green, plugin-relative TEMPLATE copy in skill) |
+| 018 | Dark-mode N/A determination + proven capture | P2 | S–M | 013 (soft) | DONE (reviewed; @ cf1d6e6; "supported?" gate + N/A wording + review guard + template field) |
+| 019 | Component-manifest impl (Stage A now / Stage B gated) | P3 | L | 017 | DONE Stage A (reviewed; @ 380b931; CMP-1 verdict vocabulary + audit-record assertion, self-test 16). Stage B DONE @ ce962d0 (gate cleared 2026-06-16; component-manifest.py 11-case self-test, import-diff gated on coverage:complete, CEM prior-art + package.json pointer in SPEC, Phase 2/4 wired) · record-migration regression fixed @ e4073de (advisor/harness-feedback-fix) |
+| 020 | LAYOUT (`LAY-*`) category spike — propose-only | P3 | L | — | DONE (reviewed; @ bbf6d5a; SPEC.md with 6+ LAY-* proposals + open questions; catalog untouched — propose-only honored) |
+| 021 | Harden vs record-audit-assertion regressions (test over real corpus) | P2 | S | — | DONE @ 01d393e (reviewed; CONTRIBUTING + evals/README; audit-record self-test 16 + real corpus OK) |
+| 022 | Onboarding lists all skills + asks which to run first | P2 | S | — | DONE @ de98091 (reviewed; full 5-skill menu + run-first ask; plugin validate OK) |
+| 023 | LAY ratchet — commit LAY-2 (reflow, WCAG-320) + LAY-4 (measure ≤80ch) to the catalog | P2 | S–M | 020 | DONE @ 7038aa6 (reviewed; LAY category + LAY-2/LAY-4 + 2 detail files + schema.json id_prefixes; validate.py 40; LAY-1/3/5/6/7 + LAY-4 check deferred) |
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJECTED (with one-line rationale)
 
@@ -47,6 +61,32 @@ Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJE
   001 is retroactive over the attendance artifacts — it validates the scoring
   engine with zero new agent runs.
 
+### Batch 2 (010–020) — added 2026-06-15 from the TFX design-harness feedback log
+
+- These stamp commit `a8ca4fa` and use SHA drift checks (not the pre-git
+  excerpt-comparison of 001–009). All eleven are independent and parallel-safe
+  except as noted below. The product surfaces the feedback describes (e.g. the
+  class-selector, `/students`) live in a **separate product repo** (Teacher
+  Workspace) and are out of scope here — these are harness-only changes.
+- **Recommended order**: starter bundle 010, 011, 012, 013 first (highest leverage;
+  012 and 013 are direct user direction) → 014, 015 (provable coverage) → 016, 017,
+  018 (catalog & process polish) → 019, 020 (bigger bets).
+- **Shared-file sequencing (execute one at a time / rebase, don't clobber)**:
+  `.claude/skills/tfx-design-ui/SKILL.md` is edited by 010, 012, 013, 014, 015,
+  017, 018, 019; `.claude/skills/tfx-design-review/SKILL.md` by 014, 015, 018;
+  `standards/catalog.yaml` by 012, 016, 019 (distinct entries — low collision).
+  Each plan's Coordination note lists its overlaps.
+- **017 before 019**: both edit `checks/audit-record.py` — land 017's `--repo-root`
+  flag first, then 019's CMP-1-verdict assertion, so the self-test cases coexist.
+- **017 and 018 both touch `docs/decisions/TEMPLATE.md`** (017 = shipping/portability,
+  018 = one dark-mode field) — sequence or rebase the shared file.
+- **018 soft-depends on 013** (reuses its capture convention; inline it if 013 is
+  not yet landed).
+- **Gated / propose-only**: 019 Stage A ships now; **Stage B is behind a STOP gate**
+  awaiting design-lead sign-off of the component-manifest spike's six answers. 020
+  only *proposes* the LAY category (no catalog commit) — adoption is a later
+  ratchet PR.
+
 ## Findings considered and rejected
 
 - **Tier-waiver mapping duplicated across three files** (standards/README.md,
@@ -68,3 +108,53 @@ Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJE
   other direction — plan 002 declares catalog.yaml the source of truth and
   validates detail frontmatter against it; a generator for 22 entries is
   machinery without a payoff.
+
+### Batch 2 — feedback items deliberately not given their own plan
+
+- **HF-8 class-selector fixes** (invisible focus, hand-rolled combobox, unlabeled
+  search, visual-only selection): product-only and in a **separate product repo**,
+  not a harness change. Its systemic causes are covered by plans 010 (focus/role/
+  name check), 014 (inventory + evaluator enumeration), and 019 (CMP-1 manifest).
+- **HF-1** (token-audit COL-2 false positives): folded into **plan 011**, which
+  supersedes it with the project-token-awareness mechanism.
+- **HF-2** (anti-slop over-applies to semantic icons): folded into **plan 015**
+  (conservative defaults + the evaluator do-not-flag note).
+- **HF-6** (structured gate questions): folded into **plan 015** (step 4).
+- **Process-honesty halves already shipped**: the "say verified manually / don't
+  overstate enforcement" note (HF-9), proxy-approval recording (HF-12), and
+  "flag visible violations belt-and-braces" (HF-16) are already in the skills —
+  plans 010/015/014 target only the genuinely missing halves.
+
+### Post-execution eval (2026-06-15, suite run against `advisor/harness-feedback-all`)
+
+- **score.py self-test** PASS (15 cases). **Evaluator-recall** PASS — recall **6/6**
+  (target ≥5/6), **0** invented blocking findings (target 0); the new evaluator
+  behaviours verified active (independent enumeration of interactive controls per
+  plan 014; "Dark mode — N/A, no `.dark` layer" per plan 018). 014/018 validated.
+- **REGRESSION (plan 019 Stage A):** the new CMP-1 verdict assertion in
+  `audit-record.py` rejects the 3 pre-existing v0 records (attendance, grade-entry,
+  student-notes) — they name CMP-1 but lack a verdict form — which also fails golden
+  001 + 002. Root cause: 019 tightened the check without migrating the existing
+  corpus; its synthetic self-test hid this. **Fix:** add
+  `CMP-1: asserted, no manifest — manifest absent for <product>` to each record's
+  Verify-verdict section (the v0 soft-pass form per the manifest spike's
+  RECOMMENDATIONS), then record-audit + golden 001/002 go green. **Process lesson:**
+  a plan that adds a record-audit assertion must run it over the *real* corpus as a
+  done-criterion, not only the synthetic self-test.
+  - ✅ **RESOLVED** @ e4073de on `advisor/harness-feedback-fix`: the 3 v0 records were
+    migrated to the `CMP-1: asserted, no manifest — manifest absent for <product>`
+    form. Re-ran: record-audit `OK: 3 records`, golden 001 PASS (14), golden 002 PASS
+    (15), validate.py 38 OK, audit-record self-test 16 — green.
+- **Final deliverable branch: `advisor/harness-feedback-fix`** — contains all of
+  010–020 plus the record migration; this is the one to review and merge.
+  (`advisor/harness-feedback-plans` = 010-only and `advisor/harness-feedback-all` =
+  010–020 are intermediate stepping-stones, subsumed by `-fix`.)
+  **Update (2026-06-16):** the final branch is now **`advisor/harness-feedback-v2`** —
+  it stacks plans 021, 022, 023 (LAY-2/LAY-4), and 019 Stage B on top of `-fix`.
+  `-fix` is itself now a stepping-stone. Merge `-v2`. (Eval re-checked on `-v2`:
+  validate.py 40 controls, audit-record self-test 16 + 3 real records OK,
+  component-manifest.py self-test 11 — green.)
+- **Golden 003** fails on pre-existing missing artifacts (never-run prospective
+  full-loop task) — not a regression.
+- **Routing** not run: no skill `description:` frontmatter changed (bodies only), so
+  triggering is unaffected (README prescribes a spot-check, not a sweep, for body edits).
