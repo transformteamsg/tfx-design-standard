@@ -67,6 +67,11 @@ PR. Current traps and their origins:
   (SLP-9, 2026-06-12 site-wide writing audit) — `evaluator-recall/planted-copy.md`
   + `expected-findings-copy.yaml`, with precision decoys testing the control's
   Do-not-flag calibration.
+- A record-audit assertion tightened without migrating the existing corpus broke
+  three v0 records (2026-06-15, CMP-1 verdict-vocabulary). The guard is the
+  standing "Record audit — every run" rule plus the CONTRIBUTING "tighten over the
+  real corpus" criterion — run `checks/audit-record.py` (no args) on any PR that
+  changes a record-audit assertion.
 
 ## Deferred
 

@@ -163,3 +163,19 @@ message stating *why* the meaning changed. Any edit that changes normative meani
 (e.g. redefining a tier, changing a waiver protocol, altering the loop gate sequence)
 must be flagged for design-lead review in the PR description, even if it touches only
 documentation.
+
+---
+
+## Tightening a corpus-scanning check
+
+**Tightening a corpus-scanning check.** When a PR adds or tightens an assertion
+in `checks/audit-record.py` (or any `checks/*` that scans an existing corpus —
+records, pages, components), its done-criteria MUST include running it over the
+**real corpus**, not only `--self-test`. A self-test audits synthetic fixtures and
+can stay green while real artifacts fail. Required before merge:
+`python3 checks/audit-record.py` (no args, audits every real record) exits 0, and
+any check that scans product files is run over a real target tree. If the real
+corpus fails the new assertion, either migrate the corpus in the same PR or
+grandfather the assertion explicitly — never ship a check the existing corpus
+cannot pass. (Origin: the 2026-06-15 CMP-1 verdict-vocabulary assertion broke
+three v0 records whose self-test had passed.)
