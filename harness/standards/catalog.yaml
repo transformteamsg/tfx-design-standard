@@ -11,7 +11,7 @@
 
 meta:
   version: "0.1"
-  updated: "2026-06-12"
+  updated: "2026-06-16"
   waiver_syntax: 'tfx-waive <ID> reason="<specific reason>"'
   categories:
     A11Y: Accessibility
@@ -392,15 +392,16 @@ controls:
 
   - id: CNT-3
     source: TFX-DS
-    title: UI copy uses second person and active voice; sentences 25 words or fewer
+    title: Copy leads with its purpose, uses second person and active voice, and keeps sentences to 25 words or fewer
     tier: L2
     check: hybrid
     phase: [implement, verify]
     applies_to: [content]
-    verify: "Lint sentence length; evaluator judges voice and person"
+    verify: "Lint sentence length; evaluator judges voice and person, and that descriptive copy (titles, descriptions, section intros, empty states) leads with its purpose or role before the mechanism"
     waiver: rationale
     fails_when:
       - passive constructions in instructions
+      - a title, description, or intro that opens with the mechanism (the tool, token, or library) instead of what it does for the teacher
     detail: controls/cnt-3.md
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
 

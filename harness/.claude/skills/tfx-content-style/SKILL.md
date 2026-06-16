@@ -43,7 +43,15 @@ stress, or it goes.
 
 - Second person ("you"); the product is "we" sparingly.
 - Active voice: "Save the plan", not "The plan should be saved".
-- Sentences ≤ 25 words. One idea per sentence. Lead with the benefit, not the feature.
+- Sentences ≤ 25 words. One idea per sentence.
+- **Lead with purpose, not mechanism.** Open copy with what it does for the teacher and
+  when to reach for it; the mechanism (the tool, token, library, or data structure)
+  comes after, or in the body. This binds hardest on **descriptive prose** — page
+  titles, descriptions, section intros, empty states, feature blurbs — where it is easy
+  to state the *what* and skip the *why*. A reader should know why a thing exists and
+  when they'd need it from the first line. *"shadcn/ui default token scales, unmodified"
+  → "Consistent spacing is what makes a screen feel calm instead of busy. One shared
+  scale."* (CNT-3)
 - Choose exactly the words needed to convey a concept or label a control — the
   simplest way to say something is usually the most universal.
 - Avoid ed-tech jargon unless it's universal among teachers.
