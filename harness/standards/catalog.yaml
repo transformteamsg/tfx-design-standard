@@ -23,6 +23,7 @@ meta:
     MOT: Motion
     IDN: Identity
     SLP: Anti-slop
+    LAY: Layout
 
 controls:
   # ── Accessibility (WCAG 2.2 AA — self-imposed floor) ──────────────────
@@ -569,3 +570,34 @@ controls:
       - modal with its own scrollbar and column layout
     detail: controls/slp-10.md
     refs: [https://github.com/transformteamsg/tfx-design-standard]
+
+  # ── Layout (LAY) ──────────────────────────────────────────────────────
+  - id: LAY-2
+    source: TFX-DS
+    title: Layout reflows to a single column with no loss at 320 CSS px (WCAG 2.2 SC 1.4.10); reading order and controls hold at 360/768/1280
+    tier: L1
+    check: judgment
+    phase: [verify]
+    applies_to: [page]
+    verify: "Evaluator confirms single-column reflow with no two-dimensional scrolling at 320 CSS px (= 1280 at 400% zoom) and a usable reading order at each captured width"
+    waiver: documented
+    fails_when:
+      - content or controls become unreachable or ambiguous at 320 px reflow
+      - reading order reverses or a primary action disappears at the narrowest width
+    detail: controls/lay-2.md
+    refs: [https://www.w3.org/WAI/WCAG21/Understanding/reflow.html]
+
+  - id: LAY-4
+    source: TFX-DS
+    title: "Body-text columns cap at a comfortable measure — target ~66ch, never above 80ch (WCAG 1.4.8); full-bleed running text is a finding"
+    tier: L2
+    check: deterministic
+    phase: [implement, verify]
+    applies_to: [page, component]
+    verify: "Prose/body containers carry a max-width and the measure is <= 80ch (target ~66ch); checks/layout-scan (planned)"
+    waiver: rationale
+    fails_when:
+      - body-text column has no max-width and spans the full viewport at 1280
+      - measure exceeds 80ch
+    detail: controls/lay-4.md
+    refs: [https://www.w3.org/TR/WCAG21/#visual-presentation]

@@ -46,6 +46,11 @@ reference point like SGDS and GOV.UK, never a checkable standard: principles set
 trade-offs; they are not used to "check" work. The phase notes below name the ones
 that recur in this portfolio.
 
+**Layout controls (partial coverage).** Layout now has two checkable controls:
+LAY-2 (reflow at 320 px — WCAG 2.2 SC 1.4.10, L1) and LAY-4 (body-text measure
+≤ 80ch, target ~66ch — L2). The rest of layout — grid systems, information-architecture
+templates, density, alignment — remains HIG + judgment until more LAY controls land.
+
 ## New page vs. modification
 
 This loop covers both. Choose the entry depth by change size, never skip the gates:

@@ -62,6 +62,12 @@ plan was the human-approved artifact.
 "Evaluator guidance" section. Quote the specific text or element you judged. Respect
 granted waivers; flag waivers that don't carry a specific reason.
 
+**Layout grading (partial control coverage).** Two LAY controls are now in the catalog:
+LAY-2 (reflow at 320 CSS px, L1 judgment — see controls/lay-2.md) and LAY-4 (body-text
+measure ≤ 80ch, L2 deterministic with planned `checks/layout-scan` — see controls/lay-4.md).
+Apply both when in scope. Grid, density, IA templates, and alignment remain HIG +
+judgment until further LAY controls land.
+
 **4. Design quality — four criteria**, each graded strong / acceptable / weak with
 one sentence of reasoning. These draw on Apple's HIG design principles as a
 reference lens (a judgment aid, not a checkable standard):
