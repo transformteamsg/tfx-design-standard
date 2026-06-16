@@ -70,13 +70,13 @@ export function Readers({
       style={{ "--ink": "var(--tw-blue)" } as CSSProperties}
     >
       <Reveal>
-        <p className="text-[12.5px] font-semibold uppercase tracking-widest text-tw-blue">
+        <p className="text-[12px] font-semibold uppercase tracking-widest text-tw-blue">
           Human · Human + machine · Machine
         </p>
-        <h2 className="mt-3 max-w-[20ch] font-display text-[30px] font-extrabold leading-[1.1] tracking-tight sm:text-[38px]">
+        <h2 className="mt-3 max-w-[20ch] font-display text-[24px] font-semibold leading-[1.1] tracking-tight sm:text-[32px]">
           {heading}
         </h2>
-        <p className="mt-4 max-w-[58ch] text-[16.5px] leading-relaxed text-muted-foreground">
+        <p className="mt-4 max-w-[58ch] text-[16px] leading-[1.6] text-muted-foreground">
           {lead}
         </p>
       </Reveal>
@@ -96,15 +96,15 @@ export function Readers({
                 <p className="text-[12px] font-semibold uppercase tracking-widest text-muted-foreground">
                   {reader.kicker}
                 </p>
-                <h3 className="mt-2 font-display text-[21px] font-bold tracking-tight">
+                <h3 className="mt-2 font-display text-[20px] font-semibold tracking-tight">
                   {reader.title}
                 </h3>
-                <p className="mt-2 max-w-[62ch] text-[15.5px] leading-relaxed text-muted-foreground">
+                <p className="mt-2 max-w-[62ch] text-[16px] leading-[1.6] text-muted-foreground">
                   {reader.text}
                 </p>
                 <Link
                   href={reader.href}
-                  className="mt-3 inline-block text-[14.5px] font-medium text-tw-blue underline underline-offset-2 hover:text-foreground"
+                  className="mt-3 inline-block text-[14px] font-medium text-tw-blue underline underline-offset-2 hover:text-foreground"
                 >
                   {reader.link}
                 </Link>

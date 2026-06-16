@@ -5,9 +5,9 @@ import clsx from "clsx";
 import type { Control } from "@/lib/catalog";
 
 const tierStyles: Record<string, string> = {
-  L0: "border-red-300 bg-red-50 text-red-700",
-  L1: "border-amber-300 bg-amber-50 text-amber-700",
-  L2: "border-emerald-300 bg-emerald-50 text-emerald-700",
+  L0: "border-danger-muted bg-danger-subtle text-danger",
+  L1: "border-warning-muted bg-warning-subtle text-warning",
+  L2: "border-success-muted bg-success-subtle text-success",
 };
 const tierLabels: Record<string, string> = {
   L0: "L0 · non-negotiable",
@@ -50,8 +50,9 @@ export function CatalogBrowser({ controls }: { controls: Control[] }) {
   }) => (
     <button
       onClick={onClick}
+      aria-pressed={active}
       className={clsx(
-        "rounded-full border px-3 py-1 text-[12.5px] font-medium transition-colors",
+        "rounded-full border px-3 py-1 text-[12px] font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue)",
         active
           ? "border-foreground bg-foreground text-white"
           : "border-border bg-surface text-muted-foreground hover:text-foreground"
@@ -87,7 +88,7 @@ export function CatalogBrowser({ controls }: { controls: Control[] }) {
         ))}
       </div>
 
-      <p className="mt-4 text-[13px] text-muted-foreground">
+      <p className="mt-4 text-[12px] text-muted-foreground">
         {filtered.length} of {controls.length} controls
       </p>
 
@@ -102,7 +103,7 @@ export function CatalogBrowser({ controls }: { controls: Control[] }) {
               <button
                 onClick={() => copy(c.id)}
                 title="Copy control ID"
-                className="rounded-md border border-border bg-zinc-50 px-2 py-0.5 font-mono text-[12.5px] font-semibold hover:border-zinc-400"
+                className="rounded-md border border-border bg-accent px-2 py-0.5 font-mono text-[12px] font-semibold hover:border-border-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue)"
               >
                 {copied === c.id ? "copied ✓" : c.id}
               </button>
@@ -119,10 +120,10 @@ export function CatalogBrowser({ controls }: { controls: Control[] }) {
               </span>
               <span className="text-[11px] text-muted-foreground">{c.category}</span>
             </div>
-            <p className="mt-2 text-[15px] font-medium">{c.statement}</p>
+            <p className="mt-2 text-[16px] font-medium">{c.statement}</p>
             {c.fails_when && (
-              <p className="mt-1.5 text-[13.5px] text-muted-foreground">
-                <span className="font-semibold text-red-700">Fails when:</span>{" "}
+              <p className="mt-1.5 text-[14px] text-muted-foreground">
+                <span className="font-semibold text-danger">Fails when:</span>{" "}
                 {c.fails_when.join(" · ")}
               </p>
             )}

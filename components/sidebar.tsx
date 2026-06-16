@@ -105,7 +105,10 @@ export function Sidebar() {
   if (pathname === "/") return null; // landing page is full-width, no docs chrome
 
   return (
-    <aside className="sticky top-14 hidden h-[calc(100vh-3.5rem)] w-60 shrink-0 overflow-y-auto border-r border-border px-4 py-8 lg:block">
+    <nav
+      aria-label="Documentation"
+      className="sticky top-14 hidden h-[calc(100vh-3.5rem)] w-60 shrink-0 overflow-y-auto border-r border-border px-4 py-8 lg:block"
+    >
       {nav.map((group) => {
         const holdsCurrentPage =
           pathname === group.href ||
@@ -126,7 +129,7 @@ export function Sidebar() {
                     aria-expanded={open}
                     aria-controls={listId}
                     aria-label={`${open ? "Collapse" : "Expand"} ${group.label}`}
-                    className="grid h-7 w-6 place-items-center rounded-md text-muted-foreground hover:text-foreground"
+                    className="grid h-7 w-6 place-items-center rounded-md text-muted-foreground hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue)"
                   >
                     <Chevron open={open} />
                   </button>
@@ -148,7 +151,7 @@ export function Sidebar() {
                   onClick={toggle}
                   aria-expanded={open}
                   aria-controls={listId}
-                  className="flex flex-1 items-center text-left"
+                  className="flex flex-1 items-center rounded-md text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue)"
                 >
                   <span className="grid h-7 w-6 place-items-center text-muted-foreground">
                     <Chevron open={open} />
@@ -171,10 +174,10 @@ export function Sidebar() {
                       href={item.href}
                       tabIndex={open ? undefined : -1}
                       className={clsx(
-                        "ml-6 block rounded-md px-2 py-1.5 text-[13.5px]",
+                        "ml-6 block rounded-md px-2 py-1.5 text-[14px]",
                         pathname === item.href
-                          ? "bg-zinc-100 font-medium text-foreground"
-                          : "text-muted-foreground hover:bg-zinc-50 hover:text-foreground"
+                          ? "bg-muted font-medium text-foreground"
+                          : "text-muted-foreground hover:bg-accent hover:text-foreground"
                       )}
                     >
                       {item.title}
@@ -186,6 +189,6 @@ export function Sidebar() {
           </div>
         );
       })}
-    </aside>
+    </nav>
   );
 }

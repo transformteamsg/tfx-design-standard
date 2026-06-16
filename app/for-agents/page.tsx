@@ -15,19 +15,19 @@ export default function Page() {
       <div className="mt-8 flex flex-wrap gap-3">
         <Link
           href="/llms.txt"
-          className="rounded-lg border border-border bg-surface px-4 py-2.5 text-[14px] font-medium hover:border-zinc-400"
+          className="rounded-lg border border-border bg-surface px-4 py-2.5 text-[14px] font-medium hover:border-border-strong"
         >
           /llms.txt — the whole standard
         </Link>
         <Link
           href="/llms-full.txt"
-          className="rounded-lg border border-border bg-surface px-4 py-2.5 text-[14px] font-medium hover:border-zinc-400"
+          className="rounded-lg border border-border bg-surface px-4 py-2.5 text-[14px] font-medium hover:border-border-strong"
         >
           /llms-full.txt — plus control details
         </Link>
         <a
           href="/standards/catalog.yaml"
-          className="rounded-lg border border-border bg-surface px-4 py-2.5 text-[14px] font-medium hover:border-zinc-400"
+          className="rounded-lg border border-border bg-surface px-4 py-2.5 text-[14px] font-medium hover:border-border-strong"
         >
           catalog.yaml — just the controls
         </a>

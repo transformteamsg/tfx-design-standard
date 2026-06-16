@@ -13,17 +13,17 @@ export default function CatalogPage() {
           section={{ label: "Standards", href: "/standards" }}
           current="Control catalog"
         />
-        <span className="mb-2 inline-block rounded-full border border-amber-300 bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-700">
+        <span className="mb-2 inline-block rounded-full border border-warning-muted bg-warning-subtle px-2 py-0.5 text-[11px] font-medium text-warning">
           ⚑ Proposed seed — v0.1
         </span>
-        <h1 className="font-display text-[36px] font-extrabold tracking-tight">
+        <h1 className="font-display text-[32px] font-semibold tracking-tight">
           Control catalog
         </h1>
-        <p className="mt-3 text-[17px] leading-relaxed text-muted-foreground">
+        <p className="mt-3 text-[18px] leading-[1.6] text-muted-foreground">
           Every control in the standard — one verifiable statement each, with its tier, fail
           conditions, and how it&apos;s checked. Cite IDs in review; agents read the same list.
         </p>
-        <p className="mt-3 text-[15px] text-muted-foreground">
+        <p className="mt-3 text-[16px] text-muted-foreground">
           Machine-readable source:{" "}
           <a
             className="text-tw-blue underline underline-offset-2"

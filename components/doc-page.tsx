@@ -43,18 +43,18 @@ export function DocPage({ doc, children }: { doc: Doc; children?: ReactNode }) {
       <div className="min-w-0 max-w-[720px] flex-1">
         {crumb && <Breadcrumb section={crumb} current={doc.title} />}
         {doc.status === "proposed" && (
-          <span className="mb-2 inline-block rounded-full border border-amber-300 bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-700">
+          <span className="mb-2 inline-block rounded-full border border-warning-muted bg-warning-subtle px-2 py-0.5 text-[11px] font-medium text-warning">
             ⚑ Proposed — react, don&apos;t obey
           </span>
         )}
         {doc.status === "settled" && (
-          <span className="mb-2 inline-block rounded-full border border-emerald-300 bg-emerald-50 px-2 py-0.5 text-[11px] font-medium text-emerald-700">
+          <span className="mb-2 inline-block rounded-full border border-success-muted bg-success-subtle px-2 py-0.5 text-[11px] font-medium text-success">
             Settled
           </span>
         )}
-        <h1 className="font-display text-[36px] font-extrabold tracking-tight">{doc.title}</h1>
+        <h1 className="font-display text-[32px] font-semibold tracking-tight">{doc.title}</h1>
         {doc.description && (
-          <p className="mt-3 text-[17px] leading-relaxed text-muted-foreground">
+          <p className="mt-3 text-[18px] leading-[1.6] text-muted-foreground">
             {doc.description}
           </p>
         )}

@@ -20,12 +20,12 @@ export function SectionIndex({ sectionKey }: { sectionKey: string }) {
           Answers: {doc.answers}
         </p>
       )}
-      <h1 className="mt-3 font-display text-[36px] font-extrabold tracking-tight">{doc.title}</h1>
+      <h1 className="mt-3 font-display text-[32px] font-semibold tracking-tight">{doc.title}</h1>
       {doc.description && (
-        <p className="mt-3 text-[17px] leading-relaxed text-muted-foreground">{doc.description}</p>
+        <p className="mt-3 text-[18px] leading-[1.6] text-muted-foreground">{doc.description}</p>
       )}
       {doc.content.trim() && (
-        <div className="prose mt-4 text-[15px]">
+        <div className="prose mt-4 text-[16px]">
           <MDXRemote source={doc.content} />
         </div>
       )}

@@ -59,7 +59,7 @@ function productMark(artKey: string, letter: string, fontSize: number, y: number
         textAnchor="middle"
         fontFamily="var(--font-display)"
         fontSize={fontSize}
-        fontWeight="700"
+        fontWeight="600"
         fill="var(--ink)"
         stroke="none"
       >
@@ -120,7 +120,7 @@ export function TopicCard({ topic }: { topic: Topic }) {
       <Thumb ink={topic.ink} art={topicArt[topic.artKey]} />
       <p className="mt-2.5 text-[14px] font-semibold leading-snug">{topic.title}</p>
       {topic.description && (
-        <p className="mt-1 line-clamp-2 text-[12.5px] leading-snug text-muted-foreground">
+        <p className="mt-1 line-clamp-2 text-[12px] leading-snug text-muted-foreground">
           {topic.description}
         </p>
       )}
@@ -137,7 +137,7 @@ export function SectionTile({ topic, tag, count }: { topic: Topic; tag?: string;
     >
       <Thumb ink={topic.ink} art={topicArt[topic.artKey]} />
       <div className="mt-3 flex items-baseline justify-between gap-3">
-        <p className="font-display text-[17px] font-bold leading-snug">{topic.title}</p>
+        <p className="font-display text-[18px] font-semibold leading-snug">{topic.title}</p>
         {tag && (
           <span className="shrink-0 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
             {tag}
@@ -145,10 +145,10 @@ export function SectionTile({ topic, tag, count }: { topic: Topic; tag?: string;
         )}
       </div>
       {topic.description && (
-        <p className="mt-1 text-[13.5px] leading-snug text-muted-foreground">{topic.description}</p>
+        <p className="mt-1 text-[14px] leading-snug text-muted-foreground">{topic.description}</p>
       )}
       {count !== undefined && (
-        <p className="mt-1.5 text-[12.5px] text-muted-foreground">
+        <p className="mt-1.5 text-[12px] text-muted-foreground">
           {count} {count === 1 ? "page" : "pages"}
         </p>
       )}
@@ -169,7 +169,7 @@ export function TopicRow({ topic }: { topic: Topic }) {
       <div>
         <p className="text-[14px] font-semibold leading-snug">{topic.title}</p>
         {topic.description && (
-          <p className="mt-1 text-[12.5px] leading-snug text-muted-foreground">
+          <p className="mt-1 text-[12px] leading-snug text-muted-foreground">
             {topic.description}
           </p>
         )}

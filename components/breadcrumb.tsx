@@ -9,7 +9,7 @@ export function Breadcrumb({
   current: string;
 }) {
   return (
-    <nav aria-label="Breadcrumb" className="mb-3 flex items-center gap-1.5 text-[13px]">
+    <nav aria-label="Breadcrumb" className="mb-3 flex items-center gap-1.5 text-[12px]">
       <Link
         href={section.href}
         className="font-medium text-tw-blue underline-offset-2 hover:underline"
