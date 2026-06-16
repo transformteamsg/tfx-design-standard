@@ -14,13 +14,29 @@ You are a guide, not the loop and not the grader. Real design work belongs to
 
 ## Run it in order — one step at a time, wait for the reply
 
-**1. Place them.** Ask one question: are they here to (a) design or change a page now,
-(b) understand how the harness works first, or (c) set up a product repo to use it?
+**1. Show the menu, then place them.** First show what the harness offers, then
+ask which they want to run first — most first-timers pick `tfx-design-ui` and
+learn by doing.
 
-- (a) → go straight to step 3.
-- (b) → give the short orientation in step 2, then step 3.
-- (c) → wrong tool: point them to the team onboarding guide (`../../../docs/ONBOARDING.md`,
-  relative to this SKILL.md) and stop.
+The harness skills:
+
+- **tfx-design-ui** — design or change a page, screen, form, flow, or component
+  (the full loop). The usual starting point.
+- **tfx-content-style** — write or review UI copy only (voice & tone, error
+  messages, naming, anti-AI-writing). Enough on its own for copy-only edits.
+- **tfx-design-standards** — read, filter, apply, or grow the control catalog;
+  waiver questions (can I waive this? who approves?).
+- **tfx-design-onboarding** — this guided tour (you're in it).
+- **tfx-design-evaluator** — the grader (an agent, not a skill you run); the loop
+  spawns it at the verify phase to review a finished design.
+
+Then ask one question — which would they like to run first? Route the answer:
+- "design or change a page" / picks `tfx-design-ui` → go to step 3.
+- "understand the harness first" → give the step-2 orientation, then step 3.
+- "write/review copy" → hand off to `tfx-content-style` and stop.
+- "catalog / waiver question" → hand off to `tfx-design-standards` and stop.
+- "set up a product repo" → wrong tool: point to the team onboarding guide
+  (`../../../docs/ONBOARDING.md`, relative to this SKILL.md) and stop.
 
 **2. Orientation — the gist, not the manual.** A few lines only; for depth, point to the
 canonical source rather than reproducing it here (reproduced text drifts):
