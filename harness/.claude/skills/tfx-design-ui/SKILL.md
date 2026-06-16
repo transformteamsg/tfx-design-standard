@@ -115,8 +115,7 @@ just each screen:
 ## v0 reality — what actually runs today
 
 Most deterministic check scripts in `checks/` are **not built yet** (see
-`checks/README.md`), and no product component manifest is wired in. The scripts that
-ARE built:
+`checks/README.md`). The scripts that ARE built:
 
 - `checks/validate.py` — catalog schema validation.
 - `checks/token-audit.py` — TOK-1..3, COL-1..2 (raw colour, off-scale spacing/radius).
@@ -127,6 +126,10 @@ ARE built:
   `python3 checks/a11y-static.py <path>...`. This does NOT cover traversal order,
   computed hit-area, contrast, or ARIA state tracking — those still require a
   rendered DOM and run as the manual accessibility pass below.
+- `checks/component-manifest.py` — validates `.tfx/component-manifest.json`; runs
+  the CMP-1 import-diff **only when `coverage: "complete"`** (partial manifest → diff
+  stays off, reports "partial manifest — diff not run"). Run with
+  `python3 checks/component-manifest.py <manifest.json> [<source-root>]`.
 
 Until the remaining scripts exist, the verify phase runs **manual** checks for
 everything else, and you must say so. Never report a `checks/`-backed control as
@@ -175,8 +178,11 @@ Output: the sprint contract, shown to the user.
 
 Produce 2–3 structurally different options. **No pixel code.** For each option:
 layout structure, which existing components it composes, how the flow splits across
-steps, and one sentence on the trade-off. Use the product's component manifest —
-options may only compose components that exist (CMP-1 applies from here on).
+steps, and one sentence on the trade-off. Use the product's component manifest
+(`.tfx/component-manifest.json`, filtered to `status: "stable"` entries) —
+options may only compose components that exist in the manifest (CMP-1 applies from
+here on). If the product has no manifest yet, fall back to the v0-limit procedure
+in `standards/controls/cmp-1.md` and note "asserted, no manifest".
 Progressive disclosure is the default pattern: show the core path, reveal complexity
 on demand. Two anti-slop controls bind at this altitude: a complex multi-section
 task gets a page, never a modal (SLP-10) — if an option puts tabs, columns, or its
@@ -264,7 +270,8 @@ Build exactly the approved plan. Constraints, non-negotiable:
   the contract. (Example: per-section semantic colour-coded icons that are
   decorative `aria-hidden` wayfinding are **not** SLP-1 "rainbow slop" — preserve
   them; neutralising them is a restyle to flag, not a default.)
-- Compose only manifest components (CMP-1); semantic shadcn tokens only — no raw
+- Compose only manifest components (`status: "stable"` from `.tfx/component-manifest.json`
+  if the product has one; CMP-1); semantic shadcn tokens only — no raw
   colour, off-scale spacing, or off-scale radii (TOK-1..3); Plus Jakarta Sans /
   Inter only, on-scale sizes (TYP-1..3).
 - Visible label on every field (A11Y-3); keyboard reach + focus states (A11Y-2);

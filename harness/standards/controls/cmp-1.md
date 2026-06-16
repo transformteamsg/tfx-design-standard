@@ -82,12 +82,20 @@ the need" edge cases described below.
 Zero forms → `audit-record.py` reports an error; two or more forms → error. This is
 machine-checkable via `audit-record.py`; a paraphrase fails the check.
 
-**v0 limit — manifest not yet wired.** Without a component manifest, "exists for the
-need" cannot be asserted mechanically. When using the "asserted, no manifest" form,
-state which of these evidence sources was used: (a) reviewed the product codebase
-directly, (b) the agent asserted the component exists and the evaluator accepted the
+**Products with a manifest.** For a product that has adopted `.tfx/component-manifest.json`,
+the evaluator uses the "verified against …" verdict form — stating the `generated` date
+and `coverage` level — and the three-surrogate fallback is retired for that product:
+the manifest is the evidence source. Run `checks/component-manifest.py <manifest.json>`
+to validate the manifest; when `coverage: "complete"` the import-diff activates
+automatically. When `coverage: "partial"`, the diff stays off and the verdict reads
+"verified against partial manifest (generated: <date>) — diff not run".
+
+**Absent a manifest.** When no manifest exists for the product, use the "asserted, no manifest"
+verdict form and state which of these evidence sources was used: (a) reviewed the product
+codebase directly, (b) the agent asserted the component exists and the evaluator accepted the
 assertion, or (c) the evaluator applied general knowledge of the Base UI / shadcn
-catalog. Label the evidence source so the verdict is auditable.
+catalog. Label the evidence source so the verdict is auditable. This soft-pass remains
+available indefinitely for products that have not yet authored a manifest.
 
 ## Waiver
 

@@ -1,6 +1,6 @@
-# Component Manifest Format — Spike Spec
-**Status:** spike / under design-lead review  
-**Date:** 2026-06-11  
+# Component Manifest Format — Spec
+**Status:** accepted — design-lead approved 2026-06-16 (plan 019 Stage B)  
+**Date:** 2026-06-11 (accepted 2026-06-16)  
 **Author:** design-harness advisor (plan 008)
 
 ---
@@ -55,8 +55,19 @@ question (see §6).
 | `product` | string | yes | Product slug: `teacher-workspace`, `casesync`, `glow` |
 | `generated` | string (ISO 8601 date) | yes | Date manifest was last edited (`YYYY-MM-DD`) |
 | `source` | `"hand-maintained"` \| `"generated"` | yes | Maintenance mode; see §4 |
+| `coverage` | `"complete"` \| `"partial"` | no (default `"partial"`) | Declares whether the manifest covers all product components. `"complete"` activates the CMP-1 import-diff (see §3); `"partial"` keeps the diff **off** and the evaluator verdict reads "verified against partial manifest (generated: &lt;date&gt;) — diff not run". Default `"partial"` is intentionally conservative — a team that omits this field never accidentally activates the import-diff. |
 | `components` | array of Component objects | yes | Non-empty |
 | `_note` | string | no | Human-readable disclaimer or context — not consumed by tooling |
+
+**Discoverability pointer.** The manifest path is referenced from the product repo's `package.json` via a `tfxComponentManifest` field (mirroring the Custom Elements Manifest community convention of `customElements` in `package.json`), so tooling can locate the manifest without hard-coding `.tfx/`:
+
+```json
+{
+  "tfxComponentManifest": ".tfx/component-manifest.json"
+}
+```
+
+This field is optional and informational — the harness checks the `.tfx/` path directly — but it makes the manifest discoverable to third-party tooling and signals the product's adoption of the TFX manifest.
 
 ### Per-entry schema (Component object)
 
@@ -66,6 +77,7 @@ question (see §6).
 | `import` | string | yes | CMP-1 diff | Module path the agent should import from: `"@base-ui/react"`, `"~/components/ui/button"`. Used to diff actual imports against the manifest. |
 | `kind` | `"base-ui-wrapper"` \| `"composite"` \| `"layout"` \| `"pattern"` | yes | Phase 2 filtering | Taxonomy of the component's place in the hierarchy. See Kind definitions below. |
 | `status` | `"stable"` \| `"deprecated"` \| `"restricted"` | yes | Phase 2 filter, evaluator | Phase 2 may only compose `stable` entries. `deprecated` usage is an evaluator finding. `restricted` usage requires a CMP-1 waiver. |
+| `approver` | string | no (applies when `status: "restricted"`) | Evaluator | Names the person who can approve use of a `restricted` component (e.g. `"design-lead"`). The evaluator checks that any `tfx-waive CMP-1` annotation on a restricted component names this approver. |
 | `props_summary` | string | yes | Agent context | One-line description of the component's purpose and key props — the agent reads this instead of source when planning. Not a full API dump. |
 | `replaces` | array of strings | no | CMP-1 evaluator | What NOT to hand-roll because this component exists. E.g. `["custom modals", "inline confirm prompts"]` on Dialog. The evaluator uses this to judge "exists for the need" edge cases. |
 | `docs` | string (URL) | no | Agent context | Storybook story URL or design doc link. |
@@ -106,6 +118,7 @@ question (see §6).
     "product":    { "type": "string" },
     "generated":  { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
     "source":     { "type": "string", "enum": ["hand-maintained", "generated"] },
+    "coverage":   { "type": "string", "enum": ["complete", "partial"] },
     "components": {
       "type": "array", "minItems": 1,
       "items": {
@@ -116,6 +129,7 @@ question (see §6).
           "import":        { "type": "string" },
           "kind":          { "type": "string", "enum": ["base-ui-wrapper", "composite", "layout", "pattern"] },
           "status":        { "type": "string", "enum": ["stable", "deprecated", "restricted"] },
+          "approver":      { "type": "string" },
           "props_summary": { "type": "string" },
           "replaces":      { "type": "array", "items": { "type": "string" } },
           "docs":          { "type": "string" }
@@ -233,45 +247,57 @@ without waiting for MCP infrastructure.
 
 ---
 
-## 6. Open Questions for the Design Lead
+## 6. Prior Art
 
-1. **Variants and sizes in the manifest or in source?**  
-   Should `Button` have a `variants` field listing `["primary","secondary","ghost","destructive"]`?
-   Or is one-line `props_summary` enough and the agent reads source for detail?
-   Tradeoff: variants in the manifest enables Phase 2 to surface "use
-   `Button variant='destructive'`" rather than "use `Button`", but it
-   significantly increases maintenance burden.
+**Custom Elements Manifest (CEM).** The web-components community has a JSON-Schema
+standard for describing components: the Custom Elements Manifest
+([github.com/webcomponents/custom-elements-manifest](https://github.com/webcomponents/custom-elements-manifest)).
+It is discoverable via a `customElements` field in `package.json`. CEM is designed for
+web component authors to expose component APIs (slots, attributes, CSS custom
+properties) to IDEs and documentation tools.
 
-2. **Per-product manifest or shared-base + product overlay?**  
-   All four products share the same Base UI wrapper layer. Should there be a
-   `base-manifest.json` (shared layer, maintained by the DS team) that product
-   manifests extend/override? Or is the duplication across four manifests
-   acceptable for v1 simplicity? An overlay model adds a merge step.
+The TFX manifest stays **distinct** from CEM for three reasons:
 
-3. **Does `restricted` need an `approver` field?**  
-   Today `restricted` means "requires CMP-1 waiver" but doesn't name who can
-   approve. Should the manifest carry an `approver` field on restricted entries
-   (e.g. `"approver": "design-lead"`) so the evaluator can check the waiver
-   annotation names the right person?
+1. **Enforcement fields.** TFX carries `replaces`, `status`, and `coverage` — the fields
+   CMP-1 enforcement needs. CEM has no equivalent; it describes APIs, not
+   agent-enforcement policy.
+2. **React / Base UI, not custom elements.** The TFX portfolio is React + Base UI.
+   CEM is tailored to HTML custom elements (Web Components). Adopting CEM would impose
+   a format designed for a different runtime.
+3. **Interop target.** If TFX ever ships web components, CEM becomes the future interop
+   target — the `tfxComponentManifest` field in `package.json` (§2 discoverability
+   pointer) mirrors CEM's `customElements` convention deliberately, so the two formats
+   can coexist or be reconciled later.
 
-4. **Is `.tfx/` the right home?**  
-   `.tfx/` is not yet an established convention (no other `.tfx/` files exist).
-   Alternatives: `.claude/tfx/component-manifest.json` (scoped to the harness
-   plugin), `tfx.config.json` (flat), or `docs/design/component-manifest.json`
-   (more visible). The choice affects whether the path is hard-coded or
-   configurable in the plugin.
+**Storybook CSF / component index.** Storybook emits a component index (`stories.json`)
+from its Component Story Format (CSF). The TFX manifest's `docs` field can reference
+Storybook story URLs. The relationship between the two: Option (a) from the spike
+(extractor reads `stories.json` and emits the manifest) is the V1 path; until then
+they are independent artifacts.
 
-5. **Storybook manifest reconciliation.**  
-   Storybook generates its own component index (`stories.json`). If a product
-   adopts Storybook later, how should `.tfx/component-manifest.json` relate?
-   Options: (a) the extractor reads `stories.json` and emits the manifest; (b)
-   the manifest is the canonical source and Storybook stories are documentation
-   only; (c) they are kept in sync manually.
+---
 
-6. **Minimum viable manifest size for CMP-1 to be "active"?**  
-   Should the harness consider CMP-1 mechanically enforceable only when the
-   manifest has ≥ N entries? Or is even a 5-entry manifest (covering the most
-   commonly misused components) enough to activate the diff?
+## 7. Design-Lead Answers (accepted 2026-06-16)
+
+The six open questions from the spike were answered by the harness lead (Reza Ilmi)
+on 2026-06-16. All six recommended answers were accepted as-is.
+
+1. **Variants.** No `variants` field for v1. `props_summary` is enough; the agent
+   reads source for detail. Maintenance burden of per-variant tracking outweighs
+   the benefit at v1.
+2. **Per-product flat manifests.** No shared-base overlay for v1. Duplication across
+   four manifests is acceptable; an overlay model adds merge-step complexity that is
+   not justified until four manifests exist and drift.
+3. **`approver` on restricted.** Yes — add an optional `approver` field on
+   `restricted` entries (implemented in §2 above). The evaluator checks that a
+   `tfx-waive CMP-1` annotation on a restricted component names this approver.
+4. **`.tfx/` is the home.** Confirmed. Referenced from `package.json` via
+   `tfxComponentManifest` (§2 discoverability pointer).
+5. **Storybook.** Manifest is canonical; Storybook stories are documentation.
+   V1 extractor (if built) reads `stories.json` and emits the manifest.
+6. **No minimum size.** No minimum entry count. Even a 5-entry manifest covering
+   the most commonly misused components is enough to be useful. The `coverage`
+   field (§2) is the activation gate for the import-diff — not entry count.
 
 ---
 
