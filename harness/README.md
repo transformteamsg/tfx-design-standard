@@ -90,7 +90,7 @@ This installs the five skills (`tfx-design-ui`, `tfx-design-standards`, `tfx-con
 
 To work on the harness itself, just open a Claude Code session in this repository: the skills load from `.claude/skills/` automatically; no install step.
 
-> **Updates**: `/plugin update tfx-design-harness@tfx` pulls new releases — the catalog and skills are versioned together via `version` in `plugin.json`, bumped on each ratchet change.
+> **Updates**: run `/plugin marketplace update tfx` then `/reload-plugins` (or restart Claude Code). Updates are **manual** — third-party marketplaces do not auto-update by default. The catalog and skills are versioned together via `version` in `plugin.json` and recorded in [CHANGELOG.md](CHANGELOG.md); full steps and the auto-update setting are in [docs/UPDATING.md](docs/UPDATING.md).
 
 Adopting the harness in a product repo? Follow [docs/ONBOARDING.md](docs/ONBOARDING.md).
 
