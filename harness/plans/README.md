@@ -37,6 +37,15 @@ honor its STOP conditions, and update your row when done.
 | 021 | Harden vs record-audit-assertion regressions (test over real corpus) | P2 | S | — | DONE @ 01d393e (reviewed; CONTRIBUTING + evals/README; audit-record self-test 16 + real corpus OK) |
 | 022 | Onboarding lists all skills + asks which to run first | P2 | S | — | DONE @ de98091 (reviewed; full 5-skill menu + run-first ask; plugin validate OK) |
 | 023 | LAY ratchet — commit LAY-2 (reflow, WCAG-320) + LAY-4 (measure ≤80ch) to the catalog | P2 | S–M | 020 | DONE @ 7038aa6 (reviewed; LAY category + LAY-2/LAY-4 + 2 detail files + schema.json id_prefixes; validate.py 40; LAY-1/3/5/6/7 + LAY-4 check deferred) |
+| 024 | Onboarding leads with explanation + routes by run-shape (HF-17) | P2 | S | — | TODO |
+| 025 | Preserving intent never exempts an element from its controls — generator + evaluator (HF-18) | P1 | M | — | TODO |
+| 026 | Phase-3 approval = structured Approve/Adjust in the follow-up turn (HF-6) | P2 | S | — | TODO |
+| 027 | Component-default / sibling-page consistency control — ratchet (HF-19) | P2 | M | gate (design lead) | TODO (Step 1 propose-only; Step 2 gated) |
+| 028 | Build `checks/contrast` — static A11Y-1 contrast subset (HF-9) | P1 | L | — | TODO |
+| 029 | Broaden COL-2 — small functional text uses Radix step-12 — ratchet (HF-9) | P2 | S–M | gate (design lead) | TODO (Step 1 propose-only; Step 2 gated) |
+| 030 | GitHub issues as the system of record for harness feedback — process + docs + labels (#6) | P2 | M | — | TODO (Step 4 label-create gated) |
+| 031 | `gh` feedback-issue helper script — dedup + labels + honest failure (#6) | P2 | M | 030 | TODO |
+| 032 | Backfill historical HF items as issues + confirm logs archived (#6) | P3 | S–M | 030, 031 | TODO (operator-gated) |
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJECTED (with one-line rationale)
 
@@ -87,6 +96,37 @@ Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJE
   only *proposes* the LAY category (no catalog commit) — adoption is a later
   ratchet PR.
 
+### Batch 3 (024–032) — added 2026-06-17 from GitHub issues #5 and #6
+
+- Source: **issue #5** (attendance loop-run feedback — HF-17/18/19, HF-6 re-raised,
+  HF-9 evidence + the functional-chip contrast finding) and **issue #6** (make GitHub
+  issues the system of record for harness feedback). All stamp commit `5f95350` and use
+  SHA drift checks. Harness-only — consumer surfaces (Teacher Workspace) are a separate
+  repo and out of scope.
+- **Recommended order**: 025 + 028 first (highest leverage — the L0-risk
+  preserve-≠-exempt behaviour fix and the contrast check that would have caught the
+  avatar fail) → 024, 026 (skill polish) → the ratchet pairs 027, 029 (propose now,
+  commit after design-lead approval) → the issue-#6 chain 030 → 031 → 032.
+- **Propose-only / gated (do not commit or side-effect without the named gate)**:
+  - 027 and 029 are **propose-only** (Step 1 writes a record; Step 2 commits the
+    catalog change) — Step 2 waits on **design-lead approval** (mirrors 020 → 023).
+  - 030 Step 4 (`gh label create`) and **032** (files real issues) are
+    **operator-gated** side effects — dry-run first, never silent.
+- **Shared-file sequencing (execute one at a time / rebase, don't clobber)**:
+  `.claude/skills/tfx-design-ui/SKILL.md` is edited by 025 (Phase-4 conservative-defaults
+  + critique step), 026 (Phase 3 approval), 028 (Phase-5 built-checks list), 029
+  (implement-phase functional-colour line, gated), 030 (Phase 6 ratchet) — all
+  *different sections*; `.claude/skills/tfx-design-review/SKILL.md` by 025 (+ a 028
+  mention); `standards/catalog.yaml` by 027 (new CMP entry) + 029 (COL-2 broadening) —
+  distinct, low-collision, both gated. Each plan carries exact "Current state" excerpts
+  + a drift check.
+- **In-flight WIP coordination**: `main` carries an *uncommitted* ratchet batch (TYP-5,
+  CMP-5/6, SLP-11 + UI-skill craft additions) **not** on this branch. Plans stamp the
+  committed HEAD `5f95350`, so their excerpts match and the drift check fires cleanly if
+  that batch merges first (the craft additions sit in adjacent sections, not the blocks
+  these plans edit). **027 reads the live catalog for the next free CMP id** rather than
+  hardcoding one, so it can't collide with CMP-5/6.
+
 ## Findings considered and rejected
 
 - **Tier-waiver mapping duplicated across three files** (standards/README.md,
@@ -124,6 +164,25 @@ Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJE
   overstate enforcement" note (HF-9), proxy-approval recording (HF-12), and
   "flag visible violations belt-and-braces" (HF-16) are already in the skills —
   plans 010/015/014 target only the genuinely missing halves.
+
+### Batch 3 — issue items deliberately not given their own plan / folded
+
+- **Issue #5's three "candidate catalog-changes/ docs"** map onto the plans, not onto
+  three new docs: `onboarding-route-by-runshape` → **plan 024** (a skill edit; no
+  catalog-change doc needed), `component-default-consistency` → **plan 027**,
+  `contrast-functional-chips-step-12` → **plan 029**.
+- **Consumer-app conventions in issue #5** (`AvatarFallback` default = white-on-blue,
+  never override the text colour; functional step-12 token usage) are **product-repo
+  facts**, not harness controls. The harness-side encodings are the consistency control
+  (027) and the COL-2 broadening (029); plan 025 names the avatar convention only as the
+  triggering evidence.
+- **HF-4 / `--radius-input` = 14px off the TOK-3 scale** is an app-wide *product* fix
+  ("fix product-wide, not per-page"), not a harness change — TOK-3 already states the
+  scale; no harness plan. Noted here so it isn't re-audited as a harness gap.
+- **HF-6, HF-9 already had a *shipped* half** (plan 015's structured-question
+  preference; the "verified manually / don't overstate enforcement" honesty note):
+  plans 026 and 028/029 add only the genuinely-missing halves (follow-up-turn structured
+  ask; the contrast check + the step-12 standard).
 
 ### Post-execution eval (2026-06-15, suite run against `advisor/harness-feedback-all`)
 
