@@ -46,10 +46,11 @@ reference point like SGDS and GOV.UK, never a checkable standard: principles set
 trade-offs; they are not used to "check" work. The phase notes below name the ones
 that recur in this portfolio.
 
-**Layout controls (partial coverage).** Layout now has two checkable controls:
-LAY-2 (reflow at 320 px — WCAG 2.2 SC 1.4.10, L1) and LAY-4 (body-text measure
-≤ 80ch, target ~66ch — L2). The rest of layout — grid systems, information-architecture
-templates, density, alignment — remains HIG + judgment until more LAY controls land.
+**Layout controls (partial coverage).** Layout now has five checkable controls:
+LAY-2 (reflow at 320 px — WCAG 2.2 SC 1.4.10, L1), LAY-3 (page-template fit, L2),
+LAY-4 (body-text measure ≤ 80ch, target ~66ch — L2), LAY-5 (density fits the task,
+L2), and LAY-6 (edge / optical alignment, L2). Grid systems remain HIG +
+judgment until a declared product grid lands.
 
 ## New page vs. modification
 
@@ -178,20 +179,32 @@ Output: the sprint contract, shown to the user.
 
 Produce 2–3 structurally different options. **No pixel code.** For each option:
 layout structure, which existing components it composes, how the flow splits across
-steps, and one sentence on the trade-off. Use the product's component manifest
+steps, a one-line **visual thesis** (the mood and energy it carries — stated as an
+extension of the product's existing system, never an invented new aesthetic), and one
+sentence on the trade-off. Use the product's component manifest
 (`.tfx/component-manifest.json`, filtered to `status: "stable"` entries) —
 options may only compose components that exist in the manifest (CMP-1 applies from
 here on). If the product has no manifest yet, fall back to the v0-limit procedure
 in `standards/controls/cmp-1.md` and note "asserted, no manifest".
 Progressive disclosure is the default pattern: show the core path, reveal complexity
-on demand. Two anti-slop controls bind at this altitude: a complex multi-section
+on demand. Three anti-slop controls bind at this altitude: a complex multi-section
 task gets a page, never a modal (SLP-10) — if an option puts tabs, columns, or its
-own scrolling inside a dialog, it is not an option; and a grid of identical cards is
+own scrolling inside a dialog, it is not an option; a grid of identical cards is
 not a default layout (SLP-5) — structure should come from the task's hierarchy, not
-a template. Two lenses bind here too: simplicity is not minimalism (HIG: Simplicity) —
+a template; and a card is only for an interactive unit (SLP-11) — if an option boxes
+static content in card chrome where spacing, type, and a divider would group it, that
+is a finding, not a layout. Two lenses bind here too: simplicity is not minimalism (HIG: Simplicity) —
 keep the important things close and let the rest fall away, never hide what the task
 needs; and keep the teacher free to move (HIG: Agency) — an option that locks people
 into a guided flow or mode must make it easy to skip or escape.
+
+**Compose, don't fill.** Treat the first screen as a composition, not a container to
+pack: one clear focal point — the teacher's primary task and its single primary action
+(CMP-5) — with related content grouped by proximity and a shared region rather than
+boxed in cards (SLP-11), and everything else stepped down so hierarchy does the
+explaining (SLP-6). Each option's layout is graded at verify against LAY-3 (does it fit
+a known page template for its type?), LAY-5 (does its density fit the task?), and
+LAY-6 (do shared edges align?) — design to them now, not as a cleanup pass.
 
 Output: the options with a recommendation. The user picks.
 
@@ -203,6 +216,12 @@ Expand the chosen option into a plan:
 - Tokens/patterns used; any **missing component** surfaced explicitly with options
   (extend an existing Base UI component / request from the design system — never
   improvise a one-off without a CMP-1 waiver).
+- **Interaction plan**: name the 2–3 specific motions the chosen option uses — one
+  entrance, one state transition, one hover/reveal — described concretely (what moves,
+  from what to what), not "add animations". Reuse the product's existing motion
+  conventions; every motion is bound by MOT-1 (100–300ms, standard easing, none on
+  critical paths beyond functional feedback), SLP-8 (no bounce/elastic), and A11Y-5
+  (a reduced-motion variant). Motion that improves neither hierarchy nor feedback is cut.
 - The controls in scope for this page (filtered catalog), with any proposed waivers
   and their rationale — waivers are decided here, not improvised during implementation.
 - Content outline: headings, key copy, names checked against CNT-2, error states
@@ -301,6 +320,51 @@ Build exactly the approved plan. Constraints, non-negotiable:
   behaviour or appearance is established, reuse it across the surface, and keep
   content and controls in predictable positions across the three widths — people
   learn faster when new interactions work the way the last one did.
+- **Action hierarchy** (CMP-5): one primary (filled) action per view — secondary steps
+  down to outline/tonal, tertiary to ghost/link; a destructive action takes its own
+  variant, never the primary style (CMP-2). The primary's colour is the product's own
+  brand primary (COL-1). Make the next step obvious without a label.
+- **Tables** (CMP-6): for tabular data — gradebooks, rosters, attendance — use a real
+  `<table>` with `<th>` headers (A11Y-7); right-align numeric columns in tabular figures
+  (TYP-5) and left-align text; keep the header visible while scrolling; design the empty
+  and loading states (CMP-3); set density to the task (LAY-5); separate rows with spacing
+  or hairline dividers, not nested-card chrome (SLP-4). If records are not compared across
+  shared columns, a list or cards may fit better than a table (SLP-11).
+- **Interface craft — the small details that read as care** (HIG: Craft). These
+  refine the controls above; they do not replace them:
+  - **Tabular figures** on any column of numbers or any number that updates in place
+    — `tabular-nums` (TYP-5). Grade tables, attendance counts, and live totals must
+    hold still, not jitter as digits change.
+  - **Concentric radius**: a nested control's radius is the parent's minus the
+    padding (`inner = outer − padding`), snapped to the scale (TOK-3).
+  - **Property-scoped, interruptible transitions**: animate named properties
+    (`transition-property: opacity, transform`), never `transition: all`; reserve
+    keyframes for one-shot staged sequences. Direction carries meaning — entrances
+    `ease-out`, exits `ease-in` and softer than the entrance, state/view changes
+    `ease-in-out`. Duration and easing per MOT-1, no bounce (SLP-8), always a
+    reduced-motion variant (A11Y-5). Keyboard navigation is instant — no animation on
+    tab/arrow movement.
+  - **Press feedback**: a subtle `scale(0.96)` on press where a tactile cue helps —
+    never below 0.95, never a bounce, disabled under reduced motion (A11Y-5).
+  - **Hit targets**: where a control reads smaller than its A11Y-4 floor (24px, 44px
+    on mobile), expand the hit area with padding or a pseudo-element rather than
+    enlarging the visible glyph.
+  - **Feels-instant feedback**: respond within ~400ms; when the real work takes
+    longer, show a skeleton or an optimistic result, not a bare spinner — CMP-3's
+    loading state, built to feel fast (Doherty threshold).
+  - **Shadows for depth, not decoration**: layer two or three low-alpha shadows
+    rather than one hard one; keep a single consistent light direction across the
+    surface; tint toward a neutral, never pure black; size the shadow to the
+    elevation. This is constructive depth — distinct from the SLP-1 glow/aura tell,
+    which stays banned.
+  - **Type polish**: `text-wrap: balance` on headings and `text-wrap: pretty` on body
+    to remove orphans; `-webkit-font-smoothing: antialiased` set once at the root;
+    `font-synthesis: none` so no weight is ever faked (TYP-1 ships 400/500/600 only);
+    letter-spacing on the short uppercase labels TYP-4 allows.
+  - **Image edges**: a 1px low-opacity outline on photos — pure black in light, pure
+    white in dark, never a tinted neutral (a tint reads as dirt on the edge).
+  - **will-change** only on `transform`/`opacity`/`filter`, and only to fix observed
+    first-frame stutter — never `will-change: all`, never pre-emptively.
 - Copy follows the `tfx-content-style` skill as you write it, not as a cleanup pass
   (it ships with this harness: `../tfx-content-style/SKILL.md` relative to this skill).
   That includes the anti-slop copy rule (SLP-9): no AI-writing tells — buzzwords,

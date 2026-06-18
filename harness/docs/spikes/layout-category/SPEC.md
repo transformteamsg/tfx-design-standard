@@ -1,6 +1,12 @@
 # Spike: LAYOUT (`LAY-*`) catalog category
 
-**Status:** `[proposed — pending design-lead approval]`
+**Status:** `[partially ratified 2026-06-17]` — LAY-3 (IA/page templates), LAY-5
+(content density), and LAY-6 (alignment/optical) committed to `standards/catalog.yaml`
+with detail files (harness lead, direct instruction). LAY-2 and LAY-4 were committed
+earlier (plan 023). **LAY-1 (grid) remains deferred** pending a declared product grid
+(open question 4); **peer-radius consistency stays in TOK-3**, not migrated to a LAY-7
+(open question 3). LAY-6's "align to the grid" was softened to "shared edges align"
+since no grid is declared yet.
 
 **Planned at:** commit `a8ca4fa`, 2026-06-15
 

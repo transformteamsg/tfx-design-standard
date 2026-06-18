@@ -14,7 +14,7 @@ surviving the whole way to shipped UI.
 NORMATIVE LAYER                       HARNESS                            ENFORCEMENT
 standards/catalog.yaml                .claude/skills/                    checks/ + evaluator agent
 ├─ TFX-DS standards tier              ├─ tfx-design-ui      (the loop)       ├─ Deterministic: scripts, a11y scan,
-│   38 controls (consolidated 2026-06-11)    ├─ tfx-design-standards (catalog use)  │   DOM checks — non-skippable
+│   47 controls (latest ratchet 2026-06-17)  ├─ tfx-design-standards (catalog use)  │   DOM checks — non-skippable
 ├─ WCAG 2.2 AA (self-imposed floor)   ├─ tfx-content-style  (voice & tone)   ├─ Judgment: tfx-design-evaluator subagent
 └─ References: SGDS, GOV.UK           └─ tfx-design-review  (evaluator)      └─ Human gates: plan approval, L1 waivers
    (reference points, not rules)
@@ -57,7 +57,7 @@ design-harness/
 │                            # from any entry point, not just the tfx-design-ui loop
 ├── standards/
 │   ├── README.md            # control catalog format spec + authoring guide
-│   ├── catalog.yaml         # TFX-DS catalog: 38 controls (always loaded)
+│   ├── catalog.yaml         # TFX-DS catalog: 47 controls (always loaded)
 │   └── controls/            # one file per control: YAML frontmatter + rationale,
 │                            # pass/fail examples, verification detail (loaded on demand)
 ├── .claude/
@@ -108,10 +108,11 @@ Adopting the harness in a product repo? Follow [docs/ONBOARDING.md](docs/ONBOARD
 ## Status & roadmap
 
 Aligned to TFX-DS v0.1 (June 2026). Catalog: the 22-control TFX-DS seed, plus 6
-ratchet additions (GovTech a11y checklist, 2026-06-11), plus the 10 anti-slop
-controls (SLP-1..10) adopted from the TFX-DS site seed catalog in the
-2026-06-11 consolidation — 38 controls, one file, consumed by both the harness
-(enforcement) and the TFX-DS website (presentation).
+ratchet additions (GovTech a11y checklist, 2026-06-11), the 10 anti-slop controls
+(SLP-1..10) adopted from the TFX-DS site seed catalog in the 2026-06-11
+consolidation, and later ratchet additions (LAY-2/3/4/5/6, TYP-5, SLP-11, CMP-5,
+CMP-6) — 47 controls, one file, consumed by both the harness (enforcement) and the
+TFX-DS website (presentation).
 
 - **V0 — now**: this standard as catalog source; skills installed; loop runnable in a
   Claude session (verify phase runs manually — see the "v0 reality" note in
