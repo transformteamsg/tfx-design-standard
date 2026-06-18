@@ -22,10 +22,11 @@ triggered.
 - **Non-negotiables (L0) that bind even outside the loop**: AA contrast (A11Y-1),
   keyboard reach + visible focus (A11Y-2), visible labels on every field (A11Y-3),
   destructive actions show consequences and offer undo/confirm (CMP-2).
-- **Anti-slop is standard, not taste** (SLP-1..10, consolidated from the TFX-DS
-  site catalog 2026-06-11): no purple/violet gradient palettes, gradient text,
-  side-tab card borders, nested cards, identical-card grids, flat type hierarchy,
-  uniform spacing, bounce easing, buzzword copy, or multi-section modals.
+- **Anti-slop is standard, not taste** (SLP-1..11; SLP-1..10 consolidated from the
+  TFX-DS site catalog 2026-06-11, SLP-11 added 2026-06-17): no purple/violet gradient
+  palettes, gradient text, side-tab card borders, nested cards, identical-card grids,
+  cards around static content, flat type hierarchy, uniform spacing, bounce easing,
+  buzzword copy, or multi-section modals.
 - **Never edit the catalog to make a failing check pass.** Propose changes via the
   ratchet (lightweight PR + design-lead approval).
 - Built `checks/` scripts: `validate.py` (catalog), `token-audit.py` (TOK-1..3,

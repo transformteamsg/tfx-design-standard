@@ -11,7 +11,7 @@
 
 meta:
   version: "0.1"
-  updated: "2026-06-16"
+  updated: "2026-06-17"
   waiver_syntax: 'tfx-waive <ID> reason="<specific reason>"'
   categories:
     A11Y: Accessibility
@@ -285,6 +285,25 @@ controls:
       - uppercase running text or headings
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
 
+  # TYP-5: ratchet addition 2026-06-17 — tabular figures for numbers that align or
+  # update, adopted from the make-interfaces-feel-better design-engineering skill;
+  # high value for this number-heavy portfolio (grade tables, attendance counts,
+  # live totals). Approved: harness lead (Reza Ilmi, direct instruction).
+  - id: TYP-5
+    source: TFX-DS
+    title: "Numbers that align in columns or update in place use tabular figures (font-variant-numeric: tabular-nums)"
+    tier: L2
+    check: hybrid
+    phase: [implement, verify]
+    applies_to: [page, component]
+    verify: "Numeric columns/tables and dynamically-updating numbers carry font-variant-numeric: tabular-nums (Tailwind `tabular-nums`); evaluator judges which figures align or update; checks/type-scan (planned)"
+    waiver: rationale
+    fails_when:
+      - a column of figures (grades, counts, marks) in proportional numerals that fail to align vertically
+      - a live counter, timer, or total that reflows horizontally as its digits change
+    detail: controls/typ-5.md
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
   # ── Colour ────────────────────────────────────────────────────────────
   - id: COL-1
     source: TFX-DS
@@ -358,6 +377,45 @@ controls:
       - missing error state
       - loading state that flickers (no min visible time)
     detail: controls/cmp-3.md
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
+  # CMP-4 is reserved for the pending empty-state-clarity proposal recorded in
+  # docs/decisions/student-notes-empty-state.md — do not reuse this id elsewhere.
+  # CMP-5 / CMP-6: ratchet additions 2026-06-17 — action hierarchy and the table
+  # pattern, adopted from the design-engineering skills (ce-frontend-design,
+  # make-interfaces-feel-better, userinterface-wiki) studied against the catalog.
+  # Approved: harness lead (Reza Ilmi, direct instruction).
+  - id: CMP-5
+    source: TFX-DS
+    title: Each view has at most one primary (filled) action; secondary and tertiary actions step down to outline, ghost, or link styling
+    tier: L2
+    check: hybrid
+    phase: [plan, implement, verify]
+    applies_to: [page, component]
+    verify: "Script counts filled/primary-variant buttons per view; evaluator judges view/region boundaries and any deliberately co-equal actions"
+    waiver: rationale
+    fails_when:
+      - two or more filled/primary buttons competing in one view with no deliberate co-equal reason
+      - a destructive action styled as the primary instead of a distinct destructive variant (CMP-2)
+      - every button rendered at the same weight, so nothing reads as the main action
+    detail: controls/cmp-5.md
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
+  - id: CMP-6
+    source: TFX-DS
+    title: Data tables use the table pattern — semantic rows and headers, numeric columns right-aligned with tabular figures, text left-aligned, and a header that stays visible while scrolling
+    tier: L2
+    check: hybrid
+    phase: [implement, verify]
+    applies_to: [component, page]
+    verify: "Script asserts table/th semantics and right-aligned tabular numeric columns; evaluator judges header persistence, density, and that empty/loading states are designed (CMP-3)"
+    waiver: rationale
+    fails_when:
+      - numeric columns centre- or left-aligned, or in proportional figures, so values do not line up (TYP-5)
+      - a long table whose header scrolls out of view, leaving columns unlabelled
+      - tabular data rendered as stacked cards or divs instead of a real table (A11Y-7)
+      - a table that can be empty or slow has no designed empty or loading state (CMP-3)
+    detail: controls/cmp-6.md
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
 
   # ── Content & naming ──────────────────────────────────────────────────
@@ -572,6 +630,25 @@ controls:
     detail: controls/slp-10.md
     refs: [https://github.com/transformteamsg/tfx-design-standard]
 
+  # SLP-11: ratchet addition 2026-06-17 — "a card only when the card is the
+  # interaction", adopted from the compound-engineering ce-frontend-design skill;
+  # completes the card trio with SLP-4 (no nested cards) and SLP-5 (no identical-card
+  # grids). Approved: harness lead (Reza Ilmi, direct instruction).
+  - id: SLP-11
+    source: TFX-DS
+    title: A card is only for an interactive unit (clickable, selectable, draggable); static content is grouped with spacing, type, and dividers
+    tier: L2
+    check: judgment
+    phase: [plan, implement, verify]
+    applies_to: [page, component]
+    verify: "Evaluator: every card-styled container (border or shadow + radius + background) is a discrete interactive unit; if removing the card chrome would not hurt comprehension, it should not be a card"
+    waiver: rationale
+    fails_when:
+      - static content boxed in card chrome purely for visual separation
+      - a card used as a section wrapper where a heading plus spacing would group it
+    detail: controls/slp-11.md
+    refs: [https://github.com/transformteamsg/tfx-design-standard]
+
   # ── Layout (LAY) ──────────────────────────────────────────────────────
   - id: LAY-2
     source: TFX-DS
@@ -602,3 +679,53 @@ controls:
       - measure exceeds 80ch
     detail: controls/lay-4.md
     refs: [https://www.w3.org/TR/WCAG21/#visual-presentation]
+
+  # LAY-3 / LAY-5 / LAY-6: ratchet additions 2026-06-17 — activated from the layout
+  # spike (docs/spikes/layout-category/SPEC.md), which specified them in full and left
+  # them pending design-lead approval. LAY-1 (grid) deferred — it needs a declared
+  # product grid (spike open Q4); peer-radius consistency stays in TOK-3 (spike Q3).
+  # Approved: harness lead (Reza Ilmi, direct instruction).
+  - id: LAY-3
+    source: TFX-DS
+    title: A surface maps to a known page template (workspace view, form, flow step, dashboard, settings, empty state, onboarding) rather than an ad-hoc shell
+    tier: L2
+    check: judgment
+    phase: [plan, verify]
+    applies_to: [page]
+    verify: "Evaluator matches the surface to its declared page type (Phase 1) and flags a bespoke shell where a known template applies"
+    waiver: rationale
+    fails_when:
+      - a surface invents a bespoke shell structure when an existing template applies
+      - information hierarchy does not match the declared page type
+    detail: controls/lay-3.md
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
+  - id: LAY-5
+    source: TFX-DS
+    title: Density suits the task — neither cramped for data entry nor padded for scanning; extreme outliers in either direction are findings
+    tier: L2
+    check: judgment
+    phase: [verify]
+    applies_to: [page, component]
+    verify: "Evaluator judges density against the page type and task (a marks-entry form and a summary dashboard have legitimately different densities)"
+    waiver: rationale
+    fails_when:
+      - a data-entry surface is too padded for efficient tab traversal
+      - a reading or scanning surface is too cramped to scan without error
+    detail: controls/lay-5.md
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
+  - id: LAY-6
+    source: TFX-DS
+    title: Shared edges align; optical alignment is used where geometry misleads
+    tier: L2
+    check: judgment
+    phase: [verify]
+    applies_to: [page, component]
+    verify: "Evaluator checks edge alignment in the 1280 screenshot; flags shared edges that do not align without a deliberate reason; distinguishes geometric from optical alignment (an icon optically centred but geometrically offset is correct)"
+    waiver: rationale
+    fails_when:
+      - shared edges between sections or components do not align, with no deliberate reason
+      - text or icon baselines and optical centres are visibly misaligned
+    detail: controls/lay-6.md
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]

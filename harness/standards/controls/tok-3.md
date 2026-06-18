@@ -15,7 +15,11 @@ refs:
 ## Requirement
 
 Corner radii must be on-scale ({0, 2, 4, 6, 8, 12, 16, 24, 9999} px) and nesting
-must be concentric (child radius ≤ parent radius). **Additionally**, peer containers
+must be concentric (child radius ≤ parent radius). The working rule for a nested
+element is `inner radius = outer radius − padding`: a card at `rounded-2xl` (16px)
+with 8px of padding wants an inner control at `rounded-lg` (8px), not another 16px.
+Mismatched radii on nested surfaces are the most common thing that makes a layout
+feel off; snap the result to the nearest scale step. **Additionally**, peer containers
 of the same kind (cards, sections, tiles) share a single corner radius, anchored by
 default to the product's `Card` component radius / `--radius` token (0.5rem = 8px in
 this product's `app/globals.css`).
