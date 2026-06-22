@@ -77,7 +77,9 @@ python3 checks/validate.py
 ```
 
 Expected output: `OK: N controls valid` (N will be 23 or higher after your addition).
-A PR with a failing validator will not be reviewed.
+A PR with a failing validator will not be reviewed. Restated fragments (the inline L0
+list, the SLP-9 buzzword summary) stay in sync with their source via `<!-- tfx-sync:… -->`
+markers + `validate.py` parity checks — see [docs/SYNC.md](docs/SYNC.md).
 
 ### (e) PR body — use the template below
 

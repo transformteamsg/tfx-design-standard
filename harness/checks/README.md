@@ -9,7 +9,9 @@ on failure, silent on success.
 
 `python3 checks/validate.py` — validates `standards/catalog.yaml` against the schema in `standards/README.md`: field presence and allowed values, tier→waiver pairing, `detail:` file existence, detail-frontmatter ↔ catalog consistency, and that every control ID referenced in skills/docs exists in the catalog. Exit 0 on pass, exit 1 with `ERROR` lines on failure. This is the repo's verification baseline — run it before committing any `standards/` change.
 
-**Self-test:** `python3 checks/validate.py --self-test` → `SELF-TEST OK (14 cases)`.
+The validator also enforces two **fragment-parity** sub-checks via `<!-- tfx-sync:… -->` markers: `[L0-SYNC]` (the inline "Non-negotiables (L0)" lists in `CLAUDE.md` and `tfx-design-ui/SKILL.md` must equal the catalog's `tier: L0` set) and `[SLP9-SYNC]` (the `tfx-content-style` buzzword summary must be a subset of the canonical list in `standards/controls/slp-9.md`). See [docs/SYNC.md](../docs/SYNC.md).
+
+**Self-test:** `python3 checks/validate.py --self-test` → `SELF-TEST OK (27 cases)`.
 
 
 ## Token audit (built)

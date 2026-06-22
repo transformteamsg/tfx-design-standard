@@ -55,8 +55,8 @@ stress, or it goes.
 - Choose exactly the words needed to convey a concept or label a control — the
   simplest way to say something is usually the most universal.
 - Avoid ed-tech jargon unless it's universal among teachers.
-- No marketing buzzwords (SLP-9): streamline, empower, supercharge, effortless,
-  seamless, world-class and kin describe nothing — say what the thing does. No
+- No marketing buzzwords (SLP-9): <!-- tfx-sync:slp9-buzzwords --> streamline, empower, supercharge, effortless,
+  seamless, world-class <!-- /tfx-sync:slp9-buzzwords --> and kin describe nothing — say what the thing does. No
   em-dash chains standing in for sentence structure, and no label/sublabel/helper
   triplets that restate each other — if removing one line loses nothing, remove it.
 - Read it aloud — if it sounds robotic, rewrite it.

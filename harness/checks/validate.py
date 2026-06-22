@@ -152,6 +152,141 @@ def cross_ref_errors(rel_path, text, catalog_ids, xref_re):
     return errors
 
 
+# ── tfx-sync parity sub-checks ──────────────────────────────────────────────────
+# Some fragments are restated in prose across files that must each ship in their
+# own context (the plugin SKILL.md + the project-root CLAUDE.md; the skill summary +
+# the canonical control). A whole-file read-through can't fix a fragment inside a
+# larger file, so each restatement is wrapped in <!-- tfx-sync:NAME -->…<!-- /tfx-sync:NAME -->
+# markers and compared against its source here. See docs/SYNC.md.
+
+# REQUIRED_CORE — a hard-coded floor of buzzwords that must appear in BOTH the
+# canonical slp-9.md list and the tfx-content-style summary. NOT synced from
+# slp-9.md by design, so the check keeps an anchor even if both lists are edited.
+# If the canonical list ever drops one of these, update this set too (see SYNC.md).
+REQUIRED_CORE = {"streamline", "empower", "supercharge"}
+
+# Connector / noise tokens dropped during buzzword tokenization.
+_BUZZWORD_NOISE = {"and", "kin", "the", "plus", "list", "buzzword", ""}
+
+
+def extract_sync_block(text, name):
+    """
+    Return the inner span between <!-- tfx-sync:NAME … --> and
+    <!-- /tfx-sync:NAME --> (DOTALL), or None if the block is absent / unclosed.
+    The open marker tolerates extra attributes (e.g. `source`, `source=catalog`).
+    """
+    pattern = (r"<!-- tfx-sync:" + re.escape(name) + r"\b[^>]*-->"
+               r"(.*?)<!-- /tfx-sync:" + re.escape(name) + r" -->")
+    match = re.search(pattern, text, re.DOTALL)
+    return match.group(1) if match else None
+
+
+def tokenize_buzzwords(span):
+    """
+    Lowercase, split on commas/whitespace/bullets, strip a trailing parenthetical
+    inflection (streamline(d) → streamline; effortless(ly) → effortless), drop
+    connector/noise tokens, and return the resulting set. No morphological
+    stemming — the live lists already align on the paren-stripped token.
+    """
+    tokens = set()
+    for raw in re.split(r"[,\s•*—–…]+", span.lower()):
+        tok = raw.strip("-–—….•* ")
+        m = re.match(r"^(\w+)\(\w*\)$", tok)
+        if m:
+            tok = m.group(1)
+        if tok and tok not in _BUZZWORD_NOISE:
+            tokens.add(tok)
+    return tokens
+
+
+def l0_parity_errors(repo_root, catalog_by_id, xref_re):
+    """
+    [L0-SYNC] Each inline 'Non-negotiables (L0)' list (CLAUDE.md and the
+    tfx-design-ui SKILL.md) must equal the catalog's tier:L0 set. Missing
+    markers are an error. Set comparison, so prose/order around the IDs is free.
+    """
+    errors = []
+    source = {cid for cid, c in catalog_by_id.items() if c.get("tier") == "L0"}
+    consumers = [
+        os.path.join(repo_root, "CLAUDE.md"),
+        os.path.join(repo_root, ".claude", "skills", "tfx-design-ui", "SKILL.md"),
+    ]
+    for fpath in consumers:
+        if not os.path.isfile(fpath):
+            continue
+        rel = os.path.relpath(fpath, repo_root)
+        with open(fpath) as fh:
+            text = fh.read()
+        span = extract_sync_block(text, "L0")
+        if span is None:
+            errors.append(f"ERROR {rel} [L0-SYNC]: missing tfx-sync:L0 markers")
+            continue
+        inline = {m.group(0) for m in xref_re.finditer(span)}
+        if inline != source:
+            errors.append(
+                f"ERROR {rel} [L0-SYNC]: inline L0 list {{{', '.join(sorted(inline))}}} "
+                f"!= catalog L0 set {{{', '.join(sorted(source))}}}"
+            )
+    return errors
+
+
+def slp9_parity_errors(repo_root):
+    """
+    [SLP9-SYNC] The tfx-content-style buzzword summary must be a SUBSET of the
+    canonical slp-9.md buzzword list (the skill may show fewer words, never more),
+    and REQUIRED_CORE must appear in both. Missing markers are an error.
+    """
+    errors = []
+    src_path = os.path.join(repo_root, "standards", "controls", "slp-9.md")
+    con_path = os.path.join(repo_root, ".claude", "skills", "tfx-content-style", "SKILL.md")
+
+    source = None
+    if os.path.isfile(src_path):
+        with open(src_path) as fh:
+            src_span = extract_sync_block(fh.read(), "slp9-buzzwords")
+        if src_span is None:
+            errors.append("ERROR standards/controls/slp-9.md [SLP9-SYNC]: missing source marker")
+        else:
+            source = tokenize_buzzwords(src_span)
+
+    consumer = None
+    if os.path.isfile(con_path):
+        rel = os.path.relpath(con_path, repo_root)
+        with open(con_path) as fh:
+            con_span = extract_sync_block(fh.read(), "slp9-buzzwords")
+        if con_span is None:
+            errors.append(f"ERROR {rel} [SLP9-SYNC]: missing consumer marker")
+        else:
+            consumer = tokenize_buzzwords(con_span)
+
+    if source is not None and consumer is not None:
+        rel = os.path.relpath(con_path, repo_root)
+        extra = consumer - source
+        if extra:
+            errors.append(
+                f"ERROR {rel} [SLP9-SYNC]: skill buzzword(s) "
+                f"{{{', '.join(sorted(extra))}}} not in canonical slp-9.md list"
+            )
+
+    # Required-core floor: must appear in both lists.
+    if consumer is not None:
+        missing = REQUIRED_CORE - consumer
+        if missing:
+            rel = os.path.relpath(con_path, repo_root)
+            errors.append(
+                f"ERROR {rel} [SLP9-SYNC]: required core buzzword(s) "
+                f"{{{', '.join(sorted(missing))}}} absent"
+            )
+    if source is not None:
+        missing = REQUIRED_CORE - source
+        if missing:
+            errors.append(
+                f"ERROR standards/controls/slp-9.md [SLP9-SYNC]: required core "
+                f"buzzword(s) {{{', '.join(sorted(missing))}}} absent"
+            )
+    return errors
+
+
 def collect_errors(repo_root, _return_count=False):
     """
     Run all of Steps 1–7 against `repo_root` and return a list of error
@@ -369,6 +504,11 @@ def collect_errors(repo_root, _return_count=False):
             content = fh.read()
         errors.extend(cross_ref_errors(rel, content, catalog_by_id, xref_re))
 
+    # ── Step 8: tfx-sync parity sub-checks ───────────────────────────────────
+    # Inline restatements (L0 list, SLP-9 buzzwords) must not drift from source.
+    errors.extend(l0_parity_errors(repo_root, catalog_by_id, xref_re))
+    errors.extend(slp9_parity_errors(repo_root))
+
     return result(len(catalog_by_id))
 
 
@@ -477,6 +617,96 @@ def run_self_test():
                                  catalog_ids, xref_re)
     if not any(e.startswith("ERROR scratch.md:2:") for e in line_errs):
         failures.append(f"FAIL unknown id line number: expected line 2 — got: {line_errs}")
+
+    # ── tfx-sync parity cases (pure helpers) ─────────────────────────────────
+
+    def assert_clean(name, errs):
+        nonlocal case_count
+        case_count += 1
+        if errs:
+            failures.append(f"FAIL {name}: expected no errors — got: {errs}")
+
+    def assert_error(name, errs, needle):
+        nonlocal case_count
+        case_count += 1
+        if not any(needle in e for e in errs):
+            failures.append(f"FAIL {name}: expected an error containing {needle!r} — got: {errs}")
+
+    # extract_sync_block: well-formed block returns the inner span; missing close
+    # marker returns None.
+    case_count += 1
+    if extract_sync_block("<!-- tfx-sync:X source -->inner<!-- /tfx-sync:X -->", "X") != "inner":
+        failures.append("FAIL extractor well-formed: expected 'inner' span")
+    case_count += 1
+    if extract_sync_block("<!-- tfx-sync:X -->inner (no close)", "X") is not None:
+        failures.append("FAIL extractor unclosed: expected None")
+
+    L0_SOURCE = {"A11Y-1", "A11Y-2", "A11Y-3", "CMP-2"}
+
+    def l0_errs_for_span(span_text):
+        """Drive the L0 parity comparison against a synthetic consumer span."""
+        if span_text is None:
+            return ["ERROR scratch.md [L0-SYNC]: missing tfx-sync:L0 markers"]
+        inline = {m.group(0) for m in xref_re.finditer(span_text)}
+        if inline != L0_SOURCE:
+            return [f"ERROR scratch.md [L0-SYNC]: inline L0 list != catalog L0 set"]
+        return []
+
+    # L0 clean: span lists exactly the four → no error.
+    assert_clean("L0 clean span",
+                 l0_errs_for_span("A11Y-1; A11Y-2; A11Y-3; CMP-2"))
+    # L0 missing a control: span omits CMP-2 → error.
+    assert_error("L0 missing control",
+                 l0_errs_for_span("A11Y-1; A11Y-2; A11Y-3"), "[L0-SYNC]")
+    # L0 extra control: span adds A11Y-4 → error.
+    assert_error("L0 extra control",
+                 l0_errs_for_span("A11Y-1; A11Y-2; A11Y-3; A11Y-4; CMP-2"), "[L0-SYNC]")
+    # L0 order / prose-insensitive: different order + surrounding words → clean.
+    assert_clean("L0 order-insensitive",
+                 l0_errs_for_span("destructive CMP-2 then label A11Y-3, focus A11Y-2, contrast A11Y-1"))
+    # L0 missing markers: extract_sync_block None → missing-markers error.
+    assert_error("L0 missing markers",
+                 l0_errs_for_span(extract_sync_block("no markers here", "L0")),
+                 "missing tfx-sync:L0 markers")
+
+    # Buzzword parity — drive tokenize_buzzwords + the subset/required-core rules.
+    BUZZ_SOURCE = tokenize_buzzwords(
+        "streamline(d), empower, supercharge, effortless(ly), seamless(ly), "
+        "world-class, revolutionise, leverage, unlock, elevate")
+
+    def buzz_errs(consumer_span):
+        consumer = tokenize_buzzwords(consumer_span)
+        errs = []
+        extra = consumer - BUZZ_SOURCE
+        if extra:
+            errs.append(f"ERROR scratch.md [SLP9-SYNC]: skill buzzword(s) {{{', '.join(sorted(extra))}}} not in canonical slp-9.md list")
+        missing = REQUIRED_CORE - consumer
+        if missing:
+            errs.append(f"ERROR scratch.md [SLP9-SYNC]: required core buzzword(s) {{{', '.join(sorted(missing))}}} absent")
+        return errs
+
+    # Buzzword clean subset: {streamline,empower,supercharge} ⊆ source → no error.
+    assert_clean("buzzword clean subset",
+                 buzz_errs("streamline, empower, supercharge"))
+    # Buzzword full set: consumer == source → no error.
+    assert_clean("buzzword full set",
+                 buzz_errs("streamline, empower, supercharge, effortless, seamless, "
+                           "world-class, revolutionise, leverage, unlock, elevate"))
+    # Buzzword rogue token: consumer adds 'disrupt' (not in source) → error.
+    assert_error("buzzword rogue token",
+                 buzz_errs("streamline, empower, supercharge, disrupt"),
+                 "not in canonical slp-9.md list")
+    # Buzzword inflection (paren-strip): source streamline(d) → streamline;
+    # consumer streamline → match, no error. (Does NOT stem 'streamlined'.)
+    case_count += 1
+    if "streamline" not in BUZZ_SOURCE or "streamlined" in BUZZ_SOURCE:
+        failures.append("FAIL buzzword inflection: streamline(d) should normalize to 'streamline' only")
+    assert_clean("buzzword inflection match",
+                 buzz_errs("streamline, empower, supercharge"))
+    # Buzzword missing core: consumer lacks 'streamline' → required-core error.
+    assert_error("buzzword missing core",
+                 buzz_errs("empower, supercharge"),
+                 "required core buzzword(s)")
 
     # ── Filesystem integration case for collect_errors ───────────────────────
 

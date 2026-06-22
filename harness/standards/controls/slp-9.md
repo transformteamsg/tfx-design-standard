@@ -74,8 +74,8 @@ negative-parallelism density. See `docs/catalog-changes/slp-9-ai-writing-tells.m
 
 **Deterministic half (lint):** case-insensitive scan of user-facing strings for:
 
-- the buzzword list — streamline(d), empower, supercharge, effortless(ly),
-  seamless(ly), world-class, revolutionise, leverage, unlock, elevate — plus the
+- the buzzword list — <!-- tfx-sync:slp9-buzzwords source --> streamline(d), empower, supercharge, effortless(ly),
+  seamless(ly), world-class, revolutionise, leverage, unlock, elevate <!-- /tfx-sync:slp9-buzzwords --> — plus the
   AI-vocabulary list: delve, robust, intricate, foster, vibrant, pivotal,
   testament, "landscape" as an abstract noun;
 - the filler list — "in order to", "it is important to note", "at this point in

@@ -46,9 +46,9 @@ honor its STOP conditions, and update your row when done.
 | 030 | GitHub issues as the system of record for harness feedback — process + docs + labels (#6) | P2 | M | — | TODO (Step 4 label-create gated) |
 | 031 | `gh` feedback-issue helper script — dedup + labels + honest failure (#6) | P2 | M | 030 | TODO |
 | 032 | Backfill historical HF items as issues + confirm logs archived (#6) | P3 | S–M | 030, 031 | TODO (operator-gated) |
-| 033 | Per-page `.md` twins + curated `/llms.txt` index (website) | P1 | L | — | TODO |
+| 033 | Per-page `.md` twins + curated `/llms.txt` index (website) | P1 | L | — | DONE (executed; branch advisor/batch4-execute; middleware→`/md` namespace [not `/_md` — Next treats `_`-folders as private], 32 twins SSG, section-path curls 200 text/markdown, /llms.txt now an index, no JSX leak) |
 | 034 | Make `validate.py` testable (`--self-test`) + wire into prebuild | P1 | M | — | DONE (executed; branch advisor/batch4-execute; behaviour-preserving — `OK: 47 controls valid`, self-test 14 cases, import-silent; prebuild runs validate first) |
-| 035 | `tfx-sync` markers + L0/SLP-9 parity checks + `SYNC.md` | P1 | M | 034 | TODO |
+| 035 | `tfx-sync` markers + L0/SLP-9 parity checks + `SYNC.md` | P1 | M | 034 | DONE (executed; branch advisor/batch4-execute; self-test 27 cases, negative test fires `[L0-SYNC]`; +SYNC.md cross-links in harness README/CONTRIBUTING) |
 | 036 | Browsable per-control detail pages + control `.md` twins (website) | P2 | M | 033 | TODO |
 | 037 | Guidelines single-source — skills/website point at catalog controls | P2 | S–M | 035 (036 soft) | TODO |
 | 038 | Build `checks/content-lint` (CNT-1/3, SLP-9) + `checks/type-scan` (TYP-1/2/4) | P2 | L | — | TODO |

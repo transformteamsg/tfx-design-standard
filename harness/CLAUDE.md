@@ -19,9 +19,11 @@ triggered.
   body. Each product's **own** primary for primary actions and brand moments (TW →
   T&S Blue `#0064FF`; Glow → orange; CaseSync → indigo; COL-1).
   Semantic tokens only — never raw colour/spacing/radius values (TOK-1..3).
+<!-- tfx-sync:L0 source=catalog -->
 - **Non-negotiables (L0) that bind even outside the loop**: AA contrast (A11Y-1),
   keyboard reach + visible focus (A11Y-2), visible labels on every field (A11Y-3),
   destructive actions show consequences and offer undo/confirm (CMP-2).
+<!-- /tfx-sync:L0 -->
 - **Anti-slop is standard, not taste** (SLP-1..11; SLP-1..10 consolidated from the
   TFX-DS site catalog 2026-06-11, SLP-11 added 2026-06-17): no purple/violet gradient
   palettes, gradient text, side-tab card borders, nested cards, identical-card grids,
