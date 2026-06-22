@@ -88,7 +88,7 @@ and `coverage` level — and the three-surrogate fallback is retired for that pr
 the manifest is the evidence source. Run `checks/component-manifest.py <manifest.json>`
 to validate the manifest; when `coverage: "complete"` the import-diff activates
 automatically. When `coverage: "partial"`, the diff stays off and the verdict reads
-"verified against partial manifest (generated: <date>) — diff not run".
+"verified against partial manifest (generated: `<date>`) — diff not run".
 
 **Absent a manifest.** When no manifest exists for the product, use the "asserted, no manifest"
 verdict form and state which of these evidence sources was used: (a) reviewed the product
