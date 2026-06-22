@@ -74,6 +74,52 @@ Pass `--repo-root <path>` to audit a consumer repo's `docs/decisions/` (the defa
 
 **Self-test:** `python3 checks/a11y-static.py --self-test` → `SELF-TEST OK (14 cases)`.
 
+## Content lint (built — static subset)
+
+`python3 checks/content-lint.py <path>...` — scans `.mdx`, `.md`, `.tsx`, `.jsx`, `.ts`, `.js`, `.vue`, `.svelte`, `.css`, and `.html` files for the statically-resolvable subset of CNT-1, CNT-3, and the deterministic (lint) half of SLP-9. Accepts files or directories (recursive). Exit 0 silent on pass; exit 1 with `ERROR` lines on failure.
+
+**Single-source word lists:** the SLP-9 buzzword, AI-vocabulary, filler, and chatbot-artifact lists are **read at runtime** from `standards/controls/slp-9.md` (resolved relative to the check, from the `<!-- tfx-sync:slp9-buzzwords -->` marked span and the named bullets in "How to verify") — never embedded as a third copy, so the lint and the catalog cannot diverge. If `slp-9.md` cannot be found or parsed, the check falls back to a small embedded copy and prints a `NOTE` saying so — never silently.
+
+**Rules:**
+
+- **SLP-9 (L2, lint half):** a word-boundaried, case-insensitive hit on the buzzword or AI-vocabulary list; a hit on the filler or chatbot-artifact phrase lists; or two or more em dashes inside one sentence. Markdown table rows (lines starting `|`) are skipped for the em-dash rule — those dashes are structural per SLP-9's "Do not flag" list.
+- **CNT-3 (L2):** a user-facing string literal (in code) or MDX/MD prose line whose longest sentence exceeds 25 words.
+- **CNT-1 (L1):** a user-facing string that is *only* a raw error code (`ERR_SYNC_500`, `0x…`, an all-caps token), or the bare literal "Something went wrong" with no actionable next step on the same or next line. Conservative — when unsure, does not flag.
+
+**Static-subset caveat — what this script does NOT verify:**
+
+- Non-literal / interpolated strings (`{var}`, template `${…}`, concatenation) — out of static reach; not flagged and not passed silently; the manual / evaluator pass covers them.
+- Whether a string is truly user-facing vs. an internal label, key, className, or path — conservative heuristics; coordinate / SVG-path data (mostly numeric tokens) is excluded.
+- CNT-3's "leads with its purpose" *semantic* half — judgment (evaluator).
+- SLP-9's structural-tell *evaluator* half — negative parallelism, forced triads, copula avoidance, significance inflation, redundant label/helper pairs, em-dash clustering across a paragraph — all judgment (evaluator).
+- CNT-1's full "what happened → what it means → what to do next" anatomy — judgment (evaluator); the script only catches the raw-code-only and bare-"Something went wrong" cases.
+
+**Self-test:** `python3 checks/content-lint.py --self-test` → `SELF-TEST OK (19 cases)`.
+
+## Type scan (built — static subset)
+
+`python3 checks/type-scan.py <path>...` — scans `.css`, `.html`, `.jsx`, `.tsx`, `.js`, `.ts`, `.vue`, and `.svelte` files for the statically-resolvable subset of TYP-1, TYP-2, TYP-3, and TYP-4. Accepts files or directories (recursive). Exit 0 silent on pass; exit 1 with `ERROR` lines on failure (`NOTE` lines for unresolvable cases do not, on their own, fail the run).
+
+**Rules:**
+
+- **TYP-1 fonts (L1):** a CSS `font-family:` or Tailwind `font-[…]` arbitrary value naming a typeface other than Plus Jakarta Sans or Inter (the token names `font-display` / `font-body` / `font-sans` / `--font-display` / `--font-body` and generic CSS keywords are allowed).
+- **TYP-2 size floor (L1):** a `font-size:` or `text-[Npx]` with `N < 14`. The suggest text carries the 11/14 ambiguity (labels may go to 11px; body floor is 14px) since label-vs-body context needs rendered layout.
+- **TYP-2 line-height (L1):** an explicit unitless / em `line-height:` or `leading-[N]` clearly outside the 1.5–1.6 body band (judged with a generous 1.4–1.7 tolerance). px / % line-heights are NOT judged — the ratio needs the font size.
+- **TYP-3 on-scale (L1):** a `text-[Npx]` or `font-size:Npx` whose whole-px `N` is not on the **TFX type scale `{120,96,72,48,32,24,20,18,16,14,12,11}`**. The scale is read at runtime from TYP-3's catalog `verify` field (`Sizes in {…}; checks/type-scan`) so it cannot drift; the same set is the embedded fallback if the catalog can't be read.
+- **TYP-4 all-caps (L2):** a `text-transform: uppercase` / `uppercase` token on a line whose same-line text content runs longer than a short label (> 24 letters). Uppercase inside a wrapped className string with no text on the line is a `NOTE`, not a flag.
+
+**TYP-3 scope decision:** TYP-3 **is** implemented (the preferred path) — the allowed scale is sourced live from the catalog `verify` field, not invented.
+
+**Static-subset caveat — what this script does NOT verify:**
+
+- Font *weights* (TYP-1's "PJS 600 / Inter 400/500/600" half) — weight is rarely co-located with the family and "approved weight" needs the family resolved; deferred to the manual pass.
+- The 11px-vs-14px floor *decision* (TYP-2) — whether an element is a label (11px floor) or body (14px floor) needs rendered context; 11–13px is flagged with the ambiguity noted, not asserted as a definite body violation.
+- Line-heights given in px or % (TYP-2) — the ratio needs the font size, rarely on the same line.
+- All-caps *length* precisely (TYP-4) — "short label" is a rendered-length judgment; uses a same-line letter-count heuristic and `NOTE`s the unresolvable cases.
+- Fonts / sizes set in a separate stylesheet the line-local rule can't see, or composed from variables / class-name interpolation — out of static reach.
+
+**Self-test:** `python3 checks/type-scan.py --self-test` → `SELF-TEST OK (18 cases)`.
+
 Planned for V1 (remaining):
 
 | Check | Controls | Approach |
@@ -90,10 +136,10 @@ Planned for V1 (remaining):
 | `skip-link` | A11Y-10 | Skip-to-main first focusable, or main/nav landmarks present |
 | `announce` | A11Y-11 (deterministic half) | Each async state surface has live-region role XOR focus-target wiring |
 | ~~`token-audit`~~ | ~~TOK-1..3, COL-1..2~~ | ✅ built |
-| `type-scan` | TYP-1..4 | Font families/weights (PJS 600, Inter 400/500/600 only), size floors (body ≥ 14, labels ≥ 11), on-scale sizes, line-height 1.5–1.6, all-caps length |
+| ~~`type-scan`~~ | ~~TYP-1..4~~ | ✅ built (static subset) — `type-scan` covers TYP-1 (font families), TYP-2 (size floor + unitless line-height), TYP-3 (on-scale, scale sourced from the catalog), TYP-4 (all-caps length); font *weights*, the label-vs-body floor decision, and px/% line-heights still need rendered context |
 | `destructive` | CMP-2 (deterministic half) | Enumerate destructive actions; assert consequence surface + undo/confirm exists |
 | `async-states` | CMP-3 (deterministic half) | Enumerate async actions; assert loading/success/error states exist and are reachable |
-| `content-lint` | CNT-1 (raw codes), CNT-3 (sentence length), SLP-9 (deterministic half) | Flag raw error codes as primary copy; sentences > 25 words; the SLP-9 lint lists (buzzwords + AI vocabulary, filler phrases, chatbot artifacts — see `standards/controls/slp-9.md` "How to verify") + em-dash chains in user-facing strings |
+| ~~`content-lint`~~ | ~~CNT-1, CNT-3, SLP-9 (deterministic half)~~ | ✅ built (static subset) — `content-lint` covers CNT-1 (raw codes), CNT-3 (sentence length), and the SLP-9 lint lists (read live from `standards/controls/slp-9.md`) + em-dash chains; the SLP-9 structural-tell evaluator half and the CNT-3 lead-with-purpose semantic half stay judgment |
 | `motion` | MOT-1, SLP-8 | Animation durations within 100–300ms, standard easing, none decorative on critical paths; no bounce/elastic/overshoot easing |
 | `identity` | IDN-1 | Logo/lockup files resolve to the approved asset library; no inline redraws |
 | `slop-scan` | SLP-1..4 | Stylesheet/DOM scan: purple-violet gradient palettes, cyan-on-dark theming, glow accents, gradient text, thick side-tab borders on rounded cards, nested cards |
@@ -102,6 +148,16 @@ Planned for V1 (remaining):
 Wiring (V1): run as a PostToolUse hook on file edits during the implement phase
 (fast subset: token-audit, type-scan, content-lint) and as the verify-phase gate
 (full suite). L0 failures block; L1 failures loop the agent back to implement.
+
+Wiring status: `type-scan` and `content-lint` are **built but not yet wired into
+`package.json` prebuild** (which runs `token-audit` + `a11y-static` over `app
+components lib`). Both currently surface pre-existing violations on this repo's own
+tree — `content-lint` flags long-sentence (CNT-3) prose in `content/`, and `type-scan`
+flags sub-14px `text-[11/12/13px]` labels and tight `leading-[…]` headings across
+`app`/`components` (the documented 11/14 label-floor and display line-height
+ambiguities). Per the harness rule "never wire a failing check into the build,"
+wiring is deferred until the live tree is clean or the flagged values are reviewed and
+either fixed or waived. Until then, run both manually during the implement phase.
 
 Waiver handling: checks must respect inline `tfx-waive <CTL-ID> reason="..."`
 comments for L2 controls only — a waiver on an L0/L1 control is itself reported as a
