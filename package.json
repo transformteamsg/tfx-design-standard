@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "prebuild": "node scripts/check-standards.mjs && python3 harness/checks/token-audit.py app components lib && python3 harness/checks/a11y-static.py app components",
+    "prebuild": "python3 harness/checks/validate.py --self-test && python3 harness/checks/validate.py && node scripts/check-standards.mjs && python3 harness/checks/token-audit.py app components lib && python3 harness/checks/a11y-static.py app components",
     "build": "next build",
     "check:standards": "node scripts/check-standards.mjs",
     "start": "next start",

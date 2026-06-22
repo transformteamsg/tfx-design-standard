@@ -47,7 +47,7 @@ honor its STOP conditions, and update your row when done.
 | 031 | `gh` feedback-issue helper script — dedup + labels + honest failure (#6) | P2 | M | 030 | TODO |
 | 032 | Backfill historical HF items as issues + confirm logs archived (#6) | P3 | S–M | 030, 031 | TODO (operator-gated) |
 | 033 | Per-page `.md` twins + curated `/llms.txt` index (website) | P1 | L | — | TODO |
-| 034 | Make `validate.py` testable (`--self-test`) + wire into prebuild | P1 | M | — | TODO |
+| 034 | Make `validate.py` testable (`--self-test`) + wire into prebuild | P1 | M | — | DONE (executed; branch advisor/batch4-execute; behaviour-preserving — `OK: 47 controls valid`, self-test 14 cases, import-silent; prebuild runs validate first) |
 | 035 | `tfx-sync` markers + L0/SLP-9 parity checks + `SYNC.md` | P1 | M | 034 | TODO |
 | 036 | Browsable per-control detail pages + control `.md` twins (website) | P2 | M | 033 | TODO |
 | 037 | Guidelines single-source — skills/website point at catalog controls | P2 | S–M | 035 (036 soft) | TODO |

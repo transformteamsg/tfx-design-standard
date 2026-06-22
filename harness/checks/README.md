@@ -9,6 +9,8 @@ on failure, silent on success.
 
 `python3 checks/validate.py` — validates `standards/catalog.yaml` against the schema in `standards/README.md`: field presence and allowed values, tier→waiver pairing, `detail:` file existence, detail-frontmatter ↔ catalog consistency, and that every control ID referenced in skills/docs exists in the catalog. Exit 0 on pass, exit 1 with `ERROR` lines on failure. This is the repo's verification baseline — run it before committing any `standards/` change.
 
+**Self-test:** `python3 checks/validate.py --self-test` → `SELF-TEST OK (14 cases)`.
+
 
 ## Token audit (built)
 
