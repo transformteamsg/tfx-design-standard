@@ -74,6 +74,25 @@ Pass `--repo-root <path>` to audit a consumer repo's `docs/decisions/` (the defa
 
 **Self-test:** `python3 checks/a11y-static.py --self-test` → `SELF-TEST OK (14 cases)`.
 
+## Waiver reconcile (built)
+
+`python3 checks/waiver-reconcile.py --src <path>... --records <dir>` — reconciles the two places a waiver can live so neither drifts from the other: inline `tfx-waive <CTL-ID> reason="..."` comments in source/CSS (the syntax `token-audit` defines, here generalised to **all** control prefixes), the "## Waivers granted" table rows in decision records (`docs/decisions/*.md`, skipping `TEMPLATE.md`), and the control's catalog tier. It reuses `audit-record.py`'s `parse_table_rows` / `column_index` / `split_sections` / `find_section` (imported by path, never rewritten). Accepts `--repo-root <path>` (records default to `<repo-root>/docs/decisions`) for consumer repos; the catalog tiers always come from the harness. Exit 0 on a clean reconcile (or NOTEs only); exit 1 on any ERROR.
+
+**ERROR (exit 1) vs NOTE (exit 0):**
+
+- **ERROR — inline tfx-waive on an L0 control** (any prefix): L0 is never waivable, so an inline waiver on `A11Y-1/2/3` or `CMP-2` is always a hard failure. This generalises the L0-never rule beyond the TOK/COL controls `token-audit` already guards.
+- **ERROR — orphan inline waiver:** an inline `tfx-waive <id>` (L1/L2) with no matching recorded waiver row for `<id>` in any scanned record — claimed in code, never approved in a record. Add it to a decision record with a named approver.
+- **ERROR — unknown control id:** a `tfx-waive` whose id is not in `standards/catalog.yaml`.
+- **NOTE — stale recorded waiver:** a recorded waiver row for `<id>` with no inline `tfx-waive <id>` in the scanned source — confirm it is still needed. A **NOTE, not an ERROR**, because the source set scanned may be partial: a recorded waiver looks "stale" only relative to the `--src` paths given, and a partial scan must never be turned into a false hard failure.
+
+A row counts as a recorded waiver only when column 0 holds a control id (`^[A-Z0-9]+-\d+$`); TEMPLATE-style empty / descriptive placeholder rows are ignored, so they raise no false stale NOTE.
+
+**What this script does NOT verify:** waivers in files or records outside the scanned `--src` / `--records` paths (the reconciliation is only as complete as the paths given — run it with the same `--src` breadth as the other checks); whether the recorded *reason* actually justifies the inline usage (judgment — the approver / evaluator); L2-waiver rationale quality. It reads the records; it never edits them.
+
+This closes the loop `token-audit.py` leaves open ("a human closes the decision-record loop") — but only for the scanned paths.
+
+**Self-test:** `python3 checks/waiver-reconcile.py --self-test` → `SELF-TEST OK (7 cases)`.
+
 ## Content lint (built — static subset)
 
 `python3 checks/content-lint.py <path>...` — scans `.mdx`, `.md`, `.tsx`, `.jsx`, `.ts`, `.js`, `.vue`, `.svelte`, `.css`, and `.html` files for the statically-resolvable subset of CNT-1, CNT-3, and the deterministic (lint) half of SLP-9. Accepts files or directories (recursive). Exit 0 silent on pass; exit 1 with `ERROR` lines on failure.

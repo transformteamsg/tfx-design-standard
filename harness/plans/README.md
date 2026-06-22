@@ -53,7 +53,7 @@ honor its STOP conditions, and update your row when done.
 | 037 | Guidelines single-source — skills/website point at catalog controls | P2 | S–M | 035 (036 soft) | DONE (executed; branch advisor/batch4-execute; skill tone table canonical & untouched, website table reconciled UP [+Permission row, +CMP-2 link], prose points at /standards/catalog/cnt-* pages; SYNC.md gains content-guidance section) |
 | 038 | Build `checks/content-lint` (CNT-1/3, SLP-9) + `checks/type-scan` (TYP-1/2/3/4) | P2 | L | — | DONE (executed; branch advisor/batch4-execute; self-test 19+18; TYP-3 scale from catalog verify field; NOT wired to prebuild — surfaces pre-existing findings: 13 CNT-3 long sentences in content/, ~40 TYP-2 small-text in app/components [11/14px ambiguity] → triage in 042) |
 | 039 | Manual-verification evidence ledger (audit-record + review + template) | P3 | M | — | TODO |
-| 040 | Build `checks/waiver-reconcile` — inline `tfx-waive` ↔ records ↔ tiers | P3 | M | — | TODO |
+| 040 | Build `checks/waiver-reconcile` — inline `tfx-waive` ↔ records ↔ tiers | P3 | M | — | DONE (executed; branch advisor/batch4-execute; self-test 7; real-repo clean exit 0 [0 inline waivers, 3 expected CMP-1 stale NOTEs]; reuses audit-record parse_table_rows via importlib, doesn't edit it; unwired per plan) |
 | 041 | Build `checks/reaudit-scope` — re-audit set for a changed control | P3 | M | — | TODO |
 | 042 | End-of-batch parity review — catalog ↔ skills ↔ website all match | P2 | M | 033–041 (capstone) | TODO |
 
