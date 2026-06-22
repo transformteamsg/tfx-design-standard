@@ -54,7 +54,7 @@ honor its STOP conditions, and update your row when done.
 | 038 | Build `checks/content-lint` (CNT-1/3, SLP-9) + `checks/type-scan` (TYP-1/2/3/4) | P2 | L | — | DONE (executed; branch advisor/batch4-execute; self-test 19+18; TYP-3 scale from catalog verify field; NOT wired to prebuild — surfaces pre-existing findings: 13 CNT-3 long sentences in content/, ~40 TYP-2 small-text in app/components [11/14px ambiguity] → triage in 042) |
 | 039 | Manual-verification evidence ledger (audit-record + review + template) | P3 | M | — | DONE (executed; branch advisor/batch4-execute; ledger REQUIRED; assertion 10 + find_ledger_table; self-test 21; all 4 real records migrated honestly [no fabricated evidence] → `OK: 4 records audited`) |
 | 040 | Build `checks/waiver-reconcile` — inline `tfx-waive` ↔ records ↔ tiers | P3 | M | — | DONE (executed; branch advisor/batch4-execute; self-test 7; real-repo clean exit 0 [0 inline waivers, 3 expected CMP-1 stale NOTEs]; reuses audit-record parse_table_rows via importlib, doesn't edit it; unwired per plan) |
-| 041 | Build `checks/reaudit-scope` — re-audit set for a changed control | P3 | M | — | TODO |
+| 041 | Build `checks/reaudit-scope` — re-audit set for a changed control | P3 | M | — | DONE (executed; branch advisor/batch4-execute; read-only query; self-test 8; COL-2 → 4 records [2 direct/2 candidate]; unknown id → exit 1; mutates nothing, imports audit-record without editing it) |
 | 042 | End-of-batch parity review — catalog ↔ skills ↔ website all match | P2 | M | 033–041 (capstone) | TODO |
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJECTED (with one-line rationale)

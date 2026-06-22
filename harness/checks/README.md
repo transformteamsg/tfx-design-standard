@@ -97,6 +97,21 @@ This closes the loop `token-audit.py` leaves open ("a human closes the decision-
 
 **Self-test:** `python3 checks/waiver-reconcile.py --self-test` → `SELF-TEST OK (7 cases)`.
 
+## Reaudit scope (built)
+
+`python3 checks/reaudit-scope.py <CTL-ID>` (or `--category <name>`) — a **read-only query, not a gate**. When a control is added or tightened, already-shipped surfaces are silently out of date "until re-audited"; this answers "which decision records should I re-audit now that control X changed?" It reads two sources, both read-only: `standards/catalog.yaml` `meta.categories` (each control's category = `meta.categories[id.split("-")[0]]`) and the `## Controls in scope` sections of `docs/decisions/*.md` (skipping `TEMPLATE.md`). It reuses `audit-record.py`'s `split_sections` / `find_section` (imported by path, never rewritten). Accepts `--repo-root <path>` to query a consumer repo's `docs/decisions/`; the category map always comes from the harness catalog.
+
+**What it computes:**
+
+- **Directly in scope** — records whose in-scope set contains the target id. For a *changed* control these explicitly used it and must be re-checked against the new clause.
+- **Same-category candidates** — records that list any control sharing the target's category but do **not** list the target id. For a *new* control these surfaces are in the affected domain. They are framed as **candidates to confirm**, not proven-affected — confirm each actually uses the affected pattern. `--category <name>` (a prefix like `COL` or the human name `Colour`) treats every control of that category as the target set.
+
+**Honest limit:** it reasons over **recorded** surfaces (decision records — the harness's ledger of what shipped), **not** the product repo's live code. When the records are complete, the re-audit set is complete; when records are missing, so is the set. Keep records current.
+
+**Exit codes:** exit 0 whenever the query runs — **including an empty result set** (no records matched is a valid answer). Exit 1 only on a usage error: an unknown control id, an unknown `--category`, or a missing records directory.
+
+**Self-test:** `python3 checks/reaudit-scope.py --self-test` → `SELF-TEST OK (8 cases)`.
+
 ## Content lint (built — static subset)
 
 `python3 checks/content-lint.py <path>...` — scans `.mdx`, `.md`, `.tsx`, `.jsx`, `.ts`, `.js`, `.vue`, `.svelte`, `.css`, and `.html` files for the statically-resolvable subset of CNT-1, CNT-3, and the deterministic (lint) half of SLP-9. Accepts files or directories (recursive). Exit 0 silent on pass; exit 1 with `ERROR` lines on failure.
