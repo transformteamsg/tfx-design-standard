@@ -132,6 +132,32 @@ Screenshots captured at 360/768/1280 px: `docs/loop-run/screenshots/{360,768,128
 | CNT-2 | L1 | verified manually: pass | "Student Notes" — plain language (also cited in SKILL.md as a good name example). "Add a note" — imperative verb phrase, no portmanteau. No codenames. |
 | CNT-3 | L2 | verified manually: pass | Subtext: "Add a note to keep track of this student's progress, observations, or conversations." — second person implied (imperative form), active voice, 18 words (≤25). Success: "Note saved." — 2 words. Error: "We couldn't save your note. Check your connection and try again." — two sentences, 7 and 7 words respectively, active voice, second person. |
 
+### Verification ledger
+
+*Compiled from the Deterministic-controls table above — no new evidence; each row
+restates what this record already captured. Every row is `manual`: `checks/` scripts
+were not built at this v0 run (per the note above), so even the `grep`-backed token
+checks were manual spot-checks, not a built `checks/` script run.*
+
+| Control | Method | Evidence |
+|---------|--------|----------|
+| A11Y-1 | manual | heading `--color-text-primary` (#18181B on #FAFAFA, ~18:1); subtext `--color-text-secondary` (#71717A on #FAFAFA, ~5:1); white button text on `--color-brand-500` (#0064FF), ~5.9:1 |
+| A11Y-2 | manual | `.btn:focus-visible` and `.form-textarea:focus` define a visible 2px outline with `--color-focus-ring`; breadcrumb links have `:focus-visible`; all interactive elements keyboard-reachable |
+| A11Y-3 | manual | textarea `id="note-content"` has `<label for="note-content">` "Note"; `aria-describedby="note-hint"` wires the hint; no unlabelled field |
+| A11Y-4 | manual | `.btn` has `min-height: 36px; min-width: 36px` — exceeds 24×24 |
+| A11Y-5 | manual | `@media (prefers-reduced-motion: reduce)` sets near-zero animation/transition duration on all elements; covers `spin` and `form-reveal` |
+| TOK-1 | manual | `grep -nE "#[0-9a-fA-F]{3,8}\b"` (manual spot-check, not a built script) — all matches on lines 19–53 (token block); no raw hex below line 68 |
+| TOK-2 | manual | margin/padding/gap use `var(--space-*)`; only reset (`0`) and `margin: 0 auto` centring off-scale |
+| TOK-3 | manual | all `border-radius` use `var(--radius-*)`; grep for raw `border-radius:` returns 0 non-token matches |
+| TYP-1 | manual | display uses Plus Jakarta Sans; body/UI uses Inter; no other typefaces |
+| TYP-2 | manual | body 16px (≥14), labels 14px (≥11), hint 11px (label floor); body line-height 1.6 (within 1.5–1.6) |
+| TYP-3 | manual | token block defines the TFX scale {11,14,16,18,20,24,32}; all `font-size` use `var(--text-*)` |
+| COL-1 | manual | primary button bg `--color-btn-primary-bg` → `--color-brand-500` → #0064FF (T&S Blue); focus ring same token |
+| CMP-1 | manual | pass-with-caveat — Button/textarea/label/breadcrumb map to Base UI / shadcn; asserted from general catalog knowledge, no manifest; waiver recorded above |
+| CMP-3 | manual | loading/success/error all implemented in code and reachable in the demo (button "Saving…" + `aria-busy`; `#success-banner`; `#error-banner` with CNT-1 anatomy) — but evaluator advisory: none of the three async states were screenshot-captured (only the empty state was) |
+| CNT-2 | manual | "Student Notes", "Add a note" — plain language, imperative verb phrase, no portmanteau |
+| CNT-3 | manual | subtext 18 words, active/second-person-implied; success "Note saved." (2 words); error two sentences (7+7 words), active, second person |
+
 ### Evaluator verdict (design-evaluator subagent)
 
 *Verdict produced by the design-evaluator agent (opus), dispatched by the reviewing orchestrator after the executor's STOP — see FRICTION-REPORT headline finding.*

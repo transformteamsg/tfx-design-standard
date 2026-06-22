@@ -42,13 +42,17 @@ note, ≥ 3 numbered done-criteria in the sprint contract, the evaluator verdict
 pasted verbatim (heuristic: a `VERDICT:` line AND a `QUALITY GRADES` block — a
 paraphrase lacks both), waiver rows carry a non-empty approver and never a waived
 L0, plan approval names an approver or records operator proxy, every referenced
-`docs/` path exists on disk, and the Ratchet section is non-empty ("no proposal —
-nothing uncovered" counts). Exit 0 with `OK: N records audited` on pass; exit 1
-with `ERROR <file>: <message>` lines on failure. This is the record-audit layer of
-the eval workflow (`evals/README.md`); hook-ready for V1 (PostToolUse on
-`docs/decisions/*` edits).
+`docs/` path exists on disk, the Ratchet section is non-empty ("no proposal —
+nothing uncovered" counts), a CMP-1-in-scope record carries exactly one fixed-form
+CMP-1 verdict line, and the Verify verdict carries a **verification ledger** (a
+`| Control | Method | Evidence |` table — each method is `script` / `manual` /
+`unverified`, and a `manual` or `unverified` row must state its evidence/reason, so
+"verified manually" is an auditable claim rather than a prose blob). Exit 0 with
+`OK: N records audited` on pass; exit 1 with `ERROR <file>: <message>` lines on
+failure. This is the record-audit layer of the eval workflow (`evals/README.md`);
+hook-ready for V1 (PostToolUse on `docs/decisions/*` edits).
 
-**Self-test:** `python3 checks/audit-record.py --self-test` → `SELF-TEST OK (14 cases)`.
+**Self-test:** `python3 checks/audit-record.py --self-test` → `SELF-TEST OK (21 cases)`.
 
 Pass `--repo-root <path>` to audit a consumer repo's `docs/decisions/` (the default roots at the harness).
 

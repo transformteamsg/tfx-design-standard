@@ -35,8 +35,11 @@ builder's evidence omits, found this way, is a finding — not an excuse.
 Deterministic controls are primarily the `checks/` scripts' job, not yours — but do
 not *assume* they ran. Only validate, token-audit, and audit-record are built (v0);
 for the rest, ask whether each was verified manually; if neither, say the control is
-unverified rather than passed. Any deterministic violation you can see — in a
-screenshot or in the code — is a finding regardless, belt and braces.
+unverified rather than passed. When you record "verified manually", state what you
+checked and how — it becomes a `manual` row in the VERIFICATION LEDGER (below) that
+the record audit validates, so "verified manually" carries evidence rather than being
+an unauditable claim. Any deterministic violation you can see — in a screenshot or in
+the code — is a finding regardless, belt and braces.
 
 **Findings sort by tier and waiver status, never by how you found them:**
 
@@ -129,6 +132,18 @@ JUDGMENT CONTROL NOTES (one line per in-scope judgment/hybrid control):
 - [control-id] pass | pass-with-caveat | fail — the evidence you judged, quoted.
   For CMP-1, always name your evidence source (manifest diff / product codebase
   read / general stack knowledge) per its detail file's v0-limit clause.
+
+VERIFICATION LEDGER (one row per in-scope control — the record pastes this verbatim):
+| Control | Method | Evidence |
+|---------|--------|----------|
+| A11Y-1  | manual | measured fg/bg with the picker — 5.1:1 at the smallest text |
+| TOK-1   | script | `checks/token-audit.py` clean |
+| A11Y-4  | unverified | needs computed layout — flag for a human |
+  Method is one of `script` / `manual` / `unverified`. A `manual` row MUST name what
+  was checked and how; a `script` row names the script/command; an `unverified` row
+  says why. This is the same fixed-form precedent as the CMP-1 line above — the record
+  audit (`checks/audit-record.py`) validates it, so a manual row with no evidence or a
+  method outside the vocabulary is a defect.
 
 UNCOVERED (defects no control covers — feed the ratchet):
 - ...

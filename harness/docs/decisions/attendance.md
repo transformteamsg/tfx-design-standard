@@ -110,6 +110,28 @@ plus exceptions / loading / success / error state evidence (loading frame captur
 after the evaluator flagged its absence; state-evidence frames rendered at desktop
 width despite 768 filenames — width evidence is the three question-state frames).
 
+### Verification ledger
+
+*Compiled from the Deterministic-controls table and the evaluator verdict above — no
+new evidence; each row restates what this record already captured.*
+
+| Control | Method | Evidence |
+|---------|--------|----------|
+| TOK-1..3, COL-1..2 | script | `python3 checks/token-audit.py docs/loop-run/attendance.html` — PASS (exit 0) |
+| A11Y-1 | manual | token pairs chosen for AA — brand-600 on white, text on tinted backgrounds; human re-check recommended (contrast script unbuilt) |
+| A11Y-2 | manual | all controls are buttons; `:focus-visible` ring tokens; success/error focus moves later verified live-DOM by the orchestrator (`activeElement.id` → "correct" / "error-banner") |
+| A11Y-3 | manual | segmented group `aria-labelledby` the student name; per-button `aria-label` "Status — Name" |
+| A11Y-4 | manual | buttons min 44px; segment buttons 44×32 with full-row spacing — 32px height relies on the spacing exception; human re-check recommended |
+| A11Y-5 | manual | global `prefers-reduced-motion` guard present |
+| TYP-1..3 | manual | PJS 600 display, Inter 400/500/600, sizes on the scale {24,20,18,16,14,12,11} |
+| TYP-4, MOT-1 | manual | no long all-caps; 150–200ms standard easing |
+| CMP-1 | manual | asserted, no manifest — evidence source (c) general Base UI / shadcn knowledge; waiver recorded above |
+| CMP-3 | manual | loading verified in code (attendance.html:422-423: button "Submitting…", disabled, scoped); exceptions/success/error photographed; loading frame `768-loading.png` captured before close |
+| A11Y-11 | manual | modification re-audit: each async state uses exactly one channel; live-DOM checked — loading live-region "Submitting attendance…", after error `activeElement` = error-banner, zero `[role=alert]` in document |
+| CNT-1 | manual | evaluator pass — error copy covers what happened, what to do, and the marks-saved reassurance; no raw code |
+| CNT-2 | manual | evaluator pass — "Attendance", "Submit attendance", "Make a correction" are plain, function-named |
+| CNT-3 | manual | evaluator pass — all sentences second person/active, under 25 words; button labels are fragments |
+
 ### Evaluator verdict (design-evaluator subagent)
 
 *Verdict produced by the design-evaluator agent (opus), dispatched with the contract,

@@ -97,6 +97,28 @@ None — this sprint removes violations rather than waiving them. No L0/L1/L2 wa
   6.12** (after darkening amber-11 → `#8a5300` and lightening subtle bgs to 8%); danger
   4.75. All PASS. (Original warning badge was 4.30 — fail — confirmed by both readings.)
 
+### Verification ledger
+
+*Compiled from the Deterministic-controls bullet, the A11Y-1 contrast bullet, and the
+two evaluator verdicts above — no new evidence; each row restates what this record
+already captured. `script` rows are the prebuild-gated checks (token-audit, a11y-static,
+check-standards) that exited 0; `manual` rows are controls whose scripts are unbuilt
+(contrast, type-scan) or that the evaluator judged.*
+
+| Control | Method | Evidence |
+|---------|--------|----------|
+| TOK-1..3, COL-1..2 | script | `token-audit.py` exits 0 (was exit 1 / ~40 violations); prebuild-gated via `check-standards.mjs` |
+| Catalog integrity | script | `check-standards.mjs` OK (40 controls) |
+| A11Y-2, A11Y-3, A11Y-8 (static subset) | script | `a11y-static.py` exits 0; A11Y-2 also confirmed manually — explicit `focus-visible:outline-(--color-tw-blue)` added on chips, copy-ID button, and both sidebar disclosure buttons |
+| A11Y-1 | manual | contrast computed (calculator + evaluator recompute, script unbuilt): white-on-`--tw-blue` 4.92; success 4.69; warning 6.12 (after amber-11 → `#8a5300`); danger 4.75 — all PASS; original warning 4.30 reproduced as the real fail |
+| A11Y-7 | manual | topbar `<nav aria-label="Primary">` added (topbar.tsx:18); doc sidebar is a `<nav>` |
+| A11Y-10 | manual | skip link is the first focusable element; main/nav landmarks present |
+| TYP-1..3 | manual | type-scan script unbuilt — verified manually: weights capped at 600, sizes banded onto the published scale {11,12,14,16,18,20,24,32,48,72} |
+| SLP-5, SLP-6 | manual | SLP-6 fix verified — overview.tsx three h3 now 16px over 14px body, page h2 20px sits 1.25× above; flat-hierarchy fail condition not met |
+| LAY-2 | manual | `catalog-320.png` is a genuine 320px capture — single-column reflow, no horizontal scroll, reading order intact |
+| LAY-4 | manual | body-text measure ≤ 80ch |
+| COL-1, SLP-1..4, SLP-8 | manual | preserved — established T&S Blue / anti-slop posture unchanged by this compliance pass |
+
 ### Evaluator verdict 1 — full review (pasted verbatim)
 
 VERDICT: pass-with-findings
