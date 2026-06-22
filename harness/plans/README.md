@@ -55,7 +55,8 @@ honor its STOP conditions, and update your row when done.
 | 039 | Manual-verification evidence ledger (audit-record + review + template) | P3 | M | — | DONE (executed; branch advisor/batch4-execute; ledger REQUIRED; assertion 10 + find_ledger_table; self-test 21; all 4 real records migrated honestly [no fabricated evidence] → `OK: 4 records audited`) |
 | 040 | Build `checks/waiver-reconcile` — inline `tfx-waive` ↔ records ↔ tiers | P3 | M | — | DONE (executed; branch advisor/batch4-execute; self-test 7; real-repo clean exit 0 [0 inline waivers, 3 expected CMP-1 stale NOTEs]; reuses audit-record parse_table_rows via importlib, doesn't edit it; unwired per plan) |
 | 041 | Build `checks/reaudit-scope` — re-audit set for a changed control | P3 | M | — | DONE (executed; branch advisor/batch4-execute; read-only query; self-test 8; COL-2 → 4 records [2 direct/2 candidate]; unknown id → exit 1; mutates nothing, imports audit-record without editing it) |
-| 042 | End-of-batch parity review — catalog ↔ skills ↔ website all match | P2 | M | 033–041 (capstone) | TODO |
+| 042 | End-of-batch parity review — catalog ↔ skills ↔ website all match | P2 | M | 033–041 (capstone) | DONE (executed 2026-06-22 @ c66e835; all of 033–041 landed; gate green — validate 47 controls + all self-tests + pnpm build 0 + plugin validate; parity CLEAN: 67 match / 0 drift / 0 needs-human across 3a/3b/3c/3d incl. voice/tone tables identical; record at docs/reviews/batch4-parity-2026-06-22.md; 4 follow-ups recorded [F1 cmp-1 <date> escape → plan 043; F2 13 CNT-3; F3 37 TYP-2; F4 3 stale CMP-1 waivers]) |
+| 043 | Escape the bare `<date>` token in `controls/cmp-1.md` (042 follow-up F1) | P3 | S | — | TODO (review-generated stub; per-control page currently renders cmp-1 body via a graceful `<pre>` fallback — non-blocking) |
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJECTED (with one-line rationale)
 

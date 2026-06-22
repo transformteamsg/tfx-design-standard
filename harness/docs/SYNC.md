@@ -78,6 +78,8 @@ and pointers suffice for v1. The skill's tables are canonical. If they drift in 
 add a `tfx-sync:voice-attributes` block (source = the plugin-shipped skill) and a
 website-optional sub-check.
 
+Automated parity (the `tfx-sync` checks above) is the floor; a periodic human parity review — `docs/reviews/` — covers what the checks can't (twin fidelity, table equivalence, guideline deference). See `docs/reviews/README.md`.
+
 ## Adding a new restated fragment
 
 1. Wrap the restatement in `<!-- tfx-sync:NEWNAME -->` … `<!-- /tfx-sync:NEWNAME -->`,
