@@ -93,7 +93,7 @@ export function CatalogBrowser({ controls }: { controls: Control[] }) {
               <button
                 onClick={() => copy(c.id)}
                 title="Copy control ID"
-                className="rounded-md border border-border bg-accent px-2 py-0.5 font-mono text-[12px] font-semibold hover:border-border-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue)"
+                className="rounded-md border border-border bg-accent px-2 py-0.5 text-[12px] font-semibold hover:border-border-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue)"
               >
                 {copied === c.id ? "copied ✓" : c.id}
               </button>
