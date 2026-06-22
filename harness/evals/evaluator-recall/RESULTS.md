@@ -2,6 +2,33 @@
 
 One entry per run, newest first. Scoring rules live in `expected-findings.yaml`.
 
+## Run 6 — 2026-06-22 (Batch 4 self-run)
+
+- **Trigger:** harness self-run after Batch 4 landed (plans 033–042) + PR #21 controls.
+  Skill bodies changed (035 markers, 037 source-of-truth note, 039 ledger) but no
+  `description:` — recall re-run as the dogfood quality check.
+- **Evaluator:** real `tfx-design-evaluator` agent, design-review rubric. Same dispatch as
+  prior runs (blind copy with PLANT stripped, code-only, all 6 controls in scope, standards
+  path passed).
+- **Verdict returned:** `VERDICT: fail`, 6 blocking findings.
+
+| Plant | Control | Caught? | As |
+|---|---|---|---|
+| 1 | CNT-1 (raw "Error 500") | yes | blocking |
+| 2 | A11Y-3 (placeholder-only label) | yes | blocking (L0) |
+| 3 | CMP-2 (one-click delete-all) | yes | blocking (L0) |
+| 4 | A11Y-11 (role=alert + focus() double-announce) | yes | blocking |
+| 5 | CNT-2 ("SyncFlow" portmanteau) | yes | blocking |
+| 6 | TYP-2 (12px body copy) | yes | blocking |
+
+- **Recall: 6/6** (target ≥5) — pass. **Precision: 0 invented blocking findings**
+  (target 0) — pass; the two UNCOVERED items (no compose field; stub button) were correctly
+  flagged for human review, not as blocking.
+- **L1 placement: stable and correct** — TYP-2 and CNT-2 both BLOCKING (the run-2/4 drift
+  did not recur; the run-5 mechanical rule is holding).
+- **Drift conclusion unchanged:** recall/precision still 6/6 · 0 across all six runs; keep
+  watching L1 severity placement, not recall.
+
 ## Runs 2–5 — 2026-06-11 (post-consolidation calibration loop)
 
 Triggered by the design-review edits in the catalog-consolidation propagation

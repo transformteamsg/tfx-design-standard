@@ -1,48 +1,131 @@
-# Plan 043: Escape the bare `<date>` token in `controls/cmp-1.md` (STUB — specify fully before executing)
+# Plan 043: Escape the bare `<date>` token in `controls/cmp-1.md` so the detail page renders as prose
 
-> **Stub only.** Filed by the Batch 4 parity review (plan 042, follow-up F1). Specify
-> fully before executing — this stub records the problem and the fix shape, not the steps.
+> **Executor instructions**: Follow this plan step by step. Run the verification
+> command and confirm the expected result. If the "STOP conditions" occur, stop
+> and report. Update this plan's row in `plans/README.md` when done (unless a
+> reviewer maintains the index).
+>
+> **Drift check (run first)**: `git diff --stat e1ccae1..HEAD -- harness/standards/controls/cmp-1.md "app/standards/catalog/[id]/page.tsx"`
+> If `cmp-1.md` changed since this plan was written, re-confirm the bare-token line below
+> before editing; on a mismatch, STOP.
 
 ## Status
 
-- **Priority**: P3 (cosmetic-rendering hygiene; the page already renders safely)
+- **Priority**: P3 (cosmetic rendering hygiene; the page already renders safely via a fallback)
 - **Effort**: XS
-- **Risk**: LOW — a one-file escape in a harness control body; read-only over everything else
+- **Risk**: LOW — a one-line escape in a harness control body; read-only over everything else
+- **Depends on**: none. (Originated as plan 042 follow-up F1.)
 - **Category**: docs / harness hygiene
-- **Planned at**: 2026-06-22, from the Batch 4 parity review record
-  (`docs/reviews/batch4-parity-2026-06-22.md`, follow-up F1)
+- **Planned at**: commit `e1ccae1`, 2026-06-22
 
 ## Why this matters
 
-`harness/standards/controls/cmp-1.md` contains bare angle-bracket tokens — `<date>` and
-`<complete|partial>` (around lines 78 and 91) — that MDX cannot parse as text. The
-per-control page `/standards/catalog/cmp-1` therefore falls back to a graceful `<pre>`
-block (the tokens render escaped as `&lt;date&gt;`) instead of rendering the control body
-as normal prose. The `.md` twin is unaffected. This is purely a rendering-quality issue:
-the page is reachable (200) and safe, but the CMP-1 detail body reads as a raw `<pre>`
-dump rather than formatted guidance.
+`harness/standards/controls/cmp-1.md` contains a bare angle-bracket token — `<date>` — **in
+prose** (not inside a code span). MDX reads `<date>` as an unclosed JSX tag, so compiling the
+control body throws. The per-control page `app/standards/catalog/[id]/page.tsx` catches that and
+falls back to rendering the raw body in a `<pre>` block (a deliberate safety net, plan 036). The
+result: `/standards/catalog/cmp-1` is reachable (200) and safe, but its body reads as a raw
+preformatted dump instead of formatted guidance — the only control page that does. The `.md`
+twin is unaffected (it always emits the raw body). This plan removes the one stray token so the
+page renders as normal prose.
 
-## The specific drift / defect
+## Current state
 
-- File: `harness/standards/controls/cmp-1.md`, the two lines carrying `<date>` /
-  `<complete|partial>` inside example strings.
-- Effect: the per-control page renders the body through its `<pre>` fallback path instead
-  of as MDX prose.
+`harness/standards/controls/cmp-1.md` — every `<…>` occurrence (verified by grep):
 
-## Fix shape (specify fully before executing)
+- **Line 71** — `` `<Button>` ``, `` `<Dialog>` ``, `` `<ConfirmRow>` `` — **inside backticks**
+  (inline code). SAFE — do not touch.
+- **Line 78** — `` `CMP-1: verified against .tfx/component-manifest.json (generated: <date>, coverage: <complete|partial>)` ``
+  — the whole string is **inside backticks**. SAFE — do not touch.
+- **Line 79** — `` `CMP-1: asserted, no manifest — manifest absent for <product>` `` — **inside
+  backticks**. SAFE — do not touch.
+- **Line 91** — the **only** offender, a bare token in prose (double-quoted, NOT backticked):
+  ```
+  "verified against partial manifest (generated: <date>) — diff not run".
+  ```
+  Here `<date>` is parsed by MDX as JSX → the compile error that triggers the `<pre>` fallback.
 
-- Escape the angle brackets so MDX treats them as literal text — wrap the example strings
-  in backticks (e.g. `` `... (generated: <date>, coverage: <complete|partial>)` ``) or
-  escape as `\<date\>` — whichever keeps the example readable and matches how other control
-  files show placeholder tokens.
-- Re-run `pnpm build` and confirm `/standards/catalog/cmp-1` renders the body as prose (no
-  `<pre>` fallback) and the `.md` twin is still 200 `text/markdown`.
-- Touch only `controls/cmp-1.md`; do not change the page's fallback logic (it is a correct
-  safety net for any future stray token).
+So the fix is a **single line** (91). The backticked tokens on 71/78/79 are already correct and
+must be left as-is.
+
+## Commands you will need
+
+| Purpose | Command | Expected |
+|---------|---------|----------|
+| Build (recompiles MDX) | `pnpm build` (repo root) | exit 0 |
+| Page renders as prose (not `<pre>`) | serve + curl (see Step 2) | body is formatted HTML, no `<pre>` fallback note |
+| Twin still served | `curl -s -o /dev/null -w '%{http_code} %{content_type}' http://localhost:3000/standards/catalog/cmp-1.md` | `200 text/markdown` |
+
+## Scope
+
+**In scope** (modify): `harness/standards/controls/cmp-1.md` — **line 91 only**.
+
+**Out of scope** (do NOT touch):
+- Lines 71/78/79 (their tokens are already safely backticked).
+- `app/standards/catalog/[id]/page.tsx` — the `<pre>` fallback is a correct safety net for any
+  future stray token; leave it.
+- Any other control file or component.
+
+## Git workflow
+
+- Branch: `advisor/043-cmp1-date-token`. Conventional commit
+  (`fix(catalog): escape bare <date> token in cmp-1.md so the detail page renders as prose`).
+  Do NOT push.
+
+## Steps
+
+### Step 1: Escape the bare token (line 91)
+
+Wrap the `<date>` on line 91 in backticks so MDX treats it as inline code, matching how the same
+token is shown on line 78. Change:
+```
+"verified against partial manifest (generated: <date>) — diff not run".
+```
+to:
+```
+"verified against partial manifest (generated: `<date>`) — diff not run".
+```
+(Backticking just the token keeps the sentence readable. Do NOT alter the surrounding prose.)
+
+**Verify**: `grep -nE '\(generated: <date>\)' harness/standards/controls/cmp-1.md` returns
+nothing (the bare form is gone); `grep -nE '\(generated: `<date>`\)' …` finds the escaped form.
+
+### Step 2: Confirm the page renders as prose
+
+`pnpm build` (exit 0), then serve and check the page no longer uses the fallback:
+- `pnpm start &` (background); wait: `curl --retry 40 --retry-delay 1 --retry-connrefused -sf http://localhost:3000/ -o /dev/null`
+- `curl -s http://localhost:3000/standards/catalog/cmp-1 | grep -c "raw Markdown source"` → **0**
+  (the fallback path renders a visible "Showing the raw Markdown source …" note; 0 means the body
+  now compiled as MDX). Also confirm a normal heading rendered:
+  `curl -s http://localhost:3000/standards/catalog/cmp-1 | grep -c "<h2"` → **> 0**.
+- `curl -s -o /dev/null -w '%{http_code} %{content_type}\n' http://localhost:3000/standards/catalog/cmp-1.md` → `200 text/markdown` (twin unaffected).
+- Stop the server (`kill %1`).
+
+**Verify**: the "raw Markdown source" note count is 0 and at least one `<h2` is present.
 
 ## Done criteria
 
-- [ ] `controls/cmp-1.md` `<date>` / `<complete|partial>` tokens escaped
-- [ ] `/standards/catalog/cmp-1` renders the body as formatted prose, not a `<pre>` fallback
-- [ ] `pnpm build` exits 0; the `.md` twin still returns 200 `text/markdown`
-- [ ] No other file touched
+Machine-checkable. ALL must hold:
+
+- [ ] `cmp-1.md` line 91's `<date>` is backticked; lines 71/78/79 unchanged
+- [ ] `pnpm build` exits 0
+- [ ] `/standards/catalog/cmp-1` renders the body as MDX prose (the "raw Markdown source" fallback note is absent; an `<h2>` is present)
+- [ ] `/standards/catalog/cmp-1.md` still returns `200 text/markdown`
+- [ ] Only `harness/standards/controls/cmp-1.md` modified
+- [ ] `plans/README.md` row updated
+
+## STOP conditions
+
+Stop and report (do not improvise) if:
+
+- After escaping line 91 the page STILL uses the `<pre>` fallback — there is another bare token
+  the grep missed (the build error names the line); escape that one too, or report.
+- The build error points at a backticked token (71/78/79) — that would mean MDX is mis-parsing
+  inside code spans, which is a different (toolchain) problem; STOP and report rather than
+  un-backticking working examples.
+
+## Maintenance notes
+
+- Placeholder tokens in control bodies must always be backticked (`` `<date>` ``) or escaped —
+  the `<pre>` fallback in the detail page is a safety net, not a license to ship bare tokens.
+- A reviewer should confirm only line 91 changed and the page renders as prose.

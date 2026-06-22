@@ -56,7 +56,9 @@ honor its STOP conditions, and update your row when done.
 | 040 | Build `checks/waiver-reconcile` — inline `tfx-waive` ↔ records ↔ tiers | P3 | M | — | DONE (executed; branch advisor/batch4-execute; self-test 7; real-repo clean exit 0 [0 inline waivers, 3 expected CMP-1 stale NOTEs]; reuses audit-record parse_table_rows via importlib, doesn't edit it; unwired per plan) |
 | 041 | Build `checks/reaudit-scope` — re-audit set for a changed control | P3 | M | — | DONE (executed; branch advisor/batch4-execute; read-only query; self-test 8; COL-2 → 4 records [2 direct/2 candidate]; unknown id → exit 1; mutates nothing, imports audit-record without editing it) |
 | 042 | End-of-batch parity review — catalog ↔ skills ↔ website all match | P2 | M | 033–041 (capstone) | DONE (executed 2026-06-22 @ c66e835; all of 033–041 landed; gate green — validate 47 controls + all self-tests + pnpm build 0 + plugin validate; parity CLEAN: 67 match / 0 drift / 0 needs-human across 3a/3b/3c/3d incl. voice/tone tables identical; record at docs/reviews/batch4-parity-2026-06-22.md; 4 follow-ups recorded [F1 cmp-1 <date> escape → plan 043; F2 13 CNT-3; F3 37 TYP-2; F4 3 stale CMP-1 waivers]) |
-| 043 | Escape the bare `<date>` token in `controls/cmp-1.md` (042 follow-up F1) | P3 | S | — | TODO (review-generated stub; per-control page currently renders cmp-1 body via a graceful `<pre>` fallback — non-blocking) |
+| 043 | Escape the bare `<date>` token in `controls/cmp-1.md` (042 follow-up F1) | P3 | XS | — | DONE (executed; branch advisor/batch5-execute; line 91 `<date>` backticked, 71/78/79 untouched; `/standards/catalog/cmp-1` renders as MDX prose — `<pre>` fallback gone, 7 h2; twin still 200) |
+| 044 | Close the type-scan TYP-1 blind spot — flag named `font-mono`/`font-serif` utilities | P1 | S–M | — | DONE (executed; branch advisor/batch5-execute; self-test 23; flags `font-mono` at catalog-browser:96, never weight utilities [font-semibold clean]; validate OK; stays unwired until 045 clears the 3 sites) |
+| 045 | Resolve the `font-mono` TYP-1 self-compliance gap on the site | P2 | S/M | 044 (verify gate) | DONE (executed; branch advisor/batch5-execute; **Option A** chosen by design-lead — `font-mono` removed from catalog-browser:96 / [id]:83 / illo:25, IDs render in Inter; type-scan TYP-1 count now 0; build 0) |
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJECTED (with one-line rationale)
 
@@ -188,6 +190,27 @@ Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJE
   catalog/controls via `../../../standards/…` and must NOT depend on `content/` (the website) or
   on the website being deployed.
 
+### Batch 5 (043–045) — added 2026-06-22 from the harness self-run
+
+- Source: the **harness self-run** on 2026-06-22 (full deterministic suite + the three eval
+  layers + an agent-browser pass over the live site), recorded in
+  `docs/reviews/2026-06-22-harness-self-run.md`. All stamp commit `e1ccae1` and use SHA drift
+  checks. The deterministic gates and evaluator-recall (6/6 · 0 invented) were all green — these
+  plans address the two gaps the agent-browser surfaced plus the open Batch 4 follow-up.
+- **The pair that matters (land together, 044 first):** **044** teaches `checks/type-scan.py` to
+  flag the named `font-mono`/`font-serif` utilities it currently misses (finding L-2 — the TYP-1
+  blind spot); **045** resolves the live `font-mono` usages that blind spot let through (finding
+  L-1), and is **decision-gated** (remove / sanction-a-mono-token-via-ratchet / waive — the
+  design-lead picks). 045's verification (type-scan now TYP-1-clean on the three sites) needs 044
+  landed. If 045 chooses the "sanction" option it edits the catalog (a ratchet) and adds
+  `font-mono` to 044's `ALLOWED_FONT_TOKENS`.
+- **043** (parity-review follow-up F1) is now fully specified: the sole bare-token offender is the
+  prose `<date>` at `cmp-1.md:91`; the backticked tokens on lines 71/78/79 are safe.
+- **Governance:** 043/044 are check/hygiene fixes on the normal PR path (design-lead review). 045
+  is normal PR review UNLESS option B is chosen, which adds a catalog ratchet
+  (`docs/catalog-changes/` propose-only → design-lead approval) for the TYP-1 amendment.
+- **Recommended order:** 044 → 045 (045 needs 044 for its gate); 043 is independent.
+
 ## Findings considered and rejected
 
 - **Tier-waiver mapping duplicated across three files** (standards/README.md,
@@ -271,6 +294,25 @@ Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJE
   and check work in this batch; revisit if they bite. (A Phase-3 *mechanical* approval gate was
   also considered and dropped — plan 026, already merged, added the structured Approve/Adjust ask,
   which covers the practical need.)
+
+### Batch 5 — items deliberately deferred (from the 2026-06-22 self-run)
+
+- **F2 — 13 CNT-3 long-sentence findings in `content/`** (content-lint, recording-only): genuine
+  long-form prose flagged by the CNT-3 ≤25-word heuristic. Not given a weak-executor plan —
+  rewriting long sentences while preserving meaning + voice is editorial judgment best done
+  directly by the design-lead, not from a step-by-step plan. `python3 harness/checks/content-lint.py content`
+  lists them. Low leverage, low risk; do it inline when convenient.
+- **F3 — ~37 TYP-2 small-text findings + the 11/14px label/body heuristic** (type-scan,
+  recording-only): most are the documented 11/14px short-label ambiguity (e.g. the 12px control-ID
+  chips are short labels, defensible). Deliberately NOT "fixed" by demoting 11–13px from ERROR to
+  NOTE — that would also miss a real 12px **body** violation, exactly the evaluator-recall TYP-2
+  plant (plant 6) that must stay caught. A precise label-vs-body split needs rendered context the
+  line-local check lacks. Keep type-scan recording-only for TYP-2; revisit only if a sound
+  label-context heuristic (or an inline opt-out annotation) is designed — a spike, not a quick fix.
+- **F4 — 3 stale CMP-1 waiver NOTEs** (`docs/decisions/attendance.md`, `grade-entry.md`,
+  `student-notes-empty-state.md`): expected — CMP-1 is a process waiver asserted in the verdict,
+  never an inline code comment, so `waiver-reconcile` finds no inline usage to match. Not a defect;
+  a trivial periodic confirm-or-retire the design-lead can do directly. No plan.
 
 ### Post-execution eval (2026-06-15, suite run against `advisor/harness-feedback-all`)
 

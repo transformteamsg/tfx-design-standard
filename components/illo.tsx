@@ -22,7 +22,7 @@ export function Illo({ subject }: { subject: string }) {
         </p>
       </div>
       <figcaption className="mt-2.5">
-        <code className="block select-all rounded-md border border-border bg-surface px-3.5 py-2.5 font-mono text-[12px] leading-[1.6] text-muted-foreground">
+        <code className="block select-all rounded-md border border-border bg-surface px-3.5 py-2.5 text-[12px] leading-[1.6] text-muted-foreground">
           {subject} {SREF}
         </code>
       </figcaption>

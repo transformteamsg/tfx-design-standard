@@ -80,7 +80,7 @@ export default async function ControlDetailPage({
         current={detail.id}
       />
       <div className="flex flex-wrap items-center gap-2">
-        <span className="rounded-md border border-border bg-accent px-2 py-0.5 font-mono text-[12px] font-semibold">
+        <span className="rounded-md border border-border bg-accent px-2 py-0.5 text-[12px] font-semibold">
           {detail.id}
         </span>
         <span
