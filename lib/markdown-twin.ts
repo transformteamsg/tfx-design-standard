@@ -1,6 +1,7 @@
 import { getDoc } from "@/lib/content";
 import { contentMap } from "@/lib/content-map";
 import { getCatalog, getPublicCatalogYaml } from "@/lib/catalog";
+import { getControlDetail, listControlIds } from "@/lib/control-detail";
 
 /* The single source of which `.md` twin URLs exist and how each renders.
    The route handler, generateStaticParams, the /llms.txt index, and the
@@ -266,17 +267,56 @@ function renderCatalogMarkdown(): string {
   return `${header}\n\n${table}${failsBlock}${yamlBlock}`;
 }
 
+/* Honest note shown when a control has no extended detail file. Exported so
+   the HTML detail page renders the identical text — one note, two surfaces. */
+export const NO_EXTENDED_DETAIL =
+  "No extended detail — this control is defined by its catalog entry above. Full rationale and examples are added when a control needs them.";
+
+/* Per-control twins (/standards/catalog/<id>.md): one reader (getControlDetail),
+   the same body the HTML page shows. Header + a tier · check · category line,
+   fails_when, then the canonical controls/<id>.md body or the no-detail note. */
+export function controlMarkdown(id: string): string {
+  const detail = getControlDetail(id);
+  if (!detail) return `# ${id.toUpperCase()}\n\n${NO_EXTENDED_DETAIL}\n`;
+
+  const parts: string[] = [];
+  parts.push(`# ${detail.id} — ${detail.statement}`);
+  parts.push(`${detail.tier} · ${detail.check} · ${detail.category}`);
+  if (detail.fails_when && detail.fails_when.length > 0) {
+    parts.push(
+      "**Fails when:** " + detail.fails_when.join(" · "),
+    );
+  }
+  parts.push(detail.body ?? NO_EXTENDED_DETAIL);
+  return parts.join("\n\n") + "\n";
+}
+
+function controlTwins(): Twin[] {
+  return listControlIds().map((id) => {
+    const detail = getControlDetail(id);
+    const htmlPath = `/standards/catalog/${id}`;
+    return {
+      mdPath: `${htmlPath}.md`,
+      htmlPath,
+      title: detail ? `${detail.id} — ${detail.statement}` : id.toUpperCase(),
+      render: () => controlMarkdown(id),
+    };
+  });
+}
+
 let cached: Twin[] | null = null;
 
 export function allTwins(): Twin[] {
   if (cached) return cached;
-  cached = [...sectionTwins(), ...sectionIndexTwins(), ...singletonTwins(), catalogTwin()];
+  cached = [
+    ...sectionTwins(),
+    ...sectionIndexTwins(),
+    ...singletonTwins(),
+    catalogTwin(),
+    ...controlTwins(),
+  ];
   return cached;
 }
-
-/* Plan 036 hook: per-control `.md` twins (/standards/catalog/<id>.md) will
-   extend allTwins() (or add a sibling registry) and reuse resolveTwin +
-   markdownResponse — keep those reusable, do not fork the header/response logic. */
 
 export function mdPaths(): string[] {
   return allTwins().map((t) => t.mdPath);

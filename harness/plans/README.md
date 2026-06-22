@@ -49,9 +49,9 @@ honor its STOP conditions, and update your row when done.
 | 033 | Per-page `.md` twins + curated `/llms.txt` index (website) | P1 | L | — | DONE (executed; branch advisor/batch4-execute; middleware→`/md` namespace [not `/_md` — Next treats `_`-folders as private], 32 twins SSG, section-path curls 200 text/markdown, /llms.txt now an index, no JSX leak) |
 | 034 | Make `validate.py` testable (`--self-test`) + wire into prebuild | P1 | M | — | DONE (executed; branch advisor/batch4-execute; behaviour-preserving — `OK: 47 controls valid`, self-test 14 cases, import-silent; prebuild runs validate first) |
 | 035 | `tfx-sync` markers + L0/SLP-9 parity checks + `SYNC.md` | P1 | M | 034 | DONE (executed; branch advisor/batch4-execute; self-test 27 cases, negative test fires `[L0-SYNC]`; +SYNC.md cross-links in harness README/CONTRIBUTING) |
-| 036 | Browsable per-control detail pages + control `.md` twins (website) | P2 | M | 033 | TODO |
+| 036 | Browsable per-control detail pages + control `.md` twins (website) | P2 | M | 033 | DONE (executed; branch advisor/batch4-execute; 47 pages + 47 `.md` twins, no-detail fallback note, unknown id 404; `cmp-1.md` bare `<date>` token → graceful `<pre>` MDX fallback [follow-up: escape it]) |
 | 037 | Guidelines single-source — skills/website point at catalog controls | P2 | S–M | 035 (036 soft) | TODO |
-| 038 | Build `checks/content-lint` (CNT-1/3, SLP-9) + `checks/type-scan` (TYP-1/2/4) | P2 | L | — | TODO |
+| 038 | Build `checks/content-lint` (CNT-1/3, SLP-9) + `checks/type-scan` (TYP-1/2/3/4) | P2 | L | — | DONE (executed; branch advisor/batch4-execute; self-test 19+18; TYP-3 scale from catalog verify field; NOT wired to prebuild — surfaces pre-existing findings: 13 CNT-3 long sentences in content/, ~40 TYP-2 small-text in app/components [11/14px ambiguity] → triage in 042) |
 | 039 | Manual-verification evidence ledger (audit-record + review + template) | P3 | M | — | TODO |
 | 040 | Build `checks/waiver-reconcile` — inline `tfx-waive` ↔ records ↔ tiers | P3 | M | — | TODO |
 | 041 | Build `checks/reaudit-scope` — re-audit set for a changed control | P3 | M | — | TODO |

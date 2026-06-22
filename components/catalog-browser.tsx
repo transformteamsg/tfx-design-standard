@@ -3,17 +3,7 @@
 import { useMemo, useState } from "react";
 import clsx from "clsx";
 import type { Control } from "@/lib/catalog";
-
-const tierStyles: Record<string, string> = {
-  L0: "border-danger-muted bg-danger-subtle text-danger",
-  L1: "border-warning-muted bg-warning-subtle text-warning",
-  L2: "border-success-muted bg-success-subtle text-success",
-};
-const tierLabels: Record<string, string> = {
-  L0: "L0 · non-negotiable",
-  L1: "L1 · mandatory",
-  L2: "L2 · recommended",
-};
+import { tierStyles, tierLabels } from "@/lib/tier-style";
 
 export function CatalogBrowser({ controls }: { controls: Control[] }) {
   const [tier, setTier] = useState<string | null>(null);
@@ -119,6 +109,12 @@ export function CatalogBrowser({ controls }: { controls: Control[] }) {
                 {c.check}
               </span>
               <span className="text-[11px] text-muted-foreground">{c.category}</span>
+              <a
+                href={`/standards/catalog/${c.id.toLowerCase()}`}
+                className="ml-auto text-[12px] text-tw-blue underline underline-offset-2"
+              >
+                Details →
+              </a>
             </div>
             <p className="mt-2 text-[16px] font-medium">{c.statement}</p>
             {c.fails_when && (
