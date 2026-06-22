@@ -3,8 +3,9 @@ import { notFound } from "next/navigation";
 import { getDoc } from "@/lib/content";
 import { DocPage } from "@/components/doc-page";
 import { Illo } from "@/components/illo";
+import { mdAlternate } from "@/lib/markdown-twin";
 
-export const metadata = { title: "For agents" };
+export const metadata = { title: "For agents", ...mdAlternate("/for-agents") };
 
 export default function Page() {
   const doc = getDoc("sections", "for-agents");
@@ -17,13 +18,13 @@ export default function Page() {
           href="/llms.txt"
           className="rounded-lg border border-border bg-surface px-4 py-2.5 text-[14px] font-medium hover:border-border-strong"
         >
-          /llms.txt — the whole standard
+          /llms.txt — the curated index
         </Link>
         <Link
           href="/llms-full.txt"
           className="rounded-lg border border-border bg-surface px-4 py-2.5 text-[14px] font-medium hover:border-border-strong"
         >
-          /llms-full.txt — plus control details
+          /llms-full.txt — the whole standard
         </Link>
         <a
           href="/standards/catalog.yaml"

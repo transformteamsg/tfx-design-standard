@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { getDoc, listDocs } from "@/lib/content";
 import { DocPage } from "@/components/doc-page";
+import { mdAlternate } from "@/lib/markdown-twin";
 
 export function generateStaticParams() {
   return listDocs("products").map((d) => ({ slug: d.slug }));
@@ -9,7 +10,7 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const doc = getDoc("products", slug);
-  return { title: doc?.title ?? "products" };
+  return { title: doc?.title ?? "products", ...mdAlternate(`/products/${slug}`) };
 }
 
 export default async function Page({ params }: { params: Promise<{ slug: string }> }) {

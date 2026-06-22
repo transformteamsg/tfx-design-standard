@@ -12,6 +12,10 @@ design-ui loop and the TEMPLATE.md structure:
   6. Plan approval names an approver or records the operator proxy.
   7. Every referenced path under docs/ exists on disk.
   8. Ratchet section is non-empty ("no proposal" text counts as content).
+  9. CMP-1 (if in scope) carries exactly one fixed-form CMP-1 verdict line.
+ 10. Verify verdict carries a verification ledger (| Control | Method |
+     Evidence | table); each method is script / manual / unverified, and a
+     manual or unverified row states its evidence/reason.
 
 Usage:
   python3 checks/audit-record.py [record.md ...]   # default: all
@@ -109,6 +113,31 @@ def column_index(header, name, default):
             if name.lower() in cell.lower():
                 return i
     return default
+
+
+def find_ledger_table(body):
+    """Return (header, rows) for the verification-ledger table in `body` —
+    the first markdown table whose header has both a 'Method' and an
+    'Evidence' column. A section may carry other tables (e.g. a prose
+    'Deterministic controls' table), so this can't use parse_table_rows
+    (which returns the first table); it scans every table and matches by
+    header. Returns (None, []) if no ledger table is present."""
+    current = []
+    for line in body.splitlines() + [""]:
+        stripped = line.strip()
+        if stripped.startswith("|"):
+            current.append(line)
+            continue
+        if current:
+            header, rows = parse_table_rows("\n".join(current))
+            if (
+                header is not None
+                and any("method" in c.lower() for c in header)
+                and any("evidence" in c.lower() for c in header)
+            ):
+                return header, rows
+            current = []
+    return None, []
 
 
 def audit_record(text, name, repo_root):
@@ -237,6 +266,48 @@ def audit_record(text, name, repo_root):
                     "record carries multiple CMP-1 verdict forms — exactly one allowed"
                 )
 
+    # ── 10. Verification ledger (Method/Evidence table in Verify verdict) ──
+    # Required: the Verify verdict section must carry a verification-ledger
+    # table (header has both a Method and an Evidence column). Each row's
+    # method must be from a fixed vocabulary, and a `manual`/`unverified`
+    # row must state its evidence/reason. Modeled on assertion 9's
+    # fixed-form precedent; reuses parse_table_rows / column_index.
+    verdict_section = find_section(sections, "Verify verdict")
+    if verdict_section is not None:
+        header, rows = find_ledger_table(verdict_section)
+        if header is None:
+            messages.append(
+                "Verify verdict section has no verification ledger — add a "
+                "| Control | Method | Evidence | table (one row per in-scope "
+                "control; method is script / manual / unverified)"
+            )
+        else:
+            method_idx = column_index(header, "method", 1)
+            evidence_idx = column_index(header, "evidence", 2)
+            valid_methods = {"script", "manual", "unverified"}
+            for row in rows:
+                control = row[0] if len(row) > 0 else ""
+                method = row[method_idx] if len(row) > method_idx else ""
+                evidence = row[evidence_idx] if len(row) > evidence_idx else ""
+                if not control and not method:
+                    continue  # empty placeholder row
+                m = method.strip().lower()
+                if m not in valid_methods:
+                    messages.append(
+                        f"ledger row '{control}' has invalid method "
+                        f"'{method.strip()}' — use script / manual / unverified"
+                    )
+                    continue
+                if m == "manual" and not evidence.strip():
+                    messages.append(
+                        f"ledger row '{control}' is 'manual' with no evidence "
+                        f"— name what was checked and how"
+                    )
+                if m == "unverified" and not evidence.strip():
+                    messages.append(
+                        f"ledger row '{control}' is 'unverified' with no reason"
+                    )
+
     return messages
 
 
@@ -338,6 +409,12 @@ BLOCKING (must fix before ship):
 QUALITY GRADES:
 - Design quality — strong.
 - Craft — strong.
+
+| Control | Method | Evidence |
+|---------|--------|----------|
+| TOK-1 | script | `checks/token-audit.py` clean (exit 0) |
+| A11Y-1 | manual | measured fg/bg with the picker — 5.1:1 at the smallest text |
+| A11Y-4 | unverified | needs computed layout — flag for a human |
 
 ## Ratchet
 
@@ -515,6 +592,65 @@ def run_self_test():
             "A11Y-1, A11Y-2, TOK-1, CMP-3, CMP-1.",
         ),
         "carries no CMP-1 verdict line",
+    )
+
+    # Case 17 (assertion 10): valid ledger (script + manual-with-evidence +
+    # unverified-with-reason) — passes. PASSING_RECORD already carries this
+    # ledger, so the minimal-record case (Case 1) also exercises it; this is
+    # the explicit, self-describing instance.
+    assert_passes(
+        "valid verification ledger (script/manual/unverified)",
+        PASSING_RECORD,
+    )
+
+    # Case 18 (assertion 10): manual row with empty Evidence cell — fails
+    assert_fails(
+        "ledger manual row with no evidence",
+        PASSING_RECORD.replace(
+            "| A11Y-1 | manual | measured fg/bg with the picker "
+            "— 5.1:1 at the smallest text |",
+            "| A11Y-1 | manual |  |",
+        ),
+        "is 'manual' with no evidence",
+    )
+
+    # Case 19 (assertion 10): invalid method ("eyeballed") — fails
+    assert_fails(
+        "ledger invalid method",
+        PASSING_RECORD.replace(
+            "| A11Y-1 | manual | measured fg/bg with the picker "
+            "— 5.1:1 at the smallest text |",
+            "| A11Y-1 | eyeballed | looked fine |",
+        ),
+        "invalid method",
+    )
+
+    # Case 20 (assertion 10): unverified row with no reason — fails
+    assert_fails(
+        "ledger unverified row with no reason",
+        PASSING_RECORD.replace(
+            "| A11Y-4 | unverified | needs computed layout "
+            "— flag for a human |",
+            "| A11Y-4 | unverified |  |",
+        ),
+        "is 'unverified' with no reason",
+    )
+
+    # Case 21 (assertion 10): Verify verdict with no ledger table — fails
+    # (the assertion is REQUIRED: a Verify verdict must carry a ledger).
+    assert_fails(
+        "no verification ledger in Verify verdict",
+        PASSING_RECORD.replace(
+            "| Control | Method | Evidence |\n"
+            "|---------|--------|----------|\n"
+            "| TOK-1 | script | `checks/token-audit.py` clean (exit 0) |\n"
+            "| A11Y-1 | manual | measured fg/bg with the picker "
+            "— 5.1:1 at the smallest text |\n"
+            "| A11Y-4 | unverified | needs computed layout "
+            "— flag for a human |\n",
+            "",
+        ),
+        "no verification ledger",
     )
 
     if failures:

@@ -177,6 +177,36 @@ Process check note: `checks/audit-record.py` will fail on this record until the
 evaluator verdict is pasted (it asserts a verbatim `VERDICT:` + `QUALITY GRADES`
 block) — expected while the verdict is pending; not run as a pass.
 
+### Verification ledger
+
+*Compiled from the Deterministic-controls table and the evaluator verdict above — no
+new evidence; each row restates what this record already captured. "live-DOM" rows
+are Playwright traces the orchestrator ran, not a built `checks/` script, so the
+method is `manual` with the live-DOM trace as the evidence.*
+
+| Control | Method | Evidence |
+|---------|--------|----------|
+| TOK-1..3, COL-1..2 | script | `python3 checks/token-audit.py docs/loop-run/grade-entry.html` — PASS (exit 0), re-run after the focus-management fix |
+| Catalog integrity | script | `python3 checks/validate.py` — PASS ("OK: 28 controls valid") |
+| A11Y-1 | manual | token pairs reused from the attendance page (AA-checked there); new pair: danger solid `--color-danger-solid` on white ≈ 4.7:1; human re-check recommended |
+| A11Y-2 | manual | native buttons/inputs/dialog; `:focus-visible` ring tokens; focus paths asserted live-DOM (after Esc → `clear-p1`, after clear → `undo-banner`, after undo → `clear-p1`, after dismiss-on-empty → `mark-p1-0`, after success → unchanged) |
+| A11Y-3 | manual | every input `aria-labelledby` row header + visible column label, `aria-describedby` column max (+ cell error when invalid); human re-check of the labelledby pattern recommended |
+| A11Y-4 | manual | buttons min 44px; small banner buttons 32px; header Clear buttons min-height 24px (at the floor); inputs 40px — 24px Clear at the minimum, human re-check |
+| A11Y-5 | manual | global `prefers-reduced-motion` guard |
+| A11Y-6 | manual | no images/icons on the page (vacuous pass) |
+| A11Y-7 | manual | single `h1`, dialog `h2`, semantic `<table>` with caption, `scope="col"/"row"` headers (deterministic half; descriptive-quality half → evaluator) |
+| A11Y-8 | manual | native elements throughout; `aria-invalid` tracks cell state; dialog labelled by its heading (semantics-match half → evaluator) |
+| A11Y-9 | manual | live-DOM — `lang="en"`, descriptive title "Marks — Weighted Assessment 2, P5 Diligence Mathematics · Teacher Workspace" |
+| A11Y-11 | manual | live-DOM — loading live region "Saving marks…"; error/validation focus lands on `error-banner`; clear focus lands on `undo-banner`; zero `[role=alert]`; undo announces via live region (channel-choice judgment → evaluator) |
+| TYP-1..3 | manual | PJS 600 display, Inter 400/500/600, sizes on scale {24,20,18,16,14,12,11}, body line-height 1.5 |
+| TYP-4, MOT-1 | manual | no long all-caps; 150–200ms standard easing only |
+| CMP-1 | manual | asserted, no manifest — evidence source (c) general Base UI / shadcn knowledge; waiver recorded above (operator proxy, flagged for human ratification) |
+| CMP-2 | manual | live-DOM — clear executes only via dialog confirm; consequence copy names column + count; undo restores all values (`mark-p1-0` "" → "22") (copy-quality half → evaluator) |
+| CMP-3 | manual | live-DOM + screenshots — loading/success/error all reachable and photographed (clarity half → evaluator) |
+| CNT-1 | manual | evaluator pass-with-caveat — save-error copy exemplary; validation-banner cause-mismatch is the recorded caveat (over-max string fires for non-numeric input) |
+| CNT-2 | manual | evaluator pass — "Marks", "Save marks", "Clear", "Total"; "Weighted Assessment 2" spelt out |
+| CNT-3 | manual | evaluator pass — second person/active, all sentences ≤ 25 words; labels are fragments |
+
 ### Evaluator verdict (design-evaluator subagent)
 
 *(Dispatched by the orchestrator 2026-06-11 after the executor stopped at Phase 5

@@ -73,9 +73,12 @@ design-harness/
 │   └── README.md            # deterministic check scripts, mapped to control ids (planned)
 └── docs/
     ├── index.html           # visual explainer of how the harness works
+    ├── SYNC.md              # fragment sync: tfx-sync markers + validate.py parity checks
     └── decisions/
         └── TEMPLATE.md      # design decision record — one per page/change
 ```
+
+Fragment sync (markers + validation): [docs/SYNC.md](docs/SYNC.md).
 
 ## Install
 

@@ -4,6 +4,10 @@ import { Illo } from "@/components/illo";
 import { Parallax, Reveal } from "@/components/landing-motion";
 import { Readers, type Reader } from "@/components/readers";
 
+export const metadata = {
+  alternates: { types: { "text/markdown": "/index.md" } },
+};
+
 type WhyItem = { title: string; text: string };
 type TeamMember = { name: string; role: string; focus: string };
 

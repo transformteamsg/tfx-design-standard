@@ -46,6 +46,17 @@ honor its STOP conditions, and update your row when done.
 | 030 | GitHub issues as the system of record for harness feedback — process + docs + labels (#6) | P2 | M | — | TODO (Step 4 label-create gated) |
 | 031 | `gh` feedback-issue helper script — dedup + labels + honest failure (#6) | P2 | M | 030 | TODO |
 | 032 | Backfill historical HF items as issues + confirm logs archived (#6) | P3 | S–M | 030, 031 | TODO (operator-gated) |
+| 033 | Per-page `.md` twins + curated `/llms.txt` index (website) | P1 | L | — | DONE (executed; branch advisor/batch4-execute; middleware→`/md` namespace [not `/_md` — Next treats `_`-folders as private], 32 twins SSG, section-path curls 200 text/markdown, /llms.txt now an index, no JSX leak) |
+| 034 | Make `validate.py` testable (`--self-test`) + wire into prebuild | P1 | M | — | DONE (executed; branch advisor/batch4-execute; behaviour-preserving — `OK: 47 controls valid`, self-test 14 cases, import-silent; prebuild runs validate first) |
+| 035 | `tfx-sync` markers + L0/SLP-9 parity checks + `SYNC.md` | P1 | M | 034 | DONE (executed; branch advisor/batch4-execute; self-test 27 cases, negative test fires `[L0-SYNC]`; +SYNC.md cross-links in harness README/CONTRIBUTING) |
+| 036 | Browsable per-control detail pages + control `.md` twins (website) | P2 | M | 033 | DONE (executed; branch advisor/batch4-execute; 47 pages + 47 `.md` twins, no-detail fallback note, unknown id 404; `cmp-1.md` bare `<date>` token → graceful `<pre>` MDX fallback [follow-up: escape it]) |
+| 037 | Guidelines single-source — skills/website point at catalog controls | P2 | S–M | 035 (036 soft) | DONE (executed; branch advisor/batch4-execute; skill tone table canonical & untouched, website table reconciled UP [+Permission row, +CMP-2 link], prose points at /standards/catalog/cnt-* pages; SYNC.md gains content-guidance section) |
+| 038 | Build `checks/content-lint` (CNT-1/3, SLP-9) + `checks/type-scan` (TYP-1/2/3/4) | P2 | L | — | DONE (executed; branch advisor/batch4-execute; self-test 19+18; TYP-3 scale from catalog verify field; NOT wired to prebuild — surfaces pre-existing findings: 13 CNT-3 long sentences in content/, ~40 TYP-2 small-text in app/components [11/14px ambiguity] → triage in 042) |
+| 039 | Manual-verification evidence ledger (audit-record + review + template) | P3 | M | — | DONE (executed; branch advisor/batch4-execute; ledger REQUIRED; assertion 10 + find_ledger_table; self-test 21; all 4 real records migrated honestly [no fabricated evidence] → `OK: 4 records audited`) |
+| 040 | Build `checks/waiver-reconcile` — inline `tfx-waive` ↔ records ↔ tiers | P3 | M | — | DONE (executed; branch advisor/batch4-execute; self-test 7; real-repo clean exit 0 [0 inline waivers, 3 expected CMP-1 stale NOTEs]; reuses audit-record parse_table_rows via importlib, doesn't edit it; unwired per plan) |
+| 041 | Build `checks/reaudit-scope` — re-audit set for a changed control | P3 | M | — | DONE (executed; branch advisor/batch4-execute; read-only query; self-test 8; COL-2 → 4 records [2 direct/2 candidate]; unknown id → exit 1; mutates nothing, imports audit-record without editing it) |
+| 042 | End-of-batch parity review — catalog ↔ skills ↔ website all match | P2 | M | 033–041 (capstone) | DONE (executed 2026-06-22 @ c66e835; all of 033–041 landed; gate green — validate 47 controls + all self-tests + pnpm build 0 + plugin validate; parity CLEAN: 67 match / 0 drift / 0 needs-human across 3a/3b/3c/3d incl. voice/tone tables identical; record at docs/reviews/batch4-parity-2026-06-22.md; 4 follow-ups recorded [F1 cmp-1 <date> escape → plan 043; F2 13 CNT-3; F3 37 TYP-2; F4 3 stale CMP-1 waivers]) |
+| 043 | Escape the bare `<date>` token in `controls/cmp-1.md` (042 follow-up F1) | P3 | S | — | TODO (review-generated stub; per-control page currently renders cmp-1 body via a graceful `<pre>` fallback — non-blocking) |
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJECTED (with one-line rationale)
 
@@ -127,6 +138,56 @@ Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJE
   these plans edit). **027 reads the live catalog for the next free CMP id** rather than
   hardcoding one, so it can't collide with CMP-5/6.
 
+### Batch 4 (033–041) — added 2026-06-22 from a harness-reliability + agent-readable-content review
+
+- Source: a fresh-context audit (3 explore + 2 design subagents, read-only) for the request
+  "make the setup more reliable; check the controls + guidelines used in the skills are recorded
+  on the website and kept in sync (symlink or other); switch the llms.txt approach to a per-page
+  `.md` twin like Claude docs." All stamp commit `7629f00` and use SHA drift checks.
+- **Architecture decision (drives 034/035/037):** **harness = source · website = publisher
+  (reads harness files through, as `lib/catalog.ts`/`lib/llms.ts` already do) · `validate.py` =
+  the guarantee.** **Git symlinks were rejected** — the real drift is *fragments* (the L0 list
+  inside CLAUDE.md, the buzzword list inside a SKILL), which a symlink can't sync, and a symlink
+  would break plugin portability. The rule: whole-file dup → read-through; plugin-shipped
+  fragment dup → `<!-- tfx-sync:NAME -->` marker + a `validate.py` parity check. Plan 035 records
+  this in `docs/SYNC.md`.
+- **Website vs. harness split:** **033 and 036 are website changes** (the Next.js app at the
+  repo/worktree root — their drift-check paths are repo-root-relative, e.g. `lib/llms.ts`,
+  `content/`); the rest are harness changes under `harness/`. Checks run from `harness/` as
+  `python3 checks/…`; the website builds with `pnpm build`.
+- **Recommended order**: 033 (independent, website) ‖ 034 → 035 → {036 (also needs 033), 037
+  (needs 035)} ; then the reliability sweep 038, 039, 040, 041 (each independent); **042 last** —
+  it is the capstone parity review that confirms the catalog, the skills, and the website all match
+  once the batch has landed. 033/034/035 are the P1 core (the user's explicit asks + the headline
+  drift gap).
+- **042 is a review/acceptance plan, not a feature plan.** It runs the whole built-check gate as a
+  floor, then walks a structured matrix over every control, all five skills, and the published
+  guideline + per-control + `.md`-twin surfaces, recording a verdict + evidence per row and filing a
+  follow-up for any gap. It produces only documentation under `harness/docs/reviews/` and is
+  read-only over everything else — if it finds drift it records it, it never fixes it. It is also
+  usable *incrementally* (rows for an un-landed plan are `n/a`), so it can sanity-check partial
+  progress, not only the finished batch.
+- **Shared-file sequencing (execute one at a time / rebase, don't clobber):**
+  `harness/checks/validate.py` — 034 (refactor) **then** 035 (adds parity sub-checks into the
+  refactored shape); `harness/.claude/skills/tfx-content-style/SKILL.md` — 035 (buzzword markers)
+  + 037 (source-of-truth framing), different regions; `harness/CLAUDE.md` — 035 (L0 marker);
+  `harness/checks/audit-record.py` — 039 (extends it); 040 builds a *separate*
+  `waiver-reconcile.py`, but if both are in flight, land one then rebase so self-test case
+  numbers don't collide; `lib/markdown-twin.ts` + `next.config.mjs` — 033 (creates) then 036
+  (extends). Each plan carries exact "Current state" excerpts + a SHA drift check.
+- **Governance (read carefully — differs from a catalog ratchet):** **no plan in this batch
+  creates or changes a control**, so the catalog ratchet (`docs/catalog-changes/` propose-only →
+  gated commit, used by 023/027/029) does **not** apply. These add *checks, presentation, and
+  process*. Like plan 028 (a check for an existing control, no ratchet record), they take normal
+  **design-lead review** before merge — flagged in each plan that edits a governance-critical
+  file (`validate.py`, `audit-record.py`, the always-on `CLAUDE.md`, or a skill: 034, 035, 037,
+  038, 039, 040). 033, 036, 041 are website/tooling additions on the normal PR path. (This
+  corrects the planning overview's looser "propose-gated" wording: the ratchet is for the
+  catalog, and nothing here touches the catalog's controls.)
+- **Plugin portability** is a hard constraint in every harness-side plan: skills resolve the
+  catalog/controls via `../../../standards/…` and must NOT depend on `content/` (the website) or
+  on the website being deployed.
+
 ## Findings considered and rejected
 
 - **Tier-waiver mapping duplicated across three files** (standards/README.md,
@@ -183,6 +244,33 @@ Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJE
   preference; the "verified manually / don't overstate enforcement" honesty note):
   plans 026 and 028/029 add only the genuinely-missing halves (follow-up-turn structured
   ask; the contrast check + the step-12 standard).
+
+### Batch 4 — items deliberately deferred (not given their own plan)
+
+- **The remaining unbuilt `checks/`** beyond plan 038's two (`content-lint`, `type-scan`) and
+  plan 028's `contrast`: `alt-scan` (A11Y-6), `reduced-motion` (A11Y-5), `structure` (A11Y-7),
+  `targets` (A11Y-4 — needs computed layout, low static yield), `destructive`/`async-states`
+  (CMP-2/3), `motion`, `slop-scan`/`slop-layout`, `identity`. Each is a follow-up plan modeled on
+  038; 038's maintenance note carries the prioritized queue. Not built now to keep 038
+  executor-sized.
+- **An *automated* voice/tone *table* parity check** (the voice-attribute + tone-by-context tables
+  duplicated between `tfx-content-style` and `content/guidelines/voice-tone.mdx`): deferred by plan
+  037 — low drift cost, and a table-parity check crossing the harness↔website boundary is brittle.
+  037 uses explicit pointers instead and records the deferral in `SYNC.md`. **The comparison itself
+  is not dropped — it moves to plan 042's manual parity matrix (3c)**, which lays the two tables
+  side by side as a periodic human review; only the *automation* of that check stays deferred until
+  it proves worth the brittleness.
+- **`.md` content-negotiation via the `Accept` header**: deferred by plan 033 — the `.md` URL
+  suffix (the Claude-docs convention the user asked for) is the v1 surface; an `Accept`-based
+  same-URL variant is a later enhancement.
+- **A remark HTML→MD round-trip stripper** for the `.md` twins: deferred by plan 033 — only
+  `content/guidelines/product-icons.mdx` has body JSX, so a conservative regex strip + a
+  verification grep suffices; the heavier remark round-trip isn't justified yet.
+- **Plugin/catalog version-mismatch detection** and **judgment-control (SLP-5/11) checklists**:
+  raised in the audit as reliability gaps but not planned — lower leverage than the drift/parity
+  and check work in this batch; revisit if they bite. (A Phase-3 *mechanical* approval gate was
+  also considered and dropped — plan 026, already merged, added the structured Approve/Adjust ask,
+  which covers the practical need.)
 
 ### Post-execution eval (2026-06-15, suite run against `advisor/harness-feedback-all`)
 

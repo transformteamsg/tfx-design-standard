@@ -77,7 +77,9 @@ python3 checks/validate.py
 ```
 
 Expected output: `OK: N controls valid` (N will be 23 or higher after your addition).
-A PR with a failing validator will not be reviewed.
+A PR with a failing validator will not be reviewed. Restated fragments (the inline L0
+list, the SLP-9 buzzword summary) stay in sync with their source via `<!-- tfx-sync:… -->`
+markers + `validate.py` parity checks — see [docs/SYNC.md](docs/SYNC.md).
 
 ### (e) PR body — use the template below
 
@@ -100,6 +102,10 @@ but differs in two ways:
   that restates the control**: any skill or check that summarises it (grep the old
   title to find them). The website needs no separate sync — it reads this catalog
   directly. The record lists what was touched.
+- **Compute the re-audit set** — once the clause changes, already-shipped surfaces are
+  silently out of date until re-audited. List the candidate set with
+  `python3 checks/reaudit-scope.py <control-id>` (it reports records that directly list
+  the control plus same-category *candidates* to confirm). Same for a brand-new control.
 
 Gates are the same: `checks/validate.py` must pass (the site repo's
 `scripts/check-standards.mjs` build gate re-verifies the catalog on deploy), and

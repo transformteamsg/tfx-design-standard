@@ -11,6 +11,13 @@ non-native English speakers — carries the UX-writing burden personally. Catalo
 controls CNT-1 (error anatomy), CNT-2 (naming), and CNT-3 (voice mechanics) bind this
 skill.
 
+**Source of truth.** The normative rules are the catalog controls — CNT-1 (error
+anatomy), CNT-2 (naming), CNT-3 (voice mechanics), and SLP-9 (AI-writing tells), each
+with a detail file in `../../../standards/controls/`. This skill is their application
+layer (it travels in the plugin); the website's voice-tone and naming guidelines present
+the same controls for human readers. If any of the three disagree, the catalog control
+wins and the others are corrected.
+
 ## Who you're writing for
 
 Teachers across Singapore — navigating dozens of platforms, relearning seasonal
@@ -55,8 +62,8 @@ stress, or it goes.
 - Choose exactly the words needed to convey a concept or label a control — the
   simplest way to say something is usually the most universal.
 - Avoid ed-tech jargon unless it's universal among teachers.
-- No marketing buzzwords (SLP-9): streamline, empower, supercharge, effortless,
-  seamless, world-class and kin describe nothing — say what the thing does. No
+- No marketing buzzwords (SLP-9): <!-- tfx-sync:slp9-buzzwords --> streamline, empower, supercharge, effortless,
+  seamless, world-class <!-- /tfx-sync:slp9-buzzwords --> and kin describe nothing — say what the thing does. No
   em-dash chains standing in for sentence structure, and no label/sublabel/helper
   triplets that restate each other — if removing one line loses nothing, remove it.
 - Read it aloud — if it sounds robotic, rewrite it.

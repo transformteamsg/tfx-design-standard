@@ -3,8 +3,9 @@ import { getDoc } from "@/lib/content";
 import { sectionInk, SectionTile, TopicRow } from "@/components/thumbnails";
 import { sectionTopics } from "@/lib/directory";
 import { Illo } from "@/components/illo";
+import { mdAlternate } from "@/lib/markdown-twin";
 
-export const metadata = { title: "Overview" };
+export const metadata = { title: "Overview", ...mdAlternate("/overview") };
 
 /* Section tiles: index pages, Apple-HIG style. Art keys pick one
    representative glyph per section. */

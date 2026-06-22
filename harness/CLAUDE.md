@@ -19,9 +19,11 @@ triggered.
   body. Each product's **own** primary for primary actions and brand moments (TW →
   T&S Blue `#0064FF`; Glow → orange; CaseSync → indigo; COL-1).
   Semantic tokens only — never raw colour/spacing/radius values (TOK-1..3).
+<!-- tfx-sync:L0 source=catalog -->
 - **Non-negotiables (L0) that bind even outside the loop**: AA contrast (A11Y-1),
   keyboard reach + visible focus (A11Y-2), visible labels on every field (A11Y-3),
   destructive actions show consequences and offer undo/confirm (CMP-2).
+<!-- /tfx-sync:L0 -->
 - **Anti-slop is standard, not taste** (SLP-1..11; SLP-1..10 consolidated from the
   TFX-DS site catalog 2026-06-11, SLP-11 added 2026-06-17): no purple/violet gradient
   palettes, gradient text, side-tab card borders, nested cards, identical-card grids,
@@ -30,10 +32,18 @@ triggered.
 - **Never edit the catalog to make a failing check pass.** Propose changes via the
   ratchet (lightweight PR + design-lead approval).
 - Built `checks/` scripts: `validate.py` (catalog), `token-audit.py` (TOK-1..3,
-  COL-1..2), `audit-record.py` (decision records). **All other deterministic
-  checks are not built yet** — do not report an unbuilt check as "passed"; say
-  "verified manually" or "unverified" and name what a human should re-check.
-  Don't overstate enforcement.
+  COL-1..2), `audit-record.py` (decision records), `a11y-static.py` (A11Y-2/3 + the
+  A11Y-8 KBD sub-rule, static subset), `component-manifest.py`, `content-lint.py`
+  (CNT-1, CNT-3, SLP-9 lint half — word lists read live from `slp-9.md`),
+  `type-scan.py` (TYP-1/2/3/4, static subset), and `waiver-reconcile.py`
+  (reconciles inline `tfx-waive` comments against decision-record waiver tables
+  and catalog tiers). **The remaining deterministic checks
+  are not built yet** (e.g. `contrast`, `alt-scan`, `reduced-motion`, `structure`,
+  `targets`, `destructive`, `async-states`, `motion`, `slop-scan`, `slop-layout`,
+  `identity`) — do not report an unbuilt check as "passed"; say "verified manually" or
+  "unverified" and name what a human should re-check. Each built check covers only a
+  static subset of its controls (see `checks/README.md` for non-coverage); don't
+  overstate enforcement.
 - Waiver syntax: `tfx-waive <CTL-ID> reason="..."` — L0 never, L1 needs a named human
   approver, L2 needs a specific real reason.
 - Singapore English spelling (British base): organise, colour, centre.
