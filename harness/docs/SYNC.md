@@ -63,6 +63,21 @@ restatement registers itself with the check instead of free-floating.
   from `slp-9.md`**, so the check keeps an anchor even if both lists are edited. If the
   canonical `slp-9.md` list ever drops one of these three, update `REQUIRED_CORE` to match.
 
+## Source of truth — content guidance
+
+Voice, tone, and naming guidance lives once in the catalog controls; the skill and the
+website point at it rather than restating it.
+
+| Artifact | Source (normative) | Consumers | Sync mechanism |
+|---|---|---|---|
+| Voice/tone/naming guidance | catalog controls CNT-1/2/3 + SLP-9 (+ detail files) | `tfx-content-style` skill (applies); `content/guidelines/voice-tone.mdx` + `naming.mdx` (present) | pointers (skill + docs link the controls); SLP-9 word list parity-checked (see `tfx-sync:slp9-buzzwords`) |
+
+A voice/tone **table** parity check is deferred: the voice-attribute and tone-by-context
+tables are duplicated between the skill and `voice-tone.mdx`, but the drift cost is low
+and pointers suffice for v1. The skill's tables are canonical. If they drift in practice,
+add a `tfx-sync:voice-attributes` block (source = the plugin-shipped skill) and a
+website-optional sub-check.
+
 ## Adding a new restated fragment
 
 1. Wrap the restatement in `<!-- tfx-sync:NEWNAME -->` … `<!-- /tfx-sync:NEWNAME -->`,
