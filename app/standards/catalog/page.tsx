@@ -1,8 +1,9 @@
 import { getCatalog } from "@/lib/catalog";
 import { CatalogBrowser } from "@/components/catalog-browser";
 import { Breadcrumb } from "@/components/breadcrumb";
+import { mdAlternate } from "@/lib/markdown-twin";
 
-export const metadata = { title: "Control catalog" };
+export const metadata = { title: "Control catalog", ...mdAlternate("/standards/catalog") };
 
 export default function CatalogPage() {
   const controls = getCatalog();
