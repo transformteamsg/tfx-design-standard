@@ -118,8 +118,17 @@ GENERIC_FAMILY_KEYWORDS = (
     "ui-monospace", "ui-serif", "cursive", "fantasy", "-apple-system",
     "blinkmacsystemfont", "segoe ui", "roboto", "helvetica", "arial",
 )
+# Generics that, used as the PRIMARY family, deliberately pick a non-approved
+# typeface (mono/serif). The sans fallbacks (sans-serif, system-ui,
+# ui-sans-serif) are the standard fallback for the approved Inter/PJS and stay
+# allowed; these do not.
+NON_APPROVED_PRIMARY_GENERICS = {"monospace", "serif", "ui-monospace", "ui-serif"}
 CSS_FONT_FAMILY_RE = re.compile(r"font-family\s*:\s*([^;{}]+)", re.IGNORECASE)
 TW_FONT_ARBITRARY_RE = re.compile(r"\bfont-\[([^\]]+)\]")
+# Named Tailwind family utilities. Only the built-in non-approved *family*
+# utilities are checked here (font-serif / font-mono) — NEVER the weight
+# utilities (font-semibold, font-bold, …), which are not a typeface choice.
+TW_FONT_NAMED_FAMILY_RE = re.compile(r"\bfont-(serif|mono)\b")
 
 
 def _check_font_rule(scan_line):
@@ -129,6 +138,15 @@ def _check_font_rule(scan_line):
     def judge(family_value, source):
         val = family_value.strip().strip("'\"").lower()
         if not val:
+            return
+        # Deliberately-non-approved generic as the PRIMARY family → flag.
+        # (_check_font_rule passes only the first family to judge() for CSS,
+        # so this fires only on the primary, not on a sans fallback.)
+        if val in NON_APPROVED_PRIMARY_GENERICS:
+            hits.append((
+                f'font-family "{family_value.strip()}" ({source})',
+                "use Plus Jakarta Sans (display) or Inter (body) via the font tokens",
+            ))
             return
         # Generic keyword only → not a typeface choice; allow.
         if val in GENERIC_FAMILY_KEYWORDS:
@@ -152,6 +170,16 @@ def _check_font_rule(scan_line):
     for m in TW_FONT_ARBITRARY_RE.finditer(scan_line):
         inner = m.group(1).replace("_", " ")
         judge(inner.split(",")[0], "Tailwind font-[…]")
+    for m in TW_FONT_NAMED_FAMILY_RE.finditer(scan_line):
+        util = "font-" + m.group(1)
+        if util in ALLOWED_FONT_TOKENS:   # a project may sanction one (see plan 045)
+            continue
+        hits.append((
+            f"Tailwind {util} utility (resolves to the default {m.group(1)} stack, "
+            f"not Plus Jakarta Sans or Inter)",
+            f"use font-display/font-body, or define a --{util[5:]} token mapped to an "
+            f"approved face and add '{util}' to ALLOWED_FONT_TOKENS",
+        ))
     return hits
 
 
@@ -482,6 +510,21 @@ def run_self_test():
                  ".h { font-family: 'Plus Jakarta Sans', sans-serif; }", ".css")
     assert_violations("FONT: Tailwind font-[Comic_Sans]",
                       '<h1 className="font-[Comic_Sans_MS]">Title</h1>', ".tsx", ["TYP-1"])
+    # Named family utilities font-mono / font-serif are non-approved → TYP-1.
+    assert_violations("FONT: Tailwind font-mono utility",
+                      '<span className="font-mono text-[12px]">SLP-2</span>', ".tsx", ["TYP-1"])
+    assert_violations("FONT: Tailwind font-serif utility",
+                      '<p className="font-serif">x</p>', ".tsx", ["TYP-1"])
+    # Weight utilities are NOT a typeface choice → never flagged by TYP-1.
+    assert_clean("FONT: font-semibold is a WEIGHT not a family",
+                 '<p className="font-semibold">x</p>', ".tsx")
+    assert_clean("FONT: font-medium weight clean",
+                 '<p className="font-medium">x</p>', ".tsx")
+    # A non-approved generic as the PRIMARY CSS family → TYP-1.
+    # (An approved face with a sans-serif fallback stays clean — covered by
+    # "FONT: CSS Inter clean" above.)
+    assert_violations("FONT: CSS monospace primary",
+                      ".code { font-family: monospace; }", ".css", ["TYP-1"])
 
     # ── TYP-2 line-height ─────────────────────────────────────────────────────
     assert_violations("LINEHEIGHT: 1.2 too tight",

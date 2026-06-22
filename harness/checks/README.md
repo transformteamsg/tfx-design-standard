@@ -140,7 +140,7 @@ This closes the loop `token-audit.py` leaves open ("a human closes the decision-
 
 **Rules:**
 
-- **TYP-1 fonts (L1):** a CSS `font-family:` or Tailwind `font-[…]` arbitrary value naming a typeface other than Plus Jakarta Sans or Inter (the token names `font-display` / `font-body` / `font-sans` / `--font-display` / `--font-body` and generic CSS keywords are allowed).
+- **TYP-1 fonts (L1):** a CSS `font-family:` or Tailwind `font-[…]` arbitrary value naming a typeface other than Plus Jakarta Sans or Inter; the named Tailwind family utilities `font-mono` / `font-serif` (which resolve to a third default typeface stack — but **never** the weight utilities `font-semibold` / `font-bold` / …, which are not a typeface choice); and a non-approved generic — `monospace` / `serif` / `ui-monospace` / `ui-serif` — used as the **primary** CSS `font-family`. Allowed: the token names `font-display` / `font-body` / `font-sans` / `--font-display` / `--font-body`, the sans fallbacks `sans-serif` / `system-ui` / `ui-sans-serif`, and any utility a project sanctions by adding it to `ALLOWED_FONT_TOKENS`.
 - **TYP-2 size floor (L1):** a `font-size:` or `text-[Npx]` with `N < 14`. The suggest text carries the 11/14 ambiguity (labels may go to 11px; body floor is 14px) since label-vs-body context needs rendered layout.
 - **TYP-2 line-height (L1):** an explicit unitless / em `line-height:` or `leading-[N]` clearly outside the 1.5–1.6 body band (judged with a generous 1.4–1.7 tolerance). px / % line-heights are NOT judged — the ratio needs the font size.
 - **TYP-3 on-scale (L1):** a `text-[Npx]` or `font-size:Npx` whose whole-px `N` is not on the **TFX type scale `{120,96,72,48,32,24,20,18,16,14,12,11}`**. The scale is read at runtime from TYP-3's catalog `verify` field (`Sizes in {…}; checks/type-scan`) so it cannot drift; the same set is the embedded fallback if the catalog can't be read.
@@ -156,7 +156,7 @@ This closes the loop `token-audit.py` leaves open ("a human closes the decision-
 - All-caps *length* precisely (TYP-4) — "short label" is a rendered-length judgment; uses a same-line letter-count heuristic and `NOTE`s the unresolvable cases.
 - Fonts / sizes set in a separate stylesheet the line-local rule can't see, or composed from variables / class-name interpolation — out of static reach.
 
-**Self-test:** `python3 checks/type-scan.py --self-test` → `SELF-TEST OK (18 cases)`.
+**Self-test:** `python3 checks/type-scan.py --self-test` → `SELF-TEST OK (23 cases)`.
 
 Planned for V1 (remaining):
 
