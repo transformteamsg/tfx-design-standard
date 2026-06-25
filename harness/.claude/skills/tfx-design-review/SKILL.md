@@ -32,6 +32,14 @@ visible focus state (A11Y-2), role + accessible name (A11Y-8/A11Y-3), and that
 its ARIA state tracks the visual (A11Y-8, per controls/a11y-8.md). A control the
 builder's evidence omits, found this way, is a finding — not an excuse.
 
+**"Preserved" and "established" are not waivers.** When the builder's critique or
+plan lists an element as "what works — preserve", grade it like any other element:
+a preserved or established component is fully in scope for its controls, and its
+contrast, focus, name, and state must be verified, not accepted on the builder's
+say-so. The most expensive misses hide here — a default that was overridden, or a
+long-standing element nobody re-checks. Read the element against its L0/L1 controls
+directly.
+
 Deterministic controls are primarily the `checks/` scripts' job, not yours — but do
 not *assume* they ran. Only validate, token-audit, and audit-record are built (v0);
 for the rest, ask whether each was verified manually; if neither, say the control is
@@ -51,6 +59,14 @@ the code — is a finding regardless, belt and braces.
   in-scope control never goes there, even when you verified it manually because its
   script is unbuilt — file it under BLOCKING/ADVISORY per tier and note "verified
   manually" as the evidence source.
+
+**Before you exclude a finding as "external chrome / out of scope," confirm the
+element actually renders outside the surface.** Read the route's code or DOM to
+establish where it comes from; if it is part of the page you are grading (the
+page's own avatar, header, or badge), it is in scope and a violation on it is a
+finding — not chrome. Excluding an in-surface element as someone else's chrome is
+how an L0 fail slips a review. State your evidence for the boundary ("rendered by
+the shared `AppShell`, not this route") when you exclude.
 
 ## Grading
 

@@ -23,7 +23,11 @@ the absolute path to `standards/` (it ships with the harness, not the product re
 A control's "Evaluator guidance" and "Do not flag" sections define your scope.
 
 independently enumerate the surface's interactive controls from the inventory and the
-route's code; do not limit your review to the screenshots supplied.
+route's code; do not limit your review to the screenshots supplied. **Treat
+"preserved" / "established" elements as gradable, not waved through — verify their
+L0/L1 controls (A11Y-1 contrast especially). Before excluding anything as
+out-of-scope chrome, confirm from the code/DOM that it renders outside the surface;
+a fail on the page's own element is a finding.**
 
 You share the generator's model and standards, so you are a rigorous second read, not
 a fully independent one — when you cannot verify a control from the evidence given,

@@ -88,7 +88,11 @@ you have seen and judged the current state. Before Phase 1's contract:
    catalog controls *and* Kind Utility: what works and should be preserved
    (call out established iconography, radius, layout, and copy that are
    deliberate — do not "fix" them, cf. the conservative-defaults rule in
-   Phase 3/4), and what genuinely underperforms (control violations, hierarchy,
+   Phase 3/4) — **but verify, do not assume: every element you list as
+   "preserve" stays in scope for its controls, so check it against the L0 floor
+   (A11Y-1 contrast especially) before calling it good. "Preserve" means do not
+   restyle a deliberate choice; it never means skip the check** — and what
+   genuinely underperforms (control violations, hierarchy,
    friction in the teacher's task). Ground each point in the screenshot.
 3. The critique's "what underperforms" list **is** the scope of the polish; it
    feeds the Phase 1 contract and the Phase 3 plan. Improvement is the goal —
@@ -289,7 +293,13 @@ Build exactly the approved plan. Constraints, non-negotiable:
   scoped task. If a change to one is genuinely warranted, flag it explicitly as a
   *proposed* change with its rationale and a one-line revert note in the plan/diff
   summary — never silently. Default to the smallest reversible change that meets
-  the contract. (Example: per-section semantic colour-coded icons that are
+  the contract. **Preserving the intent of an element never exempts it from its
+  controls.** A preserved avatar, badge, or icon still must pass A11Y-1
+  (contrast), A11Y-2/-3, and every other in-scope control; "deliberate" protects
+  its *look* from gratuitous restyling, not its *compliance* from verification.
+  If a preserved element fails a control, fixing it is in scope — flag the fix as
+  above, but do not leave the failure standing because the element was
+  "established". (Example: per-section semantic colour-coded icons that are
   decorative `aria-hidden` wayfinding are **not** SLP-1 "rainbow slop" — preserve
   them; neutralising them is a restyle to flag, not a default.)
 - Compose only manifest components (`status: "stable"` from `.tfx/component-manifest.json`
