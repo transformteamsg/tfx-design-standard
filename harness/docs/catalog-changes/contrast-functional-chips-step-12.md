@@ -1,7 +1,8 @@
 # COL-2 broadened: small functional-colour text uses Radix step-12 on a tint
 
 **Date:** 2026-06-25 · **Change type:** scope broadening of an existing control (no new
-control, no tier change) · **Approved by:** `[proposed — pending design-lead approval]`
+control, no tier change) · **Approved by:** design lead (rezailmi, repo owner),
+interactively in session 2026-06-25 — approved as proposed (COL-2 stays L1, deterministic).
 
 This record lives in `docs/catalog-changes/` deliberately: `docs/decisions/` is audited
 by `checks/audit-record.py` against the loop-run template, and this change came from the
@@ -68,7 +69,8 @@ never neutralise the colour system to "fix" it; move the text to step-12 instead
 
 ---
 
-**Gate:** Step 2 (edit COL-2 in `standards/catalog.yaml` + create `controls/col-2.md` +
-the one-line skill rule) must not run until the design lead approves this broadening. If
-the design lead prefers COL-2 become `check: hybrid`, that is a bigger shape change than
-this proposal scopes — re-spec before proceeding.
+**Status:** Step 2 committed 2026-06-25 — COL-2 broadened in `standards/catalog.yaml`
+(title/verify/fails_when), `controls/col-2.md` created with a Radix step table whose ratios
+were computed from the actual scale hexes via `checks/contrast` (amber-11 on amber-3 =
+4.25:1, the HF-9 trap; step-12 clears at 10–12:1), and the one-line step-12 rule added to
+`tfx-design-ui`. Tier/shape unchanged (L1, deterministic); COL-2 was not changed to hybrid.

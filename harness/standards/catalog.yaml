@@ -320,18 +320,22 @@ controls:
     detail: controls/col-1.md
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
 
+  # COL-2 broadened 2026-06-25 — ratchet, design-lead approved (small functional
+  # text uses step-12 on a tint; HF-9). See docs/catalog-changes/contrast-functional-chips-step-12.md
   - id: COL-2
     source: TFX-DS
-    title: Functional colours (success/warning/danger) come from the shared Radix Colors scales, never ad-hoc
+    title: Functional colours (success/warning/danger) come from the shared Radix Colors scales, never ad-hoc; small functional-colour text (≤12px chips/labels) uses the scale's step-12 on a tinted background so it clears AA (A11Y-1)
     tier: L1
     check: deterministic
     phase: [implement, verify]
     applies_to: [page, component]
-    verify: "Success/warning/danger/info colours resolve to Radix scale tokens"
+    verify: "Success/warning/danger/info colours resolve to Radix scale tokens, and small functional-colour text on a tint resolves to step-12 (step-11 on a step-3 tint lands ~4.25:1 and fails AA); contrast computed by checks/contrast / verified manually until wired"
     waiver: documented
     fails_when:
       - custom green/red/amber values
       - red used decoratively
+      - small functional-colour text (≤12px) on a tint uses step-11 (or lower) and falls below 4.5:1
+    detail: controls/col-2.md
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
 
   # ── Components & patterns ─────────────────────────────────────────────

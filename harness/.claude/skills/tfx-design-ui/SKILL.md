@@ -318,6 +318,9 @@ Build exactly the approved plan. Constraints, non-negotiable:
   if the product has one; CMP-1); semantic shadcn tokens only — no raw
   colour, off-scale spacing, or off-scale radii (TOK-1..3); Plus Jakarta Sans /
   Inter only, on-scale sizes (TYP-1..3).
+- Functional colours come from the Radix scales (COL-2); **small functional-colour
+  text (≤12px) on a tint uses step-12, not step-11** — step-11 on a tint dips below
+  the 4.5:1 AA floor (A11Y-1).
 - Visible label on every field (A11Y-3); keyboard reach + focus states (A11Y-2);
   AA contrast (A11Y-1); targets ≥ 24px, 44px on mobile (A11Y-4); respect reduced
   motion (A11Y-5).
