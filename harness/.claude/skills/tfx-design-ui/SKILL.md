@@ -132,8 +132,15 @@ Most deterministic check scripts in `checks/` are **not built yet** (see
   (FOCUS), click handlers on non-focusable elements (KBD), and icon-only buttons
   without an accessible name (NAME). Run it with
   `python3 checks/a11y-static.py <path>...`. This does NOT cover traversal order,
-  computed hit-area, contrast, or ARIA state tracking — those still require a
-  rendered DOM and run as the manual accessibility pass below.
+  computed hit-area, or ARIA state tracking — those still require a
+  rendered DOM and run as the manual accessibility pass below. (A11Y-1 contrast
+  has its own static subset — `checks/contrast.py`, next.)
+- `checks/contrast.py` — **static subset** of A11Y-1: computes WCAG text-contrast
+  ratios for line-local `text-`/`bg-` pairs (or CSS `color:`/`background:`) that
+  resolve to known tokens, and flags sub-AA pairs before render. Run with
+  `python3 checks/contrast.py --tokens <globals.css> <path>...`. It does NOT see
+  inherited/computed backgrounds or infer font size — those stay in the manual
+  contrast pass; unresolvable pairs are reported as NOTEs, never a silent pass.
 - `checks/component-manifest.py` — validates `.tfx/component-manifest.json`; runs
   the CMP-1 import-diff **only when `coverage: "complete"`** (partial manifest → diff
   stays off, reports "partial manifest — diff not run"). Run with
@@ -405,8 +412,14 @@ Run in this order; do not present output to the user while a step is failing:
      focus-visible removal, non-focusable click handlers, icon-only unnamed buttons.
      A11Y-2, A11Y-3, and A11Y-8 are **not fully mechanically verified** by this
      script — it covers the line-local static subset only. The traversal-order,
-     hit-area, contrast, and ARIA-state halves of A11Y-1..8 still run as the manual
+     hit-area, and ARIA-state halves of A11Y-2..8 still run as the manual
      pass below.
+   - `python3 checks/contrast.py --tokens <globals.css> <path>...` — static subset
+     of **A11Y-1**: flags line-local `text-`/`bg-` (or CSS `color:`/`background:`)
+     pairs that resolve to known tokens and fall below 4.5:1. It does NOT replace
+     the manual contrast pass — inherited/computed backgrounds and font-size-aware
+     large-text classification stay manual, and unresolvable pairs come back as
+     NOTEs (never a silent pass).
    - Everything else: verify by hand against the control's detail file and label it
      "verified manually" (see the v0 reality note above).
    For the manual accessibility pass, work through the catalog's A11Y controls in id

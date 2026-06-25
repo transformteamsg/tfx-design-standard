@@ -35,10 +35,12 @@ triggered.
   COL-1..2), `audit-record.py` (decision records), `a11y-static.py` (A11Y-2/3 + the
   A11Y-8 KBD sub-rule, static subset), `component-manifest.py`, `content-lint.py`
   (CNT-1, CNT-3, SLP-9 lint half — word lists read live from `slp-9.md`),
-  `type-scan.py` (TYP-1/2/3/4, static subset), and `waiver-reconcile.py`
+  `type-scan.py` (TYP-1/2/3/4, static subset), `contrast.py` (A11Y-1 text contrast,
+  static subset — line-local fg/bg pairs that resolve to known tokens; run with
+  `--tokens <globals.css>`), and `waiver-reconcile.py`
   (reconciles inline `tfx-waive` comments against decision-record waiver tables
   and catalog tiers). **The remaining deterministic checks
-  are not built yet** (e.g. `contrast`, `alt-scan`, `reduced-motion`, `structure`,
+  are not built yet** (e.g. `alt-scan`, `reduced-motion`, `structure`,
   `targets`, `destructive`, `async-states`, `motion`, `slop-scan`, `slop-layout`,
   `identity`) — do not report an unbuilt check as "passed"; say "verified manually" or
   "unverified" and name what a human should re-check. Each built check covers only a
