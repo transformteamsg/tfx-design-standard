@@ -11,7 +11,7 @@
 
 meta:
   version: "0.1"
-  updated: "2026-06-17"
+  updated: "2026-06-25"
   waiver_syntax: 'tfx-waive <ID> reason="<specific reason>"'
   categories:
     A11Y: Accessibility
@@ -320,18 +320,22 @@ controls:
     detail: controls/col-1.md
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
 
+  # COL-2 broadened 2026-06-25 — ratchet, design-lead approved (small functional
+  # text uses step-12 on a tint; HF-9). See docs/catalog-changes/contrast-functional-chips-step-12.md
   - id: COL-2
     source: TFX-DS
-    title: Functional colours (success/warning/danger) come from the shared Radix Colors scales, never ad-hoc
+    title: Functional colours (success/warning/danger) come from the shared Radix Colors scales, never ad-hoc; small functional-colour text (≤12px chips/labels) uses the scale's step-12 on a tinted background so it clears AA (A11Y-1)
     tier: L1
     check: deterministic
     phase: [implement, verify]
     applies_to: [page, component]
-    verify: "Success/warning/danger/info colours resolve to Radix scale tokens"
+    verify: "Success/warning/danger/info colours resolve to Radix scale tokens, and small functional-colour text on a tint resolves to step-12 (step-11 on a step-3 tint lands ~4.25:1 and fails AA); contrast computed by checks/contrast / verified manually until wired"
     waiver: documented
     fails_when:
       - custom green/red/amber values
       - red used decoratively
+      - small functional-colour text (≤12px) on a tint uses step-11 (or lower) and falls below 4.5:1
+    detail: controls/col-2.md
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
 
   # ── Components & patterns ─────────────────────────────────────────────
@@ -416,6 +420,24 @@ controls:
       - tabular data rendered as stacked cards or divs instead of a real table (A11Y-7)
       - a table that can be empty or slow has no designed empty or loading state (CMP-3)
     detail: controls/cmp-6.md
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
+  # CMP-7 added 2026-06-25 — ratchet, design-lead approved (component-default
+  # consistency, HF-19). See docs/catalog-changes/component-default-consistency.md
+  - id: CMP-7
+    source: TFX-DS
+    title: Components stay consistent with their design-system defaults and with sibling-page usage — overriding a default's colour/contrast/shape, or breaking a control group's shared resting affordance, is a finding unless justified
+    tier: L2
+    check: judgment
+    phase: [plan, implement, verify]
+    applies_to: [page, component]
+    verify: "Evaluator: the surface's components use their design-system defaults; any override of a default that changes colour, contrast, or shape is flagged (and its contrast re-checked under A11Y-1), the surface's component usage matches sibling pages, and a control group's members share one resting affordance; deterministic override-detection planned once the component manifest (CMP-1) is wired"
+    waiver: rationale
+    fails_when:
+      - a design-system component default is overridden in a way that changes colour, contrast, or shape with no recorded reason
+      - a component is used differently here than on sibling pages with no reason
+      - members of one control group (toggle set, segmented control) do not share a resting affordance — only the selected one reads as interactive
+    detail: controls/cmp-7.md
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
 
   # ── Content & naming ──────────────────────────────────────────────────

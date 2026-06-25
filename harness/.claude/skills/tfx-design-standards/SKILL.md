@@ -93,3 +93,9 @@ propose, the human decides. The bar for L0/L1 is high; the bar for L2 is evidenc
 Citizen-service patterns (one-thing-per-page, government banners) enter only via
 ratchet evidence — these products are professional daily-use workspaces, not
 transactional citizen services.
+
+This ratchet governs **control proposals** (records + design-lead approval). General
+harness *feedback / friction* (skill confusion, a missing check, a process or onboarding
+nit) is filed as a **GitHub issue** instead — the system of record — per
+`docs/harness-feedback.md`. A feedback issue may spawn a control proposal recorded here,
+but the two are not the same: the issue tracks the feedback, the record specs the control.

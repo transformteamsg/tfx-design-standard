@@ -14,43 +14,35 @@ You are a guide, not the loop and not the grader. Real design work belongs to
 
 ## Run it in order — one step at a time, wait for the reply
 
-**1. Show the menu, then place them.** First show what the harness offers, then
-ask which they want to run first — most first-timers pick `tfx-design-ui` and
-learn by doing.
+**1. Lead with what the harness is — the gist, not the manual.** A few lines, before
+any question; for depth, point to the canonical source rather than reproducing it
+here (reproduced text drifts):
 
-The harness skills:
+- **The one promise: intent without loss.** What they mean is written down as a
+  contract in phase 1 and graded against at every later phase.
+- **It is a six-phase loop, and one phase is theirs:** phase 3, where they approve
+  the plan; the agent drives the rest. The full procedure lives in `tfx-design-ui`.
+- **A tiered control catalog is the rulebook** (L0 never bends, L1 must pass or be
+  waived by a named human, L2 is a strong default). They never memorise it; the
+  agent loads and applies it. Mechanics and waivers live in `tfx-design-standards`.
 
-- **tfx-design-ui** — design or change a page, screen, form, flow, or component
-  (the full loop). The usual starting point.
-- **tfx-content-style** — write or review UI copy only (voice & tone, error
-  messages, naming, anti-AI-writing). Enough on its own for copy-only edits.
-- **tfx-design-standards** — read, filter, apply, or grow the control catalog;
-  waiver questions (can I waive this? who approves?).
-- **tfx-design-onboarding** — this guided tour (you're in it).
-- **tfx-design-evaluator** — the grader (an agent, not a skill you run); the loop
-  spawns it at the verify phase to review a finished design.
+**2. Route by run-shape — one question.** Ask what they want to do, framed by the
+shape of the run, not a list of tools:
 
-Then ask one question — which would they like to run first? Route the answer:
-- "design or change a page" / picks `tfx-design-ui` → go to step 3.
-- "understand the harness first" → give the step-2 orientation, then step 3.
-- "write/review copy" → hand off to `tfx-content-style` and stop.
-- "catalog / waiver question" → hand off to `tfx-design-standards` and stop.
-- "set up a product repo" → wrong tool: point to the team onboarding guide
-  (`../../../docs/ONBOARDING.md`, relative to this SKILL.md) and stop.
+- **(1) Review and redesign an existing page** — critique the current surface, then
+  improve it through the full loop → start `tfx-design-ui` (it captures the page and
+  critiques it before Phase 1). Go to step 3.
+- **(2) A new page or feature, from your intent and goal** — the full loop from a
+  blank start → start `tfx-design-ui`. Go to step 3.
+- **(3) A single, focused run** — not a full page. Ask which:
+  - write or review UI copy only → hand off to `tfx-content-style` and stop.
+  - a catalog or waiver question (can I waive this? who approves?) → hand off to
+    `tfx-design-standards` and stop.
 
-**2. Orientation — the gist, not the manual.** A few lines only; for depth, point to the
-canonical source rather than reproducing it here (reproduced text drifts):
-
-- **The one promise: intent without loss.** What they mean is written down as a contract
-  in phase 1 and graded against at every later phase.
-- **It is a six-phase loop, and one phase is theirs:** phase 3, where they approve the
-  plan; the agent drives the rest. The full procedure lives in the `tfx-design-ui` skill
-  — send them there for phase detail instead of restating it.
-- **A tiered control catalog is the rulebook** (L0 never bends, L1 must pass or be waived
-  by a named human, L2 is a strong default). They never memorise it; the agent loads and
-  applies it. Mechanics and waivers live in `tfx-design-standards`.
-
-That is enough to start. Resist giving more — the loop itself is the lesson.
+If they ask to **set up a product repo to use the harness**, that is the wrong tool:
+point them to the team onboarding guide (`../../../docs/ONBOARDING.md`, relative to
+this SKILL.md) and stop. (The grader, `tfx-design-evaluator`, is an agent the loop
+spawns at verify — not something they run; mention it only if asked.)
 
 **3. Hand off to a real run.** Ask what they would build; a real, small page beats a toy
 one. Tell them you are starting the loop, then **invoke `tfx-design-ui`** on it. Do not

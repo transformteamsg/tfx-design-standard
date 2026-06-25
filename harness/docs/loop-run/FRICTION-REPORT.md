@@ -1,5 +1,9 @@
 # Friction report — Design loop run 004
 
+> **Archived (2026-06-25).** Harness feedback is now filed as GitHub issues — the system
+> of record. See `docs/harness-feedback.md`. This report is a read-only historical record
+> of loop run 004; do not append new feedback here.
+
 **Run date:** 2026-06-10 / 2026-06-11
 **Task:** Design an empty state for Student Notes in Teacher Workspace.
 **Run type:** End-to-end unattended exercise of the design-page loop.

@@ -78,6 +78,26 @@ Pass `--repo-root <path>` to audit a consumer repo's `docs/decisions/` (the defa
 
 **Self-test:** `python3 checks/a11y-static.py --self-test` → `SELF-TEST OK (14 cases)`.
 
+## Contrast scan (built — static subset)
+
+`python3 checks/contrast.py --tokens <globals.css> <path>...` — computes WCAG 2.1 text-contrast ratios (A11Y-1) for the subset that is statically resolvable: a foreground and a background colour set together on the **same line** (class string or CSS rule) where both resolve to known token colours. This is the static half of A11Y-1 that needs no rendered DOM — the complement to `a11y-static.py`, whose docstring lists contrast as out of scope. Scans the same extensions as `a11y-static.py`. Exit 0 on pass or NOTEs-only; exit 1 with `ERROR` lines on any sub-AA pair.
+
+**Token resolution (`--tokens <file>`):** the colour map is built from a product's CSS token file (for this repo's own site, `../app/globals.css` from `harness/`). It resolves direct hex, `var(--other)` chains (transitively, cycle-safe), `color-mix(in oklab, var(--a) p%, <b>)` (mixed in OKLab per the CSS spec), and `@theme inline` aliases (`--color-foo: var(--bar)`) so a Tailwind `text-foo`/`bg-foo` utility resolves through. An unresolved token stays unresolved — never guessed.
+
+**What counts as a candidate (line-local):** a `text-<colour>` **and** a `bg-<colour>` on the same Tailwind class string (bare names that resolve to a token colour, or arbitrary `text-[#hex]`/`bg-[var(--t)]`), or a CSS rule / `style="…"` with both `color:` and `background[-color]:`.
+
+**Thresholds:** ratio `< 3.0` → ERROR (fails even large text); `3.0 ≤ ratio < 4.5` → ERROR noting it passes only as large text (≥24px / 18.66px bold — confirm the size); `≥ 4.5` → clean.
+
+**Unresolvable, never silent:** when a candidate pair is detected but a colour can't be resolved (unknown token, dynamic/`clsx` arbitrary value), the check emits a `NOTE … — verify manually` and exits 0 — it never passes silently and never raises a false ERROR.
+
+**Static-subset caveat — what this script does NOT verify:**
+
+- **Inherited / computed backgrounds.** A rule or class that sets only a text colour (background inherited from a parent) is **not** a candidate — there is no background to compare against, so it is skipped, not flagged. This is the largest false-negative surface and remains the manual / axe pass's job.
+- **Font-size-dependent large-text classification.** The 3.0–4.5 band is flagged conservatively with a "confirm the text size" note; the check does not infer font size line-locally.
+- **Non-text (UI component) contrast**, `color-mix` in spaces other than `oklab`, multi-line CSS rules, and dynamic class names beyond an arbitrary value it can read.
+
+**Self-test:** `python3 checks/contrast.py --self-test` → `SELF-TEST OK (15 cases)` (path-independent; uses inline temp fixtures).
+
 ## Waiver reconcile (built)
 
 `python3 checks/waiver-reconcile.py --src <path>... --records <dir>` — reconciles the two places a waiver can live so neither drifts from the other: inline `tfx-waive <CTL-ID> reason="..."` comments in source/CSS (the syntax `token-audit` defines, here generalised to **all** control prefixes), the "## Waivers granted" table rows in decision records (`docs/decisions/*.md`, skipping `TEMPLATE.md`), and the control's catalog tier. It reuses `audit-record.py`'s `parse_table_rows` / `column_index` / `split_sections` / `find_section` (imported by path, never rewritten). Accepts `--repo-root <path>` (records default to `<repo-root>/docs/decisions`) for consumer repos; the catalog tiers always come from the harness. Exit 0 on a clean reconcile (or NOTEs only); exit 1 on any ERROR.

@@ -88,7 +88,11 @@ you have seen and judged the current state. Before Phase 1's contract:
    catalog controls *and* Kind Utility: what works and should be preserved
    (call out established iconography, radius, layout, and copy that are
    deliberate — do not "fix" them, cf. the conservative-defaults rule in
-   Phase 3/4), and what genuinely underperforms (control violations, hierarchy,
+   Phase 3/4) — **but verify, do not assume: every element you list as
+   "preserve" stays in scope for its controls, so check it against the L0 floor
+   (A11Y-1 contrast especially) before calling it good. "Preserve" means do not
+   restyle a deliberate choice; it never means skip the check** — and what
+   genuinely underperforms (control violations, hierarchy,
    friction in the teacher's task). Ground each point in the screenshot.
 3. The critique's "what underperforms" list **is** the scope of the polish; it
    feeds the Phase 1 contract and the Phase 3 plan. Improvement is the goal —
@@ -128,8 +132,15 @@ Most deterministic check scripts in `checks/` are **not built yet** (see
   (FOCUS), click handlers on non-focusable elements (KBD), and icon-only buttons
   without an accessible name (NAME). Run it with
   `python3 checks/a11y-static.py <path>...`. This does NOT cover traversal order,
-  computed hit-area, contrast, or ARIA state tracking — those still require a
-  rendered DOM and run as the manual accessibility pass below.
+  computed hit-area, or ARIA state tracking — those still require a
+  rendered DOM and run as the manual accessibility pass below. (A11Y-1 contrast
+  has its own static subset — `checks/contrast.py`, next.)
+- `checks/contrast.py` — **static subset** of A11Y-1: computes WCAG text-contrast
+  ratios for line-local `text-`/`bg-` pairs (or CSS `color:`/`background:`) that
+  resolve to known tokens, and flags sub-AA pairs before render. Run with
+  `python3 checks/contrast.py --tokens <globals.css> <path>...`. It does NOT see
+  inherited/computed backgrounds or infer font size — those stay in the manual
+  contrast pass; unresolvable pairs are reported as NOTEs, never a silent pass.
 - `checks/component-manifest.py` — validates `.tfx/component-manifest.json`; runs
   the CMP-1 import-diff **only when `coverage: "complete"`** (partial manifest → diff
   stays off, reports "partial manifest — diff not run"). Run with
@@ -241,19 +252,24 @@ Expand the chosen option into a plan:
 
 **Stop. The user approves the plan before any implementation.** This is the cheapest
 place for human judgment — structural mistakes caught here cost a conversation, not a
-rebuild. **Present first, ask second**: the full plan goes in your message body, and
-the approval ask is a plain-text question at the END of that same message — never a
-modal/option dialog in the same turn as the plan, which forces a decision before the
-reader has read what they're deciding on. Wait for an explicit typed answer — a vague
-"continue" is not plan sign-off; confirm what they are approving. (Option dialogs are
-fine for the Phase 2 pick, where the options are short enough to read inside the
-dialog itself.)
+rebuild. The gate runs across **two turns**:
 
-At the Phase 2 option pick and at continuation/verify gates, a structured
-**Approve / Adjust** question is preferred over free text. Never use an option
-dialog in the *same turn* as the Phase 3 plan (the reader must read the plan
-first) — there, the plan goes in the message body and the ask is plain text at
-the end, as above.
+- **Turn 1 — present the plan.** The full plan goes in your message body. Close with
+  a plain-text line that you will ask for approval next — **never a modal/option
+  dialog in the same turn as the plan**, which forces a decision before the reader
+  has read what they're deciding on.
+- **Turn 2 — the structured ask.** In the follow-up turn, ask for sign-off with a
+  structured **Approve / Adjust** `AskUserQuestion` — this is the documented Phase-3
+  default. "Approve" proceeds to implement; "Adjust" sends you back to revise the
+  plan (then re-present and re-ask). A free-text approval is still accepted; a vague
+  "continue" is not — confirm what they are approving.
+
+A structured **Approve / Adjust** question is the default at the Phase 2 option pick,
+at the Phase 3 plan gate (in the follow-up turn, per the two-turn sequence above), and
+at continuation/verify gates. The one hard rule: **never an option dialog in the same
+turn as the Phase 3 plan** — the reader must read the plan first, so turn 1 is the
+plan in the message body and turn 2 is the structured ask. (At the Phase 2 pick the
+dialog may be same-turn, because the options are short enough to read inside it.)
 
 In an **unattended run** with no human reachable, proxy approval is
 permitted only when the operator authorized it up front — record it verbatim as
@@ -289,13 +305,22 @@ Build exactly the approved plan. Constraints, non-negotiable:
   scoped task. If a change to one is genuinely warranted, flag it explicitly as a
   *proposed* change with its rationale and a one-line revert note in the plan/diff
   summary — never silently. Default to the smallest reversible change that meets
-  the contract. (Example: per-section semantic colour-coded icons that are
+  the contract. **Preserving the intent of an element never exempts it from its
+  controls.** A preserved avatar, badge, or icon still must pass A11Y-1
+  (contrast), A11Y-2/-3, and every other in-scope control; "deliberate" protects
+  its *look* from gratuitous restyling, not its *compliance* from verification.
+  If a preserved element fails a control, fixing it is in scope — flag the fix as
+  above, but do not leave the failure standing because the element was
+  "established". (Example: per-section semantic colour-coded icons that are
   decorative `aria-hidden` wayfinding are **not** SLP-1 "rainbow slop" — preserve
   them; neutralising them is a restyle to flag, not a default.)
 - Compose only manifest components (`status: "stable"` from `.tfx/component-manifest.json`
   if the product has one; CMP-1); semantic shadcn tokens only — no raw
   colour, off-scale spacing, or off-scale radii (TOK-1..3); Plus Jakarta Sans /
   Inter only, on-scale sizes (TYP-1..3).
+- Functional colours come from the Radix scales (COL-2); **small functional-colour
+  text (≤12px) on a tint uses step-12, not step-11** — step-11 on a tint dips below
+  the 4.5:1 AA floor (A11Y-1).
 - Visible label on every field (A11Y-3); keyboard reach + focus states (A11Y-2);
   AA contrast (A11Y-1); targets ≥ 24px, 44px on mobile (A11Y-4); respect reduced
   motion (A11Y-5).
@@ -322,7 +347,11 @@ Build exactly the approved plan. Constraints, non-negotiable:
 - Consistency is a feature (HIG: Familiarity, Flexibility): once an element's
   behaviour or appearance is established, reuse it across the surface, and keep
   content and controls in predictable positions across the three widths — people
-  learn faster when new interactions work the way the last one did.
+  learn faster when new interactions work the way the last one did. **Use
+  design-system components at their defaults and the way sibling pages use them
+  (CMP-7): an override that changes a default's colour/contrast/shape, or a control
+  group whose members don't share a resting affordance, is a finding unless recorded
+  with a reason — re-check any colour/contrast override under A11Y-1.**
 - **Action hierarchy** (CMP-5): one primary (filled) action per view — secondary steps
   down to outline/tonal, tertiary to ghost/link; a destructive action takes its own
   variant, never the primary style (CMP-2). The primary's colour is the product's own
@@ -395,8 +424,14 @@ Run in this order; do not present output to the user while a step is failing:
      focus-visible removal, non-focusable click handlers, icon-only unnamed buttons.
      A11Y-2, A11Y-3, and A11Y-8 are **not fully mechanically verified** by this
      script — it covers the line-local static subset only. The traversal-order,
-     hit-area, contrast, and ARIA-state halves of A11Y-1..8 still run as the manual
+     hit-area, and ARIA-state halves of A11Y-2..8 still run as the manual
      pass below.
+   - `python3 checks/contrast.py --tokens <globals.css> <path>...` — static subset
+     of **A11Y-1**: flags line-local `text-`/`bg-` (or CSS `color:`/`background:`)
+     pairs that resolve to known tokens and fall below 4.5:1. It does NOT replace
+     the manual contrast pass — inherited/computed backgrounds and font-size-aware
+     large-text classification stay manual, and unresolvable pairs come back as
+     NOTEs (never a silent pass).
    - Everything else: verify by hand against the control's detail file and label it
      "verified manually" (see the v0 reality note above).
    For the manual accessibility pass, work through the catalog's A11Y controls in id
@@ -464,3 +499,8 @@ and by whom, and the verify verdict. Then:
   control or anti-pattern entry for `standards/`. Follow the "Growing the catalog"
   section of the `tfx-design-standards` skill — it is the single authoritative description
   of the proposal format.
+- Harness friction the run surfaced that is **not** a control gap — a confusing step, a
+  missing/unbuilt check, a process or onboarding nit — is filed as a **GitHub issue**
+  (the system of record), per `docs/harness-feedback.md`: title `[harness-feedback]
+  <summary>`, one severity + one or more category labels, dedup first. Do not append to a
+  markdown feedback log.
