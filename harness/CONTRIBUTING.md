@@ -185,3 +185,20 @@ corpus fails the new assertion, either migrate the corpus in the same PR or
 grandfather the assertion explicitly — never ship a check the existing corpus
 cannot pass. (Origin: the 2026-06-15 CMP-1 verdict-vocabulary assertion broke
 three v0 records whose self-test had passed.)
+
+---
+
+## Harness feedback (issues as the system of record)
+
+Harness *feedback / friction* — a confusing step, a missing or unbuilt check, a process
+or onboarding gap — is filed as a **GitHub issue** on `transformteamsg/tfx-design-standard`,
+not appended to a markdown log. Issues are the system of record. The full workflow — the
+`[harness-feedback]` title marker, the severity + category labels, dedup before filing,
+and the honest-failure rule — is in `docs/harness-feedback.md`; plan 031's
+`scripts/file-feedback-issue.py` mechanizes it.
+
+Keep the boundary clear: a **control proposal** (a new or revised catalog control) still
+goes through the ratchet into a decision / catalog-change record (above) — a feedback
+issue may *spawn* a proposal, but the issue tracks the feedback and the record specs the
+control. The markdown feedback logs (`docs/loop-run/FRICTION-REPORT.md` here, and the
+consumer repo's `docs/decisions/HARNESS-FEEDBACK.md`) are archived in favour of issues.
