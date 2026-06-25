@@ -11,7 +11,7 @@
 
 meta:
   version: "0.1"
-  updated: "2026-06-17"
+  updated: "2026-06-25"
   waiver_syntax: 'tfx-waive <ID> reason="<specific reason>"'
   categories:
     A11Y: Accessibility
@@ -416,6 +416,24 @@ controls:
       - tabular data rendered as stacked cards or divs instead of a real table (A11Y-7)
       - a table that can be empty or slow has no designed empty or loading state (CMP-3)
     detail: controls/cmp-6.md
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
+  # CMP-7 added 2026-06-25 — ratchet, design-lead approved (component-default
+  # consistency, HF-19). See docs/catalog-changes/component-default-consistency.md
+  - id: CMP-7
+    source: TFX-DS
+    title: Components stay consistent with their design-system defaults and with sibling-page usage — overriding a default's colour/contrast/shape, or breaking a control group's shared resting affordance, is a finding unless justified
+    tier: L2
+    check: judgment
+    phase: [plan, implement, verify]
+    applies_to: [page, component]
+    verify: "Evaluator: the surface's components use their design-system defaults; any override of a default that changes colour, contrast, or shape is flagged (and its contrast re-checked under A11Y-1), the surface's component usage matches sibling pages, and a control group's members share one resting affordance; deterministic override-detection planned once the component manifest (CMP-1) is wired"
+    waiver: rationale
+    fails_when:
+      - a design-system component default is overridden in a way that changes colour, contrast, or shape with no recorded reason
+      - a component is used differently here than on sibling pages with no reason
+      - members of one control group (toggle set, segmented control) do not share a resting affordance — only the selected one reads as interactive
+    detail: controls/cmp-7.md
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
 
   # ── Content & naming ──────────────────────────────────────────────────

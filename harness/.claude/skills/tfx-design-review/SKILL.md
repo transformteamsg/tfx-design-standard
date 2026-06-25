@@ -81,6 +81,14 @@ plan was the human-approved artifact.
 "Evaluator guidance" section. Quote the specific text or element you judged. Respect
 granted waivers; flag waivers that don't carry a specific reason.
 
+**Component consistency (CMP-7, L2 — controls/cmp-7.md).** Check the surface's components
+against their design-system defaults and against the same component on sibling pages: an
+override that changes a default's colour/contrast/shape, or a control group whose members
+don't share a resting affordance, is a finding unless recorded with a reason. Re-check any
+colour/contrast override under A11Y-1. Judgment for now — the deterministic
+override-detection sub-check is planned once the CMP-1 manifest is wired; say "verified
+manually" and name what you checked.
+
 **Layout grading (partial control coverage).** Five LAY controls are now in the
 catalog: LAY-2 (reflow at 320 CSS px, L1 — controls/lay-2.md), LAY-3 (page-template
 fit, L2 — controls/lay-3.md), LAY-4 (body-text measure ≤ 80ch, L2 — controls/lay-4.md),

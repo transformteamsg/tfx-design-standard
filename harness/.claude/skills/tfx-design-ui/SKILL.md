@@ -344,7 +344,11 @@ Build exactly the approved plan. Constraints, non-negotiable:
 - Consistency is a feature (HIG: Familiarity, Flexibility): once an element's
   behaviour or appearance is established, reuse it across the surface, and keep
   content and controls in predictable positions across the three widths — people
-  learn faster when new interactions work the way the last one did.
+  learn faster when new interactions work the way the last one did. **Use
+  design-system components at their defaults and the way sibling pages use them
+  (CMP-7): an override that changes a default's colour/contrast/shape, or a control
+  group whose members don't share a resting affordance, is a finding unless recorded
+  with a reason — re-check any colour/contrast override under A11Y-1.**
 - **Action hierarchy** (CMP-5): one primary (filled) action per view — secondary steps
   down to outline/tonal, tertiary to ghost/link; a destructive action takes its own
   variant, never the primary style (CMP-2). The primary's colour is the product's own

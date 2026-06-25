@@ -1,7 +1,8 @@
 # Proposed control: component-default / sibling-page consistency
 
 **Date:** 2026-06-25 · **Change type:** new control via ratchet (no tier change to any
-existing control) · **Approved by:** `[proposed — pending design-lead approval]`
+existing control) · **Approved by:** design lead (rezailmi, repo owner), interactively in
+session 2026-06-25 — approved as proposed: CMP-7, L2, `check: judgment`.
 
 This record lives in `docs/catalog-changes/` rather than `docs/decisions/`: that
 directory is audited by `checks/audit-record.py` against the loop-run template, and this
@@ -28,14 +29,10 @@ fix (plan 025 — stops "preserved" elements being waved through).
 
 ## The proposed control
 
-- **Proposed id:** the next free CMP id — written here as **`CMP-N`** because the
-  concrete integer is assigned and committed only at the gated Step 2 (until then this is
-  propose-only, so naming a committed-looking id would be premature and trips the
-  catalog-reference validator). At proposal time the catalog holds CMP-1, CMP-2, CMP-3,
-  CMP-5, CMP-6 and the 4 slot is reserved in
-  `docs/decisions/student-notes-empty-state.md`, so the next free integer is **7** (the
-  slot after CMP-6). Confirm and assign the concrete id at the approval gate.
-  **Open option for the design lead:** a dedicated `CON`/`CST` "Consistency" category
+- **Assigned id:** **CMP-7** — the next free CMP id at approval time (the catalog held
+  CMP-1, CMP-2, CMP-3, CMP-5, CMP-6 and the 4 slot is reserved in
+  `docs/decisions/student-notes-empty-state.md`). Committed to the catalog as CMP-7.
+  **Option considered:** a dedicated `CON`/`CST` "Consistency" category
   instead of CMP — that would need a `schema.json` `id_prefixes` addition (this proposal
   assumes CMP, which needs no schema change).
 - **Proposed title:** "Components stay consistent with their design-system defaults and
@@ -83,7 +80,7 @@ Cross-reference: `docs/decisions/attendance.md` (the triggering loop-run record)
 - Consumer surfaces (Teacher Workspace) are re-audited by the product team **in their own
   repo** — the avatar-default convention is a product-repo fact, not a harness control.
 
-## Notes for the eventual detail file (`standards/controls/cmp-N.md`)
+## Notes carried into the detail file (`standards/controls/cmp-7.md`)
 
 - **How it would be verified:** evaluator-judged now; the override-diff becomes
   mechanical once the CMP-1 manifest is wired (plan 019 Stage B landed the manifest
@@ -94,6 +91,7 @@ Cross-reference: `docs/decisions/attendance.md` (the triggering loop-run record)
 
 ---
 
-**Gate:** Step 2 (commit the control to `standards/catalog.yaml` + `controls/cmp-N.md` +
-skill wiring) must not run until the design lead approves this proposal and confirms the
-id, tier, and CMP-vs-dedicated-category choice.
+**Status:** Step 2 committed 2026-06-25 — CMP-7 added to `standards/catalog.yaml` +
+`controls/cmp-7.md`, with one-line wiring in `tfx-design-ui` (Phase-4 "Consistency is a
+feature") and `tfx-design-review` (judgment-controls grading). Approved as proposed:
+CMP-7, L2, `check: judgment`; CMP category kept (no `schema.json` change).
