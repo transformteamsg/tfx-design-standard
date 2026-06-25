@@ -252,19 +252,24 @@ Expand the chosen option into a plan:
 
 **Stop. The user approves the plan before any implementation.** This is the cheapest
 place for human judgment — structural mistakes caught here cost a conversation, not a
-rebuild. **Present first, ask second**: the full plan goes in your message body, and
-the approval ask is a plain-text question at the END of that same message — never a
-modal/option dialog in the same turn as the plan, which forces a decision before the
-reader has read what they're deciding on. Wait for an explicit typed answer — a vague
-"continue" is not plan sign-off; confirm what they are approving. (Option dialogs are
-fine for the Phase 2 pick, where the options are short enough to read inside the
-dialog itself.)
+rebuild. The gate runs across **two turns**:
 
-At the Phase 2 option pick and at continuation/verify gates, a structured
-**Approve / Adjust** question is preferred over free text. Never use an option
-dialog in the *same turn* as the Phase 3 plan (the reader must read the plan
-first) — there, the plan goes in the message body and the ask is plain text at
-the end, as above.
+- **Turn 1 — present the plan.** The full plan goes in your message body. Close with
+  a plain-text line that you will ask for approval next — **never a modal/option
+  dialog in the same turn as the plan**, which forces a decision before the reader
+  has read what they're deciding on.
+- **Turn 2 — the structured ask.** In the follow-up turn, ask for sign-off with a
+  structured **Approve / Adjust** `AskUserQuestion` — this is the documented Phase-3
+  default. "Approve" proceeds to implement; "Adjust" sends you back to revise the
+  plan (then re-present and re-ask). A free-text approval is still accepted; a vague
+  "continue" is not — confirm what they are approving.
+
+A structured **Approve / Adjust** question is the default at the Phase 2 option pick,
+at the Phase 3 plan gate (in the follow-up turn, per the two-turn sequence above), and
+at continuation/verify gates. The one hard rule: **never an option dialog in the same
+turn as the Phase 3 plan** — the reader must read the plan first, so turn 1 is the
+plan in the message body and turn 2 is the structured ask. (At the Phase 2 pick the
+dialog may be same-turn, because the options are short enough to read inside it.)
 
 In an **unattended run** with no human reachable, proxy approval is
 permitted only when the operator authorized it up front — record it verbatim as
