@@ -53,18 +53,20 @@ side effect that didn't happen.
 
 ## The mechanism
 
-Until plan 031's helper lands, file by hand with the marker + labels:
+Use the helper — it adds the marker, validates the labels, dedups, and fails honestly:
 
 ```
-gh issue create \
-  --repo transformteamsg/tfx-design-standard \
-  --title "[harness-feedback] <summary>" \
-  --label <severity> --label <category> \
+python3 scripts/file-feedback-issue.py \
+  --severity <L0-risk|high|med|low> \
+  --category <a11y|tooling|standards|harness-ux|onboarding> \
+  --title "<summary>" \
   --body "<ask + source context>"
 ```
 
-Plan 031 (`scripts/file-feedback-issue.py`) makes this one command with dedup and the
-honest-failure path built in.
+Rehearse with `--dry-run` (prints the `gh` command + body, files nothing); test the pure
+logic with `--self-test` (never touches the network). The title marker is added
+automatically and is idempotent. See `scripts/README.md` for the full flag list. If `gh`
+is unavailable the helper prints the would-be issue + the reason and exits non-zero.
 
 ## Archived logs
 
