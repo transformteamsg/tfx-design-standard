@@ -37,15 +37,15 @@ honor its STOP conditions, and update your row when done.
 | 021 | Harden vs record-audit-assertion regressions (test over real corpus) | P2 | S | — | DONE @ 01d393e (reviewed; CONTRIBUTING + evals/README; audit-record self-test 16 + real corpus OK) |
 | 022 | Onboarding lists all skills + asks which to run first | P2 | S | — | DONE @ de98091 (reviewed; full 5-skill menu + run-first ask; plugin validate OK) |
 | 023 | LAY ratchet — commit LAY-2 (reflow, WCAG-320) + LAY-4 (measure ≤80ch) to the catalog | P2 | S–M | 020 | DONE @ 7038aa6 (reviewed; LAY category + LAY-2/LAY-4 + 2 detail files + schema.json id_prefixes; validate.py 40; LAY-1/3/5/6/7 + LAY-4 check deferred) |
-| 024 | Onboarding leads with explanation + routes by run-shape (HF-17) | P2 | S | — | TODO |
-| 025 | Preserving intent never exempts an element from its controls — generator + evaluator (HF-18) | P1 | M | — | TODO |
-| 026 | Phase-3 approval = structured Approve/Adjust in the follow-up turn (HF-6) | P2 | S | — | TODO |
-| 027 | Component-default / sibling-page consistency control — ratchet (HF-19) | P2 | M | gate (design lead) | TODO (Step 1 propose-only; Step 2 gated) |
-| 028 | Build `checks/contrast` — static A11Y-1 contrast subset (HF-9) | P1 | L | — | TODO |
-| 029 | Broaden COL-2 — small functional text uses Radix step-12 — ratchet (HF-9) | P2 | S–M | gate (design lead) | TODO (Step 1 propose-only; Step 2 gated) |
-| 030 | GitHub issues as the system of record for harness feedback — process + docs + labels (#6) | P2 | M | — | TODO (Step 4 label-create gated) |
-| 031 | `gh` feedback-issue helper script — dedup + labels + honest failure (#6) | P2 | M | 030 | TODO |
-| 032 | Backfill historical HF items as issues + confirm logs archived (#6) | P3 | S–M | 030, 031 | TODO (operator-gated) |
+| 024 | Onboarding leads with explanation + routes by run-shape (HF-17) | P2 | S | — | DONE (executed 2026-06-25; branch advisor/batch3-execute; onboarding now leads with the orientation, then one run-shape question replaces the flat menu; greps ≥3/≥1, plugin validate OK) |
+| 025 | Preserving intent never exempts an element from its controls — generator + evaluator (HF-18) | P1 | M | — | DONE (executed 2026-06-25; UI critique + conservative-defaults say preserve protects look not compliance; review skill + evaluator agent grade preserved elements and gate out-of-scope-chrome on where it renders; all 5 greps ≥1) |
+| 026 | Phase-3 approval = structured Approve/Adjust in the follow-up turn (HF-6) | P2 | S | — | DONE (executed 2026-06-25; two-turn gate: turn 1 plan in body, turn 2 structured Approve/Adjust; same-turn prohibition + proxy paths intact; Approve/Adjust=2) |
+| 027 | Component-default / sibling-page consistency control — ratchet (HF-19) | P2 | M | gate (design lead) | DONE (executed 2026-06-25; Step 1 propose-only record + Step 2 **design-lead approved in session** → CMP-7 L2 judgment committed + controls/cmp-7.md + skill wiring; validate 48 controls) |
+| 028 | Build `checks/contrast` — static A11Y-1 contrast subset (HF-9) | P1 | L | — | DONE (executed 2026-06-25; contrast.py self-test 15, OKLab matches globals ratios [warning-subtle 6.13 vs ~6.1], real corpus clean; avatar 3.60 flagged; unresolvable→NOTE; listed in README/CLAUDE/ui skill) |
+| 029 | Broaden COL-2 — small functional text uses Radix step-12 — ratchet (HF-9) | P2 | S–M | gate (design lead) | DONE (executed 2026-06-25; Step 1 record + Step 2 **design-lead approved** → COL-2 broadened [still L1] + controls/col-2.md with computed Radix table (amber-11 on amber-3 = 4.25:1, the HF-9 trap); ui skill step-12 line; validate 48) |
+| 030 | GitHub issues as the system of record for harness feedback — process + docs + labels (#6) | P2 | M | — | DONE (executed 2026-06-25; docs/harness-feedback.md + Phase-6/standards-skill/CONTRIBUTING wiring + FRICTION-REPORT archived header; Step 4 **operator-approved** → 9 triage labels created on the org repo via gh label create --force) |
+| 031 | `gh` feedback-issue helper script — dedup + labels + honest failure (#6) | P2 | M | 030 | DONE (executed 2026-06-25; scripts/file-feedback-issue.py, self-test 14 [network-free, injected gh runner], dry-run files nothing, honest failure exit 3 verified; stdlib-only; scripts/README + doc re-pointed) |
+| 032 | Backfill historical HF items as issues + confirm logs archived (#6) | P3 | S–M | 030, 031 | DEFERRED (2026-06-25; operator chose to skip + the canonical HF-1..19 list lives in the consumer repo, not here, so the plan's "never invent items" STOP applies; no backfill run, no backfill note written; revisit with the consumer-repo source when an operator wants the one-time migration) |
 | 033 | Per-page `.md` twins + curated `/llms.txt` index (website) | P1 | L | — | DONE (executed; branch advisor/batch4-execute; middleware→`/md` namespace [not `/_md` — Next treats `_`-folders as private], 32 twins SSG, section-path curls 200 text/markdown, /llms.txt now an index, no JSX leak) |
 | 034 | Make `validate.py` testable (`--self-test`) + wire into prebuild | P1 | M | — | DONE (executed; branch advisor/batch4-execute; behaviour-preserving — `OK: 47 controls valid`, self-test 14 cases, import-silent; prebuild runs validate first) |
 | 035 | `tfx-sync` markers + L0/SLP-9 parity checks + `SYNC.md` | P1 | M | 034 | DONE (executed; branch advisor/batch4-execute; self-test 27 cases, negative test fires `[L0-SYNC]`; +SYNC.md cross-links in harness README/CONTRIBUTING) |
@@ -111,6 +111,13 @@ Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJE
 
 ### Batch 3 (024–032) — added 2026-06-17 from GitHub issues #5 and #6
 
+- **Executed 2026-06-25 on branch `advisor/batch3-execute`.** 024/025/026/028/031 done in
+  full; 027 and 029 had both ratchet steps run (Step 2 **design-lead approved
+  interactively in session 2026-06-25** → CMP-7 committed + COL-2 broadened); 030 done incl.
+  Step 4 (9 triage labels created on the org repo, operator-approved). **032 is DEFERRED** —
+  the operator chose to skip it and the canonical HF-1..19 list lives in the consumer repo,
+  so the plan's "never invent items" STOP applies; no backfill ran. Gate after the batch:
+  `validate.py` 48 controls, all check self-tests green, `pnpm build` clean, plugin validate OK.
 - Source: **issue #5** (attendance loop-run feedback — HF-17/18/19, HF-6 re-raised,
   HF-9 evidence + the functional-chip contrast finding) and **issue #6** (make GitHub
   issues the system of record for harness feedback). All stamp commit `5f95350` and use
