@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import "@fontsource-variable/inter";
 import "@fontsource-variable/plus-jakarta-sans";
 import "./globals.css";
-import { Sidebar } from "@/components/sidebar";
+import { AppSidebar } from "@/components/sidebar";
 import { TopBar } from "@/components/topbar";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
 export const metadata: Metadata = {
   title: { default: "TFX Design Standard", template: "%s — TFX Design Standard" },
@@ -21,13 +22,23 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         >
           Skip to main content
         </a>
-        <TopBar />
-        <div className="mx-auto flex w-full max-w-[1320px]">
-          <Sidebar />
-          <main id="main-content" className="min-w-0 flex-1 px-6 py-10 lg:px-12">
-            {children}
-          </main>
-        </div>
+        <SidebarProvider
+          className="flex-col"
+          style={{ "--header-height": "3.5rem" } as React.CSSProperties}
+        >
+          <TopBar />
+          <div className="flex w-full flex-1">
+            <AppSidebar />
+            <SidebarInset>
+              <main
+                id="main-content"
+                className="mx-auto w-full max-w-[1080px] min-w-0 px-6 py-10 lg:px-12"
+              >
+                {children}
+              </main>
+            </SidebarInset>
+          </div>
+        </SidebarProvider>
       </body>
     </html>
   );

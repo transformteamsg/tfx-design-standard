@@ -3,7 +3,22 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { ChevronRight } from "lucide-react";
 import clsx from "clsx";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
+} from "@/components/ui/sidebar";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 
 const nav = [
   {
@@ -74,121 +89,97 @@ const nav = [
     href: "/governance",
     items: [{ href: "/governance", title: "How this evolves" }],
   },
-];
+] satisfies {
+  label: string;
+  href?: string;
+  items: { href: string; title: string }[];
+}[];
 
-function Chevron({ open }: { open: boolean }) {
-  return (
-    <svg
-      viewBox="0 0 16 16"
-      className={clsx(
-        "h-3.5 w-3.5 shrink-0 transition-transform duration-200",
-        open && "rotate-90"
-      )}
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={1.8}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M6 4l4 4-4 4" />
-    </svg>
-  );
-}
+const groupLabel =
+  "px-1 py-1.5 text-[11px] font-semibold uppercase tracking-wider";
 
-export function Sidebar() {
+export function AppSidebar() {
   const pathname = usePathname();
-  /* Groups collapse by default. The group holding the current page opens
-     itself; an explicit click overrides either way until the next toggle. */
+  /* Groups collapse by default; the group holding the current page opens
+     itself. An explicit toggle overrides until the next toggle. */
   const [toggled, setToggled] = useState<Record<string, boolean>>({});
 
   if (pathname === "/") return null; // landing page is full-width, no docs chrome
 
   return (
-    <nav
-      aria-label="Documentation"
-      className="sticky top-14 hidden h-[calc(100vh-3.5rem)] w-60 shrink-0 overflow-y-auto border-r border-border px-4 py-8 lg:block"
-    >
-      {nav.map((group) => {
-        const holdsCurrentPage =
-          pathname === group.href ||
-          group.items.some((item) => pathname === item.href);
-        const open = toggled[group.label] ?? holdsCurrentPage;
-        const listId = `nav-${group.label.toLowerCase()}`;
-        const toggle = () =>
-          setToggled((prev) => ({ ...prev, [group.label]: !open }));
+    <Sidebar>
+      <SidebarContent className="px-2 py-4">
+        {nav.map((group) => {
+          const holdsCurrentPage =
+            pathname === group.href ||
+            group.items.some((item) => pathname === item.href);
+          const open = toggled[group.label] ?? holdsCurrentPage;
+          const onOpenChange = (o: boolean) =>
+            setToggled((prev) => ({ ...prev, [group.label]: o }));
 
-        return (
-          <div key={group.label} className="mb-1.5">
-            <div className="flex items-center">
-              {group.href ? (
-                <>
-                  <button
-                    type="button"
-                    onClick={toggle}
-                    aria-expanded={open}
-                    aria-controls={listId}
-                    aria-label={`${open ? "Collapse" : "Expand"} ${group.label}`}
-                    className="grid h-7 w-6 place-items-center rounded-md text-muted-foreground hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue)"
-                  >
-                    <Chevron open={open} />
-                  </button>
-                  <Link
-                    href={group.href}
-                    className={clsx(
-                      "block flex-1 rounded-md px-1 py-1.5 text-[11px] font-semibold uppercase tracking-wider",
-                      pathname === group.href
-                        ? "text-foreground"
-                        : "text-muted-foreground hover:text-foreground"
-                    )}
-                  >
-                    {group.label}
-                  </Link>
-                </>
-              ) : (
-                <button
-                  type="button"
-                  onClick={toggle}
-                  aria-expanded={open}
-                  aria-controls={listId}
-                  className="flex flex-1 items-center rounded-md text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue)"
-                >
-                  <span className="grid h-7 w-6 place-items-center text-muted-foreground">
-                    <Chevron open={open} />
-                  </span>
-                  <span className="block flex-1 px-1 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground hover:text-foreground">
-                    {group.label}
-                  </span>
-                </button>
-              )}
-            </div>
-            <div
-              id={listId}
-              className="grid transition-[grid-template-rows] duration-200 ease-out"
-              style={{ gridTemplateRows: open ? "1fr" : "0fr" }}
+          return (
+            <Collapsible
+              key={group.label}
+              open={open}
+              onOpenChange={onOpenChange}
+              className="mb-0.5"
             >
-              <ul className="min-h-0 overflow-hidden">
-                {group.items.map((item) => (
-                  <li key={item.href}>
-                    <Link
-                      href={item.href}
-                      tabIndex={open ? undefined : -1}
+              <SidebarGroup className="p-0">
+                <div className="flex items-center gap-0.5">
+                  <CollapsibleTrigger
+                    aria-label={`${open ? "Collapse" : "Expand"} ${group.label}`}
+                    className="grid size-7 shrink-0 place-items-center rounded-md text-muted-foreground hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue)"
+                  >
+                    <ChevronRight
                       className={clsx(
-                        "ml-6 block rounded-md px-2 py-1.5 text-[14px]",
-                        pathname === item.href
-                          ? "bg-muted font-medium text-foreground"
-                          : "text-muted-foreground hover:bg-accent hover:text-foreground"
+                        "size-3.5 transition-transform duration-200",
+                        open && "rotate-90"
+                      )}
+                    />
+                  </CollapsibleTrigger>
+                  {group.href ? (
+                    <Link
+                      href={group.href}
+                      className={clsx(
+                        "flex-1 rounded-md text-muted-foreground hover:text-foreground",
+                        groupLabel,
+                        pathname === group.href && "text-foreground"
                       )}
                     >
-                      {item.title}
+                      {group.label}
                     </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        );
-      })}
-    </nav>
+                  ) : (
+                    <CollapsibleTrigger
+                      className={clsx(
+                        "flex-1 rounded-md text-left text-muted-foreground hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue)",
+                        groupLabel
+                      )}
+                    >
+                      {group.label}
+                    </CollapsibleTrigger>
+                  )}
+                </div>
+                <CollapsibleContent className="h-[var(--collapsible-panel-height)] overflow-hidden transition-[height] duration-200 ease-out data-starting-style:h-0 data-ending-style:h-0">
+                  <SidebarGroupContent className="pt-0.5">
+                    <SidebarMenu className="ml-6 gap-0.5 border-l border-sidebar-border pl-2">
+                      {group.items.map((item) => (
+                        <SidebarMenuItem key={item.href}>
+                          <SidebarMenuButton
+                            isActive={pathname === item.href}
+                            render={<Link href={item.href} />}
+                          >
+                            <span>{item.title}</span>
+                          </SidebarMenuButton>
+                        </SidebarMenuItem>
+                      ))}
+                    </SidebarMenu>
+                  </SidebarGroupContent>
+                </CollapsibleContent>
+              </SidebarGroup>
+            </Collapsible>
+          );
+        })}
+      </SidebarContent>
+    </Sidebar>
   );
 }
