@@ -19,7 +19,8 @@ type RawCatalog = {
 
 /* Fields the public routes (/standards/catalog.yaml, /llms.txt) expose.
    `refs` and `detail` are harness-internal: Notion workspace links and
-   repo-relative paths. Detail content is published via /llms-full.txt. */
+   repo-relative paths. Detail content is published per control at
+   /standards/catalog/<id> (and its `.md` twin). */
 const PUBLIC_FIELDS = [
   "id",
   "source",
@@ -81,7 +82,7 @@ export function getPublicCatalogYaml(): string {
     "# TFX Design Standard — control catalog",
     "# A control is one verifiable statement. If you can't check it, it's not a standard.",
     "# Tiers: L0 = non-negotiable (no waiver) · L1 = mandatory (documented waiver) · L2 = recommended (inline rationale)",
-    "# Control rationale and pass/fail examples: /llms-full.txt",
+    "# Control rationale and pass/fail examples: /standards/catalog/<id> (append .md for Markdown)",
     "",
   ].join("\n");
   return header + doc.toString();

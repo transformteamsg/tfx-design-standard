@@ -17,10 +17,9 @@ Every page on this site is also available as Markdown: append `.md` to its path.
 
 ## Wiring it into your tool
 
-Three machine surfaces, depending on how much you need:
+Two machine surfaces, depending on how much you need:
 
-- [/llms.txt](/llms.txt) is the curated index. It lists every page and links each `.md` twin. Start here to see what exists.
-- [/llms-full.txt](/llms-full.txt) is every page concatenated, plus per-control rationale and examples. Paste it when you want the whole standard in context.
+- [/llms.txt](/llms.txt) is the curated index — it lists every page and links each `.md` twin. Start here. Any page is also available as Markdown: append `.md` to its path (e.g. `/standards/catalog.md`).
 - [/standards/catalog.yaml](/standards/catalog.yaml) is the control source. Point your tool at it when you only need the controls.
 
 Tiers are binding: L0 cannot be waived, L1 needs `tfx-waive <ID> reason="..."` in code, L2 deviations need an inline rationale.

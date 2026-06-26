@@ -31,7 +31,7 @@ export function getControlDetail(id: string): ControlDetail | null {
   let body: string | null = null;
   if (fs.existsSync(file)) {
     const { data, content } = matter(fs.readFileSync(file, "utf8"));
-    // Strip the harness-internal `refs` block, matching controlDetails().
+    // Strip the harness-internal `refs` block, matching the public catalog YAML.
     delete data.refs;
     body = content.trim();
   }

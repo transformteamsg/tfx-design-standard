@@ -20,12 +20,6 @@ export default function Page() {
         >
           /llms.txt — the curated index
         </Link>
-        <Link
-          href="/llms-full.txt"
-          className="rounded-lg border border-border bg-surface px-4 py-2.5 text-[14px] font-medium hover:border-border-strong"
-        >
-          /llms-full.txt — the whole standard
-        </Link>
         <a
           href="/standards/catalog.yaml"
           className="rounded-lg border border-border bg-surface px-4 py-2.5 text-[14px] font-medium hover:border-border-strong"
