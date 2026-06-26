@@ -142,6 +142,20 @@
   --font-body: "Inter Variable", system-ui, sans-serif;
 }
 
+/* Default border colour for the shadcn/ui components (Base UI): their borders set
+   width only (e.g. the sidebar's border-r, the sheet edge, separators), and
+   Tailwind v4 defaults an uncoloured border to currentColor — which rendered the
+   sidebar↔content divider near-black. Restore shadcn's base rule so any uncoloured
+   border is the light --border hairline (TOK-1). Components that set an explicit
+   border-border/colour override this. */
+@layer base {
+  *,
+  ::before,
+  ::after {
+    border-color: var(--border);
+  }
+}
+
 /* Anchor targets clear the sticky topbar; smooth only when motion is welcome. */
 html { scroll-padding-top: 80px; }
 @media (prefers-reduced-motion: no-preference) {
