@@ -5,6 +5,7 @@ import type { Doc } from "@/lib/content";
 import { extractHeadings, slugify } from "@/lib/toc";
 import { Toc } from "@/components/toc";
 import { Breadcrumb } from "@/components/breadcrumb";
+import { PageActions } from "@/components/page-actions";
 import { ToolCard, type Tool } from "@/components/tool-card";
 
 /* Sections whose docs live at /{section}/{slug} and get a breadcrumb back to
@@ -41,6 +42,9 @@ export function DocPage({ doc, children }: { doc: Doc; children?: ReactNode }) {
   return (
     <div className="flex gap-12">
       <div className="min-w-0 max-w-[720px] flex-1">
+        <div className="mb-3 flex justify-end">
+          <PageActions />
+        </div>
         {crumb && <Breadcrumb section={crumb} current={doc.title} />}
         {doc.status === "proposed" && (
           <span className="mb-2 inline-block rounded-full border border-warning-muted bg-warning-subtle px-2 py-0.5 text-[11px] font-medium text-warning">
