@@ -274,15 +274,16 @@ controls:
 
   - id: TYP-4
     source: TFX-DS
-    title: All-caps is used only for short labels
+    title: Text is never set in all-caps
     tier: L2
     check: deterministic
     phase: [implement, verify]
     applies_to: [content]
-    verify: "Uppercase text longer than a short label flagged; checks/type-scan"
+    verify: "Uppercase text-transform or all-caps strings flagged anywhere (labels, headings, body); genuine acronyms exempt; checks/type-scan"
     waiver: rationale
     fails_when:
-      - uppercase running text or headings
+      - all-caps text — labels, headings, or running text
+      - text-transform uppercase used for styling (genuine acronyms excepted)
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
 
   # TYP-5: ratchet addition 2026-06-17 — tabular figures for numbers that align or
