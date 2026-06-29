@@ -164,7 +164,7 @@ This closes the loop `token-audit.py` leaves open ("a human closes the decision-
 - **TYP-2 size floor (L1):** a `font-size:` or `text-[Npx]` with `N < 14`. The suggest text carries the 11/14 ambiguity (labels may go to 11px; body floor is 14px) since label-vs-body context needs rendered layout.
 - **TYP-2 line-height (L1):** an explicit unitless / em `line-height:` or `leading-[N]` clearly outside the 1.5–1.6 body band (judged with a generous 1.4–1.7 tolerance). px / % line-heights are NOT judged — the ratio needs the font size.
 - **TYP-3 on-scale (L1):** a `text-[Npx]` or `font-size:Npx` whose whole-px `N` is not on the **TFX type scale `{120,96,72,48,32,24,20,18,16,14,12,11}`**. The scale is read at runtime from TYP-3's catalog `verify` field (`Sizes in {…}; checks/type-scan`) so it cannot drift; the same set is the embedded fallback if the catalog can't be read.
-- **TYP-4 all-caps (L2):** a `text-transform: uppercase` / `uppercase` token on a line whose same-line text content runs longer than a short label (> 24 letters). Uppercase inside a wrapped className string with no text on the line is a `NOTE`, not a flag.
+- **TYP-4 all-caps (L2):** a `text-transform: uppercase` declaration or an `uppercase` Tailwind utility (matched as a class token — inside a class/className attr or a class-list-shaped string). Text is never set in all-caps, at any length — short labels included (HF-20). The English word "uppercase" in body text, and genuine acronyms (literal capitals, not a transform), are not flagged.
 
 **TYP-3 scope decision:** TYP-3 **is** implemented (the preferred path) — the allowed scale is sourced live from the catalog `verify` field, not invented.
 
@@ -173,10 +173,10 @@ This closes the loop `token-audit.py` leaves open ("a human closes the decision-
 - Font *weights* (TYP-1's "PJS 600 / Inter 400/500/600" half) — weight is rarely co-located with the family and "approved weight" needs the family resolved; deferred to the manual pass.
 - The 11px-vs-14px floor *decision* (TYP-2) — whether an element is a label (11px floor) or body (14px floor) needs rendered context; 11–13px is flagged with the ambiguity noted, not asserted as a definite body violation.
 - Line-heights given in px or % (TYP-2) — the ratio needs the font size, rarely on the same line.
-- All-caps *length* precisely (TYP-4) — "short label" is a rendered-length judgment; uses a same-line letter-count heuristic and `NOTE`s the unresolvable cases.
+- All-caps set via camelCase inline style (TYP-4) — `style={{textTransform:'uppercase'}}` in JSX is not matched; only the CSS `text-transform: uppercase` form and the Tailwind `uppercase` utility are.
 - Fonts / sizes set in a separate stylesheet the line-local rule can't see, or composed from variables / class-name interpolation — out of static reach.
 
-**Self-test:** `python3 checks/type-scan.py --self-test` → `SELF-TEST OK (23 cases)`.
+**Self-test:** `python3 checks/type-scan.py --self-test` → `SELF-TEST OK (27 cases)`.
 
 Planned for V1 (remaining):
 
@@ -194,7 +194,7 @@ Planned for V1 (remaining):
 | `skip-link` | A11Y-10 | Skip-to-main first focusable, or main/nav landmarks present |
 | `announce` | A11Y-11 (deterministic half) | Each async state surface has live-region role XOR focus-target wiring |
 | ~~`token-audit`~~ | ~~TOK-1..3, COL-1..2~~ | ✅ built |
-| ~~`type-scan`~~ | ~~TYP-1..4~~ | ✅ built (static subset) — `type-scan` covers TYP-1 (font families), TYP-2 (size floor + unitless line-height), TYP-3 (on-scale, scale sourced from the catalog), TYP-4 (all-caps length); font *weights*, the label-vs-body floor decision, and px/% line-heights still need rendered context |
+| ~~`type-scan`~~ | ~~TYP-1..4~~ | ✅ built (static subset) — `type-scan` covers TYP-1 (font families), TYP-2 (size floor + unitless line-height), TYP-3 (on-scale, scale sourced from the catalog), TYP-4 (no all-caps, acronyms exempt); font *weights*, the label-vs-body floor decision, and px/% line-heights still need rendered context |
 | `destructive` | CMP-2 (deterministic half) | Enumerate destructive actions; assert consequence surface + undo/confirm exists |
 | `async-states` | CMP-3 (deterministic half) | Enumerate async actions; assert loading/success/error states exist and are reachable |
 | ~~`content-lint`~~ | ~~CNT-1, CNT-3, SLP-9 (deterministic half)~~ | ✅ built (static subset) — `content-lint` covers CNT-1 (raw codes), CNT-3 (sentence length), and the SLP-9 lint lists (read live from `standards/controls/slp-9.md`) + em-dash chains; the SLP-9 structural-tell evaluator half and the CNT-3 lead-with-purpose semantic half stay judgment |

@@ -24,9 +24,11 @@ ONSCALE     TYP-3     A `text-[Npx]` or `font-size:Npx` whose N is not on the
             (L1)      TFX type scale {120,96,72,48,32,24,20,18,16,14,12,11}.
                       The scale is sourced from TYP-3's catalog `verify` field
                       (see TYPE_SCALE below) so it cannot drift.
-ALLCAPS     TYP-4     A `text-transform: uppercase` / `uppercase` class on a
-            (L2)      line whose same-line text content runs longer than a short
-                      label (> 24 letters of running text).
+ALLCAPS     TYP-4     A `text-transform: uppercase` declaration or an `uppercase`
+            (L2)      Tailwind class (in a class/className attr or a class-list
+                      string). Text is never set in all-caps, at any length;
+                      genuine acronyms are literal capitals in content, not a
+                      transform, so they are not matched.
 
 What this script does NOT verify
 ─────────────────────────────────
@@ -38,10 +40,9 @@ What this script does NOT verify
   flagged with the ambiguity noted, not asserted as definite body violations.
 - Line-heights given in px or % (TYP-2): the 1.5–1.6 ratio needs the font size,
   which is rarely on the same line. Only unitless/em line-heights are judged.
-- All-caps LENGTH precisely (TYP-4): "short label" is a rendered-length judgement.
-  This uses a same-line letter-count heuristic (> 24 letters) and cannot see
-  text supplied by a child element, a variable, or i18n. Conservative; NOTE the
-  unresolvable cases rather than guessing.
+- All-caps via camelCase inline style (TYP-4): `style={{textTransform:'uppercase'}}`
+  in JSX is not matched — only the `text-transform: uppercase` CSS form and the
+  Tailwind `uppercase` utility (as a class token) are. Rare; deferred to manual.
 - Font families / sizes set in a separate stylesheet the line-local rule can't
   see, or composed from variables / class-name interpolation — out of static
   reach; the manual pass covers them.
@@ -255,63 +256,49 @@ def _check_line_height_rule(scan_line):
 ALLCAPS_TW_RE = re.compile(r"\buppercase\b")
 ALLCAPS_CSS_RE = re.compile(r"text-transform\s*:\s*uppercase", re.IGNORECASE)
 STRIP_TAGS_RE = re.compile(r"<[^>]+>")
+# A class / className attribute whose value may carry the `uppercase` utility
+# (quoted value or a {…} JSX expression such as {cn('…')}).
+CLASS_ATTR_RE = re.compile(r'class(?:Name)?\s*=\s*("[^"]*"|\'[^\']*\'|\{[^}]*\})')
+# A class-list-shaped quoted string (other utility tokens present alongside) —
+# catches a wrapped class list on its own line and cn('…') args with no class=.
+CLASSLIST_TOKEN_RE = re.compile(
+    r"\b(flex|grid|block|inline|rounded|tracking-|leading-|"
+    r"px-|py-|pt-|pb-|pl-|pr-|mx-|my-|mt-|mb-|gap-|font-|"
+    r"text-\[|text-(?:left|right|center)|items-|justify-|w-|h-)"
+)
 
 
 def _check_allcaps_rule(scan_line):
     """
-    TYP-4: an uppercase utility/property on a line whose same-line text content
-    is long (> 24 letters of running text). Returns (found, suggest) or None;
-    returns the sentinel ("__NOTE__", msg) when uppercase is present but the
-    text length can't be resolved on this line.
+    TYP-4: text is never set in all-caps. Flags a `text-transform: uppercase`
+    declaration or an `uppercase` Tailwind utility — regardless of label length
+    (the rule changed: short labels are no longer exempt; see HF-20 / catalog).
+    The utility is matched only as a class token (inside a class/className attr
+    or a class-list-shaped string), never the English word "uppercase" in
+    visible text. Genuine acronyms are literal capitals in content, not a
+    transform, so they are not matched. Returns (found, suggest) or None.
     """
-    has_tw = bool(ALLCAPS_TW_RE.search(scan_line))
-    has_css = bool(ALLCAPS_CSS_RE.search(scan_line))
-    if not (has_tw or has_css):
+    if ALLCAPS_CSS_RE.search(scan_line):
+        return ("text-transform: uppercase — text is never set in all-caps",
+                "remove the uppercase transform; use sentence case (TYP-4)")
+
+    if not ALLCAPS_TW_RE.search(scan_line):
         return None
 
-    # If `uppercase` is the Tailwind utility and it sits inside a quoted string
-    # that is class-list-shaped (other utility tokens like flex / px-* / text-[…]
-    # / rounded-* / tracking-* alongside it), this is a className string with no
-    # text content on the line — common when a long class list wraps onto its own
-    # line. Treat it as unresolvable (NOTE), not a flag: the rendered text is
-    # elsewhere. (Conservative widen; the same-line text heuristic can't see it.)
-    if has_tw and not has_css:
-        for sm in re.finditer(r'"([^"]*\buppercase\b[^"]*)"|\'([^\']*\buppercase\b[^\']*)\'', scan_line):
-            inner = sm.group(1) if sm.group(1) is not None else sm.group(2)
-            if inner and re.search(
-                r"\b(flex|grid|block|inline|rounded|tracking-|leading-|"
-                r"px-|py-|pt-|pb-|pl-|pr-|mx-|my-|mt-|mb-|gap-|font-|"
-                r"text-\[|text-(?:left|right|center)|items-|justify-|w-|h-)", inner
-            ):
-                return ("__NOTE__",
-                        "uppercase inside a className string (no text on line) — "
-                        "verify the rendered text is a short label")
+    # `uppercase` inside a class/className attribute value (incl. {cn('…')}).
+    for m in CLASS_ATTR_RE.finditer(scan_line):
+        if ALLCAPS_TW_RE.search(m.group(1)):
+            return ("`uppercase` class — text is never set in all-caps",
+                    "remove `uppercase`; use sentence case (TYP-4)")
 
-    # Extract same-line text content: strip tags, classNames, and attributes,
-    # then count letters of what reads as visible text.
-    text = scan_line
-    # Drop className/class attribute values (where the uppercase token lives).
-    text = re.sub(r'class(?:Name)?\s*=\s*(?:"[^"]*"|\'[^\']*\'|\{[^}]*\})', " ", text)
-    # Drop other attributes value=… and style=… .
-    text = re.sub(r'\b[\w-]+\s*=\s*(?:"[^"]*"|\'[^\']*\'|\{[^}]*\})', " ", text)
-    # Drop tags and CSS selectors/braces.
-    text = STRIP_TAGS_RE.sub(" ", text)
-    text = re.sub(r"\{[^}]*\}", " ", text)
-    text = re.sub(r"[.#][\w-]+", " ", text)  # css selectors
-    text = re.sub(r"text-transform\s*:\s*uppercase\s*;?", " ", text, flags=re.IGNORECASE)
-    letters = re.sub(r"[^A-Za-z]", "", text)
+    # `uppercase` inside a class-list-shaped quoted string with no class= on the
+    # line (a wrapped class list, or a cn('…') argument on its own line).
+    for sm in re.finditer(r'"([^"]*\buppercase\b[^"]*)"|\'([^\']*\buppercase\b[^\']*)\'', scan_line):
+        inner = sm.group(1) if sm.group(1) is not None else sm.group(2)
+        if inner and CLASSLIST_TOKEN_RE.search(inner):
+            return ("`uppercase` class — text is never set in all-caps",
+                    "remove `uppercase`; use sentence case (TYP-4)")
 
-    if not letters:
-        # uppercase present but no resolvable same-line text → NOTE, never silent.
-        return ("__NOTE__",
-                "uppercase utility present but text content not on this line — "
-                "verify it is a short label")
-    if len(letters) > 24:
-        snippet = text.strip()
-        if len(snippet) > 40:
-            snippet = snippet[:40] + "…"
-        return (f"all-caps on long text ({len(letters)} letters): \"{snippet}\"",
-                "reserve all-caps for short labels; use sentence case for running text")
     return None
 
 
@@ -413,10 +400,7 @@ def check_file(filepath, type_scale=None):
         # TYP-4 all-caps
         ac = _check_allcaps_rule(scan_line)
         if ac is not None:
-            if ac[0] == "__NOTE__":
-                note(ac[1])
-            else:
-                emit("TYP-4", ac[0], ac[1])
+            emit("TYP-4", ac[0], ac[1])
 
     return results
 
@@ -532,20 +516,36 @@ def run_self_test():
     assert_clean("LINEHEIGHT: 1.5 clean", ".b { line-height: 1.5; }", ".css")
     assert_clean("LINEHEIGHT: 1.6 clean", ".b { line-height: 1.6; }", ".css")
 
-    # ── TYP-4 all-caps ────────────────────────────────────────────────────────
+    # ── TYP-4 all-caps (no all-caps at all — even short labels; HF-20) ──────────
     assert_violations(
         "ALLCAPS: uppercase on a long sentence",
         '<p className="uppercase">This entire running sentence is in upper case</p>',
         ".tsx", ["TYP-4"],
     )
-    assert_clean(
-        "ALLCAPS: uppercase on a short label NEW",
-        '<span className="uppercase">NEW</span>', ".tsx",
+    assert_violations(
+        "ALLCAPS: uppercase on a short label is now a violation",
+        '<span className="uppercase">NEW</span>', ".tsx", ["TYP-4"],
+    )
+    assert_violations(
+        "ALLCAPS: uppercase in a wrapped className string",
+        '          "block flex-1 rounded-md px-1 py-1.5 font-semibold uppercase tracking-wider",',
+        ".tsx", ["TYP-4"],
+    )
+    assert_violations(
+        "ALLCAPS: text-transform uppercase in CSS",
+        ".eyebrow { text-transform: uppercase; }", ".css", ["TYP-4"],
     )
     assert_clean(
-        "ALLCAPS: uppercase in a wrapped className string (no text on line)",
-        '          "block flex-1 rounded-md px-1 py-1.5 font-semibold uppercase tracking-wider",',
-        ".tsx",
+        "ALLCAPS: the word 'uppercase' in body text is not a utility",
+        '<p>Type your initials in uppercase</p>', ".tsx",
+    )
+    assert_clean(
+        "ALLCAPS: an acronym in content is fine (not a transform)",
+        '<span className="font-semibold">MOE</span>', ".tsx",
+    )
+    assert_clean(
+        "ALLCAPS: text-transform capitalize is allowed",
+        ".name { text-transform: capitalize; }", ".css",
     )
 
     # ── Comment stripping ─────────────────────────────────────────────────────
