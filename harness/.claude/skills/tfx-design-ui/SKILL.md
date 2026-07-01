@@ -90,8 +90,9 @@ you have seen and judged the current state. Before Phase 1's contract:
    deliberate — do not "fix" them, cf. the conservative-defaults rule in
    Phase 3/4) — **but verify, do not assume: every element you list as
    "preserve" stays in scope for its controls, so check it against the L0 floor
-   (A11Y-1 contrast especially) before calling it good. "Preserve" means do not
-   restyle a deliberate choice; it never means skip the check** — and what
+   (A11Y-1 contrast especially) before calling it good. Preserved is not waived:
+   "preserve" means do not restyle a deliberate choice, it never means skip the
+   check** — and what
    genuinely underperforms (control violations, hierarchy,
    friction in the teacher's task). Ground each point in the screenshot.
 3. The critique's "what underperforms" list **is** the scope of the polish; it
@@ -120,37 +121,18 @@ just each screen:
 - **Escapability is part of the structure** (HIG: Agency): the teacher can leave at
   any step without losing work, and the route out is visible, not discovered.
 
-## v0 reality — what actually runs today
+## What actually runs today
 
-Most deterministic check scripts in `checks/` are **not built yet** (see
-`checks/README.md`). The scripts that ARE built:
+Not every deterministic control has a script yet, and every built script covers only a
+**static subset** of its control — it reads line-local code, never the rendered DOM.
+`checks/README.md` is the single source of truth for which scripts exist and exactly
+what each does *not* cover; read it before the verify phase rather than assuming a
+control is mechanically enforced. Phase 5 names the scripts that catch the most.
 
-- `checks/validate.py` — catalog schema validation.
-- `checks/token-audit.py` — TOK-1..3, COL-1..2 (raw colour, off-scale spacing/radius).
-- `checks/audit-record.py` — decision-record process compliance.
-- `checks/a11y-static.py` — **static subset** of A11Y-2/3/8: focus-visible removal
-  (FOCUS), click handlers on non-focusable elements (KBD), and icon-only buttons
-  without an accessible name (NAME). Run it with
-  `python3 checks/a11y-static.py <path>...`. This does NOT cover traversal order,
-  computed hit-area, or ARIA state tracking — those still require a
-  rendered DOM and run as the manual accessibility pass below. (A11Y-1 contrast
-  has its own static subset — `checks/contrast.py`, next.)
-- `checks/contrast.py` — **static subset** of A11Y-1: computes WCAG text-contrast
-  ratios for line-local `text-`/`bg-` pairs (or CSS `color:`/`background:`) that
-  resolve to known tokens, and flags sub-AA pairs before render. Run with
-  `python3 checks/contrast.py --tokens <globals.css> <path>...`. It does NOT see
-  inherited/computed backgrounds or infer font size — those stay in the manual
-  contrast pass; unresolvable pairs are reported as NOTEs, never a silent pass.
-- `checks/component-manifest.py` — validates `.tfx/component-manifest.json`; runs
-  the CMP-1 import-diff **only when `coverage: "complete"`** (partial manifest → diff
-  stays off, reports "partial manifest — diff not run"). Run with
-  `python3 checks/component-manifest.py <manifest.json> [<source-root>]`.
-
-Until the remaining scripts exist, the verify phase runs **manual** checks for
-everything else, and you must say so. Never report a `checks/`-backed control as
-"passed" when no script ran — report it as "verified manually" or "could not verify
+The rule this note exists to enforce: **never report a `checks/`-backed control as
+"passed" when no script ran.** Say "verified manually" or "could not verify
 mechanically", and list what a human should re-check. Overstating enforcement is the
-failure this note exists to prevent.
+failure this prevents.
 
 ## Phase 1 — Intent (sprint contract)
 
@@ -264,12 +246,10 @@ rebuild. The gate runs across **two turns**:
   plan (then re-present and re-ask). A free-text approval is still accepted; a vague
   "continue" is not — confirm what they are approving.
 
-A structured **Approve / Adjust** question is the default at the Phase 2 option pick,
-at the Phase 3 plan gate (in the follow-up turn, per the two-turn sequence above), and
-at continuation/verify gates. The one hard rule: **never an option dialog in the same
-turn as the Phase 3 plan** — the reader must read the plan first, so turn 1 is the
-plan in the message body and turn 2 is the structured ask. (At the Phase 2 pick the
-dialog may be same-turn, because the options are short enough to read inside it.)
+This structured **Approve / Adjust** question is the default at the Phase 2 option pick
+and at continuation/verify gates too — but the two-turn split above is Phase 3 only.
+At the Phase 2 pick the dialog may be same-turn, because the options are short enough
+to read inside it.
 
 In an **unattended run** with no human reachable, proxy approval is
 permitted only when the operator authorized it up front — record it verbatim as
@@ -305,15 +285,14 @@ Build exactly the approved plan. Constraints, non-negotiable:
   scoped task. If a change to one is genuinely warranted, flag it explicitly as a
   *proposed* change with its rationale and a one-line revert note in the plan/diff
   summary — never silently. Default to the smallest reversible change that meets
-  the contract. **Preserving the intent of an element never exempts it from its
-  controls.** A preserved avatar, badge, or icon still must pass A11Y-1
-  (contrast), A11Y-2/-3, and every other in-scope control; "deliberate" protects
-  its *look* from gratuitous restyling, not its *compliance* from verification.
-  If a preserved element fails a control, fixing it is in scope — flag the fix as
-  above, but do not leave the failure standing because the element was
-  "established". (Example: per-section semantic colour-coded icons that are
-  decorative `aria-hidden` wayfinding are **not** SLP-1 "rainbow slop" — preserve
-  them; neutralising them is a restyle to flag, not a default.)
+  the contract. **But preserved is not waived:** "deliberate" protects an element's
+  *look* from restyling, never its *compliance* from verification. A preserved avatar,
+  badge, or icon still must pass A11Y-1 (contrast), A11Y-2/-3, and every in-scope
+  control; if it fails one, fixing it is in scope — flag the fix as above rather than
+  leave the failure standing because the element was "established". (Example:
+  per-section semantic colour-coded icons that are decorative `aria-hidden` wayfinding
+  are **not** SLP-1 "rainbow slop" — preserve them; neutralising them is a restyle to
+  flag, not a default.)
 - Compose only manifest components (`status: "stable"` from `.tfx/component-manifest.json`
   if the product has one; CMP-1); semantic shadcn tokens only — no raw
   colour, off-scale spacing, or off-scale radii (TOK-1..3); Plus Jakarta Sans /
@@ -362,41 +341,13 @@ Build exactly the approved plan. Constraints, non-negotiable:
   and loading states (CMP-3); set density to the task (LAY-5); separate rows with spacing
   or hairline dividers, not nested-card chrome (SLP-4). If records are not compared across
   shared columns, a list or cards may fit better than a table (SLP-11).
-- **Interface craft — the small details that read as care** (HIG: Craft). These
-  refine the controls above; they do not replace them:
-  - **Tabular figures** on any column of numbers or any number that updates in place
-    — `tabular-nums` (TYP-5). Grade tables, attendance counts, and live totals must
-    hold still, not jitter as digits change.
-  - **Concentric radius**: a nested control's radius is the parent's minus the
-    padding (`inner = outer − padding`), snapped to the scale (TOK-3).
-  - **Property-scoped, interruptible transitions**: animate named properties
-    (`transition-property: opacity, transform`), never `transition: all`; reserve
-    keyframes for one-shot staged sequences. Direction carries meaning — entrances
-    `ease-out`, exits `ease-in` and softer than the entrance, state/view changes
-    `ease-in-out`. Duration and easing per MOT-1, no bounce (SLP-8), always a
-    reduced-motion variant (A11Y-5). Keyboard navigation is instant — no animation on
-    tab/arrow movement.
-  - **Press feedback**: a subtle `scale(0.96)` on press where a tactile cue helps —
-    never below 0.95, never a bounce, disabled under reduced motion (A11Y-5).
-  - **Hit targets**: where a control reads smaller than its A11Y-4 floor (24px, 44px
-    on mobile), expand the hit area with padding or a pseudo-element rather than
-    enlarging the visible glyph.
-  - **Feels-instant feedback**: respond within ~400ms; when the real work takes
-    longer, show a skeleton or an optimistic result, not a bare spinner — CMP-3's
-    loading state, built to feel fast (Doherty threshold).
-  - **Shadows for depth, not decoration**: layer two or three low-alpha shadows
-    rather than one hard one; keep a single consistent light direction across the
-    surface; tint toward a neutral, never pure black; size the shadow to the
-    elevation. This is constructive depth — distinct from the SLP-1 glow/aura tell,
-    which stays banned.
-  - **Type polish**: `text-wrap: balance` on headings and `text-wrap: pretty` on body
-    to remove orphans; `-webkit-font-smoothing: antialiased` set once at the root;
-    `font-synthesis: none` so no weight is ever faked (TYP-1 ships 400/500/600 only);
-    letter-spacing on the short uppercase labels TYP-4 allows.
-  - **Image edges**: a 1px low-opacity outline on photos — pure black in light, pure
-    white in dark, never a tinted neutral (a tint reads as dirt on the edge).
-  - **will-change** only on `transform`/`opacity`/`filter`, and only to fix observed
-    first-frame stutter — never `will-change: all`, never pre-emptively.
+- **Interface craft** (HIG: Craft) — the small details that read as care: tabular
+  figures, concentric radius, property-scoped interruptible transitions, press
+  feedback, hit-area expansion, feels-instant loading, layered shadows, type polish,
+  image edges, and disciplined `will-change`. Each refines the controls above, none
+  replaces them, and the evaluator grades Craft on them. Apply the ones the surface
+  calls for **from `implement-craft.md`** (beside this skill) as you build — the
+  specifics live there so this list stays scannable; don't defer them to a cleanup pass.
 - Copy follows the `tfx-content-style` skill as you write it, not as a cleanup pass
   (it ships with this harness: `../tfx-content-style/SKILL.md` relative to this skill).
   That includes the anti-slop copy rule (SLP-9): no AI-writing tells — buzzwords,
@@ -417,23 +368,17 @@ Build exactly the approved plan. Constraints, non-negotiable:
 
 Run in this order; do not present output to the user while a step is failing:
 
-1. **Deterministic controls** — all L0/L1 `deterministic` controls. Run the
-   built `checks/` scripts first:
+1. **Deterministic controls** — all L0/L1 `deterministic` controls. Run the built
+   `checks/` scripts first — `checks/README.md` is the authority for the full set,
+   each script's flags, and the static subset each does *not* cover. The three that
+   catch the most:
    - `python3 checks/token-audit.py <path>...` — TOK-1..3, COL-1..2.
-   - `python3 checks/a11y-static.py <path>...` — static subset of A11Y-2/3/8:
-     focus-visible removal, non-focusable click handlers, icon-only unnamed buttons.
-     A11Y-2, A11Y-3, and A11Y-8 are **not fully mechanically verified** by this
-     script — it covers the line-local static subset only. The traversal-order,
-     hit-area, and ARIA-state halves of A11Y-2..8 still run as the manual
-     pass below.
-   - `python3 checks/contrast.py --tokens <globals.css> <path>...` — static subset
-     of **A11Y-1**: flags line-local `text-`/`bg-` (or CSS `color:`/`background:`)
-     pairs that resolve to known tokens and fall below 4.5:1. It does NOT replace
-     the manual contrast pass — inherited/computed backgrounds and font-size-aware
-     large-text classification stay manual, and unresolvable pairs come back as
-     NOTEs (never a silent pass).
-   - Everything else: verify by hand against the control's detail file and label it
-     "verified manually" (see the v0 reality note above).
+   - `python3 checks/a11y-static.py <path>...` — static subset of A11Y-2/3/8.
+   - `python3 checks/contrast.py --tokens <globals.css> <path>...` — static subset of A11Y-1.
+   Each reads line-local code only: traversal order, computed hit-area, ARIA-state,
+   inherited/computed backgrounds, and font-size classification all stay in the manual
+   pass. Everything without a script: verify by hand against the control's detail file
+   and label it "verified manually" (see "What actually runs today" above).
    For the manual accessibility pass, work through the catalog's A11Y controls in id
    order — they mirror the GovTech checklist's Essential tier
    (a11y.tech.gov.sg/checklist), which addresses ~96% of common web accessibility

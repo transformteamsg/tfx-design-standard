@@ -178,6 +178,16 @@ This closes the loop `token-audit.py` leaves open ("a human closes the decision-
 
 **Self-test:** `python3 checks/type-scan.py --self-test` → `SELF-TEST OK (27 cases)`.
 
+## Component manifest (built)
+
+`python3 checks/component-manifest.py <manifest.json> [<source-root>]` — validates a product's `.tfx/component-manifest.json` against the TFX SPEC (`docs/spikes/component-manifest/SPEC.md`): required keys, enum values, date format. Exit 0 silent on pass; exit 1 with one `ERROR` line per violation.
+
+**CMP-1 import-diff — only when `coverage: "complete"`:** the diff flags any component import in changed source that resolves outside the manifest. When `coverage` is `"partial"` (or absent) the diff stays **off** and the script reports `partial manifest — diff not run` — a team that declares complete coverage is asserting the manifest is reliable enough to diff against.
+
+**What this script does NOT verify:** re-exports and barrel files can produce false-positive diff hits when an import resolves through a barrel that isn't the manifest's import path; if you hit these, downgrade to `coverage: "partial"` and the diff stays off (same trust lesson as `token-audit`). The manifest is only as complete as the product keeps it — a stale manifest passes schema validation but misses new components.
+
+**Self-test:** `python3 checks/component-manifest.py --self-test` → `SELF-TEST OK (11 cases)`.
+
 Planned for V1 (remaining):
 
 | Check | Controls | Approach |
