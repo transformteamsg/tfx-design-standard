@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Submit marks for review, P5 Diligence Mathematics · Teacher Workspace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* tfx-tokens */
+:root {
+  /* brand: Teacher and School Blue and ramp (COL-1) */
+  --color-brand-600: #0064FF;
+  --color-brand-700: #1D4ED8;
+  --color-brand-100: #DBEAFE;
+  --color-brand-50: #EFF6FF;
+
+  /* neutrals (Radix Slate aligned) */
+  --color-bg: #FFFFFF;
+  --color-surface: #F8FAFC;
+  --color-border: #E2E8F0;
+  --color-border-strong: #CBD5E1;
+  --color-text: #1E293B;
+  --color-text-muted: #64748B;
+  --color-text-on-brand: #FFFFFF;
+  --color-overlay: rgba(30, 41, 59, 0.5);
+
+  /* functional (Radix scales) (COL-2) */
+  --color-success-bg: #E9F6EE;
+  --color-success-text: #18794E;
+  --color-success-border: #B4DFC4;
+  --color-danger-bg: #FFEFEF;
+  --color-danger-text: #CD2B31;
+  --color-danger-solid: #CD2B31;
+  --color-danger-border: #F3AEAF;
+
+  /* spacing: shadcn default scale (TOK-2) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+
+  /* radius: shadcn default scale (TOK-3) */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-full: 9999px;
+
+  /* type: TFX scale (TYP-2, TYP-3) */
+  --text-2xl: 24px;
+  --text-xl: 20px;
+  --text-lg: 18px;
+  --text-base: 16px;
+  --text-sm: 14px;
+  --text-caption: 12px;
+  --text-label: 11px;
+
+  --font-display: "Plus Jakarta Sans", sans-serif;
+  --font-body: "Inter", sans-serif;
+
+  /* layered depth, single light direction, neutral tint (craft: shadows) */
+  --shadow-card: 0 1px 2px rgba(30, 41, 59, 0.06), 0 8px 24px rgba(30, 41, 59, 0.08);
+  --focus-ring: 0 0 0 2px var(--color-bg), 0 0 0 4px var(--color-brand-600);
+}
+/* /tfx-tokens */
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { -webkit-font-smoothing: antialiased; font-synthesis: none; }
+
+body {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: 1.5;
+  color: var(--color-text);
+  background: var(--color-surface);
+  text-wrap: pretty;
+}
+
+/* MOT-1: 100 to 300ms, standard easing; property-scoped, never `all` (craft). */
+button {
+  transition: background-color 150ms ease, border-color 150ms ease,
+              box-shadow 150ms ease, transform 100ms ease;
+}
+/* press feedback (craft): subtle, never a bounce */
+button:active { transform: scale(0.97); }
+
+/* directional easing (craft): entrances ease-out */
+.card { animation: rise 200ms ease-out both; }
+@keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+/* A11Y-5: reduced-motion variant */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+  button:active { transform: none; }
+}
+
+:focus-visible { outline: none; box-shadow: var(--focus-ring); border-radius: var(--radius-sm); }
+
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
+}
+
+main { max-width: 480px; margin: 0 auto; padding: var(--space-12) var(--space-4); }
+
+.card {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-6);
+}
+
+.card__eyebrow {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-2);
+}
+h1 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--text-2xl);
+  line-height: 1.25;
+  text-wrap: balance;
+  margin-bottom: var(--space-2);
+}
+.card__lead { color: var(--color-text-muted); font-size: var(--text-sm); }
+
+/* progress summary: tabular figures so counts do not jitter (TYP-5) */
+.summary { margin: var(--space-6) 0; }
+.summary__count {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  font-size: var(--text-lg);
+}
+.summary__track {
+  margin-top: var(--space-3);
+  height: 8px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+.summary__fill {
+  height: 100%;
+  width: 95%;
+  background: var(--color-brand-600);
+  border-radius: var(--radius-full);
+}
+.summary__hint {
+  margin-top: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.field { margin-bottom: var(--space-6); }
+.field__label { display: block; font-weight: 500; font-size: var(--text-sm); margin-bottom: var(--space-1); }
+.field__hint { display: block; font-size: var(--text-caption); color: var(--color-text-muted); margin-bottom: var(--space-2); }
+textarea {
+  width: 100%;
+  min-height: 72px;
+  font: inherit;
+  color: var(--color-text);
+  padding: var(--space-3);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  resize: vertical;
+}
+textarea:focus-visible { box-shadow: var(--focus-ring); border-color: var(--color-brand-600); }
+
+/* action hierarchy (CMP-5): one primary, secondary steps down, destructive its own variant */
+.actions { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; }
+.btn {
+  min-height: 44px;              /* A11Y-4 target */
+  padding: 0 var(--space-4);
+  font: inherit;
+  font-weight: 600;
+  font-size: var(--text-sm);
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.btn--primary { background: var(--color-brand-600); color: var(--color-text-on-brand); }
+.btn--primary:hover { background: var(--color-brand-700); }
+.btn--secondary { background: var(--color-bg); color: var(--color-text); border-color: var(--color-border-strong); }
+.btn--secondary:hover { background: var(--color-surface); }
+.btn--danger-ghost { background: transparent; color: var(--color-danger-text); margin-left: auto; }
+.btn--danger-ghost:hover { background: var(--color-danger-bg); }
+.btn--danger { background: var(--color-danger-solid); color: var(--color-text-on-brand); }
+.btn[disabled] { opacity: 0.6; cursor: not-allowed; }
+
+/* async status (CMP-3, A11Y-11): transient status uses a polite live region */
+.status { margin-top: var(--space-4); font-size: var(--text-sm); min-height: 1.5em; }
+.status[data-tone="success"] { color: var(--color-success-text); }
+.status[data-tone="error"] { color: var(--color-danger-text); }
+.spinner {
+  width: 14px; height: 14px; border-radius: var(--radius-full);
+  border: 2px solid var(--color-border-strong); border-top-color: var(--color-brand-600);
+  display: inline-block; vertical-align: -2px; animation: spin 800ms linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* CMP-2 destructive confirm: consequence shown before it runs, and reversible */
+.confirm {
+  margin-top: var(--space-4);
+  padding: var(--space-4);
+  background: var(--color-danger-bg);
+  border: 1px solid var(--color-danger-border);
+  border-radius: var(--radius-md);
+}
+.confirm__title { font-weight: 600; font-size: var(--text-sm); margin-bottom: var(--space-1); }
+.confirm__body { font-size: var(--text-sm); color: var(--color-text); margin-bottom: var(--space-3); }
+.confirm .actions { justify-content: flex-start; }
+
+.demo {
+  max-width: 480px; margin: var(--space-6) auto 0;
+  font-size: var(--text-caption); color: var(--color-text-muted);
+}
+.demo__row { display: flex; gap: var(--space-2); margin-top: var(--space-2); flex-wrap: wrap; }
+.demo button {
+  font: inherit; font-size: var(--text-caption);
+  padding: var(--space-1) var(--space-2);
+  border: 1px dashed var(--color-border-strong); border-radius: var(--radius-sm);
+  background: var(--color-bg); cursor: pointer;
+}
+[hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<main>
+  <section class="card" aria-labelledby="card-title">
+    <p class="card__eyebrow">P5 Diligence · Mathematics · Weighted Assessment 2</p>
+    <h1 id="card-title">Submit marks for review</h1>
+    <p class="card__lead">Once you submit, your head of department can review these marks. You can still make changes until they start reviewing.</p>
+
+    <div class="summary">
+      <div class="summary__count"><span aria-hidden="true">38 of 40</span><span class="visually-hidden">38 of 40 students graded</span> students graded</div>
+      <div class="summary__track" role="img" aria-label="95 percent of students graded">
+        <div class="summary__fill"></div>
+      </div>
+      <p class="summary__hint">2 students have no mark yet. You can submit now and add them later.</p>
+    </div>
+
+    <div class="field">
+      <label class="field__label" for="reviewer-note">Note for the reviewer (optional)</label>
+      <span class="field__hint" id="reviewer-note-hint">Add context for anything unusual, like a student who was absent.</span>
+      <textarea id="reviewer-note" aria-describedby="reviewer-note-hint"></textarea>
+    </div>
+
+    <div class="actions">
+      <button type="button" class="btn btn--primary" id="submit-btn">Submit marks</button>
+      <button type="button" class="btn btn--secondary" id="edit-btn">Keep editing</button>
+      <button type="button" class="btn btn--danger-ghost" id="discard-btn" aria-expanded="false" aria-controls="discard-confirm">Discard draft</button>
+    </div>
+
+    <!-- CMP-2: consequence shown before the destructive action runs -->
+    <div class="confirm" id="discard-confirm" hidden>
+      <p class="confirm__title">Discard this draft?</p>
+      <p class="confirm__body">This removes the 2 unsaved changes on this page. Marks you already submitted are not affected, and you can enter the draft again later.</p>
+      <div class="actions">
+        <button type="button" class="btn btn--danger" id="discard-confirm-btn">Discard draft</button>
+        <button type="button" class="btn btn--secondary" id="discard-cancel-btn">Cancel</button>
+      </div>
+    </div>
+
+    <!-- A11Y-11: polite live region for the submit status; no focus steal -->
+    <p class="status" id="submit-status" role="status" aria-live="polite"></p>
+  </section>
+
+  <!-- Demo only: not part of the design; makes CMP-3 states reachable for evidence -->
+  <div class="demo" aria-label="Demo controls, not part of the design">
+    <span>Demo only: force a submit state</span>
+    <div class="demo__row">
+      <button type="button" data-state="idle">Idle</button>
+      <button type="button" data-state="loading">Loading</button>
+      <button type="button" data-state="success">Success</button>
+      <button type="button" data-state="error">Error</button>
+    </div>
+  </div>
+</main>
+
+<script>
+  var status = document.getElementById('submit-status');
+  function setState(state) {
+    if (state === 'loading') {
+      status.dataset.tone = 'neutral';
+      status.innerHTML = '<span class="spinner" aria-hidden="true"></span> Submitting marks now.';
+    } else if (state === 'success') {
+      status.dataset.tone = 'success';
+      status.textContent = 'Marks submitted. Your head of department can review them now.';
+    } else if (state === 'error') {
+      status.dataset.tone = 'error';
+      status.textContent = 'We could not submit the marks. Check your connection, then try again.';
+    } else {
+      status.dataset.tone = 'neutral';
+      status.textContent = '';
+    }
+  }
+  document.getElementById('submit-btn').addEventListener('click', function () { setState('loading'); });
+  var discardBtn = document.getElementById('discard-btn');
+  var confirm = document.getElementById('discard-confirm');
+  discardBtn.addEventListener('click', function () {
+    var open = confirm.hasAttribute('hidden');
+    if (open) { confirm.removeAttribute('hidden'); } else { confirm.setAttribute('hidden', ''); }
+    discardBtn.setAttribute('aria-expanded', String(open));
+  });
+  document.getElementById('discard-cancel-btn').addEventListener('click', function () {
+    confirm.setAttribute('hidden', ''); discardBtn.setAttribute('aria-expanded', 'false'); discardBtn.focus();
+  });
+  Array.prototype.forEach.call(document.querySelectorAll('.demo [data-state]'), function (b) {
+    b.addEventListener('click', function () { setState(b.getAttribute('data-state')); });
+  });
+</script>
+</body>
+</html>

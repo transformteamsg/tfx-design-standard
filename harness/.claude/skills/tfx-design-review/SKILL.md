@@ -32,8 +32,9 @@ visible focus state (A11Y-2), role + accessible name (A11Y-8/A11Y-3), and that
 its ARIA state tracks the visual (A11Y-8, per controls/a11y-8.md). A control the
 builder's evidence omits, found this way, is a finding — not an excuse.
 
-**"Preserved" and "established" are not waivers.** When the builder's critique or
-plan lists an element as "what works — preserve", grade it like any other element:
+**Preserved is not waived.** "Preserved" and "established" are not exemptions. When
+the builder's critique or plan lists an element as "what works — preserve", grade it
+like any other element:
 a preserved or established component is fully in scope for its controls, and its
 contrast, focus, name, and state must be verified, not accepted on the builder's
 say-so. The most expensive misses hide here — a default that was overridden, or a
@@ -41,9 +42,9 @@ long-standing element nobody re-checks. Read the element against its L0/L1 contr
 directly.
 
 Deterministic controls are primarily the `checks/` scripts' job, not yours — but do
-not *assume* they ran. Only validate, token-audit, and audit-record are built (v0);
-for the rest, ask whether each was verified manually; if neither, say the control is
-unverified rather than passed. When you record "verified manually", state what you
+not *assume* they ran. `checks/README.md` lists which scripts exist and the static
+subset each covers; for any control whose script is unbuilt or wasn't run, ask whether
+it was verified manually; if neither, say the control is unverified rather than passed. When you record "verified manually", state what you
 checked and how — it becomes a `manual` row in the VERIFICATION LEDGER (below) that
 the record audit validates, so "verified manually" carries evidence rather than being
 an unauditable claim. Any deterministic violation you can see — in a screenshot or in
@@ -165,7 +166,11 @@ VERIFICATION LEDGER (one row per in-scope control — the record pastes this ver
 | A11Y-4  | unverified | needs computed layout — flag for a human |
   Method is one of `script` / `manual` / `unverified`. A `manual` row MUST name what
   was checked and how; a `script` row names the script/command; an `unverified` row
-  says why. This is the same fixed-form precedent as the CMP-1 line above — the record
+  says why. When a control was verified more than one way — e.g. a script ran and you
+  also confirmed by hand — record the single strongest method (`script` over `manual`
+  over `unverified`) and put the other evidence in the Evidence column; the Method cell
+  is always exactly one of the three tokens (`checks/audit-record.py` rejects compound
+  values like `script + manual`). This is the same fixed-form precedent as the CMP-1 line above — the record
   audit (`checks/audit-record.py`) validates it, so a manual row with no evidence or a
   method outside the vocabulary is a defect.
 

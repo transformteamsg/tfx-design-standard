@@ -20,6 +20,9 @@ LINEHEIGHT  TYP-2     An explicit numeric `line-height:` or Tailwind
             (L1)      `leading-[N]` clearly outside the 1.5–1.6 body band.
                       Conservative: only unitless / em values are judged; px
                       and percentage line-heights are NOT (needs the font size).
+                      The band is BODY-scoped — line-heights inside an h1–h6 CSS
+                      rule, or on a heading element, are excluded (headings run
+                      tighter by design; see controls/typ-2.md).
 ONSCALE     TYP-3     A `text-[Npx]` or `font-size:Npx` whose N is not on the
             (L1)      TFX type scale {120,96,72,48,32,24,20,18,16,14,12,11}.
                       The scale is sourced from TYP-3's catalog `verify` field
@@ -230,9 +233,36 @@ def _check_size_rules(scan_line, type_scale):
 CSS_LINE_HEIGHT_RE = re.compile(r"line-height\s*:\s*([0-9.]+)(em)?\s*[;}]", re.IGNORECASE)
 TW_LEADING_ARBITRARY_RE = re.compile(r"\bleading-\[([0-9.]+)(em)?\]")
 
+# TYP-2's line-height band (1.5–1.6) is BODY-scoped — controls/typ-2.md fails only on
+# "line-height under 1.5 on multi-line body text". Headings correctly run tighter, so a
+# line-height inside an h1–h6 rule (or on a heading element) is out of scope, not a fail.
+_HEADING_SUBJECT_RE = re.compile(r"^h[1-6](?![a-z0-9-])", re.IGNORECASE)
+# A heading element opened on this line (JSX/HTML) — scopes `leading-[N]` on it.
+_HEADING_TAG_RE = re.compile(r"<h[1-6][\s/>]", re.IGNORECASE)
 
-def _check_line_height_rule(scan_line):
-    """TYP-2 line-height: flag unitless/em values clearly outside 1.5–1.6."""
+
+def _selector_is_heading_only(selector_text):
+    """True when every comma-group of a CSS selector targets an h1–h6 element.
+    Mixed groups (e.g. '.title, h2') return False so the body member is still
+    judged; @-rules and empty selectors return False."""
+    sel = selector_text.strip()
+    if not sel or sel.startswith("@"):
+        return False
+    parts = [p.strip() for p in sel.split(",") if p.strip()]
+    if not parts:
+        return False
+    for part in parts:
+        subject = re.split(r"[\s>+~]+", part)[-1]  # rightmost compound selector
+        if not _HEADING_SUBJECT_RE.match(subject):
+            return False
+    return True
+
+
+def _check_line_height_rule(scan_line, heading_context=False):
+    """TYP-2 line-height: flag unitless/em values clearly outside 1.5–1.6.
+    Skips heading contexts — TYP-2's band governs body copy, not headings."""
+    if heading_context:
+        return []
     hits = []
     candidates = []
     for m in CSS_LINE_HEIGHT_RE.finditer(scan_line):
@@ -367,6 +397,7 @@ def check_file(filepath, type_scale=None):
 
     rel = os.path.relpath(filepath)
     in_block_comment = False
+    in_heading_block = False  # inside an h1–h6 CSS rule (TYP-2 is body-scoped)
 
     for lineno, raw_line in enumerate(lines, start=1):
         line = raw_line.rstrip("\n")
@@ -393,8 +424,19 @@ def check_file(filepath, type_scale=None):
         for ctl, found, suggest in _check_size_rules(scan_line, type_scale):
             emit(ctl, found, suggest)
 
-        # TYP-2 line-height
-        for found, suggest in _check_line_height_rule(scan_line):
+        # TYP-2 line-height — body-scoped, so establish heading context first.
+        opens_heading = (
+            _selector_is_heading_only(scan_line.split("{", 1)[0])
+            if "{" in scan_line else False
+        )
+        effective_heading = opens_heading if "{" in scan_line else in_heading_block
+        if _HEADING_TAG_RE.search(scan_line):
+            effective_heading = True  # `leading-[N]` on a heading element
+        if "}" in scan_line:
+            in_heading_block = False
+        if "{" in scan_line and "}" not in scan_line:
+            in_heading_block = opens_heading
+        for found, suggest in _check_line_height_rule(scan_line, effective_heading):
             emit("TYP-2", found, suggest)
 
         # TYP-4 all-caps
@@ -515,6 +557,24 @@ def run_self_test():
                       ".b { line-height: 1.2; }", ".css", ["TYP-2"])
     assert_clean("LINEHEIGHT: 1.5 clean", ".b { line-height: 1.5; }", ".css")
     assert_clean("LINEHEIGHT: 1.6 clean", ".b { line-height: 1.6; }", ".css")
+    # TYP-2 is body-scoped: heading line-heights run tighter and are not judged.
+    assert_clean("LINEHEIGHT: heading 1.2 same-line clean",
+                 "h1 { line-height: 1.2; }", ".css")
+    assert_clean("LINEHEIGHT: heading multi-line 1.25 clean",
+                 "h1 {\n  line-height: 1.25;\n}", ".css")
+    assert_clean("LINEHEIGHT: descendant heading rule clean",
+                 ".card h2 {\n  line-height: 1.1;\n}", ".css")
+    # A non-heading body rule spanning lines still flags.
+    assert_violations("LINEHEIGHT: body multi-line 1.2 still flags",
+                      ".lead {\n  line-height: 1.2;\n}", ".css", ["TYP-2"])
+    # A mixed group (body + heading) is not treated as heading-only → still flags.
+    assert_violations("LINEHEIGHT: mixed group still flags",
+                      ".lead, h2 {\n  line-height: 1.2;\n}", ".css", ["TYP-2"])
+    # Tailwind leading-[N]: heading element excluded, body element flagged.
+    assert_clean("LINEHEIGHT: leading-[] on a heading element clean",
+                 '<h1 className="leading-[1.1]">Title</h1>', ".tsx")
+    assert_violations("LINEHEIGHT: leading-[] on a body element flags",
+                      '<p className="leading-[1.2]">x</p>', ".tsx", ["TYP-2"])
 
     # ── TYP-4 all-caps (no all-caps at all — even short labels; HF-20) ──────────
     assert_violations(

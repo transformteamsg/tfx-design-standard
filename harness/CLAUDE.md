@@ -31,21 +31,12 @@ triggered.
   buzzword copy, or multi-section modals.
 - **Never edit the catalog to make a failing check pass.** Propose changes via the
   ratchet (lightweight PR + design-lead approval).
-- Built `checks/` scripts: `validate.py` (catalog), `token-audit.py` (TOK-1..3,
-  COL-1..2), `audit-record.py` (decision records), `a11y-static.py` (A11Y-2/3 + the
-  A11Y-8 KBD sub-rule, static subset), `component-manifest.py`, `content-lint.py`
-  (CNT-1, CNT-3, SLP-9 lint half — word lists read live from `slp-9.md`),
-  `type-scan.py` (TYP-1/2/3/4, static subset), `contrast.py` (A11Y-1 text contrast,
-  static subset — line-local fg/bg pairs that resolve to known tokens; run with
-  `--tokens <globals.css>`), and `waiver-reconcile.py`
-  (reconciles inline `tfx-waive` comments against decision-record waiver tables
-  and catalog tiers). **The remaining deterministic checks
-  are not built yet** (e.g. `alt-scan`, `reduced-motion`, `structure`,
-  `targets`, `destructive`, `async-states`, `motion`, `slop-scan`, `slop-layout`,
-  `identity`) — do not report an unbuilt check as "passed"; say "verified manually" or
-  "unverified" and name what a human should re-check. Each built check covers only a
-  static subset of its controls (see `checks/README.md` for non-coverage); don't
-  overstate enforcement.
+- **`checks/` scripts enforce only a static subset of the deterministic controls, and
+  not every control has a script yet.** `checks/README.md` is the single source of
+  truth for which scripts exist and exactly what each does *not* cover — do not
+  re-enumerate that list here or in the skills (it drifts). Never report an unbuilt or
+  un-run check as "passed"; say "verified manually" or "unverified" and name what a
+  human should re-check. Don't overstate enforcement.
 - Waiver syntax: `tfx-waive <CTL-ID> reason="..."` — L0 never, L1 needs a named human
   approver, L2 needs a specific real reason.
 - Singapore English spelling (British base): organise, colour, centre.

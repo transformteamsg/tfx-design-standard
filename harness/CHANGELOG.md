@@ -3,6 +3,32 @@
 Notable changes to the TFX Design Harness plugin. Versioning tracks
 `.claude-plugin/plugin.json`.
 
+## [0.2.0] — 2026-07-01
+
+Consolidation pass: stop the built-checks list from drifting by single-sourcing it,
+disclose Phase-4 detail behind a pointer, and align shared phrasing across the design,
+review, and evaluator prompts.
+
+### Changed — single source of truth
+- Built-checks are single-sourced to `checks/README.md`. The skills, the evaluator,
+  and `CLAUDE.md` now point to it instead of each re-listing which scripts exist (that
+  list had drifted); added the missing `component-manifest` section to
+  `checks/README.md`.
+
+### Changed — loop and evaluator
+- Phase-4 "Interface craft" detail moved out of `tfx-design-ui/SKILL.md` into a
+  disclosed `implement-craft.md` reached by a pointer, keeping the loop scannable.
+- "Preserved is not waived" is now a shared leading phrase across the design, review,
+  and evaluator prompts.
+- Trimmed the `tfx-design-evaluator` agent prompt so it no longer restates rules that
+  live in its preloaded `tfx-design-review` skill.
+
+### Changed — standards and checks
+- Removed a stale TYP-4 reference (the "uppercase labels TYP-4 allows" clause); TYP-4
+  now forbids all-caps entirely.
+- Fixed `checks/type-scan.py`: TYP-2's body line-height band no longer
+  false-positives on headings (self-test 27→34 cases).
+
 ## [0.1.1] — 2026-06-16
 
 Harness build-out from the cross-session feedback log (plans 010–023). Each change
