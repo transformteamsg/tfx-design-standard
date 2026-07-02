@@ -368,7 +368,5 @@ and by whom, and the verify verdict. Then:
   section of the `standards` skill — it is the single authoritative description
   of the proposal format.
 - Harness friction the run surfaced that is **not** a control gap — a confusing step, a
-  missing/unbuilt check, a process or onboarding nit — is filed as a **GitHub issue**
-  (the system of record), per `docs/harness-feedback.md`: title `[harness-feedback]
-  <summary>`, one severity + one or more category labels, dedup first. Do not append to a
-  markdown feedback log.
+  missing/unbuilt check, a process or onboarding nit — is filed as a GitHub issue via the
+  `feedback` skill (it carries the procedure; `docs/harness-feedback.md` is the spec).

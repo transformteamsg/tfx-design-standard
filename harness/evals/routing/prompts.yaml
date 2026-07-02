@@ -7,14 +7,14 @@
 #   pass:  the expected skill name appears in the transcript's tool calls
 #          (a Skill tool invocation of that skill). For `expect: none`, pass
 #          means NO harness skill (design / content / standards /
-#          onboard) appears in the tool calls.
-#   cost cap: a full sweep is 33 headless sessions. Spot-check a 5-case sample
+#          onboard / feedback) appears in the tool calls.
+#   cost cap: a full sweep is 38 headless sessions. Spot-check a 5-case sample
 #          per skill edit (always include at least one modification-phrasing
 #          design case and one `none` case); run the full sweep only when a
 #          skill's frontmatter `description:` changes — that is the text that
 #          decides triggering.
 #
-# expect ∈ design | content | standards | onboard | none
+# expect ∈ design | content | standards | onboard | feedback | none
 
 cases:
   # ── design: new page / flow ─────────────────────────────────────────
@@ -98,3 +98,17 @@ cases:
     expect: design
   - prompt: "How do I design a settings screen for Glow?"
     expect: design
+
+  # ── feedback: harness feedback, including mid-turn signals ──────────
+  - prompt: "The plan gate keeps interrupting me for tiny copy changes — that's too much process"
+    expect: feedback
+  - prompt: "File this as harness feedback: the contrast check flagged a disabled button"
+    expect: feedback
+  - prompt: "The token-audit check missed a raw hex I snuck in — the harness should have caught it"
+    expect: feedback
+
+  # ── boundary guards: feedback must NOT capture product feedback or control proposals ──
+  - prompt: "I don't like the empty state on the student notes page"
+    expect: design
+  - prompt: "I think we need a new control banning full-width tables"
+    expect: standards

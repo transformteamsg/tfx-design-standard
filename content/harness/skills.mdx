@@ -10,6 +10,7 @@ status: proposed
 | `standards` (formerly `tfx-design-standards`) | Exists | Catalog reading and filtering, tier application, waiver protocol |
 | `evaluator` (formerly `tfx-design-evaluator`, agent) | Exists | Evaluator procedure for grading a finished design; findings sort by tier into blocking (L0/L1) and advisory (L2). The grading procedure ships inside the agent definition, not as a separately loadable skill — spawned as a subagent, never the generator |
 | `content` (formerly `tfx-content-style`) | Exists | Applies voice & tone, naming, and the AI-writing tells (SLP-9) at generation time, so copy arrives on-voice by default |
+| `feedback` | Exists | Catches harness feedback the moment a user voices it, even mid-task, and files it as a GitHub issue on the harness repo |
 | `design-consultation` | Planned | Answers design system and brand questions with citations into this standard |
 
 Every skill page here will contain: what it does in one sentence · when to reach for it · the exact copy-paste invocation · one worked example (real input → real output) · what good output looks like · what to do when it goes wrong.

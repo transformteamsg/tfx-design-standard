@@ -68,6 +68,14 @@ logic with `--self-test` (never touches the network). The title marker is added
 automatically and is idempotent. See `scripts/README.md` for the full flag list. If `gh`
 is unavailable the helper prints the would-be issue + the reason and exits non-zero.
 
+## Mid-session capture — the `feedback` skill
+
+The `feedback` skill routes a user's harness feedback to this process the moment it
+surfaces — even mid-task while another skill is running — instead of letting it
+evaporate when the session ends. It carries the capture-classify-confirm-file
+procedure; this doc stays the spec for the marker, labels, and dedup rule. Any
+change to those stays here and in the helper — the skill needs no edit.
+
 ## Archived logs
 
 The markdown feedback logs are read-only historical archives — do not append to them:

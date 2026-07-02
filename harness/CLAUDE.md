@@ -48,6 +48,7 @@ triggered.
 | Read, filter, apply, or grow the catalog | `standards` skill |
 | Grade a finished design | `evaluator` subagent (its agent definition carries the review procedure) |
 | Onboard a new user — learn the skills and the loop | `onboard` skill (guided tour) |
+| Report harness friction/feedback | `feedback` skill (files the GitHub issue) |
 
 Architecture and roadmap: `README.md`. Control format: `standards/README.md`.
 TFX-DS source: https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb

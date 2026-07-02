@@ -38,6 +38,7 @@ shape of the run, not a list of tools:
   - write or review UI copy only → hand off to `content` and stop.
   - a catalog or waiver question (can I waive this? who approves?) → hand off to
     `standards` and stop.
+  - feedback about the harness itself → hand off to the `feedback` skill and stop.
 
 If they ask to **set up a product repo to use the harness**, that is the wrong tool:
 point them to the team onboarding guide (`../../../docs/ONBOARDING.md`, relative to
