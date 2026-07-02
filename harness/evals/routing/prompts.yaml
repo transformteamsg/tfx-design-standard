@@ -6,70 +6,70 @@
 #          loaded a skill cannot measure triggering).
 #   pass:  the expected skill name appears in the transcript's tool calls
 #          (a Skill tool invocation of that skill). For `expect: none`, pass
-#          means NO harness skill (tfx-design-ui / tfx-content-style / tfx-design-standards /
-#          tfx-design-review / tfx-design-onboarding) appears in the tool calls.
-#   cost cap: a full sweep is 33 headless sessions. Spot-check a 5-case sample
+#          means NO harness skill (design / content / standards /
+#          onboard / feedback) appears in the tool calls.
+#   cost cap: a full sweep is 38 headless sessions. Spot-check a 5-case sample
 #          per skill edit (always include at least one modification-phrasing
-#          tfx-design-ui case and one `none` case); run the full sweep only when a
+#          design case and one `none` case); run the full sweep only when a
 #          skill's frontmatter `description:` changes — that is the text that
 #          decides triggering.
 #
-# expect ∈ tfx-design-ui | tfx-content-style | tfx-design-standards | tfx-design-onboarding | none
+# expect ∈ design | content | standards | onboard | feedback | none
 
 cases:
-  # ── tfx-design-ui: new page / flow ─────────────────────────────────────────
+  # ── design: new page / flow ─────────────────────────────────────────
   - prompt: "Design an attendance-taking page for Teacher Workspace"
-    expect: tfx-design-ui
+    expect: design
   - prompt: "Build a parent-teacher meeting booking flow for TW"
-    expect: tfx-design-ui
+    expect: design
   - prompt: "Create an empty state for the student notes list in CaseSync"
-    expect: tfx-design-ui
+    expect: design
   - prompt: "We need a settings screen for notification preferences in Glow"
-    expect: tfx-design-ui
+    expect: design
   - prompt: "Design a form for teachers to log a student incident"
-    expect: tfx-design-ui
+    expect: design
 
-  # ── tfx-design-ui: modification of an existing surface ─────────────────────
+  # ── design: modification of an existing surface ─────────────────────
   - prompt: "Add a remarks field to attendance"
-    expect: tfx-design-ui
+    expect: design
   - prompt: "Restyle the status chip on the attendance page"
-    expect: tfx-design-ui
+    expect: design
   - prompt: "Change the submit button on the marks page to show how many students are selected"
-    expect: tfx-design-ui
+    expect: design
   - prompt: "Fix the error banner on the attendance page — it overlaps the header on small screens"
-    expect: tfx-design-ui
+    expect: design
   - prompt: "Add a date picker to the homework assignment form"
-    expect: tfx-design-ui
+    expect: design
 
-  # ── tfx-design-ui: catalog-update re-audit ──────────────────────────────────
+  # ── design: catalog-update re-audit ──────────────────────────────────
   - prompt: "The catalog gained two new controls yesterday — re-check the attendance page against them"
-    expect: tfx-design-ui
+    expect: design
   - prompt: "Re-audit the student notes page against the latest catalog"
-    expect: tfx-design-ui
+    expect: design
   - prompt: "The standards catalog was updated; bring the attendance page back into compliance"
-    expect: tfx-design-ui
+    expect: design
 
-  # ── tfx-content-style: copy-only ────────────────────────────────────────────
+  # ── content: copy-only ────────────────────────────────────────────
   - prompt: "Rewrite this error message: 'Submission failed (code 0x1F4)'"
-    expect: tfx-content-style
+    expect: content
   - prompt: "Is this empty-state text on-voice? 'No notes yet. Create one to get started.'"
-    expect: tfx-content-style
+    expect: content
   - prompt: "Review the confirmation dialog copy on the marks page for tone"
-    expect: tfx-content-style
+    expect: content
   - prompt: "Suggest a better label for this button — 'Execute submission' feels off"
-    expect: tfx-content-style
+    expect: content
   - prompt: "Draft the success toast copy for when attendance is submitted"
-    expect: tfx-content-style
+    expect: content
 
-  # ── tfx-design-standards: catalog mechanics, waivers, proposals ─────────────
+  # ── standards: catalog mechanics, waivers, proposals ─────────────
   - prompt: "Can I waive TOK-1 here?"
-    expect: tfx-design-standards
+    expect: standards
   - prompt: "Propose a new control for table density based on the pilot finding"
-    expect: tfx-design-standards
+    expect: standards
   - prompt: "Does CMP-2 apply to archiving a class, or only to deleting it?"
-    expect: tfx-design-standards
+    expect: standards
   - prompt: "Write a waiver for the statutory programme name on the broadcast page"
-    expect: tfx-design-standards
+    expect: standards
 
   # ── none: pure questions, no skill should fire ──────────────────────────
   - prompt: "What does L1 mean?"
@@ -85,16 +85,30 @@ cases:
   - prompt: "What fonts does the harness stack use?"
     expect: none
 
-  # ── tfx-design-onboarding: explicit "onboard / teach me the harness" intent only ──
+  # ── onboard: explicit "onboard / teach me the harness" intent only ──
   - prompt: "Onboard me to the TFX design harness"
-    expect: tfx-design-onboarding
+    expect: onboard
   - prompt: "I'm new to the harness — teach me how to use it"
-    expect: tfx-design-onboarding
+    expect: onboard
   - prompt: "Walk me through how the design loop works for the first time"
-    expect: tfx-design-onboarding
+    expect: onboard
 
   # ── boundary guards: onboarding must NOT capture design or pure-question intents ──
   - prompt: "How do I add a remarks field to the attendance page?"
-    expect: tfx-design-ui
+    expect: design
   - prompt: "How do I design a settings screen for Glow?"
-    expect: tfx-design-ui
+    expect: design
+
+  # ── feedback: harness feedback, including mid-turn signals ──────────
+  - prompt: "The plan gate keeps interrupting me for tiny copy changes — that's too much process"
+    expect: feedback
+  - prompt: "File this as harness feedback: the contrast check flagged a disabled button"
+    expect: feedback
+  - prompt: "The token-audit check missed a raw hex I snuck in — the harness should have caught it"
+    expect: feedback
+
+  # ── boundary guards: feedback must NOT capture product feedback or control proposals ──
+  - prompt: "I don't like the empty state on the student notes page"
+    expect: design
+  - prompt: "I think we need a new control banning full-width tables"
+    expect: standards

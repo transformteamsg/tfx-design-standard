@@ -3,7 +3,7 @@
 Consumer guide for product teams (Teacher Workspace, CaseSync, Glow) keeping the
 installed harness plugin up to date.
 
-- **Plugin:** `tfx-design-harness`
+- **Plugin:** `tfx`
 - **Marketplace:** `tfx`
 - **Source:** `github.com/transformteamsg/tfx-design-standard` (the marketplace tracks the `main` branch)
 
@@ -13,13 +13,13 @@ Skip this if the plugin is already installed.
 
 ```
 /plugin marketplace add transformteamsg/tfx-design-standard
-/plugin install tfx-design-harness@tfx
+/plugin install tfx@tfx
 ```
 
-This installs the five skills (`tfx-design-ui`, `tfx-design-standards`,
-`tfx-content-style`, `tfx-design-review`, `tfx-design-onboarding`), the
-`tfx-design-evaluator` subagent, and the control catalog — the catalog ships with the
-plugin, not with your repo.
+This installs the four skills (`design`, `standards`,
+`content`, `onboard`), the
+`evaluator` subagent (which carries its own review procedure), and the
+control catalog — the catalog ships with the plugin, not with your repo.
 
 ## Update to the latest
 
@@ -31,10 +31,10 @@ plugin, not with your repo.
 Restarting Claude Code does the same as `/reload-plugins`. Confirm the result:
 
 ```
-/plugin list                       # tfx-design-harness should be present and enabled
+/plugin list                       # tfx should be present and enabled
 ```
 
-Quick check: ask "design a test page" — the `tfx-design-ui` loop should trigger and
+Quick check: ask "design a test page" — the `design` loop should trigger and
 ask its intent questions.
 
 ## How updates work here
@@ -83,5 +83,34 @@ There is no in-app version readout, so to confirm a release landed:
 
 - Check `harness/CHANGELOG.md` in the source repo for the latest version and its notes.
 - Spot-check a known change — for example, after 0.1.1 the catalog carries 40 controls
-  including `LAY-2` and `LAY-4`; ask the `tfx-design-standards` skill to list the LAY
+  including `LAY-2` and `LAY-4`; ask the `standards` skill to list the LAY
   controls, or open the catalog page on the TFX-DS website.
+
+## Migrating from 0.2.x (plugin and skill rename, 0.3.0)
+
+0.3.0 renamed the plugin `tfx-design-harness` → `tfx` and every skill to a single
+distinguishing token (`tfx-design-ui` → `design`, `tfx-design-standards` →
+`standards`, `tfx-content-style` → `content`, `tfx-design-onboarding` → `onboard`;
+the evaluator agent `tfx-design-evaluator` → `evaluator`). Installed, these read
+`tfx:design`, `tfx:standards`, `tfx:content`, `tfx:onboard`, and `tfx:evaluator`.
+
+**0.2.x and 0.3.0 cannot coexist under different plugin names** — a plain
+`/plugin marketplace update` will not move you across this rename, because the old
+install is a separate plugin (`tfx-design-harness`) from the new one (`tfx`). You
+must reinstall:
+
+```
+/plugin uninstall tfx-design-harness   # or remove it via /plugin
+/plugin marketplace update tfx         # pull the latest marketplace.json
+/plugin install tfx@tfx
+```
+
+Then restart Claude Code, or run `/reload-plugins`, so the renamed skills and agent
+load under their new names.
+
+**What does not change:** the control catalog, waiver syntax (`tfx-waive`), the
+`tfx-sync` markers, and control ids are unaffected — this rename touches only the
+plugin name and the skill/agent names. **What does not get rewritten:** decision
+records and other historical documents in your product repo that reference the old
+skill names (`tfx-design-ui`, `tfx-content-style`, and so on) stay valid as history —
+they describe what ran at the time, and rewriting them would falsify the record.

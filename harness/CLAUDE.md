@@ -32,11 +32,9 @@ triggered.
 - **Never edit the catalog to make a failing check pass.** Propose changes via the
   ratchet (lightweight PR + design-lead approval).
 - **`checks/` scripts enforce only a static subset of the deterministic controls, and
-  not every control has a script yet.** `checks/README.md` is the single source of
-  truth for which scripts exist and exactly what each does *not* cover — do not
-  re-enumerate that list here or in the skills (it drifts). Never report an unbuilt or
-  un-run check as "passed"; say "verified manually" or "unverified" and name what a
-  human should re-check. Don't overstate enforcement.
+  not every control has a script yet.** Never report an unbuilt or un-run check as
+  "passed"; say "verified manually" or "unverified" and name what a human should
+  re-check. Full statement and per-script coverage: `checks/README.md`.
 - Waiver syntax: `tfx-waive <CTL-ID> reason="..."` — L0 never, L1 needs a named human
   approver, L2 needs a specific real reason.
 - Singapore English spelling (British base): organise, colour, centre.
@@ -45,13 +43,14 @@ triggered.
 
 | Task | Use |
 |---|---|
-| Design or change a page / form / flow / component | `tfx-design-ui` skill (runs the loop) |
-| Write or review UI copy (only) | `tfx-content-style` skill (TFX voice & tone) |
-| Read, filter, apply, or grow the catalog | `tfx-design-standards` skill |
-| Grade a finished design | `tfx-design-evaluator` subagent (follows `tfx-design-review`) |
-| Onboard a new user — learn the skills and the loop | `tfx-design-onboarding` skill (guided tour) |
+| Design or change a page / form / flow / component | `design` skill (runs the loop) |
+| Write or review UI copy (only) | `content` skill (TFX voice & tone) |
+| Read, filter, apply, or grow the catalog | `standards` skill |
+| Grade a finished design | `evaluator` subagent (its agent definition carries the review procedure) |
+| Onboard a new user — learn the skills and the loop | `onboard` skill (guided tour) |
+| Report harness friction/feedback | `feedback` skill (files the GitHub issue) |
 
 Architecture and roadmap: `README.md`. Control format: `standards/README.md`.
 TFX-DS source: https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb
-The generator never grades its own work — grading goes to the `tfx-design-evaluator`
+The generator never grades its own work — grading goes to the `evaluator`
 subagent, a rigorous second read on the same model, not a fully independent one.

@@ -241,11 +241,11 @@ flagged by LAY-6's "deliberate reason" test.
 ## Honest interim position
 
 Until the design lead approves and the catalog is updated via ratchet PR, layout is
-graded as **HIG + judgment, not a checkable standard**. The `tfx-design-ui` and
-`tfx-design-review` skills should say so where they discuss layout decisions (proposed
-wording: *"Layout judgments draw on HIG Simplicity, Agency, and Familiarity as a
-reference lens; there is no checkable LAY control yet."*). This spike does not edit
-those skills — that is the follow-up ratchet PR's job.
+graded as **HIG + judgment, not a checkable standard**. The `design` skill and
+the `evaluator` agent should say so where they discuss layout decisions
+(proposed wording: *"Layout judgments draw on HIG Simplicity, Agency, and Familiarity
+as a reference lens; there is no checkable LAY control yet."*). This spike does not
+edit those definitions — that is the follow-up ratchet PR's job.
 
 ---
 

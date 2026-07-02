@@ -39,14 +39,14 @@ restatement registers itself with the check instead of free-floating.
   carry the bare `NAME`. Both open the same `NAME`.
 - The close marker is always bare: `<!-- /tfx-sync:NAME -->`.
 - A block may be inline (open and close on the same logical line, as in `slp-9.md` and
-  the `tfx-content-style` summary) or own its lines (as in the two L0 lists).
+  the `content` summary) or own its lines (as in the two L0 lists).
 
 ## Registered blocks
 
 | `NAME` | Source | Consumers | Check | Rule |
 |---|---|---|---|---|
-| `L0` | catalog `tier: L0` set | `CLAUDE.md`, `.claude/skills/tfx-design-ui/SKILL.md` | `[L0-SYNC]` | inline ID set **==** catalog L0 set |
-| `slp9-buzzwords` | `standards/controls/slp-9.md` (marked `source`) | `.claude/skills/tfx-content-style/SKILL.md` | `[SLP9-SYNC]` | consumer ⊆ source (skill may show fewer, never more) |
+| `L0` | catalog `tier: L0` set | `CLAUDE.md`, `.claude/skills/design/SKILL.md` | `[L0-SYNC]` | inline ID set **==** catalog L0 set |
+| `slp9-buzzwords` | `standards/controls/slp-9.md` (marked `source`) | `.claude/skills/content/SKILL.md` | `[SLP9-SYNC]` | consumer ⊆ source (skill may show fewer, never more) |
 
 ### Normalization
 
@@ -70,7 +70,7 @@ website point at it rather than restating it.
 
 | Artifact | Source (normative) | Consumers | Sync mechanism |
 |---|---|---|---|
-| Voice/tone/naming guidance | catalog controls CNT-1/2/3 + SLP-9 (+ detail files) | `tfx-content-style` skill (applies); `content/guidelines/voice-tone.mdx` + `naming.mdx` (present) | pointers (skill + docs link the controls); SLP-9 word list parity-checked (see `tfx-sync:slp9-buzzwords`) |
+| Voice/tone/naming guidance | catalog controls CNT-1/2/3 + SLP-9 (+ detail files) | `content` skill (applies); `content/guidelines/voice-tone.mdx` + `naming.mdx` (present) | pointers (skill + docs link the controls); SLP-9 word list parity-checked (see `tfx-sync:slp9-buzzwords`) |
 
 A voice/tone **table** parity check is deferred: the voice-attribute and tone-by-context
 tables are duplicated between the skill and `voice-tone.mdx`, but the drift cost is low

@@ -9,9 +9,9 @@ on failure, silent on success.
 
 `python3 checks/validate.py` — validates `standards/catalog.yaml` against the schema in `standards/README.md`: field presence and allowed values, tier→waiver pairing, `detail:` file existence, detail-frontmatter ↔ catalog consistency, and that every control ID referenced in skills/docs exists in the catalog. Exit 0 on pass, exit 1 with `ERROR` lines on failure. This is the repo's verification baseline — run it before committing any `standards/` change.
 
-The validator also enforces two **fragment-parity** sub-checks via `<!-- tfx-sync:… -->` markers: `[L0-SYNC]` (the inline "Non-negotiables (L0)" lists in `CLAUDE.md` and `tfx-design-ui/SKILL.md` must equal the catalog's `tier: L0` set) and `[SLP9-SYNC]` (the `tfx-content-style` buzzword summary must be a subset of the canonical list in `standards/controls/slp-9.md`). See [docs/SYNC.md](../docs/SYNC.md).
+The validator also enforces two **fragment-parity** sub-checks via `<!-- tfx-sync:… -->` markers: `[L0-SYNC]` (the inline "Non-negotiables (L0)" lists in `CLAUDE.md` and `design/SKILL.md` must equal the catalog's `tier: L0` set) and `[SLP9-SYNC]` (the `content` buzzword summary must be a subset of the canonical list in `standards/controls/slp-9.md`). See [docs/SYNC.md](../docs/SYNC.md). A third check, `[COUNT-SYNC]`, needs no markers: every "`<N> controls`" claim in `README.md` must equal the catalog's actual control count, so an added or removed control fails the build until the README prose is updated.
 
-**Self-test:** `python3 checks/validate.py --self-test` → `SELF-TEST OK (27 cases)`.
+**Self-test:** `python3 checks/validate.py --self-test` → `SELF-TEST OK (30 cases)`.
 
 
 ## Token audit (built)
@@ -176,7 +176,7 @@ This closes the loop `token-audit.py` leaves open ("a human closes the decision-
 - All-caps set via camelCase inline style (TYP-4) — `style={{textTransform:'uppercase'}}` in JSX is not matched; only the CSS `text-transform: uppercase` form and the Tailwind `uppercase` utility are.
 - Fonts / sizes set in a separate stylesheet the line-local rule can't see, or composed from variables / class-name interpolation — out of static reach.
 
-**Self-test:** `python3 checks/type-scan.py --self-test` → `SELF-TEST OK (27 cases)`.
+**Self-test:** `python3 checks/type-scan.py --self-test` → `SELF-TEST OK (34 cases)`.
 
 ## Component manifest (built)
 

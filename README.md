@@ -8,26 +8,26 @@ The design standard website for **TransformX** (Teacher & School portfolio, GovT
 
 ## Install the design harness (Claude Code plugin)
 
-The harness installs as a [Claude Code](https://code.claude.com/docs) plugin: five
-skills (`tfx-design-ui` the loop, `tfx-design-standards` catalog mechanics, `tfx-content-style`
-voice & tone, `tfx-design-review` the evaluator procedure, and `tfx-design-onboarding` a guided
-tour), the `tfx-design-evaluator` agent, and the control catalog. It ships its own catalog,
-so it works in any repo you open, not only this one.
+The harness installs as a [Claude Code](https://code.claude.com/docs) plugin: four
+skills (`tfx:design` the loop, `tfx:standards` catalog mechanics, `tfx:content`
+voice & tone, and `tfx:onboard` a guided tour), the `tfx:evaluator`
+agent (which carries its own review procedure), and the control catalog. It ships
+its own catalog, so it works in any repo you open, not only this one.
 
 ```bash
 # 1. add this repo as a plugin marketplace
 /plugin marketplace add transformteamsg/tfx-design-standard
 
 # 2. install the harness
-/plugin install tfx-design-harness@tfx
+/plugin install tfx@tfx
 
 # 3. later, pull new controls and skills
-/plugin update tfx-design-harness@tfx
+/plugin update tfx@tfx
 ```
 
-Confirm it loaded with `/plugin` (look for `tfx-design-harness`, enabled). New to it?
-Run `/tfx-design-onboarding` (or just say "onboard me") for a guided tour — then ask Claude
-to design or change a page and the `tfx-design-ui` loop takes over, enforcing the catalog
+Confirm it loaded with `/plugin` (look for `tfx`, enabled). New to it?
+Run `/tfx:onboard` (or just say "onboard me") for a guided tour — then ask Claude
+to design or change a page and the `tfx:design` loop takes over, enforcing the catalog
 throughout. Rolling it out across a product team? Follow the
 [team onboarding guide](harness/docs/ONBOARDING.md).
 
