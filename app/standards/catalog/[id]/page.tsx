@@ -1,4 +1,4 @@
-import { isValidElement, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import { notFound } from "next/navigation";
 import { compileMDX } from "next-mdx-remote/rsc";
 import remarkGfm from "remark-gfm";
@@ -7,7 +7,7 @@ import { getControlDetail, listControlIds } from "@/lib/control-detail";
 import { mdAlternate, NO_EXTENDED_DETAIL } from "@/lib/markdown-twin";
 import { tierStyles, tierLabels } from "@/lib/tier-style";
 import { Breadcrumb } from "@/components/breadcrumb";
-import { slugify } from "@/lib/toc";
+import { heading } from "@/components/mdx";
 
 export const dynamic = "force-static";
 export const dynamicParams = false;
@@ -28,21 +28,6 @@ export async function generateMetadata({
     title: `${detail.id} — ${detail.statement}`,
     ...mdAlternate(`/standards/catalog/${detail.slug}`),
   };
-}
-
-function textOf(node: ReactNode): string {
-  if (typeof node === "string" || typeof node === "number") return String(node);
-  if (Array.isArray(node)) return node.map(textOf).join("");
-  if (isValidElement(node)) return textOf((node.props as { children?: ReactNode }).children);
-  return "";
-}
-
-/* Heading ids mirror DocPage so anchors are stable across the site. */
-function heading(Tag: "h2" | "h3") {
-  function Heading({ children }: { children?: ReactNode }) {
-    return <Tag id={slugify(textOf(children))}>{children}</Tag>;
-  }
-  return Heading;
 }
 
 export default async function ControlDetailPage({
