@@ -58,7 +58,8 @@ team onboarding guide. Then step back.
 ## Stay honest
 
 - Do not oversell. If a check is not built yet, say "verified manually" — the harness
-  claims no enforcement it lacks, and its onboarding holds the same line.
+  claims no enforcement it lacks, and its onboarding holds the same line. Full
+  statement and per-script coverage: `checks/README.md`.
 - Orient and hand off; do not design or grade. Design is `design`'s job, grading
   the `evaluator`'s.
 - Second person, plain language, Singapore English, no AI-writing tells — SLP-9 binds

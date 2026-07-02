@@ -75,29 +75,13 @@ This loop covers both. Choose the entry depth by change size, never skip the gat
 ### Existing surfaces: critique before you polish
 
 Whenever the surface **already exists** (a modification, a restyle, an
-"improve / polish this", or a catalog re-audit), do not propose changes before
-you have seen and judged the current state. Before Phase 1's contract:
-
-1. **Capture the current page.** Take a screenshot of the live surface at 1280
-   (and 360 if the change is responsive). Capture mechanism: use Claude-in-Chrome
-   by default, or the user's installed browser agent of choice; the local
-   Playwright fallback from Phase 5 applies. **If capture keeps failing, ask the
-   user to provide the screenshot** — never critique a page you cannot see, and
-   never fabricate what it looks like.
-2. **Write a short design critique of what is there** — against the in-scope
-   catalog controls *and* Kind Utility: what works and should be preserved
-   (call out established iconography, radius, layout, and copy that are
-   deliberate — do not "fix" them, cf. the conservative-defaults rule in
-   Phase 3/4) — **but verify, do not assume: every element you list as
-   "preserve" stays in scope for its controls, so check it against the L0 floor
-   (A11Y-1 contrast especially) before calling it good. Preserved is not waived:
-   "preserve" means do not restyle a deliberate choice, it never means skip the
-   check** — and what
-   genuinely underperforms (control violations, hierarchy,
-   friction in the teacher's task). Ground each point in the screenshot.
-3. The critique's "what underperforms" list **is** the scope of the polish; it
-   feeds the Phase 1 contract and the Phase 3 plan. Improvement is the goal —
-   the critique keeps it targeted instead of a blanket restyle.
+"improve / polish this", or a catalog re-audit), read and run `critique.md`
+(beside this skill) BEFORE Phase 1 — do not propose changes before you have
+seen and judged the current state. Capture the current page, critique it
+against the in-scope catalog controls and Kind Utility, and let the critique's
+"what underperforms" list set the scope of the polish; **preserved is not
+waived** — a "preserve" call still has to pass its controls, it only means
+don't restyle a deliberate choice.
 
 ## A flow is not a stack of pages
 
@@ -124,15 +108,11 @@ just each screen:
 ## What actually runs today
 
 Not every deterministic control has a script yet, and every built script covers only a
-**static subset** of its control — it reads line-local code, never the rendered DOM.
-`checks/README.md` is the single source of truth for which scripts exist and exactly
-what each does *not* cover; read it before the verify phase rather than assuming a
-control is mechanically enforced. Phase 5 names the scripts that catch the most.
-
-The rule this note exists to enforce: **never report a `checks/`-backed control as
-"passed" when no script ran.** Say "verified manually" or "could not verify
-mechanically", and list what a human should re-check. Overstating enforcement is the
-failure this prevents.
+**static subset** of its control — never assume a control is mechanically enforced.
+**Never report a `checks/`-backed control as "passed" when no script ran** — say
+"verified manually" or "could not verify mechanically", and list what a human should
+re-check. Which scripts exist and exactly what each does *not* cover: `checks/README.md`
+(read it before the verify phase).
 
 ## Phase 1 — Intent (sprint contract)
 
@@ -303,18 +283,13 @@ Build exactly the approved plan. Constraints, non-negotiable:
 - Visible label on every field (A11Y-3); keyboard reach + focus states (A11Y-2);
   AA contrast (A11Y-1); targets ≥ 24px, 44px on mobile (A11Y-4); respect reduced
   motion (A11Y-5).
-- Anti-slop (SLP-1..8) — the default AI aesthetic is a defect: no purple/violet
-  gradient palettes, cyan-on-dark, or glow accents (SLP-1); no gradient text
-  (SLP-2); no thick side-tab accent borders on rounded cards (SLP-3); no nested
-  cards — flatten with spacing, typography, dividers (SLP-4); no identical-card
-  grids or icon-tile-above-heading templates (SLP-5); adjacent type-scale steps
-  ≥ 1.25x apart (SLP-6); spacing has rhythm — related tighter than unrelated
-  (SLP-7); no bounce or elastic easing (SLP-8).
-- Accessibility structure (GovTech checklist Essential tier, A11Y-6..10): text
-  alternatives or `aria-hidden` on every image/icon (A11Y-6); semantic headings/
-  lists/groups, descriptive labels (A11Y-7); custom controls expose name/role/value
-  (A11Y-8); descriptive `<title>` + `lang` attribute (A11Y-9); skip link or
-  landmarks past repeated chrome (A11Y-10).
+- Anti-slop is standard (SLP-1..11) — the default AI aesthetic is a defect. The
+  rules live in the catalog you loaded first; re-read the SLP block before
+  styling anything. Highest-frequency traps: purple/violet gradients (SLP-1),
+  nested cards (SLP-4), identical-card grids (SLP-5), bounce easing (SLP-8).
+- Accessibility structure (A11Y-6..10, GovTech Essential tier) — apply from
+  the catalog; every image/icon, heading, custom control, page title, and
+  landmark is in scope.
 - Every async state change picks ONE announcement channel (A11Y-11): transient →
   live region, no focus steal; context replacement → focus moves to the revealed
   surface, no `role="alert"` on the focus target. Declare the channel per state in
@@ -366,73 +341,18 @@ Build exactly the approved plan. Constraints, non-negotiable:
 
 ## Phase 5 — Verify
 
-Run in this order; do not present output to the user while a step is failing:
+Run the four steps in `verify.md` (beside this skill) IN ORDER — read it now,
+before verifying anything. Do not present output to the user while a step is
+failing.
 
-1. **Deterministic controls** — all L0/L1 `deterministic` controls. Run the built
-   `checks/` scripts first — `checks/README.md` is the authority for the full set,
-   each script's flags, and the static subset each does *not* cover. The three that
-   catch the most:
-   - `python3 checks/token-audit.py <path>...` — TOK-1..3, COL-1..2.
-   - `python3 checks/a11y-static.py <path>...` — static subset of A11Y-2/3/8.
-   - `python3 checks/contrast.py --tokens <globals.css> <path>...` — static subset of A11Y-1.
-   Each reads line-local code only: traversal order, computed hit-area, ARIA-state,
-   inherited/computed backgrounds, and font-size classification all stay in the manual
-   pass. Everything without a script: verify by hand against the control's detail file
-   and label it "verified manually" (see "What actually runs today" above).
-   For the manual accessibility pass, work through the catalog's A11Y controls in id
-   order — they mirror the GovTech checklist's Essential tier
-   (a11y.tech.gov.sg/checklist), which addresses ~96% of common web accessibility
-   errors. L0 failure blocks everything; L1 failure sends you back to Phase 4.
-2. **Render and screenshot.** Evidence sets, all that apply required:
-   - **Width evidence**: the primary state at 360/768/1280.
-   - **State evidence**: one frame per state asserted by each in-scope hybrid
-     control — *including loading*, the state most often coded-but-unphotographed
-     (it slipped through both pilot runs before this rule existed). Use the
-     demo-only hooks built in Phase 4.
-   - **Journey evidence** (flows and multi-step interactions): traverse the happy
-     path end-to-end, one frame per step, **plus one recovery path** from the Phase
-     3 flow map actually walked — e.g. abandon at step 2 and return, or fail
-     mid-flow and resume. Per-step screenshots that never demonstrate a traversal
-     are page evidence, not flow evidence.
-   Check each frame's *actual* rendered viewport before naming it — a screenshot
-   named `768-*.png` taken at a stale viewport is mislabeled evidence.
-   Capture mechanism: **use Claude-in-Chrome by default, or the user's installed
-   browser agent of choice**. If the agent-browser daemon misbehaves (it has
-   intermittently returned "os error 35"), a local Playwright script is the
-   proven fallback. If capture still keeps failing after a reasonable retry,
-   **ask the user to provide the screenshot** — any source is fine; the evidence
-   set is not optional, and unverified work is never presented as verified.
-   - **Inventory checkoff**: walk the Phase-1 component inventory and tick each
-     interactive control as operated — tab to it (focus visible per A11Y-2),
-     activate by keyboard, confirm role + accessible name + state (A11Y-8/A11Y-3).
-     Run `checks/a11y-static` (if built) as the static pre-pass, then operate what
-     a static scan can't see. An un-operated control is uncovered, not clean.
-   - **Dark mode: supported?** Before grading anything as dark-safe, establish
-     whether the product actually supports dark mode: is there a visible theme
-     toggle, and does a `.dark` (or `[data-theme="dark"]`) layer re-render the
-     tokens? If **not**, record dark-mode checks as **N/A — product has no dark mode**
-     in the decision record — this is a truthful outcome, never a pass.
-     If **yes**, capture one dark frame using the capture convention above (an
-     init-script that sets `.dark` / the theme attribute *before* load, or the
-     app's own toggle); a token-resolution argument alone is not evidence that
-     the mode renders.
-3. **Evaluator review** — spawn the `evaluator` subagent (a genuinely separate
-   agent — do not write the verdict yourself) with: the sprint contract, the approved
-   plan, the screenshots, the component inventory from Phase 1, the judgment/hybrid
-   controls in scope, **and the absolute path to the harness's `standards/` directory**
-   (the evaluator cannot resolve it from the product cwd). **If you cannot spawn subagents** (you are yourself a
-   subagent, or running unattended), stop at this step and report — the proven
-   pattern is *orchestrator dispatch*: whoever orchestrates you spawns the evaluator
-   and routes its verdict back to you. Never write the verdict yourself, and never
-   present unverified work as verified while waiting.
-   **Paste the full verdict verbatim into the decision record** — the record is the
-   durable artifact; a summary in its place is a defect ("full text in the session
-   log" does not survive the session). You never grade your own design work. Note
-   the shared limit honestly: the evaluator runs the same model on the same
-   standards, so it is a second read, not a fully independent one — treat split
-   findings and any control you could not mechanically verify as candidates for
-   human review.
-4. Address findings; re-run from step 1 after changes.
+- Deterministic controls run first; an L0 failure blocks everything, an L1
+  failure sends you back to Phase 4 — see "What actually runs today" above for
+  what the scripts do and don't cover.
+- Evidence sets are required: widths, states, journey (with a recovery path),
+  the Phase-1 inventory checkoff, and the dark-mode N/A rule when the product
+  has no dark mode.
+- The evaluator verdict is written by the spawned `evaluator` agent, never by
+  you, and is pasted verbatim into the decision record.
 
 ## Phase 6 — Ratchet
 

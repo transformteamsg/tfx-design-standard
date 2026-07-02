@@ -62,13 +62,14 @@ long-standing element nobody re-checks. Read the element against its L0/L1 contr
 directly.
 
 Deterministic controls are primarily the `checks/` scripts' job, not yours — but do
-not *assume* they ran. `checks/README.md` lists which scripts exist and the static
-subset each covers; for any control whose script is unbuilt or wasn't run, ask whether
-it was verified manually; if neither, say the control is unverified rather than passed. When you record "verified manually", state what you
+not *assume* they ran; for any control whose script is unbuilt or wasn't run, ask
+whether it was verified manually, and if neither, say the control is unverified
+rather than passed. When you record "verified manually", state what you
 checked and how — it becomes a `manual` row in the VERIFICATION LEDGER (below) that
 the record audit validates, so "verified manually" carries evidence rather than being
 an unauditable claim. Any deterministic violation you can see — in a screenshot or in
-the code — is a finding regardless, belt and braces.
+the code — is a finding regardless, belt and braces. Which scripts exist and the
+static subset each covers: `checks/README.md`.
 
 **Findings sort by tier and waiver status, never by how you found them:**
 

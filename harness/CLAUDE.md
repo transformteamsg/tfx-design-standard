@@ -32,11 +32,9 @@ triggered.
 - **Never edit the catalog to make a failing check pass.** Propose changes via the
   ratchet (lightweight PR + design-lead approval).
 - **`checks/` scripts enforce only a static subset of the deterministic controls, and
-  not every control has a script yet.** `checks/README.md` is the single source of
-  truth for which scripts exist and exactly what each does *not* cover — do not
-  re-enumerate that list here or in the skills (it drifts). Never report an unbuilt or
-  un-run check as "passed"; say "verified manually" or "unverified" and name what a
-  human should re-check. Don't overstate enforcement.
+  not every control has a script yet.** Never report an unbuilt or un-run check as
+  "passed"; say "verified manually" or "unverified" and name what a human should
+  re-check. Full statement and per-script coverage: `checks/README.md`.
 - Waiver syntax: `tfx-waive <CTL-ID> reason="..."` — L0 never, L1 needs a named human
   approver, L2 needs a specific real reason.
 - Singapore English spelling (British base): organise, colour, centre.
