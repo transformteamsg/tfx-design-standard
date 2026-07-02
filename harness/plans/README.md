@@ -59,6 +59,15 @@ honor its STOP conditions, and update your row when done.
 | 043 | Escape the bare `<date>` token in `controls/cmp-1.md` (042 follow-up F1) | P3 | XS | — | DONE (executed; branch advisor/batch5-execute; line 91 `<date>` backticked, 71/78/79 untouched; `/standards/catalog/cmp-1` renders as MDX prose — `<pre>` fallback gone, 7 h2; twin still 200) |
 | 044 | Close the type-scan TYP-1 blind spot — flag named `font-mono`/`font-serif` utilities | P1 | S–M | — | DONE (executed; branch advisor/batch5-execute; self-test 23; flags `font-mono` at catalog-browser:96, never weight utilities [font-semibold clean]; validate OK; stays unwired until 045 clears the 3 sites) |
 | 045 | Resolve the `font-mono` TYP-1 self-compliance gap on the site | P2 | S/M | 044 (verify gate) | DONE (executed; branch advisor/batch5-execute; **Option A** chosen by design-lead — `font-mono` removed from catalog-browser:96 / [id]:83 / illo:25, IDs render in Inter; type-scan TYP-1 count now 0; build 0) |
+| 046 | Fold the `tfx-design-review` skill into the evaluator agent | P2 | S–M | — (before 047) | DONE (executed 2026-07-02, sonnet-xhigh @ worktree; branch `advisor/046-fold-review-skill` @ 9d1799e; reviewed APPROVE — fold verbatim [MECHANICAL RULE + LEDGER intact], 12 files all in scope, validate 48 OK, self-tests 27/21, build 166 pages, live-ref sweep clean; judgment calls: diagram slot → onboarding skill, index.html section merge) |
+| 047 | Rename plugin → `tfx`, skills → design/standards/content/onboard | P1 | M–L | 046 (soft) | DONE (executed 2026-07-02, sonnet @ worktree, 2 sessions; branch `advisor/047-rename-skill-stack` @ d81c133, stacked on 046; reviewed APPROVE — plugin `tfx@0.3.0`, marketplace entry renamed, 4 skills single-token, validate.py paths live [L0-SYNC negative test fired], old-name sweep clean, build green, **routing sweep 33/33** via `--plugin-dir harness` [global install is stale 0.2.0 — re-confirm after real reinstall]; CHANGELOG 0.3.0 + UPDATING migration in) |
+| 048 | Doc truth: 48-control count + [COUNT-SYNC], layout diagram, self-test counts, catalog `verify:` names | P1 | S–M | 047 (soft) | DONE (executed 2026-07-02, sonnet @ worktree; branch `advisor/048-doc-truth` @ e35b2f8, stacked on 047; reviewed APPROVE — counts 47→48 + [COUNT-SYNC] guard live [negative test fired, self-test 27→30], diagram regenerated and matches disk, type-scan doc 27→34, A11Y-3/TYP-5 verify strings fixed [+typ-5.md parity sync, correct adaptation], validate + build green) |
+| 049 | Slim the design skill — extract verify.md/critique.md, pointers over restatements | P2 | M | 047 (hard) | DONE (executed 2026-07-02, sonnet @ worktree; branch `advisor/049-slim-design-skill` @ 1a669c5, stacked on 047; reviewed APPROVE — extractions byte-verbatim [executor diffed], SKILL.md 451→371 [plan's ≤320 target was miscalibrated arithmetic; accepted — further cuts would breach the plan's own out-of-scope list], verify.md 69 + critique.md 26 with explicit read triggers, L0 block + description byte-identical, validate green, golden evals unaffected [0 phrase hits]) |
+| 050 | App hygiene: DocPage MDX fallback, drop `shadcn` dep, stale tracing entry | P2 | S | — | DONE (executed 2026-07-02, sonnet-xhigh @ worktree; branch `advisor/050-app-hygiene` @ 272ad9d; reviewed APPROVE — helpers deduped to components/mdx.tsx, fallback mirrors exemplar, negative test proven via built HTML grep then reverted, shadcn gone [-297 pkgs], llms-full tracing gone, builds green) |
+| 051 | App verification baseline: ESLint flat config, typecheck, Vitest characterization, CI job | P2 | M | — (coord. 050 on package.json) | DONE (executed 2026-07-02, sonnet @ worktree, one REVISE round; branch `advisor/051-verification-baseline` @ 16ccf0e, stacked on 050; reviewed APPROVE — first attempt STOPPED correctly on eslint@10 + eslint-config-next@16 FlatCompat crash [version mismatch vs Next 15]; revision pinned eslint@9.39.4 + eslint-config-next@15.5.19; lint 0 errors/4 pre-existing warnings, typecheck clean, 17/17 characterization tests [no catalog-projection leak], ci.yml added, deploy.yml untouched; reviewer re-ran lint+typecheck+test green; nit: branch carries its own plans/README row — resolve at merge) |
+| 052 | Layout taste pass: agent-browser capture first, structured layout read, ranked suggestions | P1 | M | 049 (hard) | DONE (executed 2026-07-02, sonnet @ worktree; branch `advisor/052-layout-taste-pass` @ 28c12f7, converges 049+048; reviewed APPROVE — layout-patterns.md [8 anchored patterns + screenshot-reading procedure, 58 lines], critique = capture → layout read → works/underperforms → ≤5 ranked suggestions through the plan gate, evaluator SUGGESTIONS section [ledger untouched, audit-record self-test green], agent-browser first in both capture conventions; live smoke test run with real capture; note: agent-browser build lacks a working viewport-resize subcommand — width-setting guidance may need a follow-up) |
+| 053 | Layout ratchet round 2: propose LAY-1 grid + LAY-7 focal point (design-lead gated) | P2 | M | — (052 soft sibling) | DONE-AS-PROPOSED (executed 2026-07-02, sonnet-xhigh @ worktree; branch `advisor/053-layout-ratchet-2` @ 54d8cd2; reviewed APPROVE — two ratchet records [LAY-N placeholder per 3ef1920 precedent], catalog untouched, validate 48 OK, evidence honestly "standards-derived, no incident"; **Step 3 gate-pending: design lead**) |
+| 054 | `feedback` skill: mid-turn harness feedback → GitHub issue on the harness repo | P2 | M | 047 (hard) | DONE (executed 2026-07-02, sonnet @ worktree; branch `advisor/054-feedback-skill` @ 557df92, stacked on 052 [full harness chain]; reviewed APPROVE — 49-line skill with hold-don't-derail, consent gate + dry-run preview, unattended = queued-not-filed, helper-only filing to the harness repo, no label-list duplication; routing spot-check 5/5 live incl. both negative boundary cases [`--plugin-dir`]; rehearsal confirmed nothing filed [gh authenticated, issue list unchanged]; all 6 surfaces point at it; validate + build green) |
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJECTED (with one-line rationale)
 
@@ -218,6 +227,64 @@ Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJE
   (`docs/catalog-changes/` propose-only → design-lead approval) for the TYP-1 amendment.
 - **Recommended order:** 044 → 045 (045 needs 044 for its gate); 043 is independent.
 
+### Batch 6 (046–051) — added 2026-07-02 from an app + harness review (skill-stack simplification & naming)
+
+- Source: an `/improve` audit invoked as "review the state of the app, review the design
+  harness, simplify the skill stacks and naming (too long), make the harness follow design
+  best practice — inspiration: impeccable.style". All stamp commit `c42d695` and use SHA
+  drift checks. Selection note: run non-interactively — plans written for the invoker's two
+  explicit asks (stack/naming: 046/047/049; harness truth: 048) plus the top app-side
+  leverage (050/051); prune rather than execute blindly if priorities changed.
+- **Recommended order**: 046 → 047 → 048 → 049 (each builds on the previous's file
+  state; 048/049 assume post-047 names). 050 and 051 are website-side and independent —
+  parallel-safe with the harness chain, but 050 and 051 both edit `package.json`
+  (different regions; land one, rebase the other).
+- **The naming decision (047)**: plugin `tfx-design-harness` → `tfx` (marketplace is
+  already `tfx`), skills → single tokens (`tfx:design`, `tfx:standards`, `tfx:content`,
+  `tfx:onboard`), agent → `tfx:evaluator`. Routing is decided by `description:`
+  frontmatter, not names (per `evals/routing/prompts.yaml`), but name mentions inside
+  descriptions change too, so 047 mandates the FULL 33-case routing sweep. Fallback
+  scheme on collision: drop only the `tfx-` prefix (`design-ui`, `content-style`, …).
+- **Historical records are never rewritten** by 046/047: `plans/`, `CHANGELOG.md`
+  entries, `docs/reviews/`, `docs/catalog-changes/`, existing `docs/decisions/` records,
+  `docs/loop-run/`, `evals/evaluator-recall/RESULTS.md` keep the old names as history.
+- **Consumer impact (047)**: product repos must reinstall (`tfx-design-harness` 0.2.x →
+  `tfx` 0.3.0); `docs/UPDATING.md` gains the migration steps. Coordinate the merge with
+  an announcement to TW/CaseSync/Glow.
+- **Added same day (user follow-ups)**: **052** (make the harness *improve* layout, not
+  just verify it: agent-browser capture first, a structured layout read of the
+  screenshot, ranked improvement suggestions offered through the plan gate, plus a
+  `layout-patterns.md` guidance file distilled from HIG + the LAY spike + impeccable's
+  restraint/register principles), **053** (put layout/pattern best practice in the
+  *controls*: propose-only records for LAY-1 grid — with the `.tfx/layout-system.json`
+  declaration format — and LAY-7 focal point/hierarchy-matches-task; catalog commit
+  strictly behind the design-lead gate, per the 020→023/027/029 governance), and
+  **054** (a `feedback` skill: recognise harness feedback mid-turn in any session,
+  capture context, confirm with the user, file `[harness-feedback]` issues to
+  `transformteamsg/tfx-design-standard` via `scripts/file-feedback-issue.py` — never
+  the product repo, never raw `gh`, never unconfirmed). 054 consciously adds a fifth
+  skill back after 046 cut one: unlike the review skill, this one is user-routed —
+  that is its whole point.
+- **Order for the follow-ups**: 052 after 049; 053 anytime (gate-bound); 054 after 047.
+  052 and 054 both touch `design/SKILL.md` (different sections — critique pointer vs
+  Phase 6) and `onboard`/README/skills.mdx — land one, rebase the other.
+- **Direction findings (grounded, not planned — operator to weigh)**:
+  1. **Enforcement as data**: add a per-control `script:`/`enforced:` field to the
+     catalog schema so "deterministic but unscripted" (today: all of SLP-1..8, A11Y-4/5/6/9/10,
+     MOT-1, IDN-1, LAY-4, halves of CMP-2/3) is machine-visible, then build `slop-scan`
+     for the statically checkable SLP subset. impeccable.style's 45-rule deterministic
+     anti-pattern detector is precedent that this class of check works. Touches
+     schema.json, validate.py, and the website's `lib/catalog.ts` PUBLIC_FIELDS.
+  2. **Per-product DESIGN.md** (impeccable pattern): make per-product nuance (accent,
+     tone weighting, motion conventions, manifest pointer) a small machine-read file in
+     each product repo consumed at Phases 2/4, instead of prose scattered across COL-1's
+     table and the content skill's calibration section. (053's `.tfx/layout-system.json`
+     is the first concrete slice of this.)
+  3. **Standalone critique entry point**: impeccable splits evaluate (audit/critique)
+     from create. Partially realised by 052 (the layout read + suggestions live in
+     `critique.md` inside the loop); a fully standalone "critique only, change nothing"
+     entry would add another skill name — weigh against the simplification just done.
+
 ## Findings considered and rejected
 
 - **Tier-waiver mapping duplicated across three files** (standards/README.md,
@@ -320,6 +387,26 @@ Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJE
   `student-notes-empty-state.md`): expected — CMP-1 is a process waiver asserted in the verdict,
   never an inline code comment, so `waiver-reconcile` finds no inline usage to match. Not a defect;
   a trivial periodic confirm-or-retire the design-lead can do directly. No plan.
+
+### Batch 6 — findings considered and rejected (2026-07-02)
+
+- **Fonts via `next/font` instead of `@fontsource` imports** (`app/layout.tsx:2-3`):
+  real but marginal — the fontsource variable fonts are already self-hosted on a
+  static docs site; the switch risks regressing the `--font-*` token wiring in
+  `globals.css` for a small LCP/CLS win. Not worth it now.
+- **LAY controls out of id-order in catalog.yaml** (LAY-4 before LAY-3): cosmetic;
+  every consumer filters by id. Reordering is churn in a normative file.
+- **"26 detail files vs 48 controls" as a coverage gap**: by design — only
+  `judgment`/`hybrid` controls require detail files (design-standards skill rule),
+  and every judgment/hybrid control has one; `validate.py` enforces it. Do not
+  re-audit.
+- **Per-build fs/YAML re-reads in `lib/content.ts`/`lib/catalog.ts`**: build-time
+  only (all routes `force-static`), small corpus, `allTwins()` already memoized.
+  Negligible.
+- **Folding the onboarding skill away** (65 lines, mostly hands off): kept — the
+  "teach me the harness" trigger is genuinely distinct, the file is cheap, and 047
+  shortens its name to `onboard`. Decision recorded so it isn't re-litigated.
+- **`tsconfig.tsbuildinfo` in the working tree**: gitignored and untracked; no leak.
 
 ### Post-execution eval (2026-06-15, suite run against `advisor/harness-feedback-all`)
 
