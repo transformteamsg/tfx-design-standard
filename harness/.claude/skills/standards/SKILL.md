@@ -1,6 +1,6 @@
 ---
-name: tfx-design-standards
-description: How to read, filter, apply, and grow the design standards control catalog. Use when applying controls from standards/catalog.yaml, answering any waiver question about a specific control ("can I waive TOK-1?", who must approve, what the tier allows), deciding whether a control applies to a given case, writing a tfx-waive line, or proposing a new control after a failure. Do not answer waiver or applicability questions from memory or summaries — load this skill. Not needed for plain definition lookups (e.g. what a tier name means) that the always-on project rules already answer. This is the catalog-mechanics reference, not the design loop — to design or change a page use tfx-design-ui (which loads this skill itself).
+name: standards
+description: How to read, filter, apply, and grow the design standards control catalog. Use when applying controls from standards/catalog.yaml, answering any waiver question about a specific control ("can I waive TOK-1?", who must approve, what the tier allows), deciding whether a control applies to a given case, writing a tfx-waive line, or proposing a new control after a failure. Do not answer waiver or applicability questions from memory or summaries — load this skill. Not needed for plain definition lookups (e.g. what a tier name means) that the always-on project rules already answer. This is the catalog-mechanics reference, not the design loop — to design or change a page use design (which loads this skill itself).
 ---
 
 # Working with the control catalog
@@ -13,7 +13,7 @@ control: a single verifiable rule with an id, tier, and check type. The format s
 **Locating the catalog:** it ships with the harness, not the product repo. Resolve
 `standards/` relative to this SKILL.md, three levels up
 (`<this-skill-dir>/../../../standards/`) — works both in the harness dev repo and when
-installed as the `tfx-design-harness` plugin.
+installed as the `tfx` plugin.
 
 The litmus test: **if you can't check it, it's a principle or a guideline — not a
 standard.** Principles (Kind Utility, the brand and product principles, Apple's HIG
@@ -39,7 +39,7 @@ defining moments" cannot fail a check.
 - The catalog is **portfolio-wide** — one set of controls for Teacher Workspace,
   CaseSync, Glow, and TW surfaces. Products do not get their own control overlays;
   per-product difference is *nuance calibration* (accent, illustration, tone
-  weighting — see TFX-DS §6 and the `tfx-content-style` skill), never separate rules or
+  weighting — see TFX-DS §6 and the `content` skill), never separate rules or
   separate systems.
 
 ## Applying tiers
@@ -86,7 +86,7 @@ A proposal is a draft detail file in `standards/controls/` following the format 
 with the triggering incident described under Rationale. A ratified addition must also
 name the **re-audit set**: which already-shipped surfaces the new control affects —
 they are silently non-compliant until run through the modification loop (see
-`tfx-design-ui`, "Catalog update re-audit"). One control = one verifiable
+`design`, "Catalog update re-audit"). One control = one verifiable
 statement; if you can't state how it's verified, it isn't a control yet. New controls
 enter by lightweight PR with design-lead approval — same rule as L1 waivers: you
 propose, the human decides. The bar for L0/L1 is high; the bar for L2 is evidence.

@@ -1,6 +1,6 @@
 ---
-name: tfx-design-evaluator
-description: Reviews a designed page or flow against the sprint contract, judgment controls, and design quality criteria. Spawn during the verify phase of tfx-design-ui — always as a separate agent from the one that produced the design. Pass it the sprint contract, approved plan, screenshots, and in-scope controls.
+name: evaluator
+description: Reviews a designed page or flow against the sprint contract, judgment controls, and design quality criteria. Spawn during the verify phase of the design skill — always as a separate agent from the one that produced the design. Pass it the sprint contract, approved plan, screenshots, and in-scope controls.
 tools: Read, Grep, Glob, Bash
 model: opus
 ---

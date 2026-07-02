@@ -209,7 +209,7 @@ def l0_parity_errors(repo_root, catalog_by_id, xref_re):
     source = {cid for cid, c in catalog_by_id.items() if c.get("tier") == "L0"}
     consumers = [
         os.path.join(repo_root, "CLAUDE.md"),
-        os.path.join(repo_root, ".claude", "skills", "tfx-design-ui", "SKILL.md"),
+        os.path.join(repo_root, ".claude", "skills", "design", "SKILL.md"),
     ]
     for fpath in consumers:
         if not os.path.isfile(fpath):
@@ -238,7 +238,7 @@ def slp9_parity_errors(repo_root):
     """
     errors = []
     src_path = os.path.join(repo_root, "standards", "controls", "slp-9.md")
-    con_path = os.path.join(repo_root, ".claude", "skills", "tfx-content-style", "SKILL.md")
+    con_path = os.path.join(repo_root, ".claude", "skills", "content", "SKILL.md")
 
     source = None
     if os.path.isfile(src_path):

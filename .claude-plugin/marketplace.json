@@ -6,9 +6,9 @@
   },
   "plugins": [
     {
-      "name": "tfx-design-harness",
+      "name": "tfx",
       "source": "./harness",
-      "description": "The TFX Design Standard harness: design-ui loop, control catalog, voice & tone, and evaluator agent for Teacher & School products"
+      "description": "The TFX Design Standard harness: design loop, control catalog, voice & tone, and evaluator agent for Teacher & School products"
     }
   ]
 }

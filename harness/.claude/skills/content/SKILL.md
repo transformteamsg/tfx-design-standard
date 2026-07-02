@@ -1,6 +1,6 @@
 ---
-name: tfx-content-style
-description: TFX voice & tone, naming, and anti-AI-writing rules for prose in Teacher & School products — plain language, tone by context, error message anatomy, naming, AI-writing tells (SLP-9). Use whenever writing or reviewing any user-facing text (page, form, notification, empty state, error state) AND any longer prose — site content, marketing copy, documentation, decision records. Sufficient on its own for copy-only edits; when designing a full page the tfx-design-ui loop already pulls this skill in at its implement phase.
+name: content
+description: TFX voice & tone, naming, and anti-AI-writing rules for prose in Teacher & School products — plain language, tone by context, error message anatomy, naming, AI-writing tells (SLP-9). Use whenever writing or reviewing any user-facing text (page, form, notification, empty state, error state) AND any longer prose — site content, marketing copy, documentation, decision records. Sufficient on its own for copy-only edits; when designing a full page the design loop already pulls this skill in at its implement phase.
 ---
 
 # Content style for Teacher & School products
@@ -77,7 +77,7 @@ em-dash-chain, and redundant-pair rules above are part of the same control. The
 canonical word lists and the full Flag / Do-not-flag calibration live in
 `slp-9.md`, resolved relative to this SKILL.md three levels up at
 `../../../standards/controls/slp-9.md` (it ships with the harness — the same path works in
-the harness dev repo and when installed as the `tfx-design-harness` plugin; do not expect
+the harness dev repo and when installed as the `tfx` plugin; do not expect
 `standards/` in the project cwd) — that file wins if this summary drifts.
 
 - **Copula avoidance.** "Glow serves as the encouragement layer" → "Glow is the
