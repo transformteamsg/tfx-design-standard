@@ -3,6 +3,12 @@
 Notable changes to the TFX Design Harness plugin. Versioning tracks
 `.claude-plugin/plugin.json`.
 
+## [Unreleased]
+
+- The `tfx-design-review` skill's procedure moved into the `tfx-design-evaluator`
+  agent definition and the skill was removed — the harness now ships four skills,
+  not five (plan 046). Plan 047 carries the version bump.
+
 ## [0.2.0] — 2026-07-01
 
 Consolidation pass: stop the built-checks list from drifting by single-sourcing it,

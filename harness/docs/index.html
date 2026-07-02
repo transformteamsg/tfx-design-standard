@@ -309,7 +309,6 @@ td code { white-space: normal; overflow-wrap: break-word; }
     <a href="#tfx-design-ui"><span class="mono">tfx-design-ui</span></a>
     <a href="#tfx-design-standards"><span class="mono">tfx-design-standards</span></a>
     <a href="#tfx-content-style"><span class="mono">tfx-content-style</span></a>
-    <a href="#tfx-design-review"><span class="mono">tfx-design-review</span></a>
     <a href="#tfx-design-evaluator"><span class="mono">tfx-design-evaluator</span></a>
     <div class="nav-group">Reference</div>
     <a href="#checks">Checks &amp; commands</a>
@@ -325,7 +324,7 @@ td code { white-space: normal; overflow-wrap: break-word; }
 <div class="pill-row">
   <span class="pill pill--accent">The harness</span>
   <span class="pill">38 controls</span>
-  <span class="pill">5 skills + 1 agent</span>
+  <span class="pill">4 skills + 1 agent</span>
   <span class="pill">2 checks built</span>
 </div>
 
@@ -353,7 +352,8 @@ shipped UI.</p>
 <p>The harness ships as a Claude Code plugin. In a product repo (TW, CaseSync, Glow):</p>
 <pre><code>/plugin marketplace add transformteamsg/tfx-design-standard
 /plugin install tfx-design-harness@tfx</code></pre>
-<p>This installs the five skills, the <code>tfx-design-evaluator</code> subagent, and the control catalog —
+<p>This installs the four skills, the <code>tfx-design-evaluator</code> subagent (which carries its own
+review procedure), and the control catalog —
 the catalog ships with the plugin, not with the product repo. Working on the harness itself? Open a
 Claude Code session in this repository; skills load from <code>.claude/skills/</code> automatically.</p>
 <div class="callout">
@@ -457,8 +457,7 @@ definition — this page describes them, it does not copy them, so it cannot dri
   <tr><td><a href="#tfx-design-ui"><code>tfx-design-ui</code></a></td><td>The entry point — orchestrates every design change through the six-phase loop with gates.</td></tr>
   <tr><td><a href="#tfx-design-standards"><code>tfx-design-standards</code></a></td><td>The rulebook — how to read, filter, apply, waive, and grow the control catalog.</td></tr>
   <tr><td><a href="#tfx-content-style"><code>tfx-content-style</code></a></td><td>The voice — TFX tone and naming applied while writing copy, not as a cleanup pass.</td></tr>
-  <tr><td><a href="#tfx-design-review"><code>tfx-design-review</code></a></td><td>The rubric — the grading procedure the evaluator follows; findings, never patches.</td></tr>
-  <tr><td><a href="#tfx-design-evaluator"><code>tfx-design-evaluator</code></a></td><td>The grader — a genuinely separate subagent that runs tfx-design-review at verify.</td></tr>
+  <tr><td><a href="#tfx-design-evaluator"><code>tfx-design-evaluator</code></a></td><td>The grader — a genuinely separate subagent whose own definition carries the grading procedure; findings, never patches.</td></tr>
 </table>
 
 <!-- tfx-design-ui -->
@@ -553,11 +552,12 @@ alone for copy-only edits; tfx-design-ui pulls it in at implement.</p>
   <li>Statutory or ministry-mandated wording wins — waive it, don't reword it.</li>
 </ul>
 
-<!-- tfx-design-review -->
-<h3 id="tfx-design-review">tfx-design-review <a class="anchor" href="#tfx-design-review">#</a></h3>
-<p class="meta-line">rubric · <a href="../.claude/skills/tfx-design-review/SKILL.md">.claude/skills/tfx-design-review/SKILL.md</a></p>
-<p><strong>Summary</strong>: the grading procedure for finished design work, used by the
-tfx-design-evaluator subagent — not by the agent that produced the design. The grader returns findings with
+<!-- tfx-design-evaluator -->
+<h3 id="tfx-design-evaluator">tfx-design-evaluator <a class="anchor" href="#tfx-design-evaluator">#</a></h3>
+<p class="meta-line">subagent · <a href="../.claude/agents/tfx-design-evaluator.md">.claude/agents/tfx-design-evaluator.md</a></p>
+<p><strong>Summary</strong>: grades finished design work — spawned at verify with the contract, approved
+plan, screenshots, in-scope controls, and the absolute standards path. The grading procedure is written
+directly into the agent definition, not loaded from a separate skill; the grader returns findings with
 evidence, never patches.</p>
 <h4>Four grading passes</h4>
 <ol>
@@ -580,16 +580,10 @@ JUDGMENT CONTROL NOTES:  <span class="c"># one line per control, evidence quoted
 UNCOVERED:               <span class="c"># defects no control covers — feeds the ratchet</span></code></pre>
 <p>Calibration: a screening pass, not final authority — decisive on clear violations; close calls
 escalate to a human instead of manufacturing confidence.</p>
-
-<!-- tfx-design-evaluator -->
-<h3 id="tfx-design-evaluator">tfx-design-evaluator <a class="anchor" href="#tfx-design-evaluator">#</a></h3>
-<p class="meta-line">subagent · <a href="../.claude/agents/tfx-design-evaluator.md">.claude/agents/tfx-design-evaluator.md</a></p>
-<p><strong>Summary</strong>: the agent definition that runs tfx-design-review — spawned at verify with the
-contract, approved plan, screenshots, in-scope controls, and the absolute standards path.</p>
 <h4>Why it's built this way</h4>
 <ul>
-  <li><strong>Preloaded rubric</strong> (<code>skills: tfx-design-review</code>) — the procedure is injected
-  at spawn, not left for the agent to maybe read.</li>
+  <li><strong>Full procedure inline</strong> — the grading rubric lives directly in the agent definition,
+  not preloaded from a separate skill, so there is nothing to forget to load.</li>
   <li><strong>Pinned model</strong> (<code>model: opus</code>) — grading quality doesn't silently follow
   whatever the main session runs.</li>
   <li><strong>Scoped tools</strong> (Read, Grep, Glob, Bash) — it can inspect everything and edit
@@ -648,11 +642,11 @@ waivers with approvers, the verbatim evaluator verdict, and any control proposal
   <tr><th style="width:16%">Stage</th><th>Contents</th></tr>
   <tr>
     <td><strong>V0+ — now</strong></td>
-    <td>38-control catalog · five skills + evaluator agent · catalog validator and token-audit built · the loop piloted end-to-end twice with real evaluator verdicts; both runs fed controls back into the catalog. Testable today: ask a session in this repo to design a page.</td>
+    <td>38-control catalog · four skills + evaluator agent · catalog validator and token-audit built · the loop piloted end-to-end twice with real evaluator verdicts; both runs fed controls back into the catalog. Testable today: ask a session in this repo to design a page.</td>
   </tr>
   <tr>
     <td><strong>V1 — next</strong></td>
-    <td>The remaining deterministic floor: check scripts wired as hooks during implement and as the verify gate. MVP bet per TFX-DS: tfx-design-review as a screen-linter + tfx-content-style for on-voice copy; first user = designers.</td>
+    <td>The remaining deterministic floor: check scripts wired as hooks during implement and as the verify gate. MVP bet per TFX-DS: the evaluator's grading procedure as a screen-linter + tfx-content-style for on-voice copy; first user = designers.</td>
   </tr>
   <tr>
     <td><strong>V2 — later</strong></td>

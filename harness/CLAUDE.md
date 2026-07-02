@@ -48,7 +48,7 @@ triggered.
 | Design or change a page / form / flow / component | `tfx-design-ui` skill (runs the loop) |
 | Write or review UI copy (only) | `tfx-content-style` skill (TFX voice & tone) |
 | Read, filter, apply, or grow the catalog | `tfx-design-standards` skill |
-| Grade a finished design | `tfx-design-evaluator` subagent (follows `tfx-design-review`) |
+| Grade a finished design | `tfx-design-evaluator` subagent (its agent definition carries the review procedure) |
 | Onboard a new user — learn the skills and the loop | `tfx-design-onboarding` skill (guided tour) |
 
 Architecture and roadmap: `README.md`. Control format: `standards/README.md`.

@@ -20,9 +20,10 @@ Follow the two commands in the [README Install section](../README.md#install):
 /plugin install tfx-design-harness@tfx
 ```
 
-This installs the five skills (`tfx-design-ui`, `tfx-design-standards`, `tfx-content-style`,
-`tfx-design-review`, `tfx-design-onboarding`), the `tfx-design-evaluator` subagent, and the control catalog
-(`standards/`) — the catalog ships with the plugin, not with your repo.
+This installs the four skills (`tfx-design-ui`, `tfx-design-standards`, `tfx-content-style`,
+`tfx-design-onboarding`), the `tfx-design-evaluator` subagent (which carries its own review
+procedure), and the control catalog (`standards/`) — the catalog ships with the plugin, not
+with your repo.
 
 If you are working on the harness itself (not a product repo), open a Claude Code
 session in this repository directly: the skills load from `.claude/skills/`
@@ -72,9 +73,9 @@ must be consistent across TW, CaseSync, and Glow.
 ## 3. Skills installed
 
 **What it means:** The TFX skills (`tfx-design-ui`, `tfx-design-standards`,
-`tfx-content-style`, `tfx-design-review`, `tfx-design-onboarding`) must be active in the product repo's Claude session
-for the harness to work. Without them, the agent has no loop structure, no catalog
-filters, and no evaluator procedure to follow.
+`tfx-content-style`, `tfx-design-onboarding`) and the `tfx-design-evaluator` subagent must be
+active in the product repo's Claude session for the harness to work. Without them, the agent
+has no loop structure, no catalog filters, and no evaluator procedure to follow.
 
 **The concrete step:** After running the install commands in item 0, verify the skills
 loaded. Open a Claude Code session in your product repo and ask: "design a test page."

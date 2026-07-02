@@ -8,7 +8,7 @@ status: proposed
 | --- | --- | --- |
 | `tfx-design-ui` | Exists | Orchestrates the six-phase loop (intent → diverge → plan → implement → verify → ratchet); refuses to skip gates |
 | `tfx-design-standards` | Exists | Catalog reading and filtering, tier application, waiver protocol |
-| `tfx-design-review` | Exists | Evaluator procedure for grading a finished design; findings sort by tier into blocking (L0/L1) and advisory (L2). Used by the tfx-design-evaluator subagent, never the generator |
+| `tfx-design-evaluator` (agent) | Exists | Evaluator procedure for grading a finished design; findings sort by tier into blocking (L0/L1) and advisory (L2). The grading procedure ships inside the agent definition, not as a separately loadable skill — spawned as a subagent, never the generator |
 | `tfx-content-style` | Exists | Applies voice & tone, naming, and the AI-writing tells (SLP-9) at generation time, so copy arrives on-voice by default |
 | `design-consultation` | Planned | Answers design system and brand questions with citations into this standard |
 

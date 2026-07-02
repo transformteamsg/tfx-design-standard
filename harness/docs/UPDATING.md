@@ -16,10 +16,10 @@ Skip this if the plugin is already installed.
 /plugin install tfx-design-harness@tfx
 ```
 
-This installs the five skills (`tfx-design-ui`, `tfx-design-standards`,
-`tfx-content-style`, `tfx-design-review`, `tfx-design-onboarding`), the
-`tfx-design-evaluator` subagent, and the control catalog — the catalog ships with the
-plugin, not with your repo.
+This installs the four skills (`tfx-design-ui`, `tfx-design-standards`,
+`tfx-content-style`, `tfx-design-onboarding`), the
+`tfx-design-evaluator` subagent (which carries its own review procedure), and the
+control catalog — the catalog ships with the plugin, not with your repo.
 
 ## Update to the latest
 

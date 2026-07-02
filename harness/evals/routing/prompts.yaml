@@ -7,7 +7,7 @@
 #   pass:  the expected skill name appears in the transcript's tool calls
 #          (a Skill tool invocation of that skill). For `expect: none`, pass
 #          means NO harness skill (tfx-design-ui / tfx-content-style / tfx-design-standards /
-#          tfx-design-review / tfx-design-onboarding) appears in the tool calls.
+#          tfx-design-onboarding) appears in the tool calls.
 #   cost cap: a full sweep is 33 headless sessions. Spot-check a 5-case sample
 #          per skill edit (always include at least one modification-phrasing
 #          tfx-design-ui case and one `none` case); run the full sweep only when a

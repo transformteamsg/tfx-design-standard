@@ -8,11 +8,11 @@ The design standard website for **TransformX** (Teacher & School portfolio, GovT
 
 ## Install the design harness (Claude Code plugin)
 
-The harness installs as a [Claude Code](https://code.claude.com/docs) plugin: five
+The harness installs as a [Claude Code](https://code.claude.com/docs) plugin: four
 skills (`tfx-design-ui` the loop, `tfx-design-standards` catalog mechanics, `tfx-content-style`
-voice & tone, `tfx-design-review` the evaluator procedure, and `tfx-design-onboarding` a guided
-tour), the `tfx-design-evaluator` agent, and the control catalog. It ships its own catalog,
-so it works in any repo you open, not only this one.
+voice & tone, and `tfx-design-onboarding` a guided tour), the `tfx-design-evaluator`
+agent (which carries its own review procedure), and the control catalog. It ships
+its own catalog, so it works in any repo you open, not only this one.
 
 ```bash
 # 1. add this repo as a plugin marketplace
