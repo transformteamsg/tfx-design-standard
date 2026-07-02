@@ -1,12 +1,13 @@
-import { isValidElement, type ReactNode } from "react";
-import { MDXRemote } from "next-mdx-remote/rsc";
+import type { ReactNode } from "react";
+import { compileMDX } from "next-mdx-remote/rsc";
 import remarkGfm from "remark-gfm";
 import type { Doc } from "@/lib/content";
-import { extractHeadings, slugify } from "@/lib/toc";
+import { extractHeadings } from "@/lib/toc";
 import { Toc } from "@/components/toc";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { PageActions } from "@/components/page-actions";
 import { ToolCard, type Tool } from "@/components/tool-card";
+import { heading } from "@/components/mdx";
 
 /* Sections whose docs live at /{section}/{slug} and get a breadcrumb back to
    the section root. Single-doc sections (governance) and start pages don't. */
@@ -19,25 +20,27 @@ const sectionCrumbs: Record<string, { label: string; href: string }> = {
   harness: { label: "Harness", href: "/harness" },
 };
 
-function textOf(node: ReactNode): string {
-  if (typeof node === "string" || typeof node === "number") return String(node);
-  if (Array.isArray(node)) return node.map(textOf).join("");
-  if (isValidElement(node)) return textOf((node.props as { children?: ReactNode }).children);
-  return "";
-}
-
-/* Heading ids must match lib/toc's extractHeadings so the rail can target them. */
-function heading(Tag: "h2" | "h3") {
-  function Heading({ children }: { children?: ReactNode }) {
-    return <Tag id={slugify(textOf(children))}>{children}</Tag>;
-  }
-  return Heading;
-}
-
-export function DocPage({ doc, children }: { doc: Doc; children?: ReactNode }) {
+export async function DocPage({ doc, children }: { doc: Doc; children?: ReactNode }) {
   const crumb = sectionCrumbs[doc.section];
   const headings = extractHeadings(doc.content);
   const tools = (doc.data.tools ?? []) as Tool[];
+
+  /* Doc bodies are plain Markdown, but a stray angle token outside a code
+     span (e.g. "<date>" in prose) makes MDX read it as an unclosed JSX tag.
+     Compile in a try/catch; on failure fall back to a preformatted block with
+     a visible note rather than aborting the build with a broken page. */
+  let rendered: ReactNode = null;
+  let rawFallback = false;
+  try {
+    const { content } = await compileMDX({
+      source: doc.content,
+      components: { h2: heading("h2"), h3: heading("h3") },
+      options: { mdxOptions: { remarkPlugins: [remarkGfm] } },
+    });
+    rendered = content;
+  } catch {
+    rawFallback = true;
+  }
 
   return (
     <div className="flex gap-12">
@@ -65,13 +68,19 @@ export function DocPage({ doc, children }: { doc: Doc; children?: ReactNode }) {
         {tools.map((tool) => (
           <ToolCard key={tool.href} tool={tool} />
         ))}
-        <article className="prose mt-8">
-          <MDXRemote
-            source={doc.content}
-            components={{ h2: heading("h2"), h3: heading("h3") }}
-            options={{ mdxOptions: { remarkPlugins: [remarkGfm] } }}
-          />
-        </article>
+        {rawFallback ? (
+          <div className="mt-8">
+            <p className="text-[14px] text-muted-foreground">
+              Showing the raw Markdown source — this doc uses a token the renderer reads as
+              markup, so it is shown verbatim below.
+            </p>
+            <pre className="prose mt-3 overflow-x-auto whitespace-pre-wrap rounded-lg border border-border bg-surface p-4 text-[14px]">
+              {doc.content}
+            </pre>
+          </div>
+        ) : (
+          <article className="prose mt-8">{rendered}</article>
+        )}
         {children}
       </div>
       {headings.length >= 2 && <Toc headings={headings} />}
