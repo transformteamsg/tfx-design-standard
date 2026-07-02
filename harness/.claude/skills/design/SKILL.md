@@ -81,7 +81,9 @@ seen and judged the current state. Capture the current page, critique it
 against the in-scope catalog controls and Kind Utility, and let the critique's
 "what underperforms" list set the scope of the polish; **preserved is not
 waived** — a "preserve" call still has to pass its controls, it only means
-don't restyle a deliberate choice.
+don't restyle a deliberate choice. The critique includes a structured layout
+read (against `layout-patterns.md`) and ranked suggestions — `critique.md`
+carries the procedure.
 
 ## A flow is not a stack of pages
 
@@ -180,7 +182,8 @@ pack: one clear focal point — the teacher's primary task and its single primar
 boxed in cards (SLP-11), and everything else stepped down so hierarchy does the
 explaining (SLP-6). Each option's layout is graded at verify against LAY-3 (does it fit
 a known page template for its type?), LAY-5 (does its density fit the task?), and
-LAY-6 (do shared edges align?) — design to them now, not as a cleanup pass.
+LAY-6 (do shared edges align?) — design to them now, not as a cleanup pass. When
+diverging on an existing surface, the critique's layout suggestions seed the options.
 
 Output: the options with a recommendation. The user picks.
 

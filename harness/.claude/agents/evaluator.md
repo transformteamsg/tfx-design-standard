@@ -172,6 +172,12 @@ ADVISORY (should fix):
 - ... (L2 violations; waived L1s worth noting; close calls that are not control
   failures)
 
+SUGGESTIONS (not violations — layout/pattern improvements the builder may take):
+- concrete change — pattern/control it serves — impact on the task (one line each, max 5)
+  (A suggestion is never a finding: do not put a passing surface's improvement
+  ideas in BLOCKING/ADVISORY, and do not withhold a suggestion because
+  everything passed.)
+
 QUALITY GRADES: design quality / originality / craft / functionality — with reasons
 
 JUDGMENT CONTROL NOTES (one line per in-scope judgment/hybrid control):

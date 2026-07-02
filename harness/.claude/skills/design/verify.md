@@ -30,12 +30,14 @@ Run in this order; do not present output to the user while a step is failing:
      are page evidence, not flow evidence.
    Check each frame's *actual* rendered viewport before naming it — a screenshot
    named `768-*.png` taken at a stale viewport is mislabeled evidence.
-   Capture mechanism: **use Claude-in-Chrome by default, or the user's installed
-   browser agent of choice**. If the agent-browser daemon misbehaves (it has
-   intermittently returned "os error 35"), a local Playwright script is the
-   proven fallback. If capture still keeps failing after a reasonable retry,
-   **ask the user to provide the screenshot** — any source is fine; the evidence
-   set is not optional, and unverified work is never presented as verified.
+   Capture mechanism, in order of preference: (1) the `agent-browser` CLI if
+   installed (`agent-browser --help` to confirm; it has intermittently returned
+   "os error 35" — if it misbehaves, fall through) — navigate to the route, set
+   the viewport to the target width, screenshot; (2) Claude-in-Chrome or the
+   user's installed browser agent; (3) the local Playwright fallback; (4) ask
+   the user to provide the screenshot. If capture still keeps failing after a
+   reasonable retry, any source is fine; the evidence set is not optional, and
+   unverified work is never presented as verified.
    - **Inventory checkoff**: walk the Phase-1 component inventory and tick each
      interactive control as operated — tab to it (focus visible per A11Y-2),
      activate by keyboard, confirm role + accessible name + state (A11Y-8/A11Y-3).
