@@ -46,6 +46,17 @@ Card radius is the natural anchor because cards are the most common peer contain
 **Deterministic half (static, per element):** run `checks/token-audit <path>…` —
 the scanner flags off-scale values and concentric-nesting violations line-by-line.
 
+> **Coverage caveat (utility-first / Tailwind products).** `token-audit` resolves
+> raw `border-radius` in CSS properties, arbitrary utilities (`rounded-[10px]`), and
+> palette-bypass classes — but it does **not** map *named* Tailwind radius utilities
+> to px, so an off-scale named class such as `rounded-4xl` (32px, not on the
+> {0,2,4,6,8,12,16,24,9999} scale) **passes the deterministic check**. Until a
+> Tailwind-class→value resolver lands, treat off-scale named radius utilities as an
+> evaluator-judged item, not a covered-by-gate one — and do not report TOK-3 as
+> "mechanically clean" for a Tailwind product without eyeballing the named classes.
+> The same blind spot applies to TYP-3 (named size utilities) and TOK-2 (named
+> spacing utilities).
+
 **Peer-consistency (evaluator-judged — no cross-element static check):** there is no
 script that compares two different elements' radii. The evaluator compares peer
 containers visible in the screenshots against the product's Card/`--radius` anchor.

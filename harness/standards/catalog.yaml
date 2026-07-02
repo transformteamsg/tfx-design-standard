@@ -231,6 +231,11 @@ controls:
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
 
   # ── Typography ────────────────────────────────────────────────────────
+  # TYP-1 brand-wordmark exception added 2026-07-01 — ratchet, design-lead approved
+  # (Glow pilot: the Inria Sans wordmark is a deliberate brand lockup typeface with no
+  # registered exception, so it read as a hard third-typeface L1 violation. Add a
+  # per-product registered-wordmark registry, mirroring COL-1's per-product colour
+  # table.) See docs/catalog-changes/glow-pilot-col1-typ1-tok3.md
   - id: TYP-1
     source: TFX-DS
     title: Display text is Plus Jakarta Sans (600); body/UI text is Inter (400/500/600); no other typefaces
@@ -238,10 +243,11 @@ controls:
     check: deterministic
     phase: [implement, verify]
     applies_to: [page, component]
-    verify: "Font-family scan; only Plus Jakarta Sans + Inter at approved weights; checks/type-scan"
+    verify: "Font-family scan; only Plus Jakarta Sans + Inter at approved weights, plus each product's registered brand-wordmark typeface used solely for its wordmark/logo lockup (see controls/typ-1.md); checks/type-scan"
     waiver: documented
     fails_when:
-      - any third typeface in product UI
+      - any third typeface in product UI, except a product's registered brand-wordmark typeface confined to its wordmark/logo lockup (see controls/typ-1.md)
+    detail: controls/typ-1.md
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
 
   - id: TYP-2
@@ -306,18 +312,25 @@ controls:
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
 
   # ── Colour ────────────────────────────────────────────────────────────
+  # COL-1 re-tagged deterministic → hybrid 2026-07-01 — ratchet, design-lead
+  # approved (Glow pilot audit HF: the mechanical half — colour resolves to a
+  # token — passes trivially; the real failure is a neutral variant sitting
+  # where the brand primary belongs, which is judgment. Glow primary confirmed
+  # #F76B15; foreground-pairing + same-hue-collision guidance added).
+  # See docs/catalog-changes/glow-pilot-col1-typ1-tok3.md
   - id: COL-1
     source: TFX-DS
     title: Primary actions and brand moments use the product's own primary brand colour (or its ramp)
     tier: L1
-    check: deterministic
+    check: hybrid
     phase: [implement, verify]
     applies_to: [page, component]
-    verify: "Primary action / brand-moment colours resolve to the active product's primary token or its ramp (see controls/col-1.md for the per-product table)"
+    verify: "Deterministic half: primary-action and brand-moment colours resolve to the active product's primary token or its ramp (checks/token-audit). Judgment half: the evaluator confirms the view's single primary action is the product primary (dovetails CMP-5) and no other product's primary appears for emphasis; see controls/col-1.md for the per-product table and the foreground pairing"
     waiver: documented
     fails_when:
       - primary CTA in a colour that is not the product's primary
       - one product's primary used inside another product's surface
+      - a light-hue product primary (orange/amber/lime/yellow) paired with white label text that fails A11Y-1 (use the scale's dark contrast step)
     detail: controls/col-1.md
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
 
