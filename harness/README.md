@@ -13,10 +13,10 @@ surviving the whole way to shipped UI.
 ```
 NORMATIVE LAYER                       HARNESS                            ENFORCEMENT
 standards/catalog.yaml                .claude/skills/                    checks/ + evaluator agent
-├─ TFX-DS standards tier              ├─ tfx-design-ui      (the loop)       ├─ Deterministic: scripts, a11y scan,
-│   47 controls (latest ratchet 2026-06-17)  ├─ tfx-design-standards (catalog use)  │   DOM checks — non-skippable
-├─ WCAG 2.2 AA (self-imposed floor)   ├─ tfx-content-style  (voice & tone)   ├─ Judgment: tfx-design-evaluator subagent
-└─ References: SGDS, GOV.UK           └─ tfx-design-onboarding (guided tour) └─ Human gates: plan approval, L1 waivers
+├─ TFX-DS standards tier               ├─ design (the loop)               ├─ Deterministic: scripts, a11y scan,
+│   47 controls (latest ratchet 2026-06-17) ├─ standards (catalog use)     │   DOM checks — non-skippable
+├─ WCAG 2.2 AA (self-imposed floor)    ├─ content (voice & tone)          ├─ Judgment: evaluator subagent
+└─ References: SGDS, GOV.UK            └─ onboard (guided tour)           └─ Human gates: plan approval, L1 waivers
    (reference points, not rules)
 ```
 
@@ -54,7 +54,7 @@ Jakarta Sans + Inter; Teacher & School Blue `#0064FF`.
 design-harness/
 ├── README.md
 ├── CLAUDE.md                # always-on project facts — makes the harness discoverable
-│                            # from any entry point, not just the tfx-design-ui loop
+│                            # from any entry point, not just the design loop
 ├── standards/
 │   ├── README.md            # control catalog format spec + authoring guide
 │   ├── catalog.yaml         # TFX-DS catalog: 47 controls (always loaded)
@@ -62,14 +62,14 @@ design-harness/
 │                            # pass/fail examples, verification detail (loaded on demand)
 ├── .claude/
 │   ├── skills/
-│   │   ├── tfx-design-ui/           # orchestrates the loop: intent → diverge → plan →
-│   │   │                        # implement → verify
-│   │   ├── tfx-design-standards/    # how to read, filter, and apply the catalog
-│   │   ├── tfx-content-style/       # TFX voice & tone + naming, applied at generation time
-│   │   └── tfx-design-onboarding/   # guided first-run tour of the harness
+│   │   ├── design/           # orchestrates the loop: intent → diverge → plan →
+│   │   │                     # implement → verify
+│   │   ├── standards/        # how to read, filter, and apply the catalog
+│   │   ├── content/          # TFX voice & tone + naming, applied at generation time
+│   │   └── onboard/          # guided first-run tour of the harness
 │   └── agents/
-│       └── tfx-design-evaluator.md  # reviewer subagent — generator/evaluator split;
-│                                    # carries its own review procedure
+│       └── evaluator.md      # reviewer subagent — generator/evaluator split;
+│                              # carries its own review procedure
 ├── checks/
 │   └── README.md            # deterministic check scripts, mapped to control ids (planned)
 └── docs/
@@ -87,10 +87,10 @@ The harness ships as a Claude Code plugin. In your product repo (TW, CaseSync, G
 
 ```
 /plugin marketplace add transformteamsg/tfx-design-standard
-/plugin install tfx-design-harness@tfx
+/plugin install tfx@tfx
 ```
 
-This installs the four skills (`tfx-design-ui`, `tfx-design-standards`, `tfx-content-style`, `tfx-design-onboarding`), the `tfx-design-evaluator` subagent (which carries its own review procedure), and the control catalog (`standards/`) — the catalog ships with the plugin, not with your repo.
+This installs the four skills (`design`, `standards`, `content`, `onboard`), the `evaluator` subagent (which carries its own review procedure), and the control catalog (`standards/`) — the catalog ships with the plugin, not with your repo.
 
 To work on the harness itself, just open a Claude Code session in this repository: the skills load from `.claude/skills/` automatically; no install step.
 
@@ -98,7 +98,7 @@ To work on the harness itself, just open a Claude Code session in this repositor
 
 Adopting the harness in a product repo? Follow [docs/ONBOARDING.md](docs/ONBOARDING.md).
 
-## The loop (summary — full procedure in `tfx-design-ui` skill)
+## The loop (summary — full procedure in `design` skill)
 
 | Phase | Actor | Gate |
 |---|---|---|
@@ -120,10 +120,10 @@ TFX-DS website (presentation).
 
 - **V0 — now**: this standard as catalog source; skills installed; loop runnable in a
   Claude session (verify phase runs manually — see the "v0 reality" note in
-  `tfx-design-ui`). Verification baseline: `python3 checks/validate.py`.
+  `design`). Verification baseline: `python3 checks/validate.py`.
 - **V1 — next**: the deterministic floor — check scripts wired as hooks during
   implement and as the verify gate. MVP bet per TFX-DS: the evaluator's grading
-  procedure as a screen-linter against the seed catalog + `tfx-content-style` so
+  procedure as a screen-linter against the seed catalog + `content` so
   generated screens ship with on-voice copy; first user = designers.
 - **V2 — later**: component manifest via MCP, screenshot-diff against approved
   baselines, full catalog buildout from ratchet evidence.

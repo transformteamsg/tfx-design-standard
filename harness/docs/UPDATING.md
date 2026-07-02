@@ -3,7 +3,7 @@
 Consumer guide for product teams (Teacher Workspace, CaseSync, Glow) keeping the
 installed harness plugin up to date.
 
-- **Plugin:** `tfx-design-harness`
+- **Plugin:** `tfx`
 - **Marketplace:** `tfx`
 - **Source:** `github.com/transformteamsg/tfx-design-standard` (the marketplace tracks the `main` branch)
 
@@ -13,12 +13,12 @@ Skip this if the plugin is already installed.
 
 ```
 /plugin marketplace add transformteamsg/tfx-design-standard
-/plugin install tfx-design-harness@tfx
+/plugin install tfx@tfx
 ```
 
-This installs the four skills (`tfx-design-ui`, `tfx-design-standards`,
-`tfx-content-style`, `tfx-design-onboarding`), the
-`tfx-design-evaluator` subagent (which carries its own review procedure), and the
+This installs the four skills (`design`, `standards`,
+`content`, `onboard`), the
+`evaluator` subagent (which carries its own review procedure), and the
 control catalog — the catalog ships with the plugin, not with your repo.
 
 ## Update to the latest
@@ -31,10 +31,10 @@ control catalog — the catalog ships with the plugin, not with your repo.
 Restarting Claude Code does the same as `/reload-plugins`. Confirm the result:
 
 ```
-/plugin list                       # tfx-design-harness should be present and enabled
+/plugin list                       # tfx should be present and enabled
 ```
 
-Quick check: ask "design a test page" — the `tfx-design-ui` loop should trigger and
+Quick check: ask "design a test page" — the `design` loop should trigger and
 ask its intent questions.
 
 ## How updates work here
@@ -83,5 +83,5 @@ There is no in-app version readout, so to confirm a release landed:
 
 - Check `harness/CHANGELOG.md` in the source repo for the latest version and its notes.
 - Spot-check a known change — for example, after 0.1.1 the catalog carries 40 controls
-  including `LAY-2` and `LAY-4`; ask the `tfx-design-standards` skill to list the LAY
+  including `LAY-2` and `LAY-4`; ask the `standards` skill to list the LAY
   controls, or open the catalog page on the TFX-DS website.

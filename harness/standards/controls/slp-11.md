@@ -64,7 +64,7 @@ spacing, type, and dividers instead.
 - A container that *is* the interaction (clickable/selectable/draggable) — that is the
   correct use.
 - An established, deliberate card pattern already shipped on the surface — the
-  conservative-defaults rule (tfx-design-ui Phase 4) presumes settled layout
+  conservative-defaults rule (design Phase 4) presumes settled layout
   intentional; do not restyle it as a side effect. Raise it as a *proposed* change with
   rationale, never silently.
 - A single content container used to set a focused task apart from page chrome, where
