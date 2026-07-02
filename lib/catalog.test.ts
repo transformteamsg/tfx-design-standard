@@ -1,0 +1,86 @@
+import fs from "node:fs";
+import path from "node:path";
+import { parse } from "yaml";
+import { describe, expect, it } from "vitest";
+import { getCatalog, getPublicCatalogYaml } from "./catalog";
+
+/* Characterization tests for the deny-by-default projection in
+   lib/catalog.ts. These mirror the module's private PUBLIC_META /
+   PUBLIC_FIELDS allowlists (not exported — deny-by-default lists shouldn't
+   grow a public API surface) so keep them in sync by hand if catalog.ts's
+   lists change. See plan 051. */
+const PUBLIC_META_ALLOWLIST = ["version", "updated", "waiver_syntax", "categories"];
+const PUBLIC_FIELDS_ALLOWLIST = [
+  "id",
+  "source",
+  "title",
+  "tier",
+  "check",
+  "phase",
+  "applies_to",
+  "verify",
+  "waiver",
+  "fails_when",
+];
+
+function readRawCatalog() {
+  const file = path.join(process.cwd(), "harness", "standards", "catalog.yaml");
+  return parse(fs.readFileSync(file, "utf8")) as {
+    meta: Record<string, unknown>;
+    controls: Record<string, unknown>[];
+  };
+}
+
+describe("getPublicCatalogYaml — meta projection", () => {
+  it("exposes only PUBLIC_META keys at the meta level", () => {
+    const raw = readRawCatalog();
+    const projected = parse(getPublicCatalogYaml()) as { meta: Record<string, unknown> };
+    const projectedKeys = Object.keys(projected.meta).sort();
+    const expectedKeys = PUBLIC_META_ALLOWLIST.filter((k) => k in raw.meta).sort();
+    expect(projectedKeys).toEqual(expectedKeys);
+    // Every projected key must be in the allowlist (set-difference is empty).
+    for (const k of projectedKeys) {
+      expect(PUBLIC_META_ALLOWLIST).toContain(k);
+    }
+  });
+});
+
+describe("getPublicCatalogYaml — control projection", () => {
+  it("every control's keys are a subset of PUBLIC_FIELDS", () => {
+    const projected = parse(getPublicCatalogYaml()) as { controls: Record<string, unknown>[] };
+    expect(projected.controls.length).toBeGreaterThan(0);
+    for (const c of projected.controls) {
+      for (const key of Object.keys(c)) {
+        expect(PUBLIC_FIELDS_ALLOWLIST).toContain(key);
+      }
+    }
+  });
+
+  it("deny-by-default: real corpus fields outside PUBLIC_FIELDS (refs, detail) never survive projection", () => {
+    // getPublicCatalogYaml() takes no arguments — it always reads the real
+    // catalog.yaml from disk, so a fake key can't be injected in-memory
+    // without editing the file (out of scope). Instead this exercises
+    // deny-by-default against fields that genuinely exist in the corpus:
+    // catalog.yaml comments document `refs` and `detail` as harness-internal.
+    const raw = readRawCatalog();
+    const rawHasRefs = raw.controls.some((c) => "refs" in c);
+    const rawHasDetail = raw.controls.some((c) => "detail" in c);
+    expect(rawHasRefs).toBe(true);
+    expect(rawHasDetail).toBe(true);
+
+    const projected = parse(getPublicCatalogYaml()) as { controls: Record<string, unknown>[] };
+    expect(projected.controls.some((c) => "refs" in c)).toBe(false);
+    expect(projected.controls.some((c) => "detail" in c)).toBe(false);
+  });
+});
+
+describe("getCatalog", () => {
+  it("returns a non-empty list of controls with a category resolved from meta.categories", () => {
+    const controls = getCatalog();
+    expect(controls.length).toBeGreaterThan(0);
+    for (const c of controls) {
+      expect(typeof c.category).toBe("string");
+      expect(c.category.length).toBeGreaterThan(0);
+    }
+  });
+});
