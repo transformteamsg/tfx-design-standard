@@ -85,3 +85,32 @@ There is no in-app version readout, so to confirm a release landed:
 - Spot-check a known change — for example, after 0.1.1 the catalog carries 40 controls
   including `LAY-2` and `LAY-4`; ask the `standards` skill to list the LAY
   controls, or open the catalog page on the TFX-DS website.
+
+## Migrating from 0.2.x (plugin and skill rename, 0.3.0)
+
+0.3.0 renamed the plugin `tfx-design-harness` → `tfx` and every skill to a single
+distinguishing token (`tfx-design-ui` → `design`, `tfx-design-standards` →
+`standards`, `tfx-content-style` → `content`, `tfx-design-onboarding` → `onboard`;
+the evaluator agent `tfx-design-evaluator` → `evaluator`). Installed, these read
+`tfx:design`, `tfx:standards`, `tfx:content`, `tfx:onboard`, and `tfx:evaluator`.
+
+**0.2.x and 0.3.0 cannot coexist under different plugin names** — a plain
+`/plugin marketplace update` will not move you across this rename, because the old
+install is a separate plugin (`tfx-design-harness`) from the new one (`tfx`). You
+must reinstall:
+
+```
+/plugin uninstall tfx-design-harness   # or remove it via /plugin
+/plugin marketplace update tfx         # pull the latest marketplace.json
+/plugin install tfx@tfx
+```
+
+Then restart Claude Code, or run `/reload-plugins`, so the renamed skills and agent
+load under their new names.
+
+**What does not change:** the control catalog, waiver syntax (`tfx-waive`), the
+`tfx-sync` markers, and control ids are unaffected — this rename touches only the
+plugin name and the skill/agent names. **What does not get rewritten:** decision
+records and other historical documents in your product repo that reference the old
+skill names (`tfx-design-ui`, `tfx-content-style`, and so on) stay valid as history —
+they describe what ran at the time, and rewriting them would falsify the record.

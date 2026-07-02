@@ -3,11 +3,29 @@
 Notable changes to the TFX Design Harness plugin. Versioning tracks
 `.claude-plugin/plugin.json`.
 
-## [Unreleased]
+## [0.3.0] — 2026-07-02
 
-- The `tfx-design-review` skill's procedure moved into the `tfx-design-evaluator`
-  agent definition and the skill was removed — the harness now ships four skills,
-  not five (plan 046). Plan 047 carries the version bump.
+Rename pass: shorter, non-repeating names for the plugin and every skill, now that
+installation namespaces skills by plugin name.
+
+### Changed — naming
+- Plugin renamed `tfx-design-harness` → `tfx` (matches the marketplace name it already
+  shipped under: `.claude-plugin/marketplace.json`'s `"name": "tfx"`).
+- Skills renamed to their one distinguishing token: `tfx-design-ui` → `design`,
+  `tfx-design-standards` → `standards`, `tfx-content-style` → `content`,
+  `tfx-design-onboarding` → `onboard`. Installed, these read `tfx:design`,
+  `tfx:standards`, `tfx:content`, `tfx:onboard`.
+- The evaluator agent renamed `tfx-design-evaluator` → `evaluator` (`tfx:evaluator`
+  installed).
+- The `tfx-design-review` skill's procedure moved into the `evaluator` agent
+  definition and the skill was removed — the harness now ships four skills, not five
+  (plan 046).
+
+### Consumer impact
+- **Reinstall required.** 0.2.x and 0.3.0 cannot coexist under the old plugin name —
+  see `docs/UPDATING.md` for the migration steps. Decision records and other
+  historical documents that reference the old skill names by name stay valid as
+  history; they are not rewritten.
 
 ## [0.2.0] — 2026-07-01
 
