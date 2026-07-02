@@ -47,7 +47,7 @@ triggered.
 | Write or review UI copy (only) | `content` skill (TFX voice & tone) |
 | Read, filter, apply, or grow the catalog | `standards` skill |
 | Grade a finished design | `evaluator` subagent (its agent definition carries the review procedure) |
-| Onboard a new user — learn the skills and the loop | `onboard` skill (guided tour) |
+| Onboard a new user — learn the loop, set up the tools | `onboard` skill (tour + setup) |
 | Report harness friction/feedback | `feedback` skill (files the GitHub issue) |
 
 Architecture and roadmap: `README.md`. Control format: `standards/README.md`.

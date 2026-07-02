@@ -31,9 +31,10 @@ Run in this order; do not present output to the user while a step is failing:
    Check each frame's *actual* rendered viewport before naming it — a screenshot
    named `768-*.png` taken at a stale viewport is mislabeled evidence.
    Capture mechanism, in order of preference: (1) the `agent-browser` CLI if
-   installed (`agent-browser --help` to confirm; it has intermittently returned
-   "os error 35" — if it misbehaves, fall through) — navigate to the route, set
-   the viewport to the target width, screenshot; (2) Claude-in-Chrome or the
+   installed (`agent-browser --help` to confirm; not installed → offer setup
+   once via `../onboard/setup.md` before falling through; it has intermittently
+   returned "os error 35" — if it misbehaves, fall through) — navigate to the
+   route, set the viewport to the target width, screenshot; (2) Claude-in-Chrome or the
    user's installed browser agent; (3) the local Playwright fallback; (4) ask
    the user to provide the screenshot. If capture still keeps failing after a
    reasonable retry, any source is fine; the evidence set is not optional, and

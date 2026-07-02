@@ -1,13 +1,14 @@
 ---
 name: onboard
-description: A guided first-run tour of the TFX design harness for someone new to it. Orient them, then hand off to the real loop. Use ONLY when a person explicitly asks to be onboarded to or taught the harness itself ("onboard me", "how do I use this harness", "teach me the loop", "I'm new to the TFX design harness", "what can this harness do", or the /tfx:onboard command). NOT for designing or changing a page, screen, form, or component; those always go to design, even when phrased as "how do I…". NOT for making a product repo harness-ready; that is the team onboarding guide.
+description: 'Onboarding to the TFX design harness: a guided first-run tour, and setup of the per-user tools the harness relies on (the agent-browser capture CLI + skill, gh for feedback issues, Python deps for checks). Use when a person asks to be onboarded to or taught the harness itself ("onboard me", "how do I use this harness", "teach me the loop", the /tfx:onboard command), or to set up, install, or fix the harness''s tooling on their machine ("set up the harness", "install the harness dependencies", "agent-browser isn''t installed"). NOT for designing or changing a page, screen, form, or component; those always go to design, even when phrased as "how do I…". NOT for repo-level harness adoption — stack, manifest, record locations, L1 approver; that is the team onboarding guide.'
 ---
 
 # Onboarding to the TFX design harness
 
-Someone new wants to learn how to use this harness. Orient them in a few lines, then
-hand them to the real loop — teach by doing, not by lecturing. Brand essence is **Kind
-Utility**: useful first, kind at the surface. Keep turns short; ask before you explain.
+Someone new wants to learn how to use this harness, or to set up their machine's
+harness tooling. Orient them in a few lines, then hand them to the real loop — teach
+by doing, not by lecturing. Brand essence is **Kind Utility**: useful first, kind at
+the surface. Keep turns short; ask before you explain.
 
 You are a guide, not the loop and not the grader. Real design work belongs to
 `design`; this skill only orients and hands off.
@@ -26,6 +27,10 @@ here (reproduced text drifts):
   waived by a named human, L2 is a strong default). They never memorise it; the
   agent loads and applies it. Mechanics and waivers live in `standards`.
 
+Before asking, run `agent-browser --help` once. If it fails, say in one line that
+capture is not set up yet and that shape (4) fixes it — then ask the question as
+normal.
+
 **2. Route by run-shape — one question.** Ask what they want to do, framed by the
 shape of the run, not a list of tools:
 
@@ -39,10 +44,15 @@ shape of the run, not a list of tools:
   - a catalog or waiver question (can I waive this? who approves?) → hand off to
     `standards` and stop.
   - feedback about the harness itself → hand off to the `feedback` skill and stop.
+- **(4) Set up this machine for the harness** — install or fix the tools
+  the loop relies on (screenshot capture, feedback filing, checks) → read
+  `setup.md` (beside this SKILL.md) and follow it, then offer the tour or
+  stop as they prefer.
 
-If they ask to **set up a product repo to use the harness**, that is the wrong tool:
-point them to the team onboarding guide (`../../../docs/ONBOARDING.md`, relative to
-this SKILL.md) and stop. (The grader, `evaluator`, is an agent the loop
+Setup has two sides. **Repo adoption** — stack, manifest, record locations, the named
+L1 approver — belongs to the team onboarding guide (`../../../docs/ONBOARDING.md`,
+relative to this SKILL.md): point them there and stop. **Their own machine's tools**
+belong to shape (4) here. (The grader, `evaluator`, is an agent the loop
 spawns at verify — not something they run; mention it only if asked.)
 
 **3. Hand off to a real run.** Ask what they would build; a real, small page beats a toy
@@ -53,8 +63,9 @@ Keep the first page small so they reach that gate quickly.
 
 **4. Close.** Leave them one habit: they never start the loop by hand — they ask to
 design or change a page and `design` takes over. Point them to the control catalog
-(`../../../standards/catalog.yaml`, relative to this SKILL.md) and, for repo setup, the
-team onboarding guide. Then step back.
+(`../../../standards/catalog.yaml`, relative to this SKILL.md), to `setup.md` (beside
+this SKILL.md) for their machine's tools, and, for repo adoption, the team onboarding
+guide. Then step back.
 
 ## Stay honest
 
