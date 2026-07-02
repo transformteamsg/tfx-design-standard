@@ -10,6 +10,8 @@ Validates standards/catalog.yaml for internal consistency:
      controls must carry one. meta.categories covers every ID prefix.
   6. Reverse check: every standards/controls/*.md frontmatter matches catalog.
   7. Cross-reference sweep: every control ID mentioned in prose exists in catalog.
+  8. tfx-sync parity: [L0-SYNC], [SLP9-SYNC], and [COUNT-SYNC] (every "<N> controls"
+     claim in README.md must equal the catalog's actual control count).
 Exit 0 and print "OK: <n> controls valid" on success.
 Exit 1 and print "ERROR <location>: <message>" lines on failure.
 """
@@ -287,6 +289,31 @@ def slp9_parity_errors(repo_root):
     return errors
 
 
+def count_parity_errors(repo_root, catalog_count):
+    """
+    [COUNT-SYNC] Every "<N> controls" claim in README.md must equal the
+    catalog's actual control count. Catches the class of drift where a
+    control is added/removed but the README's prose count is never updated.
+    A README with no count claim is not an error (nothing to check).
+    """
+    errors = []
+    readme_path = os.path.join(repo_root, "README.md")
+    if not os.path.isfile(readme_path):
+        return errors
+    rel = os.path.relpath(readme_path, repo_root)
+    with open(readme_path) as fh:
+        text = fh.read()
+    seen = set()
+    for m in re.finditer(r"(\d+) controls", text):
+        n = int(m.group(1))
+        if n != catalog_count and n not in seen:
+            seen.add(n)
+            errors.append(
+                f"ERROR {rel} [COUNT-SYNC]: says {n} controls, catalog has {catalog_count}"
+            )
+    return errors
+
+
 def collect_errors(repo_root, _return_count=False):
     """
     Run all of Steps 1–7 against `repo_root` and return a list of error
@@ -508,6 +535,7 @@ def collect_errors(repo_root, _return_count=False):
     # Inline restatements (L0 list, SLP-9 buzzwords) must not drift from source.
     errors.extend(l0_parity_errors(repo_root, catalog_by_id, xref_re))
     errors.extend(slp9_parity_errors(repo_root))
+    errors.extend(count_parity_errors(repo_root, len(catalog_by_id)))
 
     return result(len(catalog_by_id))
 
@@ -707,6 +735,28 @@ def run_self_test():
     assert_error("buzzword missing core",
                  buzz_errs("empower, supercharge"),
                  "required core buzzword(s)")
+
+    # ── [COUNT-SYNC] cases ─────────────────────────────────────────────────
+    count_tmp = tempfile.mkdtemp(prefix="validate-selftest-count-")
+    try:
+        readme_path = os.path.join(count_tmp, "README.md")
+
+        with open(readme_path, "w") as fh:
+            fh.write("This catalog has 48 controls, all documented.")
+        assert_clean("count-sync matching count",
+                     count_parity_errors(count_tmp, 48))
+
+        with open(readme_path, "w") as fh:
+            fh.write("This catalog has 49 controls, all documented.")
+        assert_error("count-sync mismatched count",
+                     count_parity_errors(count_tmp, 48), "[COUNT-SYNC]")
+
+        with open(readme_path, "w") as fh:
+            fh.write("No count claim in this README at all.")
+        assert_clean("count-sync no claim",
+                     count_parity_errors(count_tmp, 48))
+    finally:
+        shutil.rmtree(count_tmp, ignore_errors=True)
 
     # ── Filesystem integration case for collect_errors ───────────────────────
 

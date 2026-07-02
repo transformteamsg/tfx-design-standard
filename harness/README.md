@@ -14,7 +14,7 @@ surviving the whole way to shipped UI.
 NORMATIVE LAYER                       HARNESS                            ENFORCEMENT
 standards/catalog.yaml                .claude/skills/                    checks/ + evaluator agent
 ├─ TFX-DS standards tier               ├─ design (the loop)               ├─ Deterministic: scripts, a11y scan,
-│   47 controls (latest ratchet 2026-06-17) ├─ standards (catalog use)     │   DOM checks — non-skippable
+│   48 controls (latest ratchet 2026-06-17) ├─ standards (catalog use)     │   DOM checks — non-skippable
 ├─ WCAG 2.2 AA (self-imposed floor)    ├─ content (voice & tone)          ├─ Judgment: evaluator subagent
 └─ References: SGDS, GOV.UK            └─ onboard (guided tour)           └─ Human gates: plan approval, L1 waivers
    (reference points, not rules)
@@ -55,28 +55,42 @@ design-harness/
 ├── README.md
 ├── CLAUDE.md                # always-on project facts — makes the harness discoverable
 │                            # from any entry point, not just the design loop
+├── CHANGELOG.md             # catalog + skill versions, tracked with plugin.json
+├── CONTRIBUTING.md          # ratchet flow: how a new control gets proposed and merged
 ├── standards/
 │   ├── README.md            # control catalog format spec + authoring guide
-│   ├── catalog.yaml         # TFX-DS catalog: 47 controls (always loaded)
+│   ├── catalog.yaml         # TFX-DS catalog: 48 controls (always loaded)
+│   ├── schema.json          # machine-checkable schema validate.py validates against
 │   └── controls/            # one file per control: YAML frontmatter + rationale,
 │                            # pass/fail examples, verification detail (loaded on demand)
 ├── .claude/
 │   ├── skills/
 │   │   ├── design/           # orchestrates the loop: intent → diverge → plan →
-│   │   │                     # implement → verify
+│   │   │                     # implement → verify (implement-craft.md: implement detail)
 │   │   ├── standards/        # how to read, filter, and apply the catalog
 │   │   ├── content/          # TFX voice & tone + naming, applied at generation time
 │   │   └── onboard/          # guided first-run tour of the harness
 │   └── agents/
 │       └── evaluator.md      # reviewer subagent — generator/evaluator split;
-│                              # carries its own review procedure
-├── checks/
-│   └── README.md            # deterministic check scripts, mapped to control ids (planned)
+│                             # carries its own review procedure
+├── checks/                  # 10 check scripts + fixtures/ — see checks/README.md for coverage
+├── evals/
+│   ├── golden/               # known-correct + planted-trap tasks that score loop output
+│   ├── routing/               # prompts.yaml — catches skill-description drift
+│   └── evaluator-recall/      # checks the evaluator subagent's own recall, not the loop
+├── plans/                   # numbered improvement plans (this file's own backlog)
+├── scripts/                 # repo-maintenance one-offs (e.g. file-feedback-issue.py)
 └── docs/
-    ├── index.html           # visual explainer of how the harness works
-    ├── SYNC.md              # fragment sync: tfx-sync markers + validate.py parity checks
-    └── decisions/
-        └── TEMPLATE.md      # design decision record — one per page/change
+    ├── index.html            # visual explainer of how the harness works
+    ├── SYNC.md                # fragment sync: tfx-sync markers + validate.py parity checks
+    ├── ONBOARDING.md          # adopting the harness in a product repo
+    ├── UPDATING.md            # plugin update steps + auto-update setting
+    ├── harness-feedback.md    # running log of feedback on the harness itself
+    ├── decisions/             # one design decision record per page/change
+    ├── loop-run/              # end-to-end loop run transcripts/evidence
+    ├── reviews/               # standalone review writeups
+    ├── spikes/                # exploratory spikes (e.g. layout-category)
+    └── catalog-changes/       # ratchet proposals and their outcomes
 ```
 
 Fragment sync (markers + validation): [docs/SYNC.md](docs/SYNC.md).
@@ -115,7 +129,7 @@ Aligned to TFX-DS v0.1 (June 2026). Catalog: the 22-control TFX-DS seed, plus 6
 ratchet additions (GovTech a11y checklist, 2026-06-11), the 10 anti-slop controls
 (SLP-1..10) adopted from the TFX-DS site seed catalog in the 2026-06-11
 consolidation, and later ratchet additions (LAY-2/3/4/5/6, TYP-5, SLP-11, CMP-5,
-CMP-6) — 47 controls, one file, consumed by both the harness (enforcement) and the
+CMP-6) — 48 controls, one file, consumed by both the harness (enforcement) and the
 TFX-DS website (presentation).
 
 - **V0 — now**: this standard as catalog source; skills installed; loop runnable in a

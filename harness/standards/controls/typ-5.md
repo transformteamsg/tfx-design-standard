@@ -6,7 +6,7 @@ tier: L2
 check: hybrid
 phase: [implement, verify]
 applies_to: [page, component]
-verify: "Numeric columns/tables and dynamically-updating numbers carry font-variant-numeric: tabular-nums (Tailwind `tabular-nums`); evaluator judges which figures align or update; checks/type-scan (planned)"
+verify: "Numeric columns/tables and dynamically-updating numbers carry font-variant-numeric: tabular-nums (Tailwind `tabular-nums`); evaluator judges which figures align or update; checks/type-scan tabular-nums subcheck (planned)"
 waiver: rationale
 fails_when:
   - a column of figures (grades, counts, marks) in proportional numerals that fail to align vertically
