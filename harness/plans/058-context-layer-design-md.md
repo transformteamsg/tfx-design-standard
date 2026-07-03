@@ -7,7 +7,11 @@
 > dispatched you and told you they maintain the index.
 >
 > **Drift check (run first)**, from repo root:
-> `git diff --stat 48d13dd..HEAD -- harness/.claude/skills/design harness/scripts harness/docs/ONBOARDING.md harness/checks/README.md harness/docs/catalog-changes/lay-1-grid.md`
+> `git diff --stat a8316df..HEAD -- harness/.claude/skills/design harness/scripts harness/docs/ONBOARDING.md harness/checks/README.md harness/docs/catalog-changes/lay-1-grid.md`
+> (Re-stamped 2026-07-03 after plans 056+057 landed: 056 added scope clauses
+> to the design skill's "Load first" para and intent step 3 — the same two
+> paragraphs Step 5 edits. The excerpts and Step 5 below already reflect the
+> post-056 text; 058's edits are ADDITIVE to 056's, not replacements.)
 > On any change, compare the excerpts below before proceeding; mismatch = STOP.
 
 ## Status
@@ -17,7 +21,7 @@
 - **Risk**: MED (new artifact spec consumed by the design loop; staleness is the failure mode)
 - **Depends on**: none hard. Coordinates with 056 (audience is NOT in DESIGN.md — it's a catalog scope dimension) and with 053's gate (see Step 1).
 - **Category**: direction
-- **Planned at**: commit `48d13dd`, 2026-07-03
+- **Planned at**: commit `48d13dd`, 2026-07-03; re-stamped `a8316df` after 056/057 landed
 
 ## Why this matters
 
@@ -44,12 +48,21 @@ Decisions (grilling session, 2026-07-03, operator-confirmed):
 
 ## Current state
 
-- `harness/.claude/skills/design/SKILL.md` (~lines 28–35): "**Load first:**
-  the control catalog at `standards/catalog.yaml` … resolve it relative to
-  this SKILL.md file, three levels up … Filter controls by `phase` as you
-  go…" — the context-loading step slots beside this.
-- Intent step 3 (~lines 133–141) asks "which product (TW / CaseSync / Glow /
-  TW surface — this sets tone calibration per `content`)".
+- `harness/.claude/skills/design/SKILL.md` (~lines 28–36, post-056): "**Load
+  first:** the control catalog at `standards/catalog.yaml` … resolve it
+  relative to this SKILL.md file, three levels up … **Filter controls by
+  `phase` and scope (`products`/`audiences` — absent = global) as you go**;
+  read a control's `detail` file … before applying it. Also load the
+  `standards` skill for the waiver protocol." (The bolded scope clause is
+  056's addition — 058 adds a DESIGN.md-loading sentence to the SAME
+  paragraph, after this one.)
+- Intent step 3 (~lines 137–144, post-056): "**Product and page type**:
+  which product (TW / CaseSync / Glow / TW surface — this sets tone
+  calibration per `content`) … Page type selects controls via `applies_to`.
+  **Audience**: who does this surface serve — teachers (the default …),
+  students (ask which band …), or parents? Record it in the sprint
+  contract…" (The Audience block is 056's addition — 058 adds a DESIGN.md
+  sentence to this cluster.)
 - `harness/docs/catalog-changes/lay-1-grid.md` (plan 053, **gate-pending**)
   proposes `.tfx/layout-system.json` in the product repo (lines 53, 95–110;
   grades N/A when the file is absent). This plan ABSORBS that file into
@@ -161,13 +174,18 @@ to `harness/scripts/README.md`.
 
 ### Step 5: Wire the design skill (body only)
 
-1. In the "Load first" paragraph: after the catalog sentence, add — "Also
-   read the product's `DESIGN.md` (repo root) if present — per-product
-   parameters only; on conflict with implemented code conventions, the code
-   wins and you flag the drift. Spec: the harness's `docs/DESIGN-CONTEXT.md`."
-2. In intent step 3, after the product question: "If the product repo has a
-   `DESIGN.md`, load it now — it calibrates colour/tone/motion for
-   everything downstream."
+1. In the "Load first" paragraph, immediately AFTER 056's scope-filter
+   sentence ("…read a control's `detail` file … before applying it.") and
+   before the "Also load the `standards` skill" sentence, add: "Also read
+   the product's `DESIGN.md` (repo root) if present — per-product parameters
+   only; on conflict with implemented code conventions, the code wins and
+   you flag the drift. Spec: the harness's `docs/DESIGN-CONTEXT.md`." Do NOT
+   remove or reword 056's scope-filter clause.
+2. In intent step 3, at the END of the product+audience cluster (after
+   056's "…it scopes `audiences:`-scoped controls for the rest of the
+   loop."), add: "If the product repo has a `DESIGN.md`, load it now — it
+   calibrates colour/tone/motion for everything downstream." Do NOT remove
+   or reword 056's Audience block.
 
 **Verify**: `grep -c "DESIGN.md" harness/.claude/skills/design/SKILL.md` → ≥ 2; `git diff harness/.claude/skills/design/SKILL.md | grep "^[-+]description:"` → empty.
 
@@ -198,7 +216,7 @@ to `harness/scripts/README.md`.
 
 ## STOP conditions
 
-- Any excerpt drifted since `48d13dd`.
+- Any excerpt drifted since `a8316df` (the re-stamped base after 056/057).
 - The change seems to need a skill `description:` edit or a catalog/schema change.
 - You find yourself writing catalog rules INTO the template (restatement) —
   report instead.
