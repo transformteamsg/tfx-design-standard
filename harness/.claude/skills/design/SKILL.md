@@ -32,7 +32,10 @@ this SKILL.md file, three levels up: `<this-skill-dir>/../../../standards/catalo
 `tfx` plugin; do not expect `standards/` in the project cwd). Filter
 controls by `phase` and scope (`products`/`audiences` — absent = global) as you
 go; read a control's `detail` file (same `standards/`
-directory) before applying it. Also load the `standards` skill for the waiver
+directory) before applying it. Also read the product's `DESIGN.md` (repo root)
+if present — per-product parameters only; on conflict with implemented code
+conventions, the code wins and you flag the drift. Spec: the harness's
+`docs/DESIGN-CONTEXT.md`. Also load the `standards` skill for the waiver
 protocol.
 
 **The stack** (deliberately boring, AI-legible): Base UI components, Radix Colors
@@ -140,7 +143,9 @@ Establish, asking the user only what you cannot infer:
    selects controls via `applies_to`. **Audience**: who does this surface serve —
    teachers (the default; assume it when unstated), students (ask which band:
    primary, or secondary and up), or parents? Record it in the sprint contract;
-   it scopes `audiences:`-scoped controls for the rest of the loop. **Any
+   it scopes `audiences:`-scoped controls for the rest of the loop. If the product
+   repo has a `DESIGN.md`, load it now — it calibrates colour/tone/motion for
+   everything downstream. **Any
    surface with an async or destructive
    action inherits the `[flow]` controls** (CMP-2, CMP-3) even when it is a single
    page — do not let the page/flow split scope them out.
