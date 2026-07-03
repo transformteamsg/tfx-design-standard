@@ -6,9 +6,12 @@
 > in `harness/plans/README.md` — unless a reviewer told you they maintain it.
 >
 > **Drift check (run first)**, from repo root:
-> `git diff --stat <post-059 SHA>..HEAD -- harness/checks/detect.py harness/hooks harness/docs/ONBOARDING.md`
+> `git diff --stat 61104e0..HEAD -- harness/checks/detect.py harness/hooks harness/docs/ONBOARDING.md`
 > This plan HARD-depends on 059's detect.py (exit contract 0/2/1, curated
-> profile, `--json`). If 059 has not landed, STOP.
+> profile, `--json`). 059 HAS landed (main @ 61104e0); reviewer confirmed the
+> `--json` shape before dispatch: `{findings:[{check,control,file,line,message}],
+> counts, profile, exit}`, exit 2 on findings, TOK-1 caught on raw hex. Only
+> NEW drift since 61104e0 is a STOP.
 
 ## Status
 
