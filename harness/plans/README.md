@@ -68,6 +68,7 @@ honor its STOP conditions, and update your row when done.
 | 052 | Layout taste pass: agent-browser capture first, structured layout read, ranked suggestions | P1 | M | 049 (hard) | DONE (executed 2026-07-02, sonnet @ worktree; branch `advisor/052-layout-taste-pass` @ 28c12f7, converges 049+048; reviewed APPROVE — layout-patterns.md [8 anchored patterns + screenshot-reading procedure, 58 lines], critique = capture → layout read → works/underperforms → ≤5 ranked suggestions through the plan gate, evaluator SUGGESTIONS section [ledger untouched, audit-record self-test green], agent-browser first in both capture conventions; live smoke test run with real capture; note: agent-browser build lacks a working viewport-resize subcommand — width-setting guidance may need a follow-up) |
 | 053 | Layout ratchet round 2: propose LAY-1 grid + LAY-7 focal point (design-lead gated) | P2 | M | — (052 soft sibling) | DONE-AS-PROPOSED (executed 2026-07-02, sonnet-xhigh @ worktree; branch `advisor/053-layout-ratchet-2` @ 54d8cd2; reviewed APPROVE — two ratchet records [LAY-N placeholder per 3ef1920 precedent], catalog untouched, validate 48 OK, evidence honestly "standards-derived, no incident"; **Step 3 gate-pending: design lead**) |
 | 054 | `feedback` skill: mid-turn harness feedback → GitHub issue on the harness repo | P2 | M | 047 (hard) | DONE (executed 2026-07-02, sonnet @ worktree; branch `advisor/054-feedback-skill` @ 557df92, stacked on 052 [full harness chain]; reviewed APPROVE — 49-line skill with hold-don't-derail, consent gate + dry-run preview, unattended = queued-not-filed, helper-only filing to the harness repo, no label-list duplication; routing spot-check 5/5 live incl. both negative boundary cases [`--plugin-dir`]; rehearsal confirmed nothing filed [gh authenticated, issue list unchanged]; all 6 surfaces point at it; validate + build green) |
+| 055 | `onboard` = tour + per-user setup: `setup.md` dependency checklist (agent-browser CLI + skill, gh, PyYAML), setup triggers in description, capture-fallthrough pointers | P2 | M | — (047/052/054 landed) | DONE (executed 2026-07-02/03, fable @ worktree, 2 sessions [usage-limit cut before sweep; resumed]; branch `advisor/055-onboard-setup` @ 03d8f4e; reviewed APPROVE — setup.md verbatim [consent gate, unattended = report-not-install], description + shape (4) + probe line in, capture pointers 1× each in verify/critique, single-source grep clean, validate 48 OK, plugin validate OK, 0.4.0 + CHANGELOG; **full routing sweep run**: 42/43 first-attempt, sole fail = pre-existing `content` case 16 ["review … copy for tone"] proven flaky by baseline probes [pristine harness also fails it intermittently; edited passes 2/2 both roots] — not a 055 regression, no description revision used; all 3 anti-greedy traps [32/33/37] → design; matrix in commit body + transcripts archived in session scratchpad; judgment call: description single-quoted for YAML validity, parsed value char-identical to plan text; follow-ups: ONBOARDING.md item 0 says "four skills" [stale since `feedback`], content-trigger flakiness on the tone-review phrasing is harness-feedback material) |
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJECTED (with one-line rationale)
 
@@ -268,6 +269,19 @@ Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJE
 - **Order for the follow-ups**: 052 after 049; 053 anytime (gate-bound); 054 after 047.
   052 and 054 both touch `design/SKILL.md` (different sections — critique pointer vs
   Phase 6) and `onboard`/README/skills.mdx — land one, rebase the other.
+- **Added 2026-07-02 (user follow-up, planned at `34c333c`)**: **055** — make `onboard`
+  a real onboarding skill (operator direction: "add harness setup as part of the
+  onboarding … set up the dependency like installing the agent-browser skill and cli").
+  Adds a setup branch behind a `setup.md` context pointer (writing-great-skills
+  principles inlined in the plan): ask-first install gate over the per-user inventory —
+  agent-browser CLI (`npm i -g agent-browser && agent-browser install`) + its
+  vercel-labs plugin skill, authenticated `gh`, Python + PyYAML — unattended runs
+  report instead of installing; verify.md/critique.md capture preference (1) points at
+  the checklist instead of silently falling through. **Name stays `onboard`** (047's
+  single-token decision; routing is description-driven — do not re-litigate). The
+  description changes, so the **full routing sweep is mandatory** (38 → 43 cases incl.
+  two new negative guards). Plugin 0.3.0 → 0.4.0. Independent of 053's gate; no
+  in-flight file overlaps (052/054 landed).
 - **Direction findings (grounded, not planned — operator to weigh)**:
   1. **Enforcement as data**: add a per-control `script:`/`enforced:` field to the
      catalog schema so "deterministic but unscripted" (today: all of SLP-1..8, A11Y-4/5/6/9/10,
