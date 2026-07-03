@@ -70,6 +70,14 @@ honor its STOP conditions, and update your row when done.
 | 054 | `feedback` skill: mid-turn harness feedback → GitHub issue on the harness repo | P2 | M | 047 (hard) | DONE (executed 2026-07-02, sonnet @ worktree; branch `advisor/054-feedback-skill` @ 557df92, stacked on 052 [full harness chain]; reviewed APPROVE — 49-line skill with hold-don't-derail, consent gate + dry-run preview, unattended = queued-not-filed, helper-only filing to the harness repo, no label-list duplication; routing spot-check 5/5 live incl. both negative boundary cases [`--plugin-dir`]; rehearsal confirmed nothing filed [gh authenticated, issue list unchanged]; all 6 surfaces point at it; validate + build green) |
 | 055 | `onboard` = tour + per-user setup: `setup.md` dependency checklist (agent-browser CLI + skill, gh, PyYAML), setup triggers in description, capture-fallthrough pointers | P2 | M | — (047/052/054 landed) | DONE (executed 2026-07-02/03, fable @ worktree, 2 sessions [usage-limit cut before sweep; resumed]; branch `advisor/055-onboard-setup` @ 03d8f4e; reviewed APPROVE — setup.md verbatim [consent gate, unattended = report-not-install], description + shape (4) + probe line in, capture pointers 1× each in verify/critique, single-source grep clean, validate 48 OK, plugin validate OK, 0.4.0 + CHANGELOG; **full routing sweep run**: 42/43 first-attempt, sole fail = pre-existing `content` case 16 ["review … copy for tone"] proven flaky by baseline probes [pristine harness also fails it intermittently; edited passes 2/2 both roots] — not a 055 regression, no description revision used; all 3 anti-greedy traps [32/33/37] → design; matrix in commit body + transcripts archived in session scratchpad; judgment call: description single-quoted for YAML validity, parsed value char-identical to plan text; follow-ups: ONBOARDING.md item 0 says "four skills" [stale since `feedback`], content-trigger flakiness on the tone-review phrasing is harness-feedback material) |
 
+| 056 | Catalog scope dimensions: optional `products:`/`audiences:` fields (absent = global), student age bands, validators + skills + website filtering | P1 | M–L | — (055 landed) | DONE (executed 2026-07-03 @ worktree; branch `advisor/056-catalog-scope` @ 43dbe97, 4 commits; reviewed APPROVE — schema+meta+validators [self-test 30→34], skills body-only [descriptions diff-proven untouched], projection+facets+Scope line [temp-scoped control render-proven then reverted], structural record "all 48 stay global"; gates: validate 48 OK, check-standards OK, vitest 18/18, build green, routing spot-check 5/5; judgment call: `getScopeMeta()` export added [in-scope, required by step 9.1]) |
+| 057 | Per-product branding controls — extend IDN via ratchet records (icons, tone calibration, CaseSync register); first users of `products:` | P2 | M | 056 (hard) + design-lead gate | TODO |
+| 058 | Context layer: per-product DESIGN.md + generated `.tfx/design.json` (absorbs 053's layout-system.json), loaded by the design loop, code-overrides-stale-docs | P1 | M | — (053 coordination note) | TODO |
+| 059 | Unified detector `checks/detect.py` — curated low-FP profile, `--json`, 0/2/1 exits, `.tfx/config.json` ignores (complement, never replace, tier waivers) | P2 | M | 058 (soft); before 060 | TODO |
+| 060 | Design hook: detector on UI-file edits — curated + quiet + per-dev consent + repeat-suppression (the V1 wiring deferred since plan 007) | P2 | S–M | 059 (hard) | TODO |
+| 061 | Stack restructure I: `/tfx:start` router (user-invoked, auto-runs setup), `onboard`→`setup` (+DESIGN.md init), new `critique` verb, `standards` thinned to shell | P1 | L | 055; 058 soft; before 062 | TODO |
+| 062 | Stack restructure II: five focused passes — `copy` (absorbs `content`), `polish`, `motion`, `flow`, `layout` — shared pass.md, all model-invoked | P2 | L | 061 (hard) | TODO |
+
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJECTED (with one-line rationale)
 
 ## Dependency notes
@@ -298,6 +306,76 @@ Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJE
      from create. Partially realised by 052 (the layout read + suggestions live in
      `critique.md` inside the loop); a fully standalone "critique only, change nothing"
      entry would add another skill name — weigh against the simplification just done.
+
+### Batch 7 (056–057) — added 2026-07-03: catalog scope refactor (operator-directed)
+
+- Source: operator direction — restructure the catalog into **global / per-product
+  (incl. branding) / per-audience** standards, with students split by age band
+  (primary vs secondary-and-up). Three decisions confirmed interactively 2026-07-03:
+  **(1) one catalog.yaml + optional scope fields**, not split files (the file is
+  served raw and read by 12 consumers; taxonomy is data, views are rendered);
+  **(2) authoring scope = taxonomy + branding only** — no speculative student/parent
+  controls (ratchet principle: controls grow from real surfaces); **(3) audience
+  filtering is live behaviour** — teacher surfaces are the only live ones today
+  (default = teachers at intent), student and parent surfaces are planned, so
+  `students-primary` / `students-secondary` / `parents` ship as real filter values.
+  Both stamp `48d13dd`.
+- **Load-bearing rule (056): all 48 existing controls stay GLOBAL — no scope fields
+  stamped on them.** Scoping the existing floor to `teachers` would exempt future
+  student/parent surfaces from A11Y/SLP/TOK. Scoping is opt-in per control; adding
+  scope to an existing control later deserves ratchet-record rigour.
+- **056** is schema/tooling/presentation on the normal PR path (no control semantics
+  change; structural record written to `docs/catalog-changes/`); **057** is a real
+  catalog ratchet — propose-only records (IDN-2 icons, IDN-3 tone calibration,
+  IDN-4 CaseSync register — extending IDN, deliberately no new `BRD` prefix) with
+  the catalog commit behind the design-lead gate, and the [COUNT-SYNC] prose bump.
+- **Order**: 056 → 057 (hard: 057's drafts use `products:`). 056's skill edits are
+  body-only (descriptions untouched → 5-case routing spot-check, not the full sweep);
+  if an executor believes a description must change, that is a STOP.
+
+### Batch 8 (058–060) — added 2026-07-03: impeccable.style-inspired context/detector/hook layers
+
+- Source: operator direction to research impeccable.style's docs (context system,
+  detector, hooks, config) and refactor the harness structure accordingly, sharpened
+  through a grilling session. Decisions recorded: **dogfooding is the strategy**
+  (adoption pressure accepted; 058–060 proceed); **context layer = per-product
+  DESIGN.md + generated `.tfx/design.json` from day one, NO PRODUCT.md** (audience is
+  056's dimension, voice is content §6); **hook/detector default = curated low-FP
+  subset** (token-audit, contrast, a11y-static, TYP-1 — TYP-2 stays recording-only per
+  the F3 deferral); **no `register` dimension** (brand impact ≈ colour choices, already
+  carried by DESIGN.md + COL-1; field reserved, plan 061 dropped). All stamp `48d13dd`.
+- **Order**: 058 → 059 → 060 (059 soft-depends 058; 060 hard-depends 059). Independent
+  of the batch-7 catalog chain except: 058 amends the gate-pending lay-1-grid record
+  (location-only supersession of `.tfx/layout-system.json` into `design.json`), and
+  DESIGN.md's tone section must share a source with 057's IDN-3 if that lands.
+- **Deliberately kept over impeccable's versions**: tier waivers (named approver) over
+  config ignores — ignores are scan-noise control only; the 5-skill consolidation over
+  their 20-command verb taxonomy (a standalone critique skill was weighed and dropped —
+  direction finding #3 stays open); the eval layers (routing/golden/recall), which
+  impeccable has no analog of.
+
+### Batch 9 (061–062) — added 2026-07-03: intent-shaped skill stack (operator-directed)
+
+- Source: operator finding "I'm confused when to use which skill", sharpened against
+  impeccable.style's verb taxonomy. Target: **one entry (`/tfx:start`, user-invoked,
+  auto-runs setup on missing deps/context) · two verbs (`design` create, `critique`
+  evaluate+polish) · five model-invoked focused passes (`copy` `polish` `motion`
+  `flow` `layout`) · one support (`feedback`) · `standards` kept as a thin shell**
+  (the memory-answer guard on waiver questions; body → pointers at
+  standards/README.md). `onboard`→`setup` (+ context-layer init from 058);
+  `content`→`copy` (inherits its triggers so copy asks keep auto-routing). All
+  operator decisions recorded in the plans as do-not-relitigate. Stamp `48d13dd`;
+  re-stamp before executing (056–060 may land first — their edits carry forward).
+- **Order**: 061 → 062, strictly. Both are routing-risk-concentrated: each mandates
+  the full sweep, grows the suite (~55 then ~60 cases), and **re-baselines existing
+  expectations** (improvement-phrasing design→critique; content cases→copy) — the
+  re-baseline table ships in each commit body as the sign-off record.
+- Interactions: 061 setup-init degrades gracefully without 058; 062 layout pass
+  consumes 052's layout-patterns.md (moved to critique/ by 061), 053's LAY records if
+  gated in, and 058's design.json when present. This batch supersedes direction
+  finding #3 (standalone critique — now planned) and revisits batch-8's "keep the
+  5-skill consolidation" note: the operator chose navigability over minimal
+  description count, with the router + shared pass.md holding duplication down.
 
 ## Findings considered and rejected
 
