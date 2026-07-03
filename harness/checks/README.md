@@ -13,6 +13,12 @@ exit codes onto one contract, and adds a config-based ignore layer. Targets are 
 or directories (recursive); the default target is `.`. This is the check surface hooks
 wire to (plan 060) — "fast signal without asking an AI".
 
+**Wired as a hook (plan 060, opt-in).** `hooks/design-hook.py` is a consented Claude
+Code PostToolUse hook that runs this detector's **curated profile only** (token-audit,
+contrast, a11y-static, TYP-1) on an edited UI file and reminds the agent on new
+findings — it never blocks an edit, and its "clean" is the curated subset's clean, not
+a whole-catalog pass. Off by default; install via the snippet in [`../hooks/README.md`](../hooks/README.md).
+
 **Exit contract (0 / 2 / 1).** `detect.py` adopts Impeccable's codes, which differ from
 the per-script 0/1: **0 = clean, 2 = findings, 1 = tool failure** (a wrapped script
 crashed, or `.tfx/config.json` is invalid). A wrapped script's exit 1 (violations) maps
