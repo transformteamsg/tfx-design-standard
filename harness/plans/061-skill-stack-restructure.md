@@ -6,10 +6,34 @@
 > unless a reviewer told you they maintain the index.
 >
 > **Drift check (run first)**, from repo root:
-> `git diff --stat 48d13dd..HEAD -- harness/.claude/skills harness/.claude-plugin harness/CLAUDE.md harness/README.md harness/docs/ONBOARDING.md harness/docs/UPDATING.md harness/evals/routing/prompts.yaml harness/CHANGELOG.md`
-> Skills WILL have drifted if 056/058 landed (expected — their edits are
-> compatible; carry them forward, never revert them). On any drift NOT
-> explained by a landed plan, STOP.
+> `git diff --stat 0aeee9d..HEAD -- harness/.claude/skills harness/.claude-plugin harness/CLAUDE.md harness/README.md harness/docs/ONBOARDING.md harness/docs/UPDATING.md harness/evals/routing/prompts.yaml harness/CHANGELOG.md`
+> Base re-stamped to `0aeee9d` (main tip after 056–060 landed). Only NEW drift
+> since `0aeee9d` is a STOP.
+>
+> **DRIFT RECONCILIATION (reviewer-verified 2026-07-03) — landed edits you
+> MUST PRESERVE, never revert:**
+> - `design/SKILL.md`: 056 added a scope-filter clause + an **Audience** block
+>   to the "Load first" paragraph and intent step 3; 058 added a "read the
+>   product's `DESIGN.md`" sentence to both. These sit in DIFFERENT regions
+>   than 061 edits (061 touches the *description*, the *critique-first
+>   section* at ~lines 79-90 "### Existing surfaces: critique before you
+>   polish", and moves `critique.md`/`layout-patterns.md`). Do not touch the
+>   Load-first/intent-step-3 scope/DESIGN.md text.
+> - `standards/SKILL.md` is now 104 lines with 5 sections (`# Working with
+>   the control catalog`, `## Reading and filtering`, `## Applying tiers`,
+>   `## When a control seems wrong`, `## Growing the catalog (the ratchet)`).
+>   056 added a scope-filter bullet under "## Reading and filtering" — KEEP
+>   it (it's operational load-and-filter, exactly what Step 4 preserves).
+>   Step 4 thins by pointing "## Applying tiers"/"## When a control
+>   seems wrong"/"## Growing the catalog" at `standards/README.md`, not by
+>   dropping the filter rules.
+> - `docs/ONBOARDING.md`: 058 added item "2a" (DESIGN.md context) and 060
+>   added a hook opt-in line in section 4. Step 2's onboard→setup rename
+>   updates skill-NAME references only; do NOT delete 2a or the hook line.
+> - Plugin is at **0.4.0** (Step 5 bumps → 0.5.0). Routing is **43 cases**
+>   (Step 6 grows + re-baselines from 43, not 38).
+> - `critique.md` + `layout-patterns.md` are BOTH in `design/` today (Step 3
+>   `git mv`s them to `critique/`). `verify.md`, `implement-craft.md` stay.
 
 ## Status
 
@@ -18,7 +42,7 @@
 - **Risk**: HIGH (multiple description changes = the whole routing surface moves; mitigated by the full sweep + re-baseline sign-off)
 - **Depends on**: 055 (landed). **Soft**: 058 (setup's context-init step uses its template/generator — degrade gracefully if absent, see Step 3). Execute BEFORE 062.
 - **Category**: dx / direction
-- **Planned at**: commit `48d13dd`, 2026-07-03 — re-verify excerpts against live HEAD before executing
+- **Planned at**: commit `48d13dd`, 2026-07-03; re-stamped `0aeee9d` after 056–060 landed (reconciliation block above)
 
 ## Why this matters
 
