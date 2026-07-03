@@ -5,6 +5,80 @@ Scripts that verify `check: deterministic` controls (and the deterministic half 
 violation, and prints violations with file/line/element and the control id — verbose
 on failure, silent on success.
 
+## Detector — one entry over the checks (built)
+
+`python3 checks/detect.py [<path>...]` is the **unified entry point**: a façade that
+invokes the individual check scripts below (whose rules it never changes), maps their
+exit codes onto one contract, and adds a config-based ignore layer. Targets are files
+or directories (recursive); the default target is `.`. This is the check surface hooks
+wire to (plan 060) — "fast signal without asking an AI".
+
+**Exit contract (0 / 2 / 1).** `detect.py` adopts Impeccable's codes, which differ from
+the per-script 0/1: **0 = clean, 2 = findings, 1 = tool failure** (a wrapped script
+crashed, or `.tfx/config.json` is invalid). A wrapped script's exit 1 (violations) maps
+to detect's exit 2; detect reserves exit 1 for crashes and misconfiguration. A script
+that exits 1 with a stderr traceback, exits with a code outside {0,1}, or exits 1 with
+no parseable `ERROR` line is treated as a crash — detect fails loud rather than passing
+silently.
+
+**Profiles.** The default is the **curated, low-false-positive subset**:
+`token-audit`, `contrast`, `a11y-static`, and `type-scan`'s **TYP-1 rule only** (via
+`type-scan --rules TYP-1`). The noisier rules — TYP-2 size floor and the rest — stay
+recording-only. `--all` runs every page-check script: the curated set with `type-scan`'s
+full rule set (so TYP-2 runs), plus `content-lint` and `component-manifest` (the latter
+only when a `.tfx/component-manifest.json` exists; otherwise it is reported skipped).
+
+**Output.** Text mode groups each script's findings under a `── <check> ──` header and
+passes through its `ERROR`/`NOTE` lines. `--json` emits
+`{"findings": [{"check", "control", "file", "line", "message"}], "counts": …}` on stdout,
+parsed from the scripts' `ERROR <file>:<line> [<CTL>] …` convention. An `ERROR` line that
+does not carry a `[<CTL>]` bracket (operational errors like path-not-found, and
+`component-manifest`'s `ERROR <file>:<line>: … (CMP-1 finding)` import-diff lines) is kept
+as a **control-less finding** — captured, counted toward exit 2, and printed; never
+dropped or silently passed.
+
+**Config ignores (`.tfx/config.json` at the target repo root).**
+
+```json
+{"detector": {"ignoreFiles": ["legacy/*"], "ignoreValues": ["amber-11"], "ignoreRules": ["TYP-2"]}}
+```
+
+- `ignoreFiles` — glob-filters the scanned targets (drop a legacy folder). Globs match the
+  repo-relative path or basename; `*` spans `/`.
+- `ignoreValues` — fed to `token-audit`'s `--allow` mechanism (licence a sanctioned
+  colour name / raw value); it feeds that allowlist, it does not replace it.
+- `ignoreRules` — drops whole control ids from the run (post-parse; an operational,
+  control-less finding is never dropped).
+
+`--no-config` bypasses the file entirely. An invalid or wrong-shaped `.tfx/config.json` is
+a misconfiguration → exit 1. `--tokens <css>` overrides the contrast token map (default:
+auto-discover `app/globals.css` under the repo root).
+
+**Config ignores complement tier waivers — they never replace them.** A waiver is a
+per-instance control exception with a named approver (the tier-waiver system); a config
+ignore is scan-noise control — a legacy folder detect should not walk, or a raw value the
+team has sanctioned. Neither silences an L0: `ignoreRules` on an L0 only hides it from the
+detector's own report; the L0 rule and its L0-never waiver policy are unchanged in the
+underlying scripts and the catalog. Use a waiver to *except* a control instance; use a
+config ignore to *quiet scan noise*.
+
+**Honest enforcement still binds.** `detect.py` runs only the checks that are built (the
+curated or `--all` set). It never reports an unbuilt or un-run control as "passed" — read
+its output as "the built checks found nothing", not "the design is compliant". Per-control
+coverage and the always-manual gaps are in the sections below.
+
+**Design-context freshness.** When `.tfx/design.json` exists at the target repo root and
+058's generator (`scripts/generate-design-json.py`) is present, detect also runs the
+generator in `--check` mode; a stale `design.json` (generator exit 2) is surfaced as a
+finding (exit 2), never a crash.
+
+**Self-test:** `python3 checks/detect.py --self-test` → `SELF-TEST OK (35 cases)` — profile
+selection, the 0/2/1 exit mapping (incl. curated excluding TYP-2 / `--all` including it),
+each ignore type, invalid-config → exit 1, `ERROR`-line parsing, and the JSON shape. The
+wrapped scripts are not invoked in the self-test (it exercises detect's own pure logic);
+their behaviour is proven by their own `--self-test`s and a real-corpus run over
+`docs/loop-run/`.
+
 ## Validator (built)
 
 `python3 checks/validate.py` — validates `standards/catalog.yaml` against the schema in `standards/README.md`: field presence and allowed values, tier→waiver pairing, `detail:` file existence, detail-frontmatter ↔ catalog consistency, and that every control ID referenced in skills/docs exists in the catalog. Exit 0 on pass, exit 1 with `ERROR` lines on failure. This is the repo's verification baseline — run it before committing any `standards/` change.

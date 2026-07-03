@@ -110,4 +110,10 @@ python3 scripts/generate-design-json.py <product-repo-root>
 ```
 
 CI can assert freshness with `--check` (exit 2 when `.tfx/design.json` is stale vs the
-markdown). Consuming `design.json` in the check scripts is plan 059's job, not this layer's.
+markdown).
+
+The unified detector consumes this: `checks/detect.py` (plan 059) runs the generator in
+`--check` mode whenever a `.tfx/design.json` exists at the target repo root, so a stale
+twin surfaces as a detector finding (exit 2), never a crash. A repo with no
+`.tfx/design.json` skips the check entirely — a missing context layer is a valid, complete
+state, never graded as a failure.

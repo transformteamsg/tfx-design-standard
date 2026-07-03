@@ -50,6 +50,14 @@ What this script does NOT verify
   see, or composed from variables / class-name interpolation — out of static
   reach; the manual pass covers them.
 
+Per-rule selection (additive)
+─────────────────────────────
+`--rules TYP-1,TYP-3` restricts the emitted findings to those control ids
+(comma-separated; `--rules=TYP-1` also works). Without the flag every rule
+runs — unchanged default. This is the hook detect.py's curated profile uses to
+run TYP-1 only, leaving the noisier TYP-2 recording-only. Unknown ids are a
+usage error (exit 1); operational errors (path not found) are never filtered.
+
 Output
 ──────
 ERROR <file>:<line> [<CTL-ID>] <found> — suggest: <...>
@@ -375,11 +383,17 @@ def _ends_in_block_comment(line, in_comment):
     return in_comment
 
 
-def check_file(filepath, type_scale=None):
+def check_file(filepath, type_scale=None, rules=None):
     """
     Scan a single file. Returns a list of ERROR / NOTE strings.
     `type_scale` is the allowed-size set; built from the catalog if omitted.
+    `rules` (additive, optional): a set/iterable of control ids to keep
+    (e.g. {"TYP-1"}). When None, every rule runs (unchanged default). When
+    given, only findings whose control id is in the set are emitted — the
+    per-rule selection detect.py's curated profile needs. Operational errors
+    (path not found, unreadable file) are never filtered by `rules`.
     """
+    rule_filter = set(rules) if rules is not None else None
     results = []
     ext = os.path.splitext(filepath)[1].lower()
     if ext not in TARGET_EXTENSIONS:
@@ -403,6 +417,8 @@ def check_file(filepath, type_scale=None):
         line = raw_line.rstrip("\n")
 
         def emit(ctl_id, found, suggest):
+            if rule_filter is not None and ctl_id not in rule_filter:
+                return
             results.append(
                 f"ERROR {rel}:{lineno} [{ctl_id}] {found} — suggest: {suggest}"
             )
@@ -447,15 +463,17 @@ def check_file(filepath, type_scale=None):
     return results
 
 
-def scan_paths(paths):
-    """Walk paths, collect ERROR/NOTE lines. Prints scale-fallback NOTE once."""
+def scan_paths(paths, rules=None):
+    """Walk paths, collect ERROR/NOTE lines. Prints scale-fallback NOTE once.
+    `rules` (additive, optional) restricts emitted findings to those control
+    ids — passed straight through to check_file."""
     type_scale, scale_note = load_type_scale()
     if scale_note:
         print(scale_note)
     all_results = []
     for p in paths:
         if os.path.isfile(p):
-            all_results.extend(check_file(p, type_scale))
+            all_results.extend(check_file(p, type_scale, rules))
         elif os.path.isdir(p):
             for root, dirs, files in os.walk(p):
                 dirs[:] = [d for d in dirs if not d.startswith(".")]
@@ -463,7 +481,7 @@ def scan_paths(paths):
                     ext = os.path.splitext(fname)[1].lower()
                     if ext in TARGET_EXTENSIONS:
                         all_results.extend(
-                            check_file(os.path.join(root, fname), type_scale)
+                            check_file(os.path.join(root, fname), type_scale, rules)
                         )
         else:
             print(f"ERROR type-scan: path not found: {p}")
@@ -486,6 +504,14 @@ def run_self_test():
             tf.write(content)
             tf.flush()
             res = check_file(tf.name, type_scale)
+        os.unlink(tf.name)
+        return res
+
+    def check_file_from_string(content, ext, rules):
+        with tempfile.NamedTemporaryFile(suffix=ext, mode="w", delete=False, encoding="utf-8") as tf:
+            tf.write(content)
+            tf.flush()
+            res = check_file(tf.name, type_scale, rules)
         os.unlink(tf.name)
         return res
 
@@ -614,6 +640,59 @@ def run_self_test():
     assert_clean("COMMENT: line-commented font-[Georgia] not flagged (tsx)",
                  "// className='font-[Georgia]' text-[8px]", ".tsx")
 
+    # ── --rules per-rule selection (additive; detect.py's curated profile) ──────
+    # A CSS rule that trips TYP-1 (font), TYP-2 (size floor), and TYP-3 (off-scale).
+    MULTI = ".x { font-family: Georgia; font-size: 13px; }"
+
+    def rule_ids(content, ext, rules):
+        nonlocal case_count
+        case_count += 1
+        res = check_file_from_string(content, ext, rules)
+        ids = []
+        for e in res:
+            if not e.startswith("ERROR"):
+                continue
+            m = re.search(r"\[([A-Z0-9-]+)\]", e)
+            if m:
+                ids.append(m.group(1))
+        return set(ids)
+
+    # rules=None → every rule runs (baseline for the filtered comparisons).
+    all_ids = rule_ids(MULTI, ".css", None)
+    if not {"TYP-1", "TYP-2", "TYP-3"} <= all_ids:
+        failures.append(f"FAIL --rules baseline: expected TYP-1/2/3 — got {all_ids}")
+    # Curated selection: rules={TYP-1} keeps TYP-1, DROPS the noisier TYP-2/TYP-3.
+    only1 = rule_ids(MULTI, ".css", {"TYP-1"})
+    if only1 != {"TYP-1"}:
+        failures.append(f"FAIL --rules TYP-1 only: expected {{TYP-1}} — got {only1}")
+    # A different single rule filters the other way.
+    only2 = rule_ids(MULTI, ".css", {"TYP-2"})
+    if only2 != {"TYP-2"}:
+        failures.append(f"FAIL --rules TYP-2 only: expected {{TYP-2}} — got {only2}")
+    # A two-rule set keeps exactly those two.
+    two = rule_ids(MULTI, ".css", {"TYP-1", "TYP-3"})
+    if two != {"TYP-1", "TYP-3"}:
+        failures.append(f"FAIL --rules TYP-1,TYP-3: expected both — got {two}")
+
+    # parse_rules_flag: valid list, `=` form, unknown id, missing value.
+    case_count += 1
+    a1 = ["--rules", "TYP-1,TYP-3", "some/path"]
+    if parse_rules_flag(a1) != {"TYP-1", "TYP-3"} or a1 != ["some/path"]:
+        failures.append(f"FAIL parse_rules_flag list: got {a1}")
+    case_count += 1
+    a2 = ["--rules=typ-2", "p"]  # lower-case is normalised
+    if parse_rules_flag(a2) != {"TYP-2"} or a2 != ["p"]:
+        failures.append(f"FAIL parse_rules_flag = form: got {a2}")
+    case_count += 1
+    if parse_rules_flag(["p"]) is not None:
+        failures.append("FAIL parse_rules_flag absent: expected None")
+    case_count += 1
+    try:
+        parse_rules_flag(["--rules", "TYP-9", "p"])
+        failures.append("FAIL parse_rules_flag unknown: expected ValueError")
+    except ValueError:
+        pass
+
     if failures:
         for f in failures:
             print(f)
@@ -626,15 +705,59 @@ def run_self_test():
 
 # ── Entry point ────────────────────────────────────────────────────────────────
 
+VALID_RULES = {"TYP-1", "TYP-2", "TYP-3", "TYP-4"}
+
+
+def parse_rules_flag(args):
+    """Additive `--rules TYP-1,TYP-3` (or `--rules=TYP-1`). Removes the flag from
+    `args` in place; returns the rule-id set (or None when absent). Raises
+    ValueError on an unknown/empty rule id so the caller can fail as a usage
+    error — the default (no flag) runs every rule, unchanged."""
+    rules = None
+    i = 0
+    while i < len(args):
+        a = args[i]
+        val = None
+        if a == "--rules":
+            if i + 1 >= len(args):
+                raise ValueError("--rules needs a comma-separated control-id list")
+            val = args[i + 1]
+            del args[i:i + 2]
+        elif a.startswith("--rules="):
+            val = a[len("--rules="):]
+            del args[i]
+        else:
+            i += 1
+            continue
+        ids = {r.strip().upper() for r in val.split(",") if r.strip()}
+        if not ids:
+            raise ValueError("--rules needs at least one control id")
+        unknown = ids - VALID_RULES
+        if unknown:
+            raise ValueError(
+                f"--rules: unknown id(s) {sorted(unknown)}; valid: {sorted(VALID_RULES)}"
+            )
+        rules = ids if rules is None else (rules | ids)
+    return rules
+
+
 def main():
     args = sys.argv[1:]
     if not args:
-        print("Usage: python3 checks/type-scan.py <path>... | --self-test")
+        print("Usage: python3 checks/type-scan.py [--rules TYP-1,TYP-3] <path>... | --self-test")
         sys.exit(1)
     if "--self-test" in args:
         run_self_test()
         return
-    results = scan_paths(args)
+    try:
+        rules = parse_rules_flag(args)
+    except ValueError as exc:
+        print(f"ERROR type-scan: {exc}")
+        sys.exit(1)
+    if not args:
+        print("Usage: python3 checks/type-scan.py [--rules TYP-1,TYP-3] <path>... | --self-test")
+        sys.exit(1)
+    results = scan_paths(args, rules)
     errors = [r for r in results if r.startswith("ERROR")]
     for r in results:
         print(r)
