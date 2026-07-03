@@ -29,6 +29,12 @@ If you are working on the harness itself (not a product repo), open a Claude Cod
 session in this repository directly: the skills load from `.claude/skills/`
 automatically and no install step is needed.
 
+**Per-user tools.** The plugin install is per-repo; the capture and
+filing tools are per-person. Each teammate runs the `onboard` skill and
+picks setup (or follows `.claude/skills/onboard/setup.md` in this repo):
+the agent-browser CLI + skill for screenshots, an authenticated `gh` for
+harness feedback, Python with PyYAML for the check scripts.
+
 ---
 
 ## 1. The stack

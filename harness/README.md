@@ -16,7 +16,7 @@ standards/catalog.yaml                .claude/skills/                    checks/
 ├─ TFX-DS standards tier               ├─ design (the loop)               ├─ Deterministic: scripts, a11y scan,
 │   48 controls (latest ratchet 2026-06-17) ├─ standards (catalog use)     │   DOM checks — non-skippable
 ├─ WCAG 2.2 AA (self-imposed floor)    ├─ content (voice & tone)          ├─ Judgment: evaluator subagent
-└─ References: SGDS, GOV.UK            ├─ onboard (guided tour)           └─ Human gates: plan approval, L1 waivers
+└─ References: SGDS, GOV.UK            ├─ onboard (tour + setup)          └─ Human gates: plan approval, L1 waivers
                                        └─ feedback (harness issue filing)
    (reference points, not rules)
 ```
@@ -70,7 +70,7 @@ design-harness/
 │   │   │                     # implement → verify (implement-craft.md: implement detail)
 │   │   ├── standards/        # how to read, filter, and apply the catalog
 │   │   ├── content/          # TFX voice & tone + naming, applied at generation time
-│   │   ├── onboard/          # guided first-run tour of the harness
+│   │   ├── onboard/          # first-run tour + per-user tool setup
 │   │   └── feedback/         # captures harness feedback mid-turn, files it as an issue
 │   └── agents/
 │       └── evaluator.md      # reviewer subagent — generator/evaluator split;
@@ -107,6 +107,8 @@ The harness ships as a Claude Code plugin. In your product repo (TW, CaseSync, G
 ```
 
 This installs the five skills (`design`, `standards`, `content`, `onboard`, `feedback`), the `evaluator` subagent (which carries its own review procedure), and the control catalog (`standards/`) — the catalog ships with the plugin, not with your repo.
+
+The design loop captures screenshots with the agent-browser CLI — to set it and the other per-user tools up, run the onboard skill and pick setup (the checklist lives in .claude/skills/onboard/setup.md).
 
 To work on the harness itself, just open a Claude Code session in this repository: the skills load from `.claude/skills/` automatically; no install step.
 

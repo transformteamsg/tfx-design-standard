@@ -3,6 +3,23 @@
 Notable changes to the TFX Design Harness plugin. Versioning tracks
 `.claude-plugin/plugin.json`.
 
+## [0.4.0] — 2026-07-02
+
+Onboarding now sets up the machine, not just the mental model.
+
+### Added
+- `onboard` gains a setup branch: new `setup.md` checklist installs and
+  verifies the per-user tools (agent-browser CLI + skill, authenticated
+  `gh`, Python + PyYAML) behind an ask-first consent gate; unattended runs
+  report instead of installing (plan 055).
+- The design skill's verify/critique capture steps point at that checklist
+  when agent-browser is missing, instead of silently falling through.
+
+### Changed
+- `onboard`'s description now also triggers on setup intent ("set up the
+  harness", "install the harness dependencies"). Routing sweep re-run —
+  see plans/055.
+
 ## [0.3.0] — 2026-07-02
 
 Rename pass: shorter, non-repeating names for the plugin and every skill, now that

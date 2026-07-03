@@ -7,8 +7,9 @@ you have seen and judged the current state. Before Phase 1's contract:
 1. **Capture the current page.** Take a screenshot of the live surface at 1280
    (and 360 if the change is responsive). Capture mechanism, in order of
    preference: (1) the `agent-browser` CLI if installed (`agent-browser --help`
-   to confirm) — navigate to the route, set the viewport to the target width,
-   screenshot; (2) Claude-in-Chrome or the user's installed browser agent; (3)
+   to confirm; not installed → offer setup once via `../onboard/setup.md` before
+   falling through) — navigate to the route, set the viewport to the target
+   width, screenshot; (2) Claude-in-Chrome or the user's installed browser agent; (3)
    the local Playwright fallback; (4) ask the user to provide the screenshot.
    Never critique a page you cannot see, and never fabricate what it looks like.
 2. **Layout read (do this before judging).** Read `layout-patterns.md` (beside

@@ -8,7 +8,7 @@
 #          (a Skill tool invocation of that skill). For `expect: none`, pass
 #          means NO harness skill (design / content / standards /
 #          onboard / feedback) appears in the tool calls.
-#   cost cap: a full sweep is 38 headless sessions. Spot-check a 5-case sample
+#   cost cap: a full sweep is 43 headless sessions. Spot-check a 5-case sample
 #          per skill edit (always include at least one modification-phrasing
 #          design case and one `none` case); run the full sweep only when a
 #          skill's frontmatter `description:` changes — that is the text that
@@ -98,6 +98,20 @@ cases:
     expect: design
   - prompt: "How do I design a settings screen for Glow?"
     expect: design
+
+  # ── onboard: setup branch ──
+  - prompt: "Set up the TFX design harness on my machine"
+    expect: onboard
+  - prompt: "Install the agent-browser CLI so the design loop can take screenshots"
+    expect: onboard
+  - prompt: "The harness says capture isn't set up — install what it needs"
+    expect: onboard
+
+  # ── boundary guards: setup wording must NOT capture design or generic installs ──
+  - prompt: "Set up a new attendance page for Teacher Workspace"
+    expect: design
+  - prompt: "Install prettier and set up ESLint in this repo"
+    expect: none
 
   # ── feedback: harness feedback, including mid-turn signals ──────────
   - prompt: "The plan gate keeps interrupting me for tiny copy changes — that's too much process"
