@@ -132,6 +132,14 @@ protocol. The worked example at `docs/decisions/student-notes-empty-state.md` sh
 the full manual-verification table, including which checks the evaluator was unable
 to verify from screenshots alone (see the ADVISORY on CMP-3 in that record).
 
+**Optional — auto-run the detector on your edits.** `hooks/design-hook.py` is a
+per-developer, opt-in PostToolUse hook: it runs the curated detector on each UI file
+you edit and reminds you (never blocks) on new findings. It is off until you install
+it. To enable, paste the snippet from `hooks/README.md` into your
+`.claude/settings.local.json`; `TFX_HOOK_DISABLED=1` mutes it for a session. It runs
+the curated subset only — a quiet edit is not a whole-catalog pass, so the manual
+verification protocol above still stands.
+
 ---
 
 ## 5. Record locations
