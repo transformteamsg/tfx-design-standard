@@ -160,3 +160,17 @@ matching `standards/README.md` authoring rule 5 ("no per-product control overlay
 Awaiting design-lead approve/amend/reject, recorded by name and date in this file before
 any catalog change happens (per the harness's own CLAUDE.md: never edit the catalog to
 make a failing check pass, and never commit without recorded approval).
+
+---
+
+## Amendment — 2026-07-03 (plan 058): location supersession only
+
+The `.tfx/layout-system.json` file proposed above ("The declaration", resolving spike
+open question 4) is superseded **in location only** by plan 058: its `layout-system`
+object becomes the top-level `layout_system` key inside the product repo's
+`.tfx/design.json` (generated from a human-owned `DESIGN.md`; spec at
+`docs/DESIGN-CONTEXT.md`). Nothing else moves — the schema fields (`columns`, `gutter`,
+`margins`, `breakpoints`, `maxContentWidth`), the N/A-when-absent grading, and the
+control proposal's **gate status (design-lead approval still pending)** are all unchanged.
+A product that has not declared a grid still grades N/A; the only difference is where the
+declaration lives once it exists.

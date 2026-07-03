@@ -76,6 +76,33 @@ must be consistent across TW, CaseSync, and Glow.
 
 ---
 
+## 2a. Per-product context — `DESIGN.md` (optional, recommended)
+
+**What it means:** The catalog is portfolio-wide and product-agnostic on purpose. A
+`DESIGN.md` at your repo root records the few *visual parameters* that make your product
+itself — its primary colour, tone weighting, motion conventions, and column grid — and its
+generated twin `.tfx/design.json` lets the check scripts and the design loop read them.
+This is the one item that is **optional** and not counted among the six: a repo with no
+`DESIGN.md` gets the portfolio defaults everywhere, which is a valid, complete state — it
+is never graded as a failure. Add one only if your product's parameters actually differ.
+
+**The concrete step:**
+
+1. Copy the annotated template from the harness: `docs/templates/DESIGN.md` →
+   `your-repo/DESIGN.md`.
+2. Fill in only the parameters that *differ* from the portfolio default; delete every
+   section that matches it. Parameters only — never restate a catalog rule (that recreates
+   the drift `docs/SYNC.md` exists to prevent).
+3. Generate the machine twin and commit **both** files:
+   `python3 <harness>/scripts/generate-design-json.py .`
+4. Regenerate whenever you edit `DESIGN.md` (the twin is generated only, never
+   hand-edited); CI can gate freshness with `--check`.
+
+Full spec — the sections, the parameters-only rule, and the "code overrides stale docs"
+loading rule: `docs/DESIGN-CONTEXT.md`.
+
+---
+
 ## 3. Skills installed
 
 **What it means:** The TFX skills (`design`, `standards`,
