@@ -22,6 +22,10 @@ standard.* Standards are the only layer the harness can enforce automatically. R
   phase: [implement, verify]    # loop phases where it applies:
                                 #   intent | plan | implement | verify
   applies_to: [page, component] # page | component | flow | content
+  products: [glow]              # OPTIONAL — subset of tw | casesync | glow.
+                                # Absent = global (all products). Never [].
+  audiences: [students-primary] # OPTIONAL — teachers | students-primary |
+                                # students-secondary | parents. Absent = global.
   verify: "Type-scale scan; checks/type-scan"
   waiver: documented            # none | documented | rationale  (follows tier)
   detail: controls/typ-2.md     # omit if the index entry is self-sufficient
@@ -40,8 +44,37 @@ which renders this same file):
 - `fails_when:` — per-control list of short anti-pattern bullets. For controls
   with a detail file these summarise the detail's "Fails when" section; the
   detail file remains the fuller account.
-- a top-level `meta:` block — `version`, `updated`, `waiver_syntax`, and a
-  `categories` map from prefix to display name.
+- a top-level `meta:` block — `version`, `updated`, `waiver_syntax`, a
+  `categories` map from prefix to display name, and `products` / `audiences`
+  maps from scope value to display name (see Scope below).
+
+## Scope
+
+Two optional per-control fields scope a control to part of the portfolio:
+`products:` (subset of `tw | casesync | glow`) and `audiences:` (subset of
+`teachers | students-primary | students-secondary | parents`).
+
+- **Absent = global.** A control without a scope field applies to every
+  product / every audience. Never write an empty list — the validators reject
+  `products: []`; omit the field instead.
+- **Filtering is an intersection.** A control is in scope for a run when its
+  `phase` matches AND `applies_to` (the *surface* dimension — page /
+  component / flow / content, unchanged and distinct from these fields)
+  matches AND (`products` absent OR contains the active product) AND
+  (`audiences` absent OR contains the active audience).
+- **Audience defaults to `teachers`** at the intent phase when unstated —
+  today's live surfaces are teacher-facing. The design loop asks when a
+  surface could plausibly serve students or parents.
+- Age bands: `students-primary` = primary school; `students-secondary` =
+  secondary school and up.
+- **Do not stamp scope onto floor controls.** Stamping
+  `audiences: [teachers]` onto existing global controls would *exempt* future
+  student and parent surfaces from the accessibility floor, anti-slop, and
+  tokens — the opposite of safe. The safety net travels to every audience by
+  default; scoping is opt-in per control, used only when a control genuinely
+  binds one product or audience.
+- TW-adjacent surfaces (Posts, PG Staff Portal) count as `tw` — the same rule
+  the content skill's tone table uses.
 
 ## Tiers → enforcement
 

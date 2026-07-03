@@ -5,10 +5,20 @@ import clsx from "clsx";
 import type { Control } from "@/lib/catalog";
 import { tierStyles, tierLabels } from "@/lib/tier-style";
 
-export function CatalogBrowser({ controls }: { controls: Control[] }) {
+export function CatalogBrowser({
+  controls,
+  productNames,
+  audienceNames,
+}: {
+  controls: Control[];
+  productNames: Record<string, string>;
+  audienceNames: Record<string, string>;
+}) {
   const [tier, setTier] = useState<string | null>(null);
   const [category, setCategory] = useState<string | null>(null);
   const [check, setCheck] = useState<string | null>(null);
+  const [product, setProduct] = useState<string | null>(null);
+  const [audience, setAudience] = useState<string | null>(null);
   const [copied, setCopied] = useState<string | null>(null);
 
   const categories = useMemo(
@@ -20,7 +30,10 @@ export function CatalogBrowser({ controls }: { controls: Control[] }) {
     (c) =>
       (!tier || c.tier === tier) &&
       (!category || c.category === category) &&
-      (!check || c.check === check)
+      (!check || c.check === check) &&
+      // Absent scope fields = global — the control matches every selection.
+      (!product || !c.products || c.products.includes(product)) &&
+      (!audience || !c.audiences || c.audiences.includes(audience))
   );
 
   const copy = (id: string) => {
@@ -76,6 +89,26 @@ export function CatalogBrowser({ controls }: { controls: Control[] }) {
             {k}
           </Chip>
         ))}
+        <span className="mx-1 text-border">|</span>
+        {Object.entries(productNames).map(([key, name]) => (
+          <Chip
+            key={key}
+            active={product === key}
+            onClick={() => setProduct(product === key ? null : key)}
+          >
+            {name}
+          </Chip>
+        ))}
+        <span className="mx-1 text-border">|</span>
+        {Object.entries(audienceNames).map(([key, name]) => (
+          <Chip
+            key={key}
+            active={audience === key}
+            onClick={() => setAudience(audience === key ? null : key)}
+          >
+            {name}
+          </Chip>
+        ))}
       </div>
 
       <p className="mt-4 text-[12px] text-muted-foreground">
@@ -109,6 +142,14 @@ export function CatalogBrowser({ controls }: { controls: Control[] }) {
                 {c.check}
               </span>
               <span className="text-[11px] text-muted-foreground">{c.category}</span>
+              {(c.products || c.audiences) && (
+                <span className="rounded-full border border-border px-2 py-0.5 text-[11px] text-muted-foreground">
+                  {[
+                    ...(c.products ?? []).map((p) => productNames[p] ?? p),
+                    ...(c.audiences ?? []).map((a) => audienceNames[a] ?? a),
+                  ].join(" · ")}
+                </span>
+              )}
               <a
                 href={`/standards/catalog/${c.id.toLowerCase()}`}
                 className="ml-auto text-[12px] text-tw-blue underline underline-offset-2"

@@ -9,7 +9,14 @@ import { getCatalog, getPublicCatalogYaml } from "./catalog";
    PUBLIC_FIELDS allowlists (not exported — deny-by-default lists shouldn't
    grow a public API surface) so keep them in sync by hand if catalog.ts's
    lists change. See plan 051. */
-const PUBLIC_META_ALLOWLIST = ["version", "updated", "waiver_syntax", "categories"];
+const PUBLIC_META_ALLOWLIST = [
+  "version",
+  "updated",
+  "waiver_syntax",
+  "categories",
+  "products",
+  "audiences",
+];
 const PUBLIC_FIELDS_ALLOWLIST = [
   "id",
   "source",
@@ -21,6 +28,8 @@ const PUBLIC_FIELDS_ALLOWLIST = [
   "verify",
   "waiver",
   "fails_when",
+  "products",
+  "audiences",
 ];
 
 function readRawCatalog() {
@@ -71,6 +80,24 @@ describe("getPublicCatalogYaml — control projection", () => {
     const projected = parse(getPublicCatalogYaml()) as { controls: Record<string, unknown>[] };
     expect(projected.controls.some((c) => "refs" in c)).toBe(false);
     expect(projected.controls.some((c) => "detail" in c)).toBe(false);
+  });
+
+  it("scope fields absent in the source stay absent — no default injection", () => {
+    // Controls without products:/audiences: are global; the projection must
+    // not invent the fields. (Today every control in the corpus is global.)
+    const raw = readRawCatalog();
+    const globalIds = raw.controls
+      .filter((c) => !("products" in c) && !("audiences" in c))
+      .map((c) => c.id);
+    expect(globalIds.length).toBeGreaterThan(0);
+
+    const projected = parse(getPublicCatalogYaml()) as { controls: Record<string, unknown>[] };
+    for (const c of projected.controls) {
+      if (globalIds.includes(c.id)) {
+        expect("products" in c).toBe(false);
+        expect("audiences" in c).toBe(false);
+      }
+    }
   });
 });
 
