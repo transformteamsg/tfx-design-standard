@@ -6,9 +6,14 @@
 > in `harness/plans/README.md` — unless a reviewer told you they maintain it.
 >
 > **Drift check (run first)**, from repo root:
-> `git diff --stat 48d13dd..HEAD -- harness/checks harness/docs/DESIGN-CONTEXT.md`
-> (If 058 has landed, DESIGN-CONTEXT.md exists — read it. If in-scope checks
-> files changed, compare excerpts; mismatch = STOP.)
+> `git diff --stat 85287e3..HEAD -- harness/checks harness/docs/DESIGN-CONTEXT.md`
+> (Re-stamped 2026-07-03 after 056/058 landed. EXPECTED, non-blocking prior
+> drift you will NOT touch: `validate.py` carries 056's scope-field checks
+> [detect.py excludes validate.py as a catalog self-check, never a page
+> check]; `DESIGN-CONTEXT.md` now exists [058] — its Step here adds one
+> paragraph. type-scan.py confirmed to have NO per-rule selection today, so
+> Step 1's additive-flag contingency IS in play. Only NEW drift since
+> 85287e3 is a STOP.)
 
 ## Status
 
