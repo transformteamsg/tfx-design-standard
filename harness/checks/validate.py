@@ -58,6 +58,8 @@ def load_schema_bits(repo_root):
         "allowed_phases": set(schema["phases"]),
         "allowed_applies_to": set(schema["applies_to"]),
         "allowed_waivers": set(tier_waiver.values()),
+        "allowed_products": set(schema["products"]),
+        "allowed_audiences": set(schema["audiences"]),
         "control_id_re": re.compile(rf"^({prefixes})-\d+$"),
         "xref_re": re.compile(rf"\b({prefixes})-\d+\b"),
     }
@@ -119,6 +121,23 @@ def validate_control(control, idx, schema_bits):
             bad = [a for a in applies_to if a not in allowed_applies_to]
             if bad:
                 err(loc, f"invalid applies_to values {bad} — allowed: {sorted(allowed_applies_to)}")
+
+    # 2c. Optional scope fields — products / audiences. Absent = global;
+    # an empty list is an error (omit the field for global instead).
+    for scope_field, allowed_key in (("products", "allowed_products"),
+                                     ("audiences", "allowed_audiences")):
+        value = control.get(scope_field)
+        if value is None:
+            continue
+        allowed = schema_bits[allowed_key]
+        if not isinstance(value, list):
+            err(loc, f"'{scope_field}' must be a list, got {type(value).__name__}")
+        elif len(value) == 0:
+            err(loc, f"'{scope_field}' must not be an empty list — omit the field for global (all)")
+        else:
+            bad = [v for v in value if v not in allowed]
+            if bad:
+                err(loc, f"invalid {scope_field} values {bad} — allowed: {sorted(allowed)}")
 
     waiver = control.get("waiver")
     if waiver is not None and waiver not in allowed_waivers:
@@ -735,6 +754,24 @@ def run_self_test():
     assert_error("buzzword missing core",
                  buzz_errs("empower, supercharge"),
                  "required core buzzword(s)")
+
+    # ── Scope field (products / audiences) cases ───────────────────────────
+    # Scoped control with valid values → passes.
+    assert_control_clean("scoped control valid",
+                         dict(valid_control, products=["glow"],
+                              audiences=["students-primary"]))
+    # Unknown product value → error.
+    assert_control_error("unknown product value",
+                         dict(valid_control, products=["glow", "bogus"]),
+                         "invalid products values ['bogus']")
+    # Empty products list → error telling the author to omit the field.
+    assert_control_error("empty products list",
+                         dict(valid_control, products=[]),
+                         "omit the field for global")
+    # audiences as a string, not a list → error.
+    assert_control_error("audiences not a list",
+                         dict(valid_control, audiences="teachers"),
+                         "'audiences' must be a list")
 
     # ── [COUNT-SYNC] cases ─────────────────────────────────────────────────
     count_tmp = tempfile.mkdtemp(prefix="validate-selftest-count-")

@@ -5,5 +5,7 @@
   "checks": ["deterministic", "judgment", "hybrid"],
   "phases": ["intent", "plan", "implement", "verify"],
   "applies_to": ["page", "component", "flow", "content"],
+  "products": ["tw", "casesync", "glow"],
+  "audiences": ["teachers", "students-primary", "students-secondary", "parents"],
   "id_prefixes": ["A11Y", "TOK", "TYP", "COL", "CMP", "CNT", "MOT", "IDN", "SLP", "LAY"]
 }

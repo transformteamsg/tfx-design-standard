@@ -33,6 +33,8 @@ const CHECKS = new Set(schema.checks);
 const PHASES = new Set(schema.phases);
 const APPLIES_TO = new Set(schema.applies_to);
 const ID_RE = new RegExp(`^(${schema.id_prefixes.join("|")})-\\d+$`);
+const PRODUCTS = new Set(schema.products);
+const AUDIENCES = new Set(schema.audiences);
 
 const catalogPath = "harness/standards/catalog.yaml";
 let catalog;
@@ -61,6 +63,19 @@ if (catalog) {
           ? c[field].filter((v) => !allowed.has(v))
           : [c[field]];
         if (bad.length) err(loc, `invalid ${field} values [${bad}]`);
+      }
+    }
+    // Optional scope fields — absent = global; empty list is an error.
+    for (const [field, allowed] of [["products", PRODUCTS], ["audiences", AUDIENCES]]) {
+      if (field in c) {
+        if (!Array.isArray(c[field])) {
+          err(loc, `'${field}' must be a list`);
+        } else if (c[field].length === 0) {
+          err(loc, `'${field}' must not be an empty list — omit the field for global (all)`);
+        } else {
+          const bad = c[field].filter((v) => !allowed.has(v));
+          if (bad.length) err(loc, `invalid ${field} values [${bad}]`);
+        }
       }
     }
     if (c.tier && c.waiver && schema.tier_waiver[c.tier] !== c.waiver)

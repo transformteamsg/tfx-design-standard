@@ -3,6 +3,7 @@
 # Consumers: the design harness (agent enforcement — this repo's skills/checks)
 # and the TFX-DS website (human presentation — renders and serves this file raw).
 # Format: standards/README.md. Detail files: standards/controls/<id>.md
+# Scope: optional per-control products:/audiences: fields — absent = global (all). See standards/README.md §Scope.
 # WCAG 2.2 AA is the self-imposed accessibility floor (kept because it's right,
 # not because it's mandated). SGDS / GOV.UK are reference points, not rules.
 # Consolidated 2026-06-11 from the harness catalog (28 controls, operational
@@ -11,7 +12,7 @@
 
 meta:
   version: "0.1"
-  updated: "2026-06-25"
+  updated: "2026-07-03"
   waiver_syntax: 'tfx-waive <ID> reason="<specific reason>"'
   categories:
     A11Y: Accessibility
@@ -24,6 +25,15 @@ meta:
     IDN: Identity
     SLP: Anti-slop
     LAY: Layout
+  products:
+    tw: Teacher Workspace   # TW-adjacent surfaces (Posts, PG Staff Portal) count as tw
+    casesync: CaseSync
+    glow: Glow
+  audiences:
+    teachers: Teachers & school staff
+    students-primary: Students — primary
+    students-secondary: Students — secondary and up
+    parents: Parents & guardians
 
 controls:
   # ── Accessibility (WCAG 2.2 AA — self-imposed floor) ──────────────────
