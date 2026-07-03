@@ -30,7 +30,8 @@ catalog ships with this harness, not with the product repo — resolve it relati
 this SKILL.md file, three levels up: `<this-skill-dir>/../../../standards/catalog.yaml`
 (the same path works in the harness dev repo and when installed as the
 `tfx` plugin; do not expect `standards/` in the project cwd). Filter
-controls by `phase` as you go; read a control's `detail` file (same `standards/`
+controls by `phase` and scope (`products`/`audiences` — absent = global) as you
+go; read a control's `detail` file (same `standards/`
 directory) before applying it. Also load the `standards` skill for the waiver
 protocol.
 
@@ -136,7 +137,11 @@ Establish, asking the user only what you cannot infer:
 3. **Product and page type**: which product (TW / CaseSync / Glow / TW surface — this
    sets tone calibration per `content`), and what kind of surface: workspace
    view, form, flow step, dashboard, settings, empty state, onboarding. Page type
-   selects controls via `applies_to`. **Any surface with an async or destructive
+   selects controls via `applies_to`. **Audience**: who does this surface serve —
+   teachers (the default; assume it when unstated), students (ask which band:
+   primary, or secondary and up), or parents? Record it in the sprint contract;
+   it scopes `audiences:`-scoped controls for the rest of the loop. **Any
+   surface with an async or destructive
    action inherits the `[flow]` controls** (CMP-2, CMP-3) even when it is a single
    page — do not let the page/flow split scope them out.
 4. **Done-criteria**: write a short sprint contract — the 3–6 statements the evaluator

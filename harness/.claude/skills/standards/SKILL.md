@@ -28,9 +28,12 @@ defining moments" cannot fail a check.
 - Load the index once per session. Read a control's `detail` file only when the
   control is in scope — details carry rationale, pass/fail examples, and evaluator
   guidance.
-- Filter by `phase` (where you are in the loop) and `applies_to` (what you're
-  producing). A content-only change pulls `applies_to: [content]` controls, not the
-  whole catalog.
+- Filter by `phase` (where you are in the loop), `applies_to` (what you're
+  producing), and scope: `products` / `audiences` — a control without those
+  fields is global and always in scope; a scoped control applies only when
+  the run's product/audience is listed. Audience defaults to teachers when
+  the intent phase didn't establish one. A content-only change pulls
+  `applies_to: [content]` controls, not the whole catalog.
 - A control without a `detail:` field is self-sufficient: its `title` and
   `verify` line are the whole rule — apply them as written. Only `judgment`
   and `hybrid` controls carry detail files (evaluator guidance lives there);
