@@ -1,20 +1,29 @@
 # Routing eval dataset — does the right skill fire on these prompts?
 #
 # how_to_run:
-#   probe: claude -p "<prompt>" --max-turns 2 --output-format json
-#          — run in a FRESH session at the repo root (a session that already
+#   probe: claude -p "<prompt>" --max-turns 2 --output-format stream-json --verbose --plugin-dir harness
+#          — run in a FRESH session at the repo (worktree) root (a session that already
 #          loaded a skill cannot measure triggering).
-#   pass:  the expected skill name appears in the transcript's tool calls
-#          (a Skill tool invocation of that skill). For `expect: none`, pass
-#          means NO harness skill (design / content / standards /
-#          onboard / feedback) appears in the tool calls.
-#   cost cap: a full sweep is 43 headless sessions. Spot-check a 5-case sample
-#          per skill edit (always include at least one modification-phrasing
-#          design case and one `none` case); run the full sweep only when a
-#          skill's frontmatter `description:` changes — that is the text that
-#          decides triggering.
+#   pass:  the expected skill name appears in the transcript's Skill tool calls
+#          (a Skill tool invocation of that skill). For `expect: none`, pass means NO
+#          harness skill (design / critique / content / standards / setup / feedback)
+#          appears in the tool calls. `start` is user-invoked
+#          (disable-model-invocation: true) — it never fires from a prompt, so it needs
+#          no case here.
+#   cost cap: a full sweep is 50 headless sessions. Spot-check a 5-case sample per skill
+#          edit (always include at least one modification-phrasing design case and one
+#          `none` case); run the full sweep only when a skill's frontmatter `description:`
+#          changes — that is the text that decides triggering.
 #
-# expect ∈ design | content | standards | onboard | feedback | none
+# re-baseline (2026-07-03, plan 061 — operator's intent-shaped stack restructure):
+#   - onboarding + setup cases: expect onboard -> setup (the onboard skill was renamed to
+#     setup; it keeps both the setup and the onboarding triggers).
+#   - "I don't like the empty state on the student notes page": expect design -> critique
+#     (open dissatisfaction with an existing page and no named change is now critique's).
+#   - added critique positives (review / what's wrong / improve / audit an existing page)
+#     and critique/design/content/none boundary guards.
+#
+# expect ∈ design | critique | content | standards | setup | feedback | none
 
 cases:
   # ── design: new page / flow ─────────────────────────────────────────
@@ -48,6 +57,24 @@ cases:
     expect: design
   - prompt: "The standards catalog was updated; bring the attendance page back into compliance"
     expect: design
+
+  # ── critique: evaluate / improve an existing page, no named change ───
+  - prompt: "Review the attendance page"
+    expect: critique
+  - prompt: "What's wrong with this form?"
+    expect: critique
+  - prompt: "Improve the student notes page"
+    expect: critique
+  - prompt: "Audit this page against the standards"
+    expect: critique
+
+  # ── boundary guards: critique must NOT capture named changes, copy, or grading ──
+  - prompt: "Add a remarks field to the student notes page"
+    expect: design
+  - prompt: "Rewrite the confirmation message on the delete-class dialog"
+    expect: content
+  - prompt: "Grade the page the loop just produced"
+    expect: none
 
   # ── content: copy-only ────────────────────────────────────────────
   - prompt: "Rewrite this error message: 'Submission failed (code 0x1F4)'"
@@ -85,13 +112,13 @@ cases:
   - prompt: "What fonts does the harness stack use?"
     expect: none
 
-  # ── onboard: explicit "onboard / teach me the harness" intent only ──
+  # ── setup: onboarding + machine setup (was onboard) ──
   - prompt: "Onboard me to the TFX design harness"
-    expect: onboard
+    expect: setup
   - prompt: "I'm new to the harness — teach me how to use it"
-    expect: onboard
+    expect: setup
   - prompt: "Walk me through how the design loop works for the first time"
-    expect: onboard
+    expect: setup
 
   # ── boundary guards: onboarding must NOT capture design or pure-question intents ──
   - prompt: "How do I add a remarks field to the attendance page?"
@@ -99,13 +126,13 @@ cases:
   - prompt: "How do I design a settings screen for Glow?"
     expect: design
 
-  # ── onboard: setup branch ──
+  # ── setup: tool-install branch ──
   - prompt: "Set up the TFX design harness on my machine"
-    expect: onboard
+    expect: setup
   - prompt: "Install the agent-browser CLI so the design loop can take screenshots"
-    expect: onboard
+    expect: setup
   - prompt: "The harness says capture isn't set up — install what it needs"
-    expect: onboard
+    expect: setup
 
   # ── boundary guards: setup wording must NOT capture design or generic installs ──
   - prompt: "Set up a new attendance page for Teacher Workspace"
@@ -123,6 +150,6 @@ cases:
 
   # ── boundary guards: feedback must NOT capture product feedback or control proposals ──
   - prompt: "I don't like the empty state on the student notes page"
-    expect: design
+    expect: critique
   - prompt: "I think we need a new control banning full-width tables"
     expect: standards
