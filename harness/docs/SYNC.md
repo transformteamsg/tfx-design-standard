@@ -39,14 +39,14 @@ restatement registers itself with the check instead of free-floating.
   carry the bare `NAME`. Both open the same `NAME`.
 - The close marker is always bare: `<!-- /tfx-sync:NAME -->`.
 - A block may be inline (open and close on the same logical line, as in `slp-9.md` and
-  the `content` summary) or own its lines (as in the two L0 lists).
+  the `copy` skill summary) or own its lines (as in the two L0 lists).
 
 ## Registered blocks
 
 | `NAME` | Source | Consumers | Check | Rule |
 |---|---|---|---|---|
 | `L0` | catalog `tier: L0` set | `CLAUDE.md`, `.claude/skills/design/SKILL.md` | `[L0-SYNC]` | inline ID set **==** catalog L0 set |
-| `slp9-buzzwords` | `standards/controls/slp-9.md` (marked `source`) | `.claude/skills/content/SKILL.md` | `[SLP9-SYNC]` | consumer ⊆ source (skill may show fewer, never more) |
+| `slp9-buzzwords` | `standards/controls/slp-9.md` (marked `source`) | `.claude/skills/copy/SKILL.md` | `[SLP9-SYNC]` | consumer ⊆ source (skill may show fewer, never more) |
 
 ### Normalization
 
@@ -63,14 +63,14 @@ restatement registers itself with the check instead of free-floating.
   from `slp-9.md`**, so the check keeps an anchor even if both lists are edited. If the
   canonical `slp-9.md` list ever drops one of these three, update `REQUIRED_CORE` to match.
 
-## Source of truth — content guidance
+## Source of truth — copy guidance
 
 Voice, tone, and naming guidance lives once in the catalog controls; the skill and the
 website point at it rather than restating it.
 
 | Artifact | Source (normative) | Consumers | Sync mechanism |
 |---|---|---|---|
-| Voice/tone/naming guidance | catalog controls CNT-1/2/3 + SLP-9 (+ detail files) | `content` skill (applies); `content/guidelines/voice-tone.mdx` + `naming.mdx` (present) | pointers (skill + docs link the controls); SLP-9 word list parity-checked (see `tfx-sync:slp9-buzzwords`) |
+| Voice/tone/naming guidance | catalog controls CNT-1/2/3 + SLP-9 (+ detail files) | `copy` skill (applies); `content/guidelines/voice-tone.mdx` + `naming.mdx` (present) | pointers (skill + docs link the controls); SLP-9 word list parity-checked (see `tfx-sync:slp9-buzzwords`) |
 
 A voice/tone **table** parity check is deferred: the voice-attribute and tone-by-context
 tables are duplicated between the skill and `voice-tone.mdx`, but the drift cost is low

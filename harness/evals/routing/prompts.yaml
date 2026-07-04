@@ -6,11 +6,11 @@
 #          loaded a skill cannot measure triggering).
 #   pass:  the expected skill name appears in the transcript's Skill tool calls
 #          (a Skill tool invocation of that skill). For `expect: none`, pass means NO
-#          harness skill (design / critique / content / standards / setup / feedback)
-#          appears in the tool calls. `start` is user-invoked
-#          (disable-model-invocation: true) — it never fires from a prompt, so it needs
-#          no case here.
-#   cost cap: a full sweep is 53 headless sessions. Spot-check a 5-case sample per skill
+#          harness skill (design / critique / copy / polish / motion / flow / layout /
+#          standards / setup / feedback) appears in the tool calls. `start` is
+#          user-invoked (disable-model-invocation: true) — it never fires from a prompt,
+#          so it needs no case here.
+#   cost cap: a full sweep is 67 headless sessions. Spot-check a 5-case sample per skill
 #          edit (always include at least one modification-phrasing design case and one
 #          `none` case); run the full sweep only when a skill's frontmatter `description:`
 #          changes — that is the text that decides triggering.
@@ -25,7 +25,18 @@
 #   - added a critique-vs-content copy-improve tiebreak (061): a copy-only "improve" goes
 #     to content, a page-level "improve" stays critique (critique disowns copy-only).
 #
-# expect ∈ design | critique | content | standards | setup | feedback | none
+# re-baseline (2026-07-04, plan 062 — five focused passes; content dissolved into copy):
+#   - the ~8 content cases now expect copy (content skill renamed to copy; it keeps every
+#     content trigger, so copy-only asks still route there).
+#   - added per-pass positives (polish / motion / flow / layout) and the pass boundary set:
+#     a dimension-named ask goes to its pass; a whole-page "polish this" with no dimension
+#     stays critique; a named change ("add a transition") stays design; a perf ask is none.
+#     Watch cannibalisation both ways: passes must not steal critique's whole-page asks,
+#     and critique must not steal a dimension-named pass ask.
+#   - polish vs layout hierarchy tiebreak: visual/composition hierarchy (what draws the eye)
+#     is layout's; type/weight hierarchy is polish's. Two tiebreak cases pin the split.
+#
+# expect ∈ design | critique | copy | polish | motion | flow | layout | standards | setup | feedback | none
 
 cases:
   # ── design: new page / flow ─────────────────────────────────────────
@@ -74,29 +85,29 @@ cases:
   - prompt: "Add a remarks field to the student notes page"
     expect: design
   - prompt: "Rewrite the confirmation message on the delete-class dialog"
-    expect: content
+    expect: copy
   - prompt: "Grade the page the loop just produced"
     expect: none
 
-  # ── critique vs content: copy-improve tiebreak (061 clause) ──
+  # ── critique vs copy: copy-improve tiebreak ──
   - prompt: "Improve the copy on the report-card form"
-    expect: content
+    expect: copy
   - prompt: "The wording on the attendance-marking page feels clunky — can you improve it?"
-    expect: content
+    expect: copy
   - prompt: "Improve the report-card form"
     expect: critique
 
-  # ── content: copy-only ────────────────────────────────────────────
+  # ── copy: copy-only ────────────────────────────────────────────
   - prompt: "Rewrite this error message: 'Submission failed (code 0x1F4)'"
-    expect: content
+    expect: copy
   - prompt: "Is this empty-state text on-voice? 'No notes yet. Create one to get started.'"
-    expect: content
+    expect: copy
   - prompt: "Review the confirmation dialog copy on the marks page for tone"
-    expect: content
+    expect: copy
   - prompt: "Suggest a better label for this button — 'Execute submission' feels off"
-    expect: content
+    expect: copy
   - prompt: "Draft the success toast copy for when attendance is submitted"
-    expect: content
+    expect: copy
 
   # ── standards: catalog mechanics, waivers, proposals ─────────────
   - prompt: "Can I waive TOK-1 here?"
@@ -163,3 +174,37 @@ cases:
     expect: critique
   - prompt: "I think we need a new control banning full-width tables"
     expect: standards
+
+  # ── focused passes: a dimension-named ask on an existing page goes to its pass ──
+  - prompt: "Improve the copy on the marks page"
+    expect: copy
+  - prompt: "Polish the spacing on the marks page"
+    expect: polish
+  - prompt: "The type sizes on the attendance page look off — polish them"
+    expect: polish
+  - prompt: "Polish the motion on the attendance page"
+    expect: motion
+  - prompt: "The animations feel janky on save"
+    expect: motion
+  - prompt: "Tighten the layout of the student notes list"
+    expect: layout
+  - prompt: "The dashboard hierarchy is flat — tighten the layout"
+    expect: layout
+  - prompt: "This multi-step form loses my draft"
+    expect: flow
+  - prompt: "Improve the flow of the incident-report wizard — teachers get lost between steps"
+    expect: flow
+
+  # ── polish vs layout: hierarchy tiebreak (visual/composition hierarchy is layout's, type hierarchy is polish's) ──
+  - prompt: "The visual hierarchy on the dashboard is weak"
+    expect: layout
+  - prompt: "The type hierarchy on the report card is flat — the headings don't stand out"
+    expect: polish
+
+  # ── boundary guards: pass vs critique (no dimension) / design (named change) / none (perf) ──
+  - prompt: "Polish the attendance page"
+    expect: critique
+  - prompt: "Add a transition when the panel opens"
+    expect: design
+  - prompt: "Make the site load faster"
+    expect: none

@@ -1,7 +1,7 @@
 {
   "name": "tfx",
   "displayName": "TFX Design Harness",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "license": "MIT",
   "description": "The TFX Design Standard harness: design loop, control catalog, voice & tone, and evaluator agent for Teacher & School products",
   "author": {

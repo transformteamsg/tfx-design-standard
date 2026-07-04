@@ -50,11 +50,14 @@ skill that fits:
   ranks suggestions, then runs the accepted ones through the loop).
 - **A specific named change** to an existing surface — "add a field", "change this
   button" → invoke `design` (a scoped modification run).
-- **A focused single-concern pass** (copy, layout, accessibility, motion, tokens) —
-  *coming in a later release* (the five focused passes); until they land, route these
-  through `critique` to evaluate or `design` for a named change.
-- **Copy only** — write or review UI text with no layout change → invoke `content`
-  (this re-points to `copy` in a later release).
+- **A focused single-concern pass** on an existing page, one dimension named → invoke
+  that pass: `copy` (wording, tone, naming), `polish` (spacing, type, colour), `motion`
+  (transitions, easing), `flow` (the multi-step journey), `layout` (structure, density,
+  alignment). Each captures, proposes ranked fixes, gates, and verifies. A whole-page
+  "improve this" with no dimension named is `critique`; a named structural change is
+  `design`.
+- **Copy only** — write or review UI text with no layout change → invoke `copy`
+  (TFX voice & tone; it also runs the improve-the-copy pass).
 - **A rulebook or waiver question** — "can I waive this?", "who approves?", "does this
   control apply?" → invoke `standards`; never answer a waiver question from memory.
 - **Feedback about the harness itself** — a confusing gate, a check that misfired →
