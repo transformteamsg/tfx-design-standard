@@ -10,7 +10,7 @@
 #          appears in the tool calls. `start` is user-invoked
 #          (disable-model-invocation: true) — it never fires from a prompt, so it needs
 #          no case here.
-#   cost cap: a full sweep is 50 headless sessions. Spot-check a 5-case sample per skill
+#   cost cap: a full sweep is 53 headless sessions. Spot-check a 5-case sample per skill
 #          edit (always include at least one modification-phrasing design case and one
 #          `none` case); run the full sweep only when a skill's frontmatter `description:`
 #          changes — that is the text that decides triggering.
@@ -22,6 +22,8 @@
 #     (open dissatisfaction with an existing page and no named change is now critique's).
 #   - added critique positives (review / what's wrong / improve / audit an existing page)
 #     and critique/design/content/none boundary guards.
+#   - added a critique-vs-content copy-improve tiebreak (061): a copy-only "improve" goes
+#     to content, a page-level "improve" stays critique (critique disowns copy-only).
 #
 # expect ∈ design | critique | content | standards | setup | feedback | none
 
@@ -75,6 +77,14 @@ cases:
     expect: content
   - prompt: "Grade the page the loop just produced"
     expect: none
+
+  # ── critique vs content: copy-improve tiebreak (061 clause) ──
+  - prompt: "Improve the copy on the report-card form"
+    expect: content
+  - prompt: "The wording on the attendance-marking page feels clunky — can you improve it?"
+    expect: content
+  - prompt: "Improve the report-card form"
+    expect: critique
 
   # ── content: copy-only ────────────────────────────────────────────
   - prompt: "Rewrite this error message: 'Submission failed (code 0x1F4)'"
