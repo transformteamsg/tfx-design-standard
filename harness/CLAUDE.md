@@ -43,11 +43,13 @@ triggered.
 
 | Task | Use |
 |---|---|
-| Design or change a page / form / flow / component | `design` skill (runs the loop) |
+| Orient, check the machine/repo, and route to the right skill | `start` skill (user-invoked: `/tfx:start`) |
+| Create a page / form / flow, or make a named change to one | `design` skill (runs the loop) |
+| Review, improve, or polish an existing page (no specific change named) | `critique` skill (evaluate → gated fixes) |
 | Write or review UI copy (only) | `content` skill (TFX voice & tone) |
-| Read, filter, apply, or grow the catalog | `standards` skill |
+| Read, filter, apply, or grow the catalog; any waiver question | `standards` skill |
 | Grade a finished design | `evaluator` subagent (its agent definition carries the review procedure) |
-| Onboard a new user — learn the loop, set up the tools | `onboard` skill (tour + setup) |
+| Set up a machine for the harness, or onboard a new user | `setup` skill (per-user tools + context) |
 | Report harness friction/feedback | `feedback` skill (files the GitHub issue) |
 
 Architecture and roadmap: `README.md`. Control format: `standards/README.md`.

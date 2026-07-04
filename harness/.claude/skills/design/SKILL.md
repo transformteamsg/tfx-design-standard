@@ -1,6 +1,6 @@
 ---
 name: design
-description: Design or change a Teacher & School product UI — a new page, screen, form, flow, OR a modification to an existing one (adding a field, editing copy, restyling a component). Use whenever the user asks to design, create, build, add to, change, fix, or restyle any page, screen, form, component, or user flow — and whenever they ask to re-audit, re-check, or re-verify an existing page against the standards catalog (e.g. after the catalog gains new controls). Orchestrates the full loop — intent, diverge, plan (human gate), implement, verify — with the TFX-DS standards catalog enforced throughout. For copy-only edits the content skill is sufficient; for questions about the catalog itself use standards.
+description: Design or change a Teacher & School product UI — a new page, screen, form, flow, OR a modification to an existing one (adding a field, editing copy, restyling a component). Use whenever the user asks to design, create, build, add to, change, fix, or restyle any page, screen, form, component, or user flow — and whenever they ask to re-audit, re-check, or re-verify an existing page against the standards catalog (e.g. after the catalog gains new controls). Orchestrates the full loop — intent, diverge, plan (human gate), implement, verify — with the TFX-DS standards catalog enforced throughout. For copy-only edits the content skill is sufficient; for questions about the catalog itself use standards; and to review, improve, or polish an existing page with no specific change named — or when the user just says they don't like it — use critique.
 ---
 
 # Design UI
@@ -36,7 +36,8 @@ directory) before applying it. Also read the product's `DESIGN.md` (repo root)
 if present — per-product parameters only; on conflict with implemented code
 conventions, the code wins and you flag the drift. Spec: the harness's
 `docs/DESIGN-CONTEXT.md`. Also load the `standards` skill for the waiver
-protocol.
+protocol. For any waiver or applicability question read
+`../../../standards/README.md` — never answer from memory.
 
 **The stack** (deliberately boring, AI-legible): Base UI components, Radix Colors
 scales, shadcn/ui default tokens for spacing/radius/type. Plus Jakarta Sans (600) for
@@ -78,16 +79,17 @@ This loop covers both. Choose the entry depth by change size, never skip the gat
 
 ### Existing surfaces: critique before you polish
 
-Whenever the surface **already exists** (a modification, a restyle, an
-"improve / polish this", or a catalog re-audit), read and run `critique.md`
-(beside this skill) BEFORE Phase 1 — do not propose changes before you have
-seen and judged the current state. Capture the current page, critique it
-against the in-scope catalog controls and Kind Utility, and let the critique's
-"what underperforms" list set the scope of the polish; **preserved is not
-waived** — a "preserve" call still has to pass its controls, it only means
-don't restyle a deliberate choice. The critique includes a structured layout
-read (against `layout-patterns.md`) and ranked suggestions — `critique.md`
-carries the procedure.
+Whenever the surface **already exists** and the ask is broader than a narrowly
+scoped named change (a restyle, an "improve / polish this", or a catalog
+re-audit), the evaluate step belongs to the `critique` skill — **invoke
+`critique` first** and continue here once the user approves its suggestions. Do
+not propose changes before the current state has been captured and judged. The
+critique captures the live page, runs a structured layout read (against
+`../critique/layout-patterns.md`), grades it against the in-scope catalog
+controls and Kind Utility, and returns ranked suggestions whose "what
+underperforms" list sets the scope of the polish; the procedure lives in
+`../critique/critique.md`. **Preserved is not waived** — a "preserve" call still
+has to pass its controls, it only means don't restyle a deliberate choice.
 
 ## A flow is not a stack of pages
 

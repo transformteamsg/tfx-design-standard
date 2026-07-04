@@ -20,19 +20,20 @@ Follow the two commands in the [README Install section](../README.md#install):
 /plugin install tfx@tfx
 ```
 
-This installs the four skills (`design`, `standards`, `content`,
-`onboard`), the `evaluator` subagent (which carries its own review
-procedure), and the control catalog (`standards/`) — the catalog ships with the plugin, not
-with your repo.
+This installs the seven skills (`start`, `setup`, `design`, `critique`,
+`standards`, `content`, `feedback`), the `evaluator` subagent (which carries its own
+review procedure), and the control catalog (`standards/`) — the catalog ships with the
+plugin, not with your repo. `/tfx:start` is the front door: it orients you and routes to
+the right skill.
 
 If you are working on the harness itself (not a product repo), open a Claude Code
 session in this repository directly: the skills load from `.claude/skills/`
 automatically and no install step is needed.
 
 **Per-user tools.** The plugin install is per-repo; the capture and
-filing tools are per-person. Each teammate runs the `onboard` skill and
-picks setup (or follows `.claude/skills/onboard/setup.md` in this repo):
-the agent-browser CLI + skill for screenshots, an authenticated `gh` for
+filing tools are per-person. Each teammate runs `/tfx:start` (or invokes the `setup`
+skill directly), which follows the checklist (`.claude/skills/setup/setup.md` in this
+repo): the agent-browser CLI + skill for screenshots, an authenticated `gh` for
 harness feedback, Python with PyYAML for the check scripts.
 
 ---
@@ -105,8 +106,8 @@ loading rule: `docs/DESIGN-CONTEXT.md`.
 
 ## 3. Skills installed
 
-**What it means:** The TFX skills (`design`, `standards`,
-`content`, `onboard`) and the `evaluator` subagent must be
+**What it means:** The TFX skills (`start`, `setup`, `design`, `critique`,
+`standards`, `content`, `feedback`) and the `evaluator` subagent must be
 active in the product repo's Claude session for the harness to work. Without them, the agent
 has no loop structure, no catalog filters, and no evaluator procedure to follow.
 

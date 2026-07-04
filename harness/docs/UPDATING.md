@@ -16,8 +16,8 @@ Skip this if the plugin is already installed.
 /plugin install tfx@tfx
 ```
 
-This installs the four skills (`design`, `standards`,
-`content`, `onboard`), the
+This installs the seven skills (`start`, `setup`, `design`, `critique`,
+`standards`, `content`, `feedback`), the
 `evaluator` subagent (which carries its own review procedure), and the
 control catalog — the catalog ships with the plugin, not with your repo.
 
@@ -85,6 +85,38 @@ There is no in-app version readout, so to confirm a release landed:
 - Spot-check a known change — for example, after 0.1.1 the catalog carries 40 controls
   including `LAY-2` and `LAY-4`; ask the `standards` skill to list the LAY
   controls, or open the catalog page on the TFX-DS website.
+
+## Migrating from 0.4.x (skill-stack restructure, 0.5.0)
+
+0.5.0 reshapes the skill stack from domain-named to intent-shaped. The plugin and its
+skills path are unchanged (`"skills": "./.claude/skills/"`, directory-scanned), so this
+is **not** a reinstall like 0.3.0 was — a plain marketplace update picks it up:
+
+```
+/plugin marketplace update tfx     # pull the latest plugin from main
+/reload-plugins                    # load start, setup, critique; drop onboard
+```
+
+**What changed:**
+
+- **New `start` skill** — user-invoked only (`/tfx:start`). It orients you, checks your
+  machine/repo, and routes you to the right skill. It is the new front door; nothing
+  triggers it automatically.
+- **`onboard` renamed to `setup`.** The folder moved (`.claude/skills/onboard/` →
+  `.claude/skills/setup/`); the setup checklist inside it is unchanged. `setup` still
+  answers "set up the harness" and "onboard me", and can now also seed a product's
+  `DESIGN.md` context layer. **The `/tfx:onboard` command name is gone** — use
+  `/tfx:start` to orient, or just ask to be set up and `setup` triggers.
+- **New `critique` skill** — takes "review / improve / polish / audit / I don't like it"
+  asks for an existing page (no specific change named); `design` keeps named changes and
+  new pages.
+- **`standards` slimmed** to a rulebook shell that points at `standards/README.md`; its
+  behaviour is unchanged (still the place for waiver and applicability questions).
+
+**What does not change:** the control catalog, `tfx-waive` syntax, `tfx-sync` markers,
+control ids, and the `content`, `feedback`, and `evaluator` names. Decision records and
+other historical documents that reference `onboard` by name stay valid as history — they
+describe what ran at the time, and rewriting them would falsify the record.
 
 ## Migrating from 0.2.x (plugin and skill rename, 0.3.0)
 

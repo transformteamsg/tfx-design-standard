@@ -3,6 +3,53 @@
 Notable changes to the TFX Design Harness plugin. Versioning tracks
 `.claude-plugin/plugin.json`.
 
+## [0.5.0] — 2026-07-03
+
+Skill-stack restructure I: an intent-shaped stack you can navigate. The domain-named
+stack (design/standards/content/onboard/feedback) was hard to route by hand; this pass
+adds a user-invoked router, splits evaluate-and-polish out of design, renames onboard to
+setup, and thins standards to a rulebook shell.
+
+### Added
+- **`start`** — a user-invoked router (`/tfx:start`, `disable-model-invocation: true`):
+  orientation, a machine/repo context check (agent-browser + `DESIGN.md`/`.tfx`), and a
+  run-shape route menu naming the full stack. It loads no context until invoked and does
+  no work itself — it hands off (plan 061).
+- **`critique`** — a new model-invoked verb for EVALUATE + POLISH: capture an existing
+  page, grade it against the catalog and layout patterns, return scored ranked
+  suggestions without changing anything, then on approval hand the accepted list to
+  `design` as a specified-change run. `critique.md` + `layout-patterns.md` moved here
+  from `design/` as its procedure (plan 061).
+
+### Changed — skill stack
+- **`onboard` → `setup`.** The skill folder was renamed (`setup.md` unchanged); its
+  description keeps the 055 setup triggers and the onboarding triggers ("onboard me",
+  "I'm new to the harness"), points tour-seekers at `/tfx:start`, and its body now also
+  offers to seed a product's `DESIGN.md` context layer. No reinstall — the plugin scans
+  the skills directory, so a renamed folder is picked up automatically.
+- **`design`** keeps its CREATE/modify role. Its description gains a boundary NOT-clause
+  routing open "review / improve / polish / I don't like it" asks to `critique`; its
+  critique-first path now invokes the `critique` skill and continues on approval.
+- **`standards`** thinned to a rulebook shell (104 → ~22 lines): the load-and-filter
+  rules stay (the operational core), and the tier/waiver table, `tfx-waive` syntax, and
+  authoring rules now point at `standards/README.md` rather than restating them. The
+  memory-answer guard on waiver questions is kept — waiver and applicability questions
+  are never answered from memory.
+- **`content`** is untouched in this release (it becomes `copy` in a later pass).
+
+### Changed — routing
+- `evals/routing/prompts.yaml` re-baselined for the restructure (dated note in the file
+  header): the onboarding/setup cases move `onboard` → `setup`, "I don't like the empty
+  state…" moves `design` → `critique`, and new `critique` positives plus boundary guards
+  were added. The full sweep was re-run because three descriptions changed (setup,
+  critique, design).
+
+### Consumer impact
+- **No reinstall needed** for the folder rename — `/plugin marketplace update tfx` then
+  `/reload-plugins` picks up `start`, `setup`, and `critique`. The old `/tfx:onboard`
+  command name is gone; use `/tfx:start` to orient or ask `setup` to set up your machine.
+  See `docs/UPDATING.md`.
+
 ## [0.4.0] — 2026-07-02
 
 Onboarding now sets up the machine, not just the mental model.

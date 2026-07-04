@@ -11,14 +11,15 @@ is a defect. Speed comes from the automation — quality comes from the contract
 surviving the whole way to shipped UI.
 
 ```
-NORMATIVE LAYER                       HARNESS                            ENFORCEMENT
-standards/catalog.yaml                .claude/skills/                    checks/ + evaluator agent
-├─ TFX-DS standards tier               ├─ design (the loop)               ├─ Deterministic: scripts, a11y scan,
-│   48 controls (latest ratchet 2026-06-17) ├─ standards (catalog use)     │   DOM checks — non-skippable
-├─ WCAG 2.2 AA (self-imposed floor)    ├─ content (voice & tone)          ├─ Judgment: evaluator subagent
-└─ References: SGDS, GOV.UK            ├─ onboard (tour + setup)          └─ Human gates: plan approval, L1 waivers
-                                       └─ feedback (harness issue filing)
-   (reference points, not rules)
+NORMATIVE LAYER                       HARNESS                              ENFORCEMENT
+standards/catalog.yaml                .claude/skills/                      checks/ + evaluator agent
+├─ TFX-DS standards tier              ├─ start (router; /tfx:start)        ├─ Deterministic: scripts, a11y scan,
+│   48 controls (latest ratchet 2026-06-17) ├─ setup (per-user tools + context)  │   DOM checks — non-skippable
+├─ WCAG 2.2 AA (self-imposed floor)   ├─ design (the loop)                 ├─ Judgment: evaluator subagent
+└─ References: SGDS, GOV.UK           ├─ critique (evaluate + polish)      └─ Human gates: plan approval, L1 waivers
+                                      ├─ standards (catalog use)
+   (reference points, not rules)      ├─ content (voice & tone)
+                                      └─ feedback (harness issue filing)
 ```
 
 Normative source: [TFX-DS v0.1 draft](https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb)
@@ -66,11 +67,14 @@ design-harness/
 │                            # pass/fail examples, verification detail (loaded on demand)
 ├── .claude/
 │   ├── skills/
+│   │   ├── start/            # user-invoked router: orient, context check, route (/tfx:start)
+│   │   ├── setup/            # per-user tool setup + product context-layer init
 │   │   ├── design/           # orchestrates the loop: intent → diverge → plan →
 │   │   │                     # implement → verify (implement-craft.md: implement detail)
+│   │   ├── critique/         # evaluate an existing page → ranked suggestions → gated fixes
+│   │   │                     # (critique.md + layout-patterns.md: its procedure)
 │   │   ├── standards/        # how to read, filter, and apply the catalog
 │   │   ├── content/          # TFX voice & tone + naming, applied at generation time
-│   │   ├── onboard/          # first-run tour + per-user tool setup
 │   │   └── feedback/         # captures harness feedback mid-turn, files it as an issue
 │   └── agents/
 │       └── evaluator.md      # reviewer subagent — generator/evaluator split;
@@ -106,9 +110,9 @@ The harness ships as a Claude Code plugin. In your product repo (TW, CaseSync, G
 /plugin install tfx@tfx
 ```
 
-This installs the five skills (`design`, `standards`, `content`, `onboard`, `feedback`), the `evaluator` subagent (which carries its own review procedure), and the control catalog (`standards/`) — the catalog ships with the plugin, not with your repo.
+This installs the seven skills (`start`, `setup`, `design`, `critique`, `standards`, `content`, `feedback`), the `evaluator` subagent (which carries its own review procedure), and the control catalog (`standards/`) — the catalog ships with the plugin, not with your repo. Run `/tfx:start` for orientation and routing to the right one.
 
-The design loop captures screenshots with the agent-browser CLI — to set it and the other per-user tools up, run the onboard skill and pick setup (the checklist lives in .claude/skills/onboard/setup.md).
+The design loop captures screenshots with the agent-browser CLI — to set it and the other per-user tools up, run `/tfx:start` (or invoke the `setup` skill directly) and follow the checklist (it lives in .claude/skills/setup/setup.md).
 
 To work on the harness itself, just open a Claude Code session in this repository: the skills load from `.claude/skills/` automatically; no install step.
 
