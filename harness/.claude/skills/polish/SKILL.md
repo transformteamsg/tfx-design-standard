@@ -1,6 +1,6 @@
 ---
 name: polish
-description: Polish the visual surface of an existing Teacher & School product page — spacing, type, colour, and token craft. Use for a scoped ask that names this dimension — "polish the spacing", "tighten the type", "the colours look off", "make it feel more finished on <page>" — with no structural, copy, or motion change named. NOT for a whole-page review with no dimension named (that is critique); NOT for a named structural or component change (that is design). Layout structure goes to layout, wording to copy, animation to motion.
+description: Polish a NAMED visual dimension of an existing Teacher & School product page — spacing, type, radius, colour, hierarchy, or shadow. Use only when the ask names such a dimension — "polish the spacing", "tighten the type", "the colours look off", "the radii are inconsistent on <page>". NOT for a bare "polish / tidy / clean up the page (or screen)" with no visual dimension named — that general, dimensionless polish is critique's whole-page job, so route it to critique. NOT for a named structural or component change — that is design. Layout structure goes to layout, wording to copy, animation to motion.
 ---
 
 # Polish an existing surface
