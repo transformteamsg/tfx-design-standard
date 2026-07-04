@@ -10,7 +10,7 @@
 #          standards / setup / feedback) appears in the tool calls. `start` is
 #          user-invoked (disable-model-invocation: true) — it never fires from a prompt,
 #          so it needs no case here.
-#   cost cap: a full sweep is 65 headless sessions. Spot-check a 5-case sample per skill
+#   cost cap: a full sweep is 67 headless sessions. Spot-check a 5-case sample per skill
 #          edit (always include at least one modification-phrasing design case and one
 #          `none` case); run the full sweep only when a skill's frontmatter `description:`
 #          changes — that is the text that decides triggering.
@@ -33,6 +33,8 @@
 #     stays critique; a named change ("add a transition") stays design; a perf ask is none.
 #     Watch cannibalisation both ways: passes must not steal critique's whole-page asks,
 #     and critique must not steal a dimension-named pass ask.
+#   - polish vs layout hierarchy tiebreak: visual/composition hierarchy (what draws the eye)
+#     is layout's; type/weight hierarchy is polish's. Two tiebreak cases pin the split.
 #
 # expect ∈ design | critique | copy | polish | motion | flow | layout | standards | setup | feedback | none
 
@@ -192,6 +194,12 @@ cases:
     expect: flow
   - prompt: "Improve the flow of the incident-report wizard — teachers get lost between steps"
     expect: flow
+
+  # ── polish vs layout: hierarchy tiebreak (visual/composition hierarchy is layout's, type hierarchy is polish's) ──
+  - prompt: "The visual hierarchy on the dashboard is weak"
+    expect: layout
+  - prompt: "The type hierarchy on the report card is flat — the headings don't stand out"
+    expect: polish
 
   # ── boundary guards: pass vs critique (no dimension) / design (named change) / none (perf) ──
   - prompt: "Polish the attendance page"

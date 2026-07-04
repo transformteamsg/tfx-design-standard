@@ -1,6 +1,6 @@
 ---
 name: polish
-description: Polish a NAMED visual dimension of an existing Teacher & School product page — spacing, type, radius, colour, hierarchy, or shadow. Use only when the ask names such a dimension — "polish the spacing", "tighten the type", "the colours look off", "the radii are inconsistent on <page>". NOT for a bare "polish / tidy / clean up the page (or screen)" with no visual dimension named — that general, dimensionless polish is critique's whole-page job, so route it to critique. NOT for a named structural or component change — that is design. Layout structure goes to layout, wording to copy, animation to motion.
+description: Polish a NAMED visual dimension of an existing Teacher & School product page — spacing, type, radius, colour, shadow, or type/weight hierarchy (SLP-6). Use only when the ask names such a dimension — "polish the spacing", "tighten the type", "the colours look off", "the headings don't stand out from the body". NOT for a bare "polish / tidy / clean up the page (or screen)" with no visual dimension named — that general, dimensionless polish is critique's whole-page job, so route it to critique. NOT for a named structural or component change — that is design. Visual or page hierarchy — what draws the eye (emphasis, size, position, grouping) — is layout's; polish only touches type/weight hierarchy. Layout structure goes to layout, wording to copy, animation to motion.
 ---
 
 # Polish an existing surface
