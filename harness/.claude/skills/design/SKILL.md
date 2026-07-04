@@ -1,6 +1,6 @@
 ---
 name: design
-description: Design or change a Teacher & School product UI — a new page, screen, form, flow, OR a modification to an existing one (adding a field, editing copy, restyling a component). Use whenever the user asks to design, create, build, add to, change, fix, or restyle any page, screen, form, component, or user flow — and whenever they ask to re-audit, re-check, or re-verify an existing page against the standards catalog (e.g. after the catalog gains new controls). Orchestrates the full loop — intent, diverge, plan (human gate), implement, verify — with the TFX-DS standards catalog enforced throughout. For copy-only edits the content skill is sufficient; for questions about the catalog itself use standards; and to review, improve, or polish an existing page with no specific change named — or when the user just says they don't like it — use critique.
+description: Design or change a Teacher & School product UI — a new page, screen, form, flow, OR a modification to an existing one (adding a field, editing copy, restyling a component). Use whenever the user asks to design, create, build, add to, change, fix, or restyle any page, screen, form, component, or user flow — and whenever they ask to re-audit, re-check, or re-verify an existing page against the standards catalog (e.g. after the catalog gains new controls). Orchestrates the full loop — intent, diverge, plan (human gate), implement, verify — with the TFX-DS standards catalog enforced throughout. For copy-only edits the copy skill is sufficient; for questions about the catalog itself use standards; and to review, improve, or polish an existing page with no specific change named — or when the user just says they don't like it — use critique.
 ---
 
 # Design UI
@@ -140,7 +140,7 @@ Establish, asking the user only what you cannot infer:
    Lim, P5 Math, entering marks the week before reports are due.") Design for the
    stressed week, not the average one.
 3. **Product and page type**: which product (TW / CaseSync / Glow / TW surface — this
-   sets tone calibration per `content`), and what kind of surface: workspace
+   sets tone calibration per `copy`), and what kind of surface: workspace
    view, form, flow step, dashboard, settings, empty state, onboarding. Page type
    selects controls via `applies_to`. **Audience**: who does this surface serve —
    teachers (the default; assume it when unstated), students (ask which band:
@@ -338,8 +338,8 @@ Build exactly the approved plan. Constraints, non-negotiable:
   replaces them, and the evaluator grades Craft on them. Apply the ones the surface
   calls for **from `implement-craft.md`** (beside this skill) as you build — the
   specifics live there so this list stays scannable; don't defer them to a cleanup pass.
-- Copy follows the `content` skill as you write it, not as a cleanup pass
-  (it ships with this harness: `../content/SKILL.md` relative to this skill).
+- Copy follows the `copy` skill as you write it, not as a cleanup pass
+  (it ships with this harness: `../copy/SKILL.md` relative to this skill).
   That includes the anti-slop copy rule (SLP-9): no AI-writing tells — buzzwords,
   em-dash chains, filler, chatbot artifacts, structural tells (negative
   parallelism, forced triads, copula avoidance), or label/helper pairs that

@@ -1,9 +1,9 @@
 ---
-name: content
-description: TFX voice & tone, naming, and anti-AI-writing rules for prose in Teacher & School products — plain language, tone by context, error message anatomy, naming, AI-writing tells (SLP-9). Use whenever writing or reviewing any user-facing text (page, form, notification, empty state, error state) AND any longer prose — site content, marketing copy, documentation, decision records. Sufficient on its own for copy-only edits; when designing a full page the design loop already pulls this skill in at its implement phase.
+name: copy
+description: Improve, write, or review the copy on a Teacher & School product surface — TFX voice & tone, naming, error-message anatomy, and anti-AI-writing rules (SLP-9), applied at generation time. Use for any copy-only edit — writing or reviewing user-facing text (page, form, notification, empty state, error state), tightening the wording on a page ("improve/polish the copy on the marks page"), or any longer prose (site content, marketing copy, documentation, decision records). Sufficient on its own for copy-only work; the design loop pulls it in at its implement phase. NOT for a whole-page review with no dimension named — that is critique; NOT for a named structural or visual change — that is design.
 ---
 
-# Content style for Teacher & School products
+# Copy for Teacher & School products
 
 The TFX-DS voice & tone (§4.1) and naming (§4.2) guidelines, applied at generation
 time. The intent: copy arrives already on-voice, so no builder — least of all
@@ -17,6 +17,11 @@ with a detail file in `../../../standards/controls/`. This skill is their applic
 layer (it travels in the plugin); the website's voice-tone and naming guidelines present
 the same controls for human readers. If any of the three disagree, the catalog control
 wins and the others are corrected.
+
+**Improve-the-copy pass.** For a scoped "improve / polish the copy on `<page>`" run —
+capture the surface, judge only the wording, propose ranked fixes, gate, and verify —
+follow `../critique/pass.md` with this skill's dimension subset: **CNT-1, CNT-2, CNT-3,
+and SLP-9**. The rest of this file is that pass's reference: it is what "on-voice" means.
 
 ## Who you're writing for
 

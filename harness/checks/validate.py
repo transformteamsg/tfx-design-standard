@@ -181,7 +181,7 @@ def cross_ref_errors(rel_path, text, catalog_ids, xref_re):
 # markers and compared against its source here. See docs/SYNC.md.
 
 # REQUIRED_CORE — a hard-coded floor of buzzwords that must appear in BOTH the
-# canonical slp-9.md list and the content skill's summary. NOT synced from
+# canonical slp-9.md list and the copy skill's summary. NOT synced from
 # slp-9.md by design, so the check keeps an anchor even if both lists are edited.
 # If the canonical list ever drops one of these, update this set too (see SYNC.md).
 REQUIRED_CORE = {"streamline", "empower", "supercharge"}
@@ -253,13 +253,13 @@ def l0_parity_errors(repo_root, catalog_by_id, xref_re):
 
 def slp9_parity_errors(repo_root):
     """
-    [SLP9-SYNC] The content skill's buzzword summary must be a SUBSET of the
+    [SLP9-SYNC] The copy skill's buzzword summary must be a SUBSET of the
     canonical slp-9.md buzzword list (the skill may show fewer words, never more),
     and REQUIRED_CORE must appear in both. Missing markers are an error.
     """
     errors = []
     src_path = os.path.join(repo_root, "standards", "controls", "slp-9.md")
-    con_path = os.path.join(repo_root, ".claude", "skills", "content", "SKILL.md")
+    con_path = os.path.join(repo_root, ".claude", "skills", "copy", "SKILL.md")
 
     source = None
     if os.path.isfile(src_path):

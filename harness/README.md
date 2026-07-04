@@ -18,7 +18,7 @@ standards/catalog.yaml                .claude/skills/                      check
 ├─ WCAG 2.2 AA (self-imposed floor)   ├─ design (the loop)                 ├─ Judgment: evaluator subagent
 └─ References: SGDS, GOV.UK           ├─ critique (evaluate + polish)      └─ Human gates: plan approval, L1 waivers
                                       ├─ standards (catalog use)
-   (reference points, not rules)      ├─ content (voice & tone)
+   (reference points, not rules)      ├─ copy (voice & tone)
                                       └─ feedback (harness issue filing)
 ```
 
@@ -74,7 +74,7 @@ design-harness/
 │   │   ├── critique/         # evaluate an existing page → ranked suggestions → gated fixes
 │   │   │                     # (critique.md + layout-patterns.md: its procedure)
 │   │   ├── standards/        # how to read, filter, and apply the catalog
-│   │   ├── content/          # TFX voice & tone + naming, applied at generation time
+│   │   ├── copy/             # TFX voice & tone + naming, applied at generation time
 │   │   └── feedback/         # captures harness feedback mid-turn, files it as an issue
 │   └── agents/
 │       └── evaluator.md      # reviewer subagent — generator/evaluator split;
