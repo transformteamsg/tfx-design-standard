@@ -6,9 +6,42 @@
 > unless a reviewer told you they maintain the index.
 >
 > **Drift check (run first)**, from repo root:
-> `git diff --stat <post-061 SHA>..HEAD -- harness/.claude/skills harness/evals/routing/prompts.yaml harness/.claude-plugin harness/CLAUDE.md harness/README.md`
-> This plan HARD-depends on 061 (critique skill + its capture/read machinery
-> + the start router menu). If 061 has not landed, STOP.
+> `git diff --stat d37e7fb..HEAD -- harness/.claude/skills harness/evals/routing/prompts.yaml harness/.claude-plugin harness/CLAUDE.md harness/README.md`
+> HARD-depends on 061 — LANDED at main `d37e7fb`. Base re-stamped to `d37e7fb`.
+> Only NEW drift since `d37e7fb` is a STOP.
+>
+> **DRIFT RECONCILIATION (reviewer-verified 2026-07-04) — the `content`→`copy`
+> rename has CONSEQUENTIAL edits its original scope missed. These are now
+> IN-SCOPE, required, and obviously-correct consequences of the rename (NOT
+> scope creep — renaming a skill that a validator hardcodes REQUIRES the path
+> fix):**
+> - `harness/checks/validate.py:262` hardcodes
+>   `os.path.join(repo_root, ".claude", "skills", "content", "SKILL.md")` for
+>   the `[SLP9-SYNC]` consumer check. Change the string `"content"` → `"copy"`
+>   (that ONE path literal only — no other validate.py logic). The original
+>   plan's "STOP if validate.py references the content path" guard is
+>   SUPERSEDED by this instruction: make the path edit, keep `[SLP9-SYNC]`
+>   green, run `validate.py --self-test` (its self-test uses a `scratch.md`
+>   fixture, not the real path, so it stays green).
+> - `harness/docs/SYNC.md:49` documents that same path in the slp9-buzzwords
+>   row — update `.claude/skills/content/SKILL.md` → `…/copy/SKILL.md`.
+> - `harness/.claude/skills/critique/SKILL.md` — 061's boundary fix added the
+>   NOT-clause "…those go to content." Update its target `content` → `copy`
+>   (one word; the tiebreak now points at the renamed skill).
+> - `harness/.claude/skills/design/SKILL.md` — the description ("the content
+>   skill is sufficient") and body (~line 341 "Copy follows the `content`
+>   skill") name the skill; retarget content → copy.
+> - **DO NOT TOUCH** `lib/content.ts`, `scripts/check-standards.mjs` — their
+>   `content`/`contentDir` refer to the WEBSITE `content/` MDX directory at
+>   the repo root, NOT the content skill. They are unaffected by this rename.
+> - The `<!-- tfx-sync:slp9-buzzwords -->` consumer marker lives inside
+>   content/SKILL.md — `git mv` preserves it, so it rides into copy/SKILL.md
+>   automatically; the validate.py + SYNC.md path updates above are what make
+>   `[SLP9-SYNC]` find it at the new location.
+> - PRESERVE (never revert): 056/058's design-skill scope + DESIGN.md edits;
+>   061's start/setup/critique skills, the thinned standards, the critique
+>   copy NOT-clause (you update its target, don't delete it). Plugin at
+>   0.5.0 (→ 0.6.0). Routing at 53 cases (re-baseline + extend from 53).
 
 ## Status
 
@@ -17,7 +50,7 @@
 - **Risk**: HIGH (five new model-invoked descriptions on one boundary surface — pass-vs-critique-vs-design routing is the whole risk)
 - **Depends on**: 061 (hard). 056 (soft — scope filtering). 052/053 artifacts for `layout`.
 - **Category**: dx / direction
-- **Planned at**: commit `48d13dd`, 2026-07-03 — re-stamp against post-061 HEAD before executing
+- **Planned at**: commit `48d13dd`, 2026-07-03; re-stamped `d37e7fb` after 056–061 landed (reconciliation block above)
 
 ## Why this matters
 
@@ -88,13 +121,21 @@ Same as 061: validate.py / `claude plugin validate harness` / routing probe
 `skills/polish/`, `skills/motion/`, `skills/flow/`, `skills/layout/`
 (create), one shared `skills/critique/pass.md` (the common pass procedure —
 lives with critique, its owner), `design/SKILL.md` (retarget the
-content-skill pointer to `copy`), `start/SKILL.md` (route menu: passes now
-live), `harness/CLAUDE.md` + `README.md` (stack tables), plugin.json (0.6.0)
-+ CHANGELOG + UPDATING, `evals/routing/prompts.yaml`, `plans/README.md`.
+content-skill pointer to `copy`, description + body), `critique/SKILL.md`
+(one word: NOT-clause target content→copy), `harness/checks/validate.py`
+(ONE path literal at line 262: `"content"`→`"copy"` — see reconciliation
+block), `harness/docs/SYNC.md` (line 49 path), `start/SKILL.md` (route menu:
+passes now live), `harness/CLAUDE.md` + `README.md` (stack tables),
+plugin.json (0.6.0) + CHANGELOG + UPDATING, `evals/routing/prompts.yaml`,
+`plans/README.md`.
 
-**Out of scope**: critique.md / layout-patterns.md contents (owned by 061;
-passes READ them), the catalog/checks/website, `setup`, `feedback`,
-`standards`, the evaluator agent, golden/recall evals.
+**Out of scope**: critique.md / layout-patterns.md CONTENTS (owned by 061;
+passes READ them — but critique/SKILL.md's one NOT-clause word IS in scope),
+the catalog, all `checks/*.py` EXCEPT the single validate.py:262 path
+literal, the WEBSITE (`lib/`, `app/`, `components/`, and the repo-root
+`content/` MDX dir — `lib/content.ts`/`check-standards.mjs` `content` refs
+are the website dir, NOT the skill), `setup`, `feedback`, `standards`, the
+evaluator agent, golden/recall evals.
 
 ## Git workflow
 
@@ -130,7 +171,11 @@ SLP-9 subset"). Update `design/SKILL.md`'s implement-phase load to `copy`,
 and every live `content`-skill reference (CLAUDE.md table, README, SYNC.md
 if it names the skill — check `grep -rn "content skill" harness/docs`).
 
-**Verify**: `grep -rn "skills/content" harness/` → no live hits (history docs exempt); validate.py OK ([SLP9-SYNC] marker must survive the move — if validate names the skill path, STOP and report).
+Then apply the reconciliation-block consequential edits: `validate.py:262`
+`"content"`→`"copy"`, `docs/SYNC.md:49` path, and the `critique/SKILL.md`
+NOT-clause target `content`→`copy`.
+
+**Verify**: `grep -rn "skills/content\|skills/\"content\"\|\"content\", \"SKILL" harness/ --include=*.py` → no live hits; `grep -rn "skills/content" harness/.claude harness/docs` → no live hits (history/plans docs exempt); `cd harness && python3 checks/validate.py` → `OK: 48 controls valid` with `[SLP9-SYNC]` GREEN; `python3 checks/validate.py --self-test` → passes; `grep -c "those go to copy" harness/.claude/skills/critique/SKILL.md` → 1.
 
 ### Step 3: Create `polish`, `motion`, `flow`, `layout`
 
@@ -192,12 +237,19 @@ cross-checks over the five new bodies + the grep gates.
 
 ## STOP conditions
 
-- 061 not landed.
-- validate.py's [SLP9-SYNC] or control-id checks reference the `content`
-  path by name and break on the rename — report, don't patch validate.py
-  (it's out of scope).
-- Any pass description can't hold its boundary after one revision.
-- A pass body starts restating catalog rules instead of citing ids.
+- 061 not landed (it has — main `d37e7fb`).
+- `[SLP9-SYNC]` still fails AFTER the validate.py:262 path update + the
+  git-mv marker move — that would mean the rename broke something the
+  reconciliation block didn't foresee (e.g. a second hardcoded path). Report
+  it. (The single documented path edit is EXPECTED and in-scope — do NOT
+  STOP merely because validate.py references the content path; that is the
+  thing you are fixing.)
+- Any pass description can't hold its boundary after ONE revision (the
+  pass-vs-critique-vs-design or pass-vs-copy cannibalisation).
+- A pass body starts restating catalog rule TEXT instead of citing ids.
+- You find a hardcoded content-skill path OUTSIDE the four enumerated in the
+  reconciliation block (validate.py:262, SYNC.md:49, critique NOT-clause,
+  design refs) — report it before editing.
 
 ## Maintenance notes
 
