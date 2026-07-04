@@ -18,7 +18,7 @@ standards/catalog.yaml                .claude/skills/                      check
 ├─ WCAG 2.2 AA (self-imposed floor)   ├─ design (the loop)                 ├─ Judgment: evaluator subagent
 └─ References: SGDS, GOV.UK           ├─ critique (evaluate + polish)      └─ Human gates: plan approval, L1 waivers
                                       ├─ standards (catalog use)
-   (reference points, not rules)      ├─ copy (voice & tone)
+   (reference points, not rules)      ├─ copy·polish·motion·flow·layout (focused passes)
                                       └─ feedback (harness issue filing)
 ```
 
@@ -72,9 +72,10 @@ design-harness/
 │   │   ├── design/           # orchestrates the loop: intent → diverge → plan →
 │   │   │                     # implement → verify (implement-craft.md: implement detail)
 │   │   ├── critique/         # evaluate an existing page → ranked suggestions → gated fixes
-│   │   │                     # (critique.md + layout-patterns.md: its procedure)
+│   │   │                     # (critique.md + layout-patterns.md; pass.md: shared pass procedure)
 │   │   ├── standards/        # how to read, filter, and apply the catalog
-│   │   ├── copy/             # TFX voice & tone + naming, applied at generation time
+│   │   ├── copy/             # TFX voice & tone + naming; also the improve-the-copy pass
+│   │   ├── polish, motion, flow, layout/   # focused single-dimension passes (share critique/pass.md)
 │   │   └── feedback/         # captures harness feedback mid-turn, files it as an issue
 │   └── agents/
 │       └── evaluator.md      # reviewer subagent — generator/evaluator split;
@@ -110,7 +111,7 @@ The harness ships as a Claude Code plugin. In your product repo (TW, CaseSync, G
 /plugin install tfx@tfx
 ```
 
-This installs the seven skills (`start`, `setup`, `design`, `critique`, `standards`, `content`, `feedback`), the `evaluator` subagent (which carries its own review procedure), and the control catalog (`standards/`) — the catalog ships with the plugin, not with your repo. Run `/tfx:start` for orientation and routing to the right one.
+This installs the eleven skills (`start`, `setup`, `design`, `critique`, `standards`, `feedback`, and the five focused passes — `copy`, `polish`, `motion`, `flow`, `layout`), the `evaluator` subagent (which carries its own review procedure), and the control catalog (`standards/`) — the catalog ships with the plugin, not with your repo. Run `/tfx:start` for orientation and routing to the right one.
 
 The design loop captures screenshots with the agent-browser CLI — to set it and the other per-user tools up, run `/tfx:start` (or invoke the `setup` skill directly) and follow the checklist (it lives in .claude/skills/setup/setup.md).
 

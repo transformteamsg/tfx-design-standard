@@ -3,6 +3,48 @@
 Notable changes to the TFX Design Harness plugin. Versioning tracks
 `.claude-plugin/plugin.json`.
 
+## [0.6.0] — 2026-07-04
+
+Skill-stack restructure II: dimension-scoped improvement passes you can fire directly.
+Five focused passes let a user (or the agent) improve one dimension of an existing page —
+"polish the motion", "tighten the layout" — without running the full loop or a full
+critique. A pass is a small loop: it captures, proposes ranked in-dimension fixes, stops
+at the plan gate, and verifies. `content` dissolves into `copy`.
+
+### Added
+- **Five focused passes** (all model-invoked, so also user-typeable): **`copy`**
+  (wording, tone, naming), **`polish`** (spacing, type, colour), **`motion`**
+  (transitions, easing, reduced-motion), **`flow`** (the multi-step journey), **`layout`**
+  (structure, density, alignment). Each SKILL.md is a thin branch head (≤ 30 lines): a
+  dimension trigger with whole-page→`critique` / named-change→`design` NOT-clauses, its
+  control-id subset (cited, never restated), reference files, and a pointer to the shared
+  procedure (plan 062).
+- **`critique/pass.md`** — the one procedure all five passes run: capture, load only the
+  dimension's control subset, ranked in-dimension suggestions (anything outside is noted
+  and routed), plan gate, implement + verify. L0 is never scoped out of any pass.
+
+### Changed — skill stack
+- **`content` → `copy`.** The skill folder was renamed (`git mv`); `copy` keeps the full
+  voice/tone/naming/SLP-9 body (its dimension reference) and every content trigger, and
+  adds the improve-the-copy pass pointer. The `<!-- tfx-sync:slp9-buzzwords -->` marker
+  rode along; `validate.py`'s `[SLP9-SYNC]` consumer path was updated `content` → `copy`
+  and stays green. No reinstall — the skills directory is scanned.
+- **`design`** description + implement-phase refs retargeted `content` → `copy`;
+  **`critique`** copy-only NOT-clause retargeted `content` → `copy`.
+- **`start`** route menu: the five passes are live (the "coming in a later release"
+  placeholder is gone).
+
+### Changed — routing
+- `evals/routing/prompts.yaml` re-baselined: the `content` cases now expect `copy`; per-pass
+  positives and boundary guards added (dimension ask → pass; whole-page → `critique`;
+  named change → `design`). Header count updated.
+
+### Consumer impact
+- **No reinstall needed** for the folder rename — `/plugin marketplace update tfx` then
+  `/reload-plugins` picks up the five passes and drops `content`. `copy` keeps every
+  `content` trigger, so "rewrite this error message" still routes automatically. See
+  `docs/UPDATING.md`.
+
 ## [0.5.0] — 2026-07-03
 
 Skill-stack restructure I: an intent-shaped stack you can navigate. The domain-named
