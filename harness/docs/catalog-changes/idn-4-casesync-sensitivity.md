@@ -1,8 +1,13 @@
 # Proposed control: IDN-N (CaseSync sensitivity register — the first product-scoped control; slot 4)
 
 **Date:** 2026-07-03 · **Change type:** new control via ratchet (no tier change to any
-existing control) · **Approved by:** pending — design-lead approval required before the
-catalog commit. No approval is recorded in this file yet.
+existing control) · **Approved by:** Reza Ilmi (design lead), 2026-07-06 — in-session approval. Assigned
+**IDN-4** as a **separate, product-scoped** control (option (a) — NOT folded into IDN-3),
+and elevated to **L1** (the gate chose L1 over the proposed L2, given the privacy /
+sensitivity stakes). This is the portfolio's **first `products:`-scoped control**; the bar
+it sets for future scoped controls: a control genuinely binds one product when the
+constraint is product-specific and concrete (here: gamification/celebration around
+sensitive casework), not mere tone weight.
 
 > **Note on `IDN-N`:** placeholder, not a concrete number — `checks/validate.py`'s
 > cross-ref sweep flags any `PREFIX-<digit>` id not in the live catalog. At proposal time

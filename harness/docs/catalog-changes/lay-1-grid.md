@@ -1,9 +1,9 @@
 # Proposed control: LAY-N (grid / columns and gutters — the spike's reserved slot 1)
 
 **Date:** 2026-07-02 · **Change type:** new control via ratchet (activates the id slot
-the layout spike reserved; no tier change to any existing control) · **Approved by:**
-pending — design-lead approval required before Step 3 (catalog commit). No approval is
-recorded in this file yet.
+the layout spike reserved; no tier change to any existing control) · **Approved by:** Reza Ilmi (design lead), 2026-07-06 — in-session approval. Assigned
+**LAY-1**, L2, hybrid, as proposed; the declaration reads from `.tfx/design.json`
+`layout_system` (plan 058 supersession, below). Grades N/A where no grid is declared.
 
 > **Note on `LAY-N`:** written as a placeholder rather than a concrete number, because the
 > id is committed to the catalog only at the gated Step 3, and `checks/validate.py`'s

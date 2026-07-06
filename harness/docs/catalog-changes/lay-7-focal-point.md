@@ -1,8 +1,10 @@
 # Proposed control: LAY-N (one focal point, hierarchy matches task order — next free LAY slot 7)
 
 **Date:** 2026-07-02 · **Change type:** new control via ratchet (no tier change to any
-existing control) · **Approved by:** pending — design-lead approval required before
-Step 3 (catalog commit). No approval is recorded in this file yet.
+existing control) · **Approved by:** Reza Ilmi (design lead), 2026-07-06 — in-session approval. Assigned
+**LAY-7**, L2, judgment. Phase remapped from the proposed `[diverge, verify]` to
+**`[plan, verify]`** to fit the catalog schema's phase enum (the catalog has no `diverge`
+phase; `plan` is the composition-decision phase, matching LAY-3).
 
 > **Note on `LAY-N`:** written as a placeholder rather than a concrete number, for the
 > same reason as the sibling proposal `lay-1-grid.md` — `checks/validate.py`'s

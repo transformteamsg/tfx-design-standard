@@ -1,8 +1,10 @@
 # Proposed control: IDN-N (per-product tone register — the verbal twin of COL-1's per-product colour; slot 3)
 
 **Date:** 2026-07-03 · **Change type:** new control via ratchet (no tier change to any
-existing control) · **Approved by:** pending — design-lead approval required before the
-catalog commit. No approval is recorded in this file yet.
+existing control) · **Approved by:** Reza Ilmi (design lead), 2026-07-06 — in-session approval. Assigned
+**IDN-3**, L2, as proposed. The per-product register table is now normative in this
+control's detail file (`controls/idn-3.md`); the `copy` skill §6 points here (SYNC parity
+deferred, pointer for v1).
 
 > **Note on `IDN-N`:** placeholder, not a concrete number — same reason as the sibling
 > `idn-2-product-icons.md`: `checks/validate.py`'s cross-ref sweep flags any
