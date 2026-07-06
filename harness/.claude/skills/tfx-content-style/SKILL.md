@@ -58,16 +58,47 @@ stress, or it goes.
   to state the *what* and skip the *why*. A reader should know why a thing exists and
   when they'd need it from the first line. *"shadcn/ui default token scales, unmodified"
   → "Consistent spacing is what makes a screen feel calm instead of busy. One shared
-  scale."* (CNT-3)
+  scale."* (CNT-5, split from CNT-3 2026-07-03)
 - Choose exactly the words needed to convey a concept or label a control — the
   simplest way to say something is usually the most universal.
+- **Cut low-informational-value words** (CNT-6) unless clarity suffers: empty
+  openers ("There is", "It is"), filler ("such", "just", "really", "very",
+  "please"), and droppable articles/conjunctions. The canonical lists live in
+  `cnt-6.md` (same resolved path as slp-9.md below). SLP-9 handles the AI-tell
+  vocabulary and structures; CNT-6 is the no-op words in any copy, whoever wrote it.
 - Avoid ed-tech jargon unless it's universal among teachers.
+- Name the action, not the input device (CNT-4): "choose", "select", "view", never
+  "click", "tap", "swipe", or "press". Link text names its destination — "View the
+  report", never "click here" or "read more". Teachers reach these products on
+  laptops, tablets, phones, and screen readers; device-agnostic verbs are correct
+  for all of them at once.
 - No marketing buzzwords (SLP-9): <!-- tfx-sync:slp9-buzzwords --> streamline, empower, supercharge, effortless,
   seamless, world-class <!-- /tfx-sync:slp9-buzzwords --> and kin describe nothing — say what the thing does. No
   em-dash chains standing in for sentence structure, and no label/sublabel/helper
   triplets that restate each other — if removing one line loses nothing, remove it.
 - Read it aloud — if it sounds robotic, rewrite it.
 - Singapore English spelling (British base): organise, colour, centre.
+
+## The editing sequence (method, not a control)
+
+Good microcopy is edited into shape, not written in one go. The controls above say
+what "good" is; this is the working order that gets you there. It is a method — none
+of these passes is itself a control, and none fails a check. Draft first, then edit
+in passes:
+
+1. **Draft.** Write what you want to say to the teacher. Don't polish yet.
+2. **Purposeful.** Keep only words that serve the teacher's goal or the product's.
+   Lead with the most important idea (CNT-3, lead with purpose).
+3. **Concise.** Front-load the point; cut filler and empty openers (SLP-9). One idea
+   per sentence, well under the 25-word ceiling (CNT-3).
+4. **Conversational.** Second person, active voice; read it aloud (CNT-3). Name the
+   action, not the device (CNT-4).
+5. **Clear.** Simple words, simple present tense; no double negatives or noun stacks.
+6. **Check.** Consistent terms (CNT-2), plain error anatomy (CNT-1), and a last pass
+   for AI-writing tells (SLP-9).
+
+The website's [UI text](/guidelines/ui-text) guideline presents the full sequence
+for human readers; this skill is where an agent applies it.
 
 ## AI writing tells (SLP-9)
 
