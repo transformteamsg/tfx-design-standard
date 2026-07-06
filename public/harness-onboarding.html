@@ -153,6 +153,15 @@
   </header>
 
   <section>
+    <h2>Install the harness skills</h2>
+    <p class="prose">The harness ships as a Claude Code plugin. In your product repo — Teacher Workspace, CaseSync, or Glow — add the marketplace and install it. Two commands, typed in Claude Code:</p>
+    <pre class="cmd">/plugin marketplace add transformteamsg/tfx-design-standard
+/plugin install tfx@tfx</pre>
+    <p class="prose">That installs the <b>eleven skills</b>, the <code>evaluator</code> that grades the work, and the <b>control catalog</b> — the rulebook ships with the plugin, not your repo. Run <code>/reload-plugins</code> and you're set.</p>
+    <p class="lede">Working on the harness itself? No install needed — open a Claude Code session in the harness repo and the skills load from <code>.claude/skills/</code> automatically.</p>
+  </section>
+
+  <section>
     <h2>What it is</h2>
     <p class="prose">A <b>control catalog</b> plus a set of <b>Claude Code skills</b>. Together they make an agent follow the TFX Design Standard whenever it designs or changes UI for the Teacher &amp; School portfolio — Teacher Workspace, CaseSync, and Glow.</p>
     <p class="prose">The point is to keep quality from drifting. Instead of hoping an agent remembers the rules, the harness loads them, applies them, and grades the result against what you asked for. Its brand essence is <b>Kind Utility</b>: useful first, kind at the surface. The one test any screen has to pass — does this help teachers work faster with less stress?</p>
@@ -203,15 +212,6 @@
   </section>
 
   <section>
-    <h2>Install the harness skills</h2>
-    <p class="prose">The harness ships as a Claude Code plugin. In your product repo — Teacher Workspace, CaseSync, or Glow — add the marketplace and install it. Two commands, typed in Claude Code:</p>
-    <pre class="cmd">/plugin marketplace add transformteamsg/tfx-design-standard
-/plugin install tfx@tfx</pre>
-    <p class="prose">That installs the <b>eleven skills</b>, the <code>evaluator</code> that grades the work, and the <b>control catalog</b> — the rulebook ships with the plugin, not your repo. Run <code>/reload-plugins</code> and you're set.</p>
-    <p class="lede">Working on the harness itself? No install needed — open a Claude Code session in the harness repo and the skills load from <code>.claude/skills/</code> automatically.</p>
-  </section>
-
-  <section>
     <h2>Get started in three steps</h2>
     <div class="steps">
       <div class="step"><span class="n">1</span><div><h3>Orient — <code>/tfx:start</code></h3><p>A few lines on how the harness works, a check that your machine is ready, and a hand-off to the right skill.</p></div></div>
@@ -232,7 +232,7 @@
 
   <section>
     <h2>How to give feedback</h2>
-    <p class="prose">When the harness itself gets in your way — a gate that interrupts too much, a check that flagged the wrong thing or missed something, an onboarding gap — that's worth capturing. Just say it, even mid-task, and the <b>feedback</b> skill files a <code>[harness-feedback]</code> issue on the harness repo for you.</p>
+    <p class="prose">When the harness itself gets in your way, say so — even mid-task. The <b>feedback</b> skill captures it and files a <code>[harness-feedback]</code> issue on the repo for you.</p>
     <div class="callout">
       <p><b>Use it for:</b> "The plan gate keeps interrupting me for tiny copy changes." · "The contrast check flagged a disabled button." · "The token check missed a raw hex I snuck in."</p>
       <p><b>Not for:</b> feedback about a product's own page (that's a design-loop task), or proposing a new rule (that's the ratchet, below).</p>
@@ -266,7 +266,7 @@
     <span class="pointer"><code>README.md</code> — architecture and roadmap.</span>
     <span class="pointer"><code>standards/catalog.yaml</code> — the rulebook itself, the single source of truth.</span>
     <span class="pointer"><code>docs/ONBOARDING.md</code> — adopting the harness in a product repo.</span>
-    <br><b>Meta:</b> this page was designed by the harness it describes — semantic tokens only, both themes, anti-slop, AA contrast, one focal point per section.
+    <br><b>Meta:</b> built with the harness it describes — tokens only, both themes, AA contrast, checked clean.
   </p>
 
 </div>
