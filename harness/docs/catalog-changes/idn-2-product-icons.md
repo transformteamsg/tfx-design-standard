@@ -1,8 +1,9 @@
 # Proposed control: IDN-N (product icons render only from the approved icon family — the icon-level twin of IDN-1; slot 2)
 
 **Date:** 2026-07-03 · **Change type:** new control via ratchet (no tier change to any
-existing control) · **Approved by:** pending — design-lead approval required before the
-catalog commit. No approval is recorded in this file yet.
+existing control) · **Approved by:** Reza Ilmi (design lead), 2026-07-06 — in-session approval, per the
+027/029 precedent. Assigned **IDN-2**, kept as a **separate** control (not folded into
+IDN-1); ratified in step with the still-`proposed` product-icon guideline (open Q2).
 
 > **Note on `IDN-N`:** written as a placeholder rather than a concrete number, for the
 > same reason as the plan-053 siblings `lay-1-grid.md` / `lay-7-focal-point.md` —

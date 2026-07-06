@@ -12,7 +12,7 @@
 
 meta:
   version: "0.1"
-  updated: "2026-07-03"
+  updated: "2026-07-06"
   waiver_syntax: 'tfx-waive <ID> reason="<specific reason>"'
   categories:
     A11Y: Accessibility
@@ -524,6 +524,57 @@ controls:
       - rebuilt or distorted logo marks
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
 
+  # IDN-2..4: branding controls activated via the ratchet 2026-07-06 (plan 057),
+  # from recorded facts (COL-1 table, content skill §6, product-icons guideline).
+  # Design-lead approved: Reza Ilmi, 2026-07-06 (in-session). Records:
+  # docs/catalog-changes/idn-{2,3,4}-*.md. IDN-4 is the first product-scoped control.
+  - id: IDN-2
+    source: TFX-DS
+    title: Product icons render only from the approved product-icon family; no ad-hoc, redrawn, or regenerated icons
+    tier: L1
+    check: deterministic
+    phase: [implement, verify]
+    applies_to: [page, component]
+    verify: "Icon files resolve to the approved product-icon set (the guideline's icon family); no inline-drawn or regenerated marks; new marks are pre-verified via the Icon Generator before entering the set"
+    waiver: documented
+    fails_when:
+      - a redrawn, distorted, or regenerated product-icon mark
+      - a per-product background colour or gradient applied to the icon container
+      - wordmarks, photos, shadows, or gloss inside the icon
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
+  - id: IDN-3
+    source: TFX-DS
+    title: Copy on a product's surface carries that product's calibrated tone register — same voice character, calibrated weight, never a switched voice system
+    tier: L2
+    check: judgment
+    phase: [implement, verify]
+    applies_to: [content]
+    verify: "Evaluator reads the surface's copy against the product's row in the per-product register table (controls/idn-3.md): does it hold the shared voice character at the product's calibrated weight, or switch systems?"
+    waiver: rationale
+    fails_when:
+      - copy adopts another product's register (a switched voice system, not calibrated weight)
+      - a TW-adjacent surface (Posts / PG Staff Portal) carries nuance instead of plain TW voice
+    detail: controls/idn-3.md
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
+  - id: IDN-4
+    source: TFX-DS
+    title: "CaseSync surfaces treat casework as sensitive: restrained celebration, no gamified or playful elements around case data"
+    tier: L1
+    check: judgment
+    phase: [implement, verify]
+    applies_to: [content, page, component]
+    products: [casesync]
+    verify: "On CaseSync surfaces, the evaluator confirms case-data moments are treated with restraint — no confetti/celebration animations, streak/badge/points gamification, or exclamatory congratulatory copy around case outcomes; acknowledgement is calm and privacy-forward"
+    waiver: documented
+    fails_when:
+      - celebratory or confetti-style motion on a case-closure or case-outcome moment
+      - streak / badge / points / leaderboard gamification attached to casework
+      - exclamatory congratulatory copy on a sensitive case outcome
+    detail: controls/idn-4.md
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
   # ── Anti-slop (SLP-1..10) ─────────────────────────────────────────────
   # Adopted 2026-06-11 from the TFX-DS site seed catalog (v0.1) during the
   # catalog consolidation — the site and harness catalogs had diverged; these
@@ -683,6 +734,24 @@ controls:
     refs: [https://github.com/transformteamsg/tfx-design-standard]
 
   # ── Layout (LAY) ──────────────────────────────────────────────────────
+  # LAY-1: grid control activated via the ratchet 2026-07-06 (plan 053) — closes the
+  # spike's deferred grid slot; declaration lives in .tfx/design.json layout_system
+  # (plan 058). N/A where no grid is declared. Design-lead approved: Reza Ilmi, 2026-07-06.
+  - id: LAY-1
+    source: TFX-DS
+    title: Layout uses the product's declared column grid and gutter scale; ad-hoc column counts and off-scale gutters are findings — N/A where no grid is declared
+    tier: L2
+    check: hybrid
+    phase: [implement, verify]
+    applies_to: [page, component]
+    verify: "Where a product declares a grid (.tfx/design.json layout_system), gutter/margin values resolve to the TOK-2 spacing scale and column count matches the declared value; evaluator judges whether the column structure reads as coherent; grades N/A where no grid is declared (checks/layout-scan planned)"
+    waiver: rationale
+    fails_when:
+      - a declared grid exists and the layout uses an ad-hoc column count not drawn from it
+      - a declared grid exists and gutters/margins don't match the spacing scale (TOK-2) with no deliberate reason
+    detail: controls/lay-1.md
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
   - id: LAY-2
     source: TFX-DS
     title: Layout reflows to a single column with no loss at 320 CSS px (WCAG 2.2 SC 1.4.10); reading order and controls hold at 360/768/1280
@@ -761,4 +830,23 @@ controls:
       - shared edges between sections or components do not align, with no deliberate reason
       - text or icon baselines and optical centres are visibly misaligned
     detail: controls/lay-6.md
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
+  # LAY-7: focal-point control activated via the ratchet 2026-07-06 (plan 053) —
+  # promotes the "Compose, don't fill" prose into a checkable whole-page composition
+  # rule. Design-lead approved: Reza Ilmi, 2026-07-06. Record: docs/catalog-changes/lay-7-focal-point.md.
+  - id: LAY-7
+    source: TFX-DS
+    title: The page has one primary focal region and its visual reading order matches the task's priority order
+    tier: L2
+    check: judgment
+    phase: [plan, verify]
+    applies_to: [page]
+    verify: "Evaluator applies the squint test (does the first-glance read land on the region the task needs done first?) and enumerates the page's distinct visual regions by weight; a page with two or more regions of comparable weight and no task reason for the tie, or whose first-read region is not the task's priority region, fails"
+    waiver: rationale
+    fails_when:
+      - two or more regions compete for first read with no task reason for the tie
+      - the squint-test first-read lands on secondary content
+      - the primary action's region is visually subordinate to decoration
+    detail: controls/lay-7.md
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
