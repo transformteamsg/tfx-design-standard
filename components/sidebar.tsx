@@ -20,7 +20,18 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 
-const nav = [
+type NavLeaf = { href: string; title: string };
+type NavSubGroup = { label: string; items: NavLeaf[] };
+type NavItem = NavLeaf | NavSubGroup;
+type NavGroup = { label: string; href?: string; items: NavItem[] };
+
+const isSubGroup = (item: NavItem): item is NavSubGroup => "items" in item;
+const leafHrefs = (items: NavItem[]): string[] =>
+  items.flatMap((item) =>
+    isSubGroup(item) ? item.items.map((leaf) => leaf.href) : [item.href],
+  );
+
+const nav: NavGroup[] = [
   {
     label: "Start",
     items: [
@@ -46,8 +57,16 @@ const nav = [
     label: "Guidelines",
     href: "/guidelines",
     items: [
-      { href: "/guidelines/voice-tone", title: "Voice & tone" },
-      { href: "/guidelines/naming", title: "Naming" },
+      {
+        label: "Content",
+        items: [
+          { href: "/guidelines/voice-tone", title: "Voice & tone" },
+          { href: "/guidelines/grammar-mechanics", title: "Grammar & mechanics" },
+          { href: "/guidelines/ui-text", title: "UI text" },
+          { href: "/guidelines/text-patterns", title: "Components & text patterns" },
+          { href: "/guidelines/naming", title: "Naming" },
+        ],
+      },
       { href: "/guidelines/interaction", title: "Interaction" },
       { href: "/guidelines/web-interface", title: "Web interface" },
       { href: "/guidelines/data-viz", title: "Data visualization" },
@@ -89,11 +108,7 @@ const nav = [
     href: "/governance",
     items: [{ href: "/governance", title: "How this evolves" }],
   },
-] satisfies {
-  label: string;
-  href?: string;
-  items: { href: string; title: string }[];
-}[];
+];
 
 const groupLabel =
   "px-1 py-1.5 text-[11px] font-semibold uppercase tracking-wider";
@@ -106,13 +121,23 @@ export function AppSidebar() {
 
   if (pathname === "/") return null; // landing page is full-width, no docs chrome
 
+  const renderLeaf = (item: NavLeaf) => (
+    <SidebarMenuItem key={item.href}>
+      <SidebarMenuButton
+        isActive={pathname === item.href}
+        render={<Link href={item.href} />}
+      >
+        <span>{item.title}</span>
+      </SidebarMenuButton>
+    </SidebarMenuItem>
+  );
+
   return (
     <Sidebar>
       <SidebarContent className="px-2 py-4">
         {nav.map((group) => {
           const holdsCurrentPage =
-            pathname === group.href ||
-            group.items.some((item) => pathname === item.href);
+            pathname === group.href || leafHrefs(group.items).includes(pathname);
           const open = toggled[group.label] ?? holdsCurrentPage;
           const onOpenChange = (o: boolean) =>
             setToggled((prev) => ({ ...prev, [group.label]: o }));
@@ -162,16 +187,43 @@ export function AppSidebar() {
                 <CollapsibleContent className="h-[var(--collapsible-panel-height)] overflow-hidden transition-[height] duration-200 ease-out data-starting-style:h-0 data-ending-style:h-0">
                   <SidebarGroupContent className="pt-0.5">
                     <SidebarMenu className="ml-6 gap-0.5 border-l border-sidebar-border pl-2">
-                      {group.items.map((item) => (
-                        <SidebarMenuItem key={item.href}>
-                          <SidebarMenuButton
-                            isActive={pathname === item.href}
-                            render={<Link href={item.href} />}
-                          >
-                            <span>{item.title}</span>
-                          </SidebarMenuButton>
-                        </SidebarMenuItem>
-                      ))}
+                      {group.items.map((item) => {
+                        if (!isSubGroup(item)) return renderLeaf(item);
+
+                        const subKey = `${group.label}/${item.label}`;
+                        const subOpen =
+                          toggled[subKey] ??
+                          item.items.some((leaf) => pathname === leaf.href);
+
+                        return (
+                          <SidebarMenuItem key={item.label}>
+                            <Collapsible
+                              open={subOpen}
+                              onOpenChange={(o) =>
+                                setToggled((prev) => ({ ...prev, [subKey]: o }))
+                              }
+                            >
+                              <CollapsibleTrigger
+                                aria-label={`${subOpen ? "Collapse" : "Expand"} ${item.label}`}
+                                className="flex w-full items-center gap-1 rounded-md px-2 py-1.5 text-sm text-muted-foreground hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue)"
+                              >
+                                <ChevronRight
+                                  className={clsx(
+                                    "size-3.5 shrink-0 transition-transform duration-200",
+                                    subOpen && "rotate-90"
+                                  )}
+                                />
+                                <span>{item.label}</span>
+                              </CollapsibleTrigger>
+                              <CollapsibleContent className="h-[var(--collapsible-panel-height)] overflow-hidden transition-[height] duration-200 ease-out data-starting-style:h-0 data-ending-style:h-0">
+                                <SidebarMenu className="ml-3 gap-0.5 border-l border-sidebar-border pl-2 pt-0.5">
+                                  {item.items.map(renderLeaf)}
+                                </SidebarMenu>
+                              </CollapsibleContent>
+                            </Collapsible>
+                          </SidebarMenuItem>
+                        );
+                      })}
                     </SidebarMenu>
                   </SidebarGroupContent>
                 </CollapsibleContent>
