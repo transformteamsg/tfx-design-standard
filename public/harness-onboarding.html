@@ -156,20 +156,18 @@
     <h2>Install the harness skills</h2>
     <p class="prose">The harness ships as a Claude Code plugin. In your product repo — Teacher Workspace, CaseSync, or Glow — add the marketplace and install it. Two commands, typed in Claude Code:</p>
     <pre class="cmd">/plugin marketplace add transformteamsg/tfx-design-standard
-/plugin install tfx@tfx</pre>
-    <p class="prose">That installs the <b>eleven skills</b>, the <code>evaluator</code> that grades the work, and the <b>control catalog</b> — the rulebook ships with the plugin, not your repo. Run <code>/reload-plugins</code> and you're set.</p>
+/plugin install tfx@tfx
+/reload-plugins</pre>
+    <p class="prose">That installs the <b>eleven skills</b>, the <code>evaluator</code> that grades the work, and the <b>control catalog</b> — the rulebook ships with the plugin, not your repo. You're set.</p>
     <p class="lede">Working on the harness itself? No install needed — open a Claude Code session in the harness repo and the skills load from <code>.claude/skills/</code> automatically.</p>
 
     <p class="subhead">Already have it?</p>
-    <p class="prose">On the <code>tfx</code> plugin already? Pull the latest and reload — the renamed skills (<code>setup</code>, <code>copy</code>, <code>critique</code>) come through on their own:</p>
-    <pre class="cmd">/plugin marketplace update tfx
-/reload-plugins</pre>
     <p class="prose">Only if you're on the <b>old</b> <code>tfx-design-harness</code> plugin (from before the 0.3.0 rename) do you reinstall — the old and new are separate plugins, so an update won't cross the rename:</p>
     <pre class="cmd">/plugin uninstall tfx-design-harness
 /plugin marketplace update tfx
 /plugin install tfx@tfx
 /reload-plugins</pre>
-    <p class="lede">Either way, your product's <code>DESIGN.md</code> and decision records are untouched. Full detail: <code>docs/UPDATING.md</code>.</p>
+    <p class="lede">Your product's <code>DESIGN.md</code> and decision records are untouched. Full detail: <code>docs/UPDATING.md</code>.</p>
   </section>
 
   <section>
