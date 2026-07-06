@@ -254,10 +254,15 @@
 
   <section>
     <h2>Already have it installed?</h2>
-    <p class="prose">The current version (v0.6.0) renamed two skills — <code>onboard</code> became <code>setup</code>, and <code>content</code> became <code>copy</code>. That makes it a <b>breaking upgrade</b>: product repos <b>reinstall</b> rather than update in place.</p>
-    <div class="callout">
-      <p><b>Migrating:</b> follow the three-command migration in <code>docs/UPDATING.md</code> — remove the old plugin, update the marketplace, then install <code>tfx@tfx</code> and run <code>/reload-plugins</code>. Your product's <code>DESIGN.md</code> and decision records are untouched.</p>
-    </div>
+    <p class="prose">If you already have the <code>tfx</code> plugin, you're on the current track — pull the latest and reload. The renamed skills (<code>setup</code>, <code>copy</code>, <code>critique</code>) come through on their own:</p>
+    <pre class="cmd">/plugin marketplace update tfx
+/reload-plugins</pre>
+    <p class="prose">Only if you're on the <b>old</b> <code>tfx-design-harness</code> plugin (from before the 0.3.0 rename) do you reinstall — the old and new are separate plugins, so an update won't cross the rename:</p>
+    <pre class="cmd">/plugin uninstall tfx-design-harness
+/plugin marketplace update tfx
+/plugin install tfx@tfx
+/reload-plugins</pre>
+    <p class="lede">Either way, your product's <code>DESIGN.md</code> and decision records are untouched. Full detail: <code>docs/UPDATING.md</code>.</p>
   </section>
 
   <p class="foot">

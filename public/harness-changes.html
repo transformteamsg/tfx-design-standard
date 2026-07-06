@@ -389,7 +389,7 @@
 
   <p class="foot">
     <b>Status:</b> plans 056 to 062 merged and pushed to <code>origin/main</code> · both design-lead gates cleared 6 Jul (5 rules committed) · plugin <b>v0.6.0</b> · every check green (53 controls valid, detector and validator self-tests pass, site builds).<br>
-    <b>Heads-up for teams:</b> this is a breaking upgrade. The <code>onboard</code> skill became <code>setup</code> and <code>content</code> became <code>copy</code>, so product repos reinstall rather than update in place.
+    <b>Heads-up for teams:</b> the <code>onboard</code>→<code>setup</code> and <code>content</code>→<code>copy</code> renames come through a normal <code>/plugin marketplace update tfx</code> then <code>/reload-plugins</code> — no reinstall. Only the old <code>tfx-design-harness</code> plugin (pre-0.3.0) needs a full reinstall.
   </p>
 
 </div>
