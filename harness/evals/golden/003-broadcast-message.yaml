@@ -1,9 +1,9 @@
-# Golden task 003 — authored, NOT YET RUN.
+# Golden task 003 — first run 2026-07-07: PASS, 14 assertions, after one
+# advisory tuning (see the recipient-count assertion below).
 # An orchestrator runs the brief through the full design-ui loop, then scores the
 # produced artifacts with `python3 evals/score.py evals/golden/003-broadcast-message.yaml`.
-# Until then the artifact paths do not exist and the scorer correctly fails.
-# When first run, expect assertion tuning (grep heuristics meeting real output):
-# tune THIS file to match ground-truth intent — never tune the page to the greps.
+# Standing policy: assertions get tuned to match ground-truth intent —
+# never tune the page to the greps.
 
 id: 003-broadcast-message
 
@@ -65,11 +65,13 @@ assertions:
     path: docs/loop-run/broadcast-message.html
     pattern: '[Cc]onfirm'
     expect: present
-  # Advisory (see traps) — a recipient count appears in the confirm copy
+  # Advisory (see traps). 2026-07-07: retuned to strip_tags + 'Send to' anchor —
+  # scopes to confirm copy, tolerant of TYP-5 markup.
   - type: grep
     path: docs/loop-run/broadcast-message.html
-    pattern: '\d+\s*(parents|recipients|families)'
+    pattern: 'Send to \d+ (parents|recipients|families)'
     expect: present
+    strip_tags: true
   # CNT-1 — error copy reassures that the draft is preserved
   - type: grep
     path: docs/loop-run/broadcast-message.html

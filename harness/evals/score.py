@@ -22,7 +22,10 @@ Task YAML schema
 Assertion types (exactly these four — adding more is a plan STOP condition)
 ──────────────────────────────────────────────────────────────────────────
   {type: file_exists, path}
-  {type: grep, path, pattern, expect: present|absent}   # re.MULTILINE regex
+  {type: grep, path, pattern, expect: present|absent,   # re.MULTILINE regex
+          strip_tags: true|false}                       # optional, default false —
+                                                        #   strip HTML tags + decode
+                                                        #   &nbsp;/&amp; before matching
   {type: command, run, exit: 0|1}                       # whitelist: run must
                                                         #   start "python3 checks/"
   {type: count, path, pattern, min}                     # regex match count ≥ min
@@ -38,6 +41,7 @@ per failure. A missing artifact is a clear "artifact missing" error, never a
 traceback.
 """
 
+import html
 import os
 import re
 import shlex
@@ -158,15 +162,28 @@ def run_file_exists(a):
     return summary, None
 
 
+def strip_html(text):
+    """Strip HTML tags and decode common entities for tag-tolerant matching."""
+    text = re.sub(r"<[^>]+>", "", text)
+    text = text.replace("&nbsp;", " ")
+    text = text.replace("&amp;", "&")
+    return html.unescape(text)
+
+
 def run_grep(a):
     path, pattern, expect = a["path"], a["pattern"], a["expect"]
+    strip_tags = a.get("strip_tags", False)
     summary = f"grep {path} /{pattern}/ {expect}"
+    if strip_tags:
+        summary += " (strip_tags)"
     regex, err = compile_pattern(pattern)
     if err:
         return summary, err
     text, err = read_text(path)
     if err:
         return summary, err
+    if strip_tags:
+        text = strip_html(text)
     found = regex.search(text) is not None
     if expect == "present" and not found:
         return summary, f"pattern '{pattern}' not found (expected present)"
@@ -269,7 +286,9 @@ def run_self_test():
 
     fixture = tempfile.NamedTemporaryFile(
         suffix=".txt", mode="w", delete=False, encoding="utf-8")
-    fixture.write("alpha line one\nVERDICT: pass\nbeta beta beta\n")
+    fixture.write("alpha line one\nVERDICT: pass\nbeta beta beta\n"
+                  '<span class="num">32</span> parents\n'
+                  "32&nbsp;parents\n")
     fixture.close()
     fixture_path = fixture.name
     missing_path = fixture_path + ".does-not-exist"
@@ -329,6 +348,17 @@ def run_self_test():
                  [{"type": "grep", "path": missing_path,
                    "pattern": "alpha", "expect": "present"}],
                  "artifact missing")
+
+    # 7a–7b: strip_tags — raw markup defeats the pattern, tag-stripping tolerates it
+    # (covers both a tag wrapper and an HTML entity between the digits and the word)
+    expect_error("grep-strip-tags-off-fails-on-markup",
+                 [{"type": "grep", "path": fixture_path,
+                   "pattern": r"\d+ parents", "expect": "present"}],
+                 "not found")
+    expect_pass("grep-strip-tags-on-tolerates-markup",
+                [{"type": "grep", "path": fixture_path,
+                  "pattern": r"\d+ parents", "expect": "present",
+                  "strip_tags": True}])
 
     # 8–9: count pass / fail
     expect_pass("count-pass",
