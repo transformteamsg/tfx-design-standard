@@ -226,25 +226,42 @@ Expand the chosen option into a plan:
   incomplete.
 - **Tradeoffs, named**: what this design sacrifices and why that's acceptable. A plan
   without a tradeoffs section is incomplete.
+- **Plan summary table**: end the plan with a compact table the reader can scan in one
+  pass — one row per plan dimension (structure; components; interaction & motion; async
+  states + each one's A11Y-11 channel; controls in scope; waivers; tradeoffs; evidence
+  to capture), each cell a tight phrase, not prose. It is a summary the grill and the
+  approver read first, never a substitute for the plan above it.
 
 **Stop. The user approves the plan before any implementation.** This is the cheapest
 place for human judgment — structural mistakes caught here cost a conversation, not a
-rebuild. The gate runs across **two turns**:
+rebuild. The gate runs across **three stages**, in order — never collapsed on your own
+initiative; only the human's clear early approval shortens it (`grill.md`'s
+early-approval rule):
 
-- **Turn 1 — present the plan.** The full plan goes in your message body. Close with
-  a plain-text line that you will ask for approval next — **never a modal/option
-  dialog in the same turn as the plan**, which forces a decision before the reader
-  has read what they're deciding on.
-- **Turn 2 — the structured ask.** In the follow-up turn, ask for sign-off with a
-  structured **Approve / Adjust** `AskUserQuestion` — this is the documented Phase-3
-  default. "Approve" proceeds to implement; "Adjust" sends you back to revise the
-  plan (then re-present and re-ask). A free-text approval is still accepted; a vague
-  "continue" is not — confirm what they are approving.
+- **Stage 1 — expose the plan.** The full plan goes in your message body, ending with
+  the plan summary table. Close with a plain-text line that you will grill the plan
+  next — **never a modal/option dialog in the same turn as the plan**, which forces a
+  decision before the reader has read what they're deciding on. Do not ask for
+  approval yet.
+- **Stage 2 — grill the plan.** Read `grill.md` (beside this skill) now and run it:
+  interrogate the exposed plan one question at a time, each with a recommended answer,
+  looking up facts from context and putting every open decision to the human, and
+  folding every answer back into the plan before the next question. This is where hidden assumptions and
+  ducked decisions get resolved, so the human approves a sharpened plan rather than a
+  first draft. Grilling sharpens only: a question whose answer changes the chosen
+  structure sends you back to Phase 2, and grilling never relaxes a control.
+- **Stage 3 — the structured ask.** Once the grill is spent, ask for sign-off on the
+  sharpened plan with a structured **Approve / Adjust** `AskUserQuestion` — the
+  documented Phase-3 default. "Approve" proceeds to implement; "Adjust" sends you back
+  to revise the plan — a structural adjustment returns to Phase 2 (the grill's own
+  rule), anything else is re-exposed and re-asked. A free-text approval is still
+  accepted; a vague "continue" is not — confirm what they are approving.
 
 This structured **Approve / Adjust** question is the default at the Phase 2 option pick
-and at continuation/verify gates too — but the two-turn split above is Phase 3 only.
+and at continuation/verify gates too — but the three-stage split above is Phase 3 only.
 At the Phase 2 pick the dialog may be same-turn, because the options are short enough
-to read inside it.
+to read inside it. In an unattended run the grill has no human to answer it — grill
+yourself and record it, per `grill.md`.
 
 In an **unattended run** with no human reachable, proxy approval is
 permitted only when the operator authorized it up front — record it verbatim as

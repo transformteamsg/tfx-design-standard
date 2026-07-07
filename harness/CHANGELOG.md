@@ -3,6 +3,42 @@
 Notable changes to the TFX Design Harness plugin. Versioning tracks
 `.claude-plugin/plugin.json`.
 
+## [Unreleased]
+
+### Added — Phase 3 grill
+- **`design/grill.md`** — a `grill-me`-inspired interview brought into the harness. After
+  the plan is exposed and before the approval gate, the loop red-teams its own plan across
+  portfolio-tuned lenses (intent drift, worst-day teacher, ducked decision, cheaper design,
+  control-most-at-risk, waiver honesty), looks up facts from context, and puts every open
+  decision to the user **one question at a time with a recommended answer**, in dependency
+  order down the design tree. Grilling sharpens only — it never relaxes a control or adds
+  scope; a structural answer sends the loop back to Phase 2. It stops at shared
+  understanding, honours a clear early approval, and its control-at-risk and waiver lenses
+  read `standards/catalog.yaml` and the `standards` skill at grill time rather than carrying
+  frozen lists. Follows the canonical `grilling` skill (mattpocock/skills), with the
+  harness's guardrails layered on.
+
+### Changed — Phase 3 gate
+- The plan gate went from **two turns to three stages**: expose → **grill** → Approve/Adjust.
+  The approver now signs off on a grilled, sharpened plan, not a first draft. Unattended runs
+  grill themselves into the decision record, mirroring the operator-proxy rule.
+- Plan output now **ends with a compact summary table** (one row per plan dimension) the
+  grill and approver read first — a summary, never a substitute for the plan.
+- Description frontmatter untouched, so routing is unaffected (no full sweep; body-edit
+  spot-check applies). Deterministic layer re-run green: `audit-record` OK, `score --self-test`
+  17/17.
+- This change alters the loop gate sequence — a normative-meaning change per
+  `harness/CONTRIBUTING.md` — and must be flagged for design-lead review in the
+  PR description when this ships.
+
+### Changed — evals
+- The `grep` assertion gains an opt-in `strip_tags: true` field: `score.py` strips HTML
+  tags and decodes entities before matching, so copy assertions survive inline markup
+  (TYP-5 tabular-figure spans and the like) without per-run regex widening. Still exactly
+  four assertion types — this is a field on `grep`, not a fifth type. Self-test grew to 17
+  cases; golden task 003's recipient-count advisory was retuned to `strip_tags` + a
+  `Send to` anchor that scopes it to the confirm copy.
+
 ## [0.6.0] — 2026-07-04
 
 Skill-stack restructure II: dimension-scoped improvement passes you can fire directly.

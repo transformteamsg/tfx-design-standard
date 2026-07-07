@@ -1,5 +1,9 @@
 # Plan 026: Phase-3 plan approval is a structured Approve / Adjust in the follow-up turn
 
+> Superseded 2026-07-07: the two-turn gate this plan shipped was replaced by the
+> three-stage gate (expose → grill → Approve/Adjust) in the design skill; the
+> "follow-up turn" verification greps below no longer apply.
+
 > **Executor instructions**: Follow this plan step by step. Run every
 > verification command and confirm the expected result before moving to the
 > next step. If anything in the "STOP conditions" section occurs, stop and
