@@ -39,6 +39,26 @@ Notable changes to the TFX Design Harness plugin. Versioning tracks
   cases; golden task 003's recipient-count advisory was retuned to `strip_tags` + a
   `Send to` anchor that scopes it to the confirm copy.
 
+### Added — catalog (ratchet)
+- **CMP-4** — every empty-state view unambiguously signals "no content exists" (distinct
+  from loading, error, or permissions failure) through a heading, explanatory subtext, and
+  the absence of loading chrome such as skeleton rows or spinners. L1, hybrid check. Fills
+  the slot reserved in `catalog.yaml` since 2026-06-16 (Student Notes loop run,
+  `docs/decisions/student-notes-empty-state.md`). Design-lead approved 2026-07-08. Catalog
+  53 → 54 controls.
+
+### Added — harness rule (not a catalog control)
+- **Async-state evidence required.** When CMP-3 is in scope, the verify evidence set must
+  capture the loading, success, and error states — not only the initial/empty state — with
+  a video walkthrough or a named human attestation as acceptable substitutes for a missing
+  frame. Adopted as a harness rule rather than a new `EVD` catalog category (recommended
+  option; keeps the catalog about the product surface, not the loop's own evidence
+  process): `design/verify.md` and `docs/decisions/TEMPLATE.md`'s evidence ledger now carry
+  the requirement. No `EVD` prefix, no schema change, no catalog entry. A deterministic
+  `checks/audit-record.py` assertion enforcing this over the real record corpus is a
+  planned follow-up, not part of this change — see
+  `docs/catalog-changes/evd-1-async-evidence.md`.
+
 ## [0.6.0] — 2026-07-04
 
 Skill-stack restructure II: dimension-scoped improvement passes you can fire directly.

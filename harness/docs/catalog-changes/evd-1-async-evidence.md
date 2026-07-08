@@ -1,15 +1,22 @@
-# Proposed control: EVD-N (Async-state screenshot evidence required)
+# Async-state screenshot evidence required — APPROVED AS A HARNESS RULE, NOT A CONTROL
 
-**Date:** 2026-07-08 · **Change type:** new control OR harness rule via ratchet — the
-gate's central decision, see "Control vs harness rule" below · **Approved by:** pending —
-design-lead approval required before any change lands. No approval is recorded in this
-file yet.
+**Date:** 2026-07-08 · **Change type:** harness-rule adoption via ratchet — the gate chose
+path (b) below over a new catalog control · **Approved by:** Reza Ilmi (design lead),
+2026-07-08 — in-session directive ("execute all and then ship"); recommended options
+adopted. **Decision: path (b), the harness-rule path — the recommended option — not path
+(a), a new `EVD` control.** Additional reviewer scoping decision: no
+`checks/audit-record.py` assertion is added in this run (see "Deferred: the audit-record
+assertion" below, unchanged by the gate's decision). **The `EVD` prefix stays unused** —
+no `standards/schema.json` change, no `meta.categories` entry, no catalog entry, no
+`controls/evd-1.md`. Record this explicitly so a future proposal does not half-adopt the
+prefix.
 
-> **Note on `EVD-N`:** placeholder, not a concrete id — `EVD` is **not** currently in
-> `standards/schema.json`'s `id_prefixes`; adding an `EVD-1` catalog entry would require
-> a schema change (see below). This record uses the placeholder convention regardless, so
-> `checks/validate.py`'s cross-ref sweep does not flag a stray literal id while this
-> proposal is open.
+> **Note on the `EVD-N` placeholder used below:** `EVD` was never added to
+> `standards/schema.json`'s `id_prefixes` — that is precisely what the gate declined to
+> do — so `checks/validate.py`'s cross-ref sweep never actually matches an `EVD-<digit>`
+> string regardless of what this file writes. The specification sections below still use
+> `EVD-N` for readability and to mirror the CMP-4 record's convention, not because the id
+> is reserved anywhere; no id was ever assigned, and none is now.
 
 This record lives in `docs/catalog-changes/` per the plan-053 placement rule. Plan:
 `harness/plans/065-ratchet-cmp4-empty-state-evd1-evidence.md`.
@@ -64,7 +71,16 @@ Two paths, presented honestly, both closing the same gap:
 
 **Recommendation:** (b), the harness-rule path — it keeps the catalog scoped to what the
 *product* must do, not what the *builder's evidence set* must contain, while giving the
-requirement the same mandatory force. The gate decides.
+requirement the same mandatory force.
+
+**Gate decision: (b), the harness-rule path.** Recommended option adopted as-is. Landed
+in `.claude/skills/design/verify.md` (Phase 5's state-evidence step now names the
+MANDATORY loading/success/error-frame requirement when CMP-3 is in scope, with the
+video/attestation substitutes) and `docs/decisions/TEMPLATE.md`'s evidence ledger (a
+REQUIRED line under Screenshots naming the same requirement). No schema, categories,
+catalog, or detail-file change — the section below ("The proposed control (if the gate
+chooses path (a))") is retained only as the specification that was NOT adopted, for the
+record.
 
 ## The proposed control (if the gate chooses path (a))
 
@@ -118,14 +134,15 @@ this ratchet round. This gap stays machine-visible instead: it is queued as a fo
 
 ## Re-audit set
 
-Not applicable if the gate chooses the harness-rule path (b) — there is no catalog control
-id, so `checks/reaudit-scope.py` has nothing to compute against. If the gate instead
-chooses path (a), run `python3 checks/reaudit-scope.py EVD-1` after the catalog commit and
-paste the output here.
+**Not applicable — the gate chose the harness-rule path (b).** There is no catalog
+control id, so `checks/reaudit-scope.py` has nothing to compute against. The rule still
+has a practical re-audit implication worth naming for the design lead: every decision
+record written before 2026-07-08 (all four in the current corpus) predates this
+requirement and was not built with an EVD-aware evidence set in mind — those records are
+not retroactively non-compliant (the rule did not exist when they shipped), but a future
+CMP-3-scoped re-audit of those surfaces should also capture the missing frames while it's
+there.
 
----
-
-**Status:** propose-only, Step 1 of plan 065. Not committed to `standards/catalog.yaml`
-or `standards/schema.json`. Awaiting design-lead approve/amend/reject (including the
-control-vs-harness-rule decision), recorded by name and date in this file before any
-change happens.
+**Status:** APPROVED AS A HARNESS RULE (Step 3 of plan 065). No `standards/catalog.yaml`
+or `standards/schema.json` change — none was ever made. `.claude/skills/design/verify.md`
+and `docs/decisions/TEMPLATE.md` carry the MANDATORY requirement.

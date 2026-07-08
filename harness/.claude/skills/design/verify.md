@@ -22,7 +22,14 @@ Run in this order; do not present output to the user while a step is failing:
    - **State evidence**: one frame per state asserted by each in-scope hybrid
      control — *including loading*, the state most often coded-but-unphotographed
      (it slipped through both pilot runs before this rule existed). Use the
-     demo-only hooks built in Phase 4.
+     demo-only hooks built in Phase 4. **MANDATORY when CMP-3 is in scope** (harness
+     rule, not a catalog control — see `docs/catalog-changes/evd-1-async-evidence.md`):
+     the evidence set must capture the loading state, the success state, and the
+     error state, not only the initial/empty state — a build can claim all three
+     exist in code while only the empty state is ever screenshotted, and code-level
+     reachability is not perceptibility. Acceptable substitutes for a frame: a video
+     walkthrough covering all three states, or a named human reviewer's attestation
+     that they witnessed the live render of all three.
    - **Journey evidence** (flows and multi-step interactions): traverse the happy
      path end-to-end, one frame per step, **plus one recovery path** from the Phase
      3 flow map actually walked — e.g. abandon at step 2 and return, or fail

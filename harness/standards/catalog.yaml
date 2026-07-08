@@ -394,8 +394,24 @@ controls:
     detail: controls/cmp-3.md
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
 
-  # CMP-4 is reserved for the pending empty-state-clarity proposal recorded in
-  # docs/decisions/student-notes-empty-state.md — do not reuse this id elsewhere.
+  # CMP-4 added 2026-07-08 — ratchet, design-lead approved (empty-state clarity,
+  # Student Notes loop run). See docs/catalog-changes/cmp-4-empty-state-clarity.md
+  - id: CMP-4
+    source: TFX-DS
+    title: Every empty-state view unambiguously signals "no content exists" — distinct from loading, error, or permissions failure — through a heading, explanatory subtext, and the absence of loading chrome such as skeleton rows or spinners
+    tier: L1
+    check: hybrid
+    phase: [plan, implement, verify]
+    applies_to: [page, component]
+    verify: "Deterministic: confirm the rendered DOM contains neither a skeleton-row element nor a loading spinner when the empty-state heading is visible (manual until a script exists). Judgment: evaluator reads the heading + subtext pair and answers 'could a first-time user mistake this for a loading state or a permissions error?' — pass = no plausible confusion"
+    waiver: documented
+    fails_when:
+      - a skeleton row, shimmer, or loading spinner is visible in the DOM alongside the empty-state heading
+      - the heading/subtext pair reads as "still loading" or "you don't have access" rather than "nothing here yet"
+      - an empty state ships with list chrome (row dividers, placeholder rows) that could be mistaken for a populated-but-loading list
+    detail: controls/cmp-4.md
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
   # CMP-5 / CMP-6: ratchet additions 2026-06-17 — action hierarchy and the table
   # pattern, adopted from the design-engineering skills (ce-frontend-design,
   # make-interfaces-feel-better, userinterface-wiki) studied against the catalog.

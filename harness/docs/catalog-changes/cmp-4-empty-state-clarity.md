@@ -1,18 +1,21 @@
-# Proposed control: CMP-N (Empty-state clarity — fills the reserved slot 4)
+# Proposed control: CMP-4 (Empty-state clarity — fills the reserved slot 4)
 
 **Date:** 2026-07-08 · **Change type:** new control via ratchet (fills the id already
 reserved for this proposal — no tier change to any existing control) · **Approved by:**
-pending — design-lead approval required before the catalog commit. No approval is
-recorded in this file yet.
+Reza Ilmi (design lead), 2026-07-08 — in-session directive ("execute all and then ship");
+recommended options adopted. Committed to the catalog in the reserved slot at **CMP-4**,
+**L1**, **hybrid**, `phase: [plan, implement, verify]`, `applies_to: [page, component]`,
+`waiver: documented`, with the `fails_when` bullets drafted below carried verbatim into
+the catalog entry and `controls/cmp-4.md`, exactly as proposed — no amendments at the
+gate.
 
-> **Note on `CMP-N`:** placeholder, not a concrete number — `checks/validate.py`'s
-> cross-ref sweep flags any `PREFIX-<digit>` id not in the live catalog. The slot itself
-> is not actually contested here: `standards/catalog.yaml:397-398` already carries a
-> two-line reservation comment naming this exact proposal by file path and instructing
-> that the id not be reused elsewhere (see plan 065's "Current state" section for the
-> full text). This record still uses the placeholder convention (per the idn-4 record
-> precedent) so `validate.py` passes while this file is propose-only; only whether the
-> proposal is approved as specified is open, not which slot it would take.
+> **Note on the `CMP-N` placeholder used below:** while this proposal was open,
+> `checks/validate.py`'s cross-ref sweep would have flagged a literal `CMP-4` reference in
+> this file as an unknown control id (the catalog didn't carry the entry yet), so the body
+> below still reads `CMP-N` in the specification sections — a drafting artifact of the
+> propose-then-approve sequence, not a live open question. The id was never actually
+> contested: `standards/catalog.yaml:397-398` carried a reservation comment naming this
+> exact proposal by file path since 2026-06-16.
 
 This record lives in `docs/catalog-changes/` per the plan-053 placement rule. Plan:
 `harness/plans/065-ratchet-cmp4-empty-state-evd1-evidence.md`.
@@ -66,14 +69,13 @@ transcribed faithfully into the full proposal at
     mistaken for a populated-but-loading list.
 - **detail:** `controls/cmp-4.md`.
 
-## Open questions for the gate
+## Open questions for the gate — resolved
 
-1. **Tier and check type:** confirm L1, hybrid, as proposed (vs. a lower tier or a
-   judgment-only check).
-2. **`phase` and `applies_to`:** confirm `[plan, implement, verify]` and
+1. **Tier and check type:** confirmed L1, hybrid, as proposed.
+2. **`phase` and `applies_to`:** confirmed `[plan, implement, verify]` and
    `[page, component]` as proposed.
-3. **`fails_when` bullets:** confirm the three drafted above carry into the catalog entry
-   and detail file verbatim, or amend.
+3. **`fails_when` bullets:** the three drafted above carried into the catalog entry and
+   detail file verbatim, unamended.
 
 ## Non-duplication statement
 
@@ -95,6 +97,5 @@ control is committed.
 
 ---
 
-**Status:** propose-only, Step 1 of plan 065. Not committed to `standards/catalog.yaml`.
-Awaiting design-lead approve/amend/reject, recorded by name and date in this file before
-any catalog change happens.
+**Status:** APPROVED AS PROPOSED and committed to `standards/catalog.yaml` (Step 3 of
+plan 065). Catalog 53 → 54 controls. Re-audit set to be appended below per Step 5.
