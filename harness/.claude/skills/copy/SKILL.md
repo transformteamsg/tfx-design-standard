@@ -21,8 +21,9 @@ wins and the others are corrected.
 **Improve-the-copy pass.** For a scoped "improve / polish the copy on `<page>`" run —
 capture the surface, judge only the wording, propose ranked fixes, gate, and verify —
 follow `../critique/pass.md` with this skill's dimension subset: **CNT-1, CNT-2, CNT-3,
-SLP-9, and IDN-3 (IDN-4 on CaseSync surfaces)**. The rest of this file is that pass's
-reference: it is what "on-voice" means.
+CNT-4 (domain fidelity — content modeling a real-world artifact is faithful to it or
+labelled illustrative), SLP-9, and IDN-3 (IDN-4 on CaseSync surfaces)**. The rest of
+this file is that pass's reference: it is what "on-voice" means.
 
 ## Who you're writing for
 

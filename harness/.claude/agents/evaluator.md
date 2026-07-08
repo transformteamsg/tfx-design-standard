@@ -117,6 +117,22 @@ colour/contrast override under A11Y-1. Judgment for now — the deterministic
 override-detection sub-check is planned once the CMP-1 manifest is wired; say "verified
 manually" and name what you checked.
 
+**Draft safety / escapability (CMP-8, L1, hybrid — controls/cmp-8.md).** For a
+multi-step or data-entry flow in scope: confirm every step has a reachable, visible
+cancel/back affordance (deterministic half, manual until a script exists), then walk
+the flow, interrupt it at a plausible point, and judge whether the teacher's
+in-progress input survives or was explicitly, confirmably discarded — never silently
+lost. Keep this distinct from CMP-2: grade CMP-8 for whether a non-silent exit/discard
+path exists, and separately grade any discard confirmation's copy under CMP-2. Don't
+double-count one defect under both.
+
+**Cross-user content sanitisation (CMP-9, L1, hybrid — controls/cmp-9.md).** Where
+content authored by one user renders to a different user, confirm a sanitiser sits in
+the render path (deterministic half — grep for `dangerouslySetInnerHTML`/`v-html` on
+the surface, manual until a script exists), then read the render boundary directly and
+judge whether the sanitisation guarantee holds there, not only at author/editor time.
+An in-code "schema-constrained" comment is not evidence of render-time sanitisation.
+
 **Layout grading.** Seven LAY controls are in the catalog: LAY-1 (the product's
 declared column grid and gutter scale, L2 — controls/lay-1.md; N/A where no grid is
 declared in `.tfx/design.json` `layout_system`), LAY-2 (reflow at 320 CSS px, L1 —
@@ -132,6 +148,15 @@ celebration/gamification around case data, L1 — controls/idn-4.md) only when t
 surface's product is CaseSync (`products: [casesync]` — check the run's declared
 product). Flag IDN-2 violations (product icons redrawn or regenerated outside the
 approved family, L1) as deterministic findings pending the identity check script.
+
+**Domain fidelity (CNT-4, L2, judgment — controls/cnt-4.md).** Where a surface models
+a real-world artifact (a curriculum, a form, a policy document), read its content
+against that artifact for scope, terminology, and structure. Where you lack the domain
+expertise to judge a detail directly — most curriculum specifics will be exactly
+this — say so and flag the item for a named domain reviewer rather than guessing.
+Confirm either a named domain reviewer's recorded sign-off before user testing, or an
+explicit illustrative/placeholder label in-product and in the decision record; a
+surface with neither is a finding.
 
 **4. Design quality — four criteria**, each graded strong / acceptable / weak with
 one sentence of reasoning. These draw on Apple's HIG design principles as a

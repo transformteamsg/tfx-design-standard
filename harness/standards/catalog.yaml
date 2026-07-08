@@ -467,6 +467,45 @@ controls:
     detail: controls/cmp-7.md
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
 
+  # CMP-8 added 2026-07-08 — ratchet, design-lead approved (draft safety /
+  # escapability, flow-pass gap). See
+  # docs/catalog-changes/cmp-8-draft-safety-escapability.md
+  - id: CMP-8
+    source: TFX-DS
+    title: A multi-step or data-entry task offers a non-destructive exit at every step, and in-progress work is preserved or explicitly discarded on interruption — never silently lost
+    tier: L1
+    check: hybrid
+    phase: [plan, implement, verify]
+    applies_to: [flow]
+    verify: "Deterministic: every step in a mapped flow has a reachable cancel/back affordance (planned, manual until a script exists). Judgment: evaluator walks the flow map, interrupts it, and confirms in-progress work survives the interruption or is explicitly, confirmably discarded — never silently lost"
+    waiver: documented
+    fails_when:
+      - a wizard/dialog with no cancel/back at some step
+      - navigation away silently drops typed content
+      - an interrupted flow resumes from zero with no warning at exit time
+      - escape/close discards a draft with no confirm (ties to CMP-2's mechanics)
+    detail: controls/cmp-8.md
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
+  # CMP-9 added 2026-07-08 — ratchet, design-lead approved (cross-user HTML
+  # sanitisation; category decided CMP over SLP to keep SLP aesthetically
+  # coherent). See docs/catalog-changes/cross-user-html-sanitisation.md
+  - id: CMP-9
+    source: TFX-DS
+    title: Content authored by one user and rendered to another is sanitised at the render boundary; author-time schema constraints are not sufficient
+    tier: L1
+    check: hybrid
+    phase: [implement, verify]
+    applies_to: [component, flow]
+    verify: "Deterministic: grep detector (planned) finds dangerouslySetInnerHTML/v-html on any surface rendering another user's authored content, and checks whether a sanitiser call sits in the render path. Judgment: evaluator reads the render boundary and confirms sanitisation holds there, not only at author/editor time; a mock-data prototype deferral is acceptable only if explicitly flagged in the decision record"
+    waiver: documented
+    fails_when:
+      - dangerouslySetInnerHTML/v-html renders another user's authored content with no sanitiser in the render path
+      - sanitisation is claimed at editor time only ("schema-constrained output") with nothing enforced at render
+      - a prototype defers sanitisation with no recorded flag noting the deferral
+    detail: controls/cmp-9.md
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
   # ── Content & naming ──────────────────────────────────────────────────
   - id: CNT-1
     source: TFX-DS
@@ -510,6 +549,24 @@ controls:
       - passive constructions in instructions
       - a title, description, or intro that opens with the mechanism (the tool, token, or library) instead of what it does for the teacher
     detail: controls/cnt-3.md
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
+  # CNT-4 added 2026-07-08 — ratchet, design-lead approved (domain fidelity,
+  # issue #27). See docs/catalog-changes/cnt-4-domain-fidelity.md
+  - id: CNT-4
+    source: TFX-DS
+    title: Content that models a real-world artifact is faithful to it (scope, terminology, structure) or explicitly labelled illustrative
+    tier: L2
+    check: judgment
+    phase: [intent, implement, verify]
+    applies_to: [content]
+    verify: "Evaluator + named domain reviewer sign-off before user testing, or the illustrative label present in-product and in the decision record"
+    waiver: rationale
+    fails_when:
+      - a curriculum/subject/level detail a practitioner would recognise as wrong (e.g. a subject graded at a level where it isn't taught)
+      - invented specifics presented as real in a user-testing surface
+      - placeholder content with no illustrative label
+    detail: controls/cnt-4.md
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
 
   # ── Motion & identity ─────────────────────────────────────────────────

@@ -15,6 +15,10 @@ and routed).
 
 - **CMP-2** — destructive actions show consequences and offer undo/confirm (L0).
 - **CMP-3** — every async transaction has loading, success, and error states.
+- **CMP-8** — a non-destructive exit exists at every step, and in-progress work is
+  preserved or explicitly discarded on interruption — never silently lost. (CMP-2 keeps
+  the destructive-action consequence/undo mechanics; CMP-8 covers the work itself and
+  the ability to leave.)
 - **A11Y-2** — keyboard traversal works across the whole journey, not just per screen.
 - **A11Y-11** — each transition announces its change and manages focus.
 - **SLP-10** — a complex multi-section task gets a page, not a modal.
