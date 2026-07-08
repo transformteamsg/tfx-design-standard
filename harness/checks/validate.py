@@ -1004,6 +1004,77 @@ def run_self_test():
         sys.exit(0)
 
 
+# ── Coverage listing ─────────────────────────────────────────────────────────
+
+def effective_enforcement(control):
+    """
+    Resolve a control's effective 'enforced' value, applying the schema
+    default when the field is absent: 'manual' for deterministic/hybrid,
+    'evaluator' for judgment. Returns (value, was_defaulted). Pure — no I/O.
+    """
+    enforced = control.get("enforced")
+    if enforced is not None:
+        return enforced, False
+    return ("evaluator" if control.get("check") == "judgment" else "manual"), True
+
+
+def format_script(control):
+    """Render a control's script: field (string, list, or absent) as one cell."""
+    script = control.get("script")
+    if isinstance(script, list):
+        return ", ".join(script)
+    if isinstance(script, str):
+        return script
+    return "—"
+
+
+def print_coverage(repo_root):
+    """
+    Print the derived enforcement-coverage table (id · tier · check ·
+    enforced[defaulted] · script) plus a summary count line, and exit 0.
+    This replaces hand-maintained gap lists (e.g. plans/README.md's
+    direction-finding #1), which drift as controls are added. Read-only —
+    never writes back a defaulted value into the catalog.
+    """
+    catalog_path = os.path.join(repo_root, "standards", "catalog.yaml")
+    with open(catalog_path) as fh:
+        catalog_data = yaml.safe_load(fh)
+    controls = sorted(catalog_data.get("controls", []), key=lambda c: c.get("id", ""))
+
+    counts = {"script": 0, "partial": 0, "manual": 0, "evaluator": 0}
+    rows = []
+    for control in controls:
+        enforced, defaulted = effective_enforcement(control)
+        counts[enforced] = counts.get(enforced, 0) + 1
+        rows.append((
+            control.get("id", "?"),
+            control.get("tier", "?"),
+            control.get("check", "?"),
+            f"{enforced} (default)" if defaulted else enforced,
+            format_script(control),
+        ))
+
+    header = ("id", "tier", "check", "enforced", "script")
+    widths = [
+        max(len(header[i]), *(len(r[i]) for r in rows)) if rows else len(header[i])
+        for i in range(len(header))
+    ]
+
+    def fmt(row):
+        return "  ".join(str(cell).ljust(w) for cell, w in zip(row, widths))
+
+    print(fmt(header))
+    print(fmt(tuple("-" * w for w in widths)))
+    for row in rows:
+        print(fmt(row))
+    print()
+    print(
+        f"{counts['script']} script / {counts['partial']} partial / "
+        f"{counts['manual']} manual / {counts['evaluator']} evaluator "
+        f"(total {len(controls)})"
+    )
+
+
 # ── Entry point ──────────────────────────────────────────────────────────────────
 
 def main():
@@ -1012,6 +1083,10 @@ def main():
     if "--self-test" in args:
         run_self_test()
         return  # run_self_test calls sys.exit
+
+    if "--coverage" in args:
+        print_coverage(REPO_ROOT)
+        sys.exit(0)
 
     errors, n = collect_errors(REPO_ROOT, _return_count=True)
 
