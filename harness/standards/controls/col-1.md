@@ -8,6 +8,8 @@ phase: [implement, verify]
 applies_to: [page, component]
 verify: "Primary action / brand-moment colours resolve to the active product's primary token or its ramp (see controls/col-1.md for the per-product table)"
 waiver: documented
+enforced: partial
+script: checks/token-audit.py
 refs:
   - https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb
 ---

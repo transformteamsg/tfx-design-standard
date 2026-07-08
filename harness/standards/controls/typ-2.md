@@ -8,6 +8,8 @@ phase: [implement, verify]
 applies_to: [page, component]
 verify: "Type-scale scan; checks/type-scan"
 waiver: documented
+enforced: partial
+script: checks/type-scan.py
 refs:
   - https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb
 ---

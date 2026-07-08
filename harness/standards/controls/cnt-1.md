@@ -8,6 +8,8 @@ phase: [implement, verify]
 applies_to: [content]
 verify: "Script finds error surfaces and flags raw codes; evaluator judges 'what happened -> what it means -> what to do next'"
 waiver: documented
+enforced: partial
+script: checks/content-lint.py
 refs:
   - https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb
 ---
