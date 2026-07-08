@@ -7,5 +7,6 @@
   "applies_to": ["page", "component", "flow", "content"],
   "products": ["tw", "casesync", "glow"],
   "audiences": ["teachers", "students-primary", "students-secondary", "parents"],
+  "enforced": ["script", "partial", "manual", "evaluator"],
   "id_prefixes": ["A11Y", "TOK", "TYP", "COL", "CMP", "CNT", "MOT", "IDN", "SLP", "LAY"]
 }
