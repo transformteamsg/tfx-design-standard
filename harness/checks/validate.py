@@ -11,7 +11,8 @@ Validates standards/catalog.yaml for internal consistency:
   6. Reverse check: every standards/controls/*.md frontmatter matches catalog.
   7. Cross-reference sweep: every control ID mentioned in prose exists in catalog.
   8. tfx-sync parity: [L0-SYNC], [SLP9-SYNC], and [COUNT-SYNC] (every "<N> controls"
-     claim in README.md must equal the catalog's actual control count).
+     claim in README.md or docs/index.html must equal the catalog's actual
+     control count).
 Exit 0 and print "OK: <n> controls valid" on success.
 Exit 1 and print "ERROR <location>: <message>" lines on failure.
 """
@@ -308,28 +309,33 @@ def slp9_parity_errors(repo_root):
     return errors
 
 
-def count_parity_errors(repo_root, catalog_count):
+COUNT_SYNC_PATHS = ("README.md", "docs/index.html")
+
+
+def count_parity_errors(repo_root, catalog_count, relpaths=COUNT_SYNC_PATHS):
     """
-    [COUNT-SYNC] Every "<N> controls" claim in README.md must equal the
-    catalog's actual control count. Catches the class of drift where a
-    control is added/removed but the README's prose count is never updated.
-    A README with no count claim is not an error (nothing to check).
+    [COUNT-SYNC] Every "<N> controls" claim in README.md or docs/index.html
+    must equal the catalog's actual control count. Catches the class of
+    drift where a control is added/removed but a prose count is never
+    updated. A file with no count claim (or that doesn't exist) is not an
+    error (nothing to check).
     """
     errors = []
-    readme_path = os.path.join(repo_root, "README.md")
-    if not os.path.isfile(readme_path):
-        return errors
-    rel = os.path.relpath(readme_path, repo_root)
-    with open(readme_path) as fh:
-        text = fh.read()
-    seen = set()
-    for m in re.finditer(r"(\d+) controls", text):
-        n = int(m.group(1))
-        if n != catalog_count and n not in seen:
-            seen.add(n)
-            errors.append(
-                f"ERROR {rel} [COUNT-SYNC]: says {n} controls, catalog has {catalog_count}"
-            )
+    for relpath in relpaths:
+        path = os.path.join(repo_root, relpath)
+        if not os.path.isfile(path):
+            continue
+        rel = os.path.relpath(path, repo_root)
+        with open(path) as fh:
+            text = fh.read()
+        seen = set()
+        for m in re.finditer(r"(\d+) controls", text):
+            n = int(m.group(1))
+            if n != catalog_count and n not in seen:
+                seen.add(n)
+                errors.append(
+                    f"ERROR {rel} [COUNT-SYNC]: says {n} controls, catalog has {catalog_count}"
+                )
     return errors
 
 
@@ -792,6 +798,22 @@ def run_self_test():
             fh.write("No count claim in this README at all.")
         assert_clean("count-sync no claim",
                      count_parity_errors(count_tmp, 48))
+
+        docs_dir = os.path.join(count_tmp, "docs")
+        os.makedirs(docs_dir, exist_ok=True)
+        index_path = os.path.join(docs_dir, "index.html")
+
+        with open(readme_path, "w") as fh:
+            fh.write("No count claim in this README at all.")
+        with open(index_path, "w") as fh:
+            fh.write('<span class="pill">48 controls</span>')
+        assert_clean("count-sync index.html matching count",
+                     count_parity_errors(count_tmp, 48))
+
+        with open(index_path, "w") as fh:
+            fh.write('<span class="pill">47 controls</span>')
+        assert_error("count-sync index.html mismatched count",
+                     count_parity_errors(count_tmp, 48), "[COUNT-SYNC]")
     finally:
         shutil.rmtree(count_tmp, ignore_errors=True)
 

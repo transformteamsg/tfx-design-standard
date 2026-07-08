@@ -89,16 +89,16 @@ their behaviour is proven by their own `--self-test`s and a real-corpus run over
 
 `python3 checks/validate.py` — validates `standards/catalog.yaml` against the schema in `standards/README.md`: field presence and allowed values, tier→waiver pairing, `detail:` file existence, detail-frontmatter ↔ catalog consistency, and that every control ID referenced in skills/docs exists in the catalog. Exit 0 on pass, exit 1 with `ERROR` lines on failure. This is the repo's verification baseline — run it before committing any `standards/` change.
 
-The validator also enforces two **fragment-parity** sub-checks via `<!-- tfx-sync:… -->` markers: `[L0-SYNC]` (the inline "Non-negotiables (L0)" lists in `CLAUDE.md` and `design/SKILL.md` must equal the catalog's `tier: L0` set) and `[SLP9-SYNC]` (the `content` buzzword summary must be a subset of the canonical list in `standards/controls/slp-9.md`). See [docs/SYNC.md](../docs/SYNC.md). A third check, `[COUNT-SYNC]`, needs no markers: every "`<N> controls`" claim in `README.md` must equal the catalog's actual control count, so an added or removed control fails the build until the README prose is updated.
+The validator also enforces two **fragment-parity** sub-checks via `<!-- tfx-sync:… -->` markers: `[L0-SYNC]` (the inline "Non-negotiables (L0)" lists in `CLAUDE.md` and `design/SKILL.md` must equal the catalog's `tier: L0` set) and `[SLP9-SYNC]` (the `copy` buzzword summary must be a subset of the canonical list in `standards/controls/slp-9.md`). See [docs/SYNC.md](../docs/SYNC.md). A third check, `[COUNT-SYNC]`, needs no markers: every "`<N> controls`" claim in `README.md` **and `docs/index.html`** must equal the catalog's actual control count, so an added or removed control fails the build until the prose is updated.
 
-**Self-test:** `python3 checks/validate.py --self-test` → `SELF-TEST OK (30 cases)`.
+**Self-test:** `python3 checks/validate.py --self-test` → `SELF-TEST OK (36 cases)`.
 
 
 ## Token audit (built)
 
 `python3 checks/token-audit.py <path>...` — scans `.css`, `.html`, `.jsx`, `.tsx`, `.js`, `.ts`, `.vue`, and `.svelte` files for raw colour values, off-scale spacing, and off-scale border-radius that should be replaced with design tokens. Accepts files or directories (recursive). Exit 0 silent on pass; exit 1 with `ERROR` lines on failure.
 
-**Coverage:** TOK-1 (raw hex/rgb/hsl/oklch/named-colour in style contexts, plus raw colour inside Tailwind arbitrary-value utilities e.g. `bg-[…]` — see below), TOK-2 (off-scale spacing — shadcn default scale), TOK-3 (off-scale border-radius), COL-1/COL-2 (Tailwind palette utility classes bypassing the semantic layer). Suggests the nearest scale value or token pattern on every violation.
+**Coverage:** TOK-1 (raw hex/rgb/hsl/oklch/named-colour in style contexts, plus raw colour inside Tailwind arbitrary-value utilities e.g. `bg-[…]` — see below), TOK-2 (off-scale spacing — shadcn default scale), TOK-3 (off-scale border-radius), COL-2 (Tailwind palette utility classes bypassing the semantic layer; COL-1 partial — palette bypass only, product-primary resolution is judgment). Suggests the nearest scale value or token pattern on every violation.
 
 **Token-definition exemption:** raw values inside a `:root { --*: … }` custom-property block or a `/* tfx-tokens */` … `/* /tfx-tokens */` region are exempt — tokens must be defined somewhere.
 
@@ -256,7 +256,7 @@ This closes the loop `token-audit.py` leaves open ("a human closes the decision-
 - All-caps set via camelCase inline style (TYP-4) — `style={{textTransform:'uppercase'}}` in JSX is not matched; only the CSS `text-transform: uppercase` form and the Tailwind `uppercase` utility are.
 - Fonts / sizes set in a separate stylesheet the line-local rule can't see, or composed from variables / class-name interpolation — out of static reach.
 
-**Self-test:** `python3 checks/type-scan.py --self-test` → `SELF-TEST OK (34 cases)`.
+**Self-test:** `python3 checks/type-scan.py --self-test` → `SELF-TEST OK (42 cases)`.
 
 ## Component manifest (built)
 
