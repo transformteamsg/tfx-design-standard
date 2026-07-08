@@ -33,7 +33,7 @@ REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Frontmatter fields compared against the catalog in the Step-6 reverse check.
 FRONTMATTER_FIELDS = ["id", "source", "title", "tier", "check", "phase",
-                      "applies_to", "verify", "waiver"]
+                      "applies_to", "verify", "waiver", "enforced", "script"]
 
 
 def load_schema_bits(repo_root):
@@ -61,6 +61,7 @@ def load_schema_bits(repo_root):
         "allowed_waivers": set(tier_waiver.values()),
         "allowed_products": set(schema["products"]),
         "allowed_audiences": set(schema["audiences"]),
+        "allowed_enforced": set(schema["enforced"]),
         "control_id_re": re.compile(rf"^({prefixes})-\d+$"),
         "xref_re": re.compile(rf"\b({prefixes})-\d+\b"),
     }
@@ -143,6 +144,35 @@ def validate_control(control, idx, schema_bits):
     waiver = control.get("waiver")
     if waiver is not None and waiver not in allowed_waivers:
         err(loc, f"invalid waiver '{waiver}' — allowed: {sorted(allowed_waivers)}")
+
+    # 2d. Optional enforcement fields — enforced / script. Orthogonal to
+    # `check:` (who verifies in principle) — this says what actually runs
+    # today. Absent enforced defaults to 'manual' (deterministic/hybrid) or
+    # 'evaluator' (judgment); the default is never written back.
+    allowed_enforced = schema_bits["allowed_enforced"]
+    enforced = control.get("enforced")
+    script = control.get("script")
+
+    if enforced is not None and enforced not in allowed_enforced:
+        err(loc, f"invalid enforced '{enforced}' — allowed: {sorted(allowed_enforced)}")
+
+    script_list = None
+    if script is not None:
+        if isinstance(script, str):
+            script_list = [script]
+        elif isinstance(script, list) and all(isinstance(s, str) for s in script):
+            script_list = script
+        else:
+            err(loc, f"'script' must be a string or list of strings, got {script!r}")
+
+    if script is not None and enforced not in ("script", "partial"):
+        err(loc, "'script' is present but 'enforced' is not 'script' or 'partial'")
+
+    if enforced in ("script", "partial") and script is None:
+        err(loc, f"enforced '{enforced}' requires a 'script' field")
+
+    if enforced == "evaluator" and check not in ("judgment", "hybrid"):
+        err(loc, f"enforced 'evaluator' is only valid on check 'judgment' or 'hybrid' — got '{check}'")
 
     # 3. Tier→waiver pairing
     if tier in tier_waiver and waiver is not None:
@@ -432,6 +462,19 @@ def collect_errors(repo_root, _return_count=False):
                 err(loc, f"detail file 'standards/{detail}' does not exist")
         elif check in {"judgment", "hybrid"}:
             err(loc, f"check '{check}' requires a 'detail' file (rationale + pass/fail examples)")
+
+        # 5c. script: every path exists on disk (repo-relative to repo_root).
+        # Type errors (non-string entries) are already reported by
+        # validate_control; here we only resolve well-formed string paths.
+        script = control.get("script")
+        if script is not None:
+            script_list = script if isinstance(script, list) else [script]
+            for sp in script_list:
+                if not isinstance(sp, str):
+                    continue
+                script_abs = os.path.join(repo_root, sp)
+                if not os.path.isfile(script_abs):
+                    err(loc, f"script path '{sp}' does not exist")
 
     # ── Step 5b: meta.categories covers every ID prefix ──────────────────────
     # The TFX-DS website derives control categories from this map; a missing
@@ -779,6 +822,44 @@ def run_self_test():
                          dict(valid_control, audiences="teachers"),
                          "'audiences' must be a list")
 
+    # ── Enforcement field (enforced / script) cases ─────────────────────────
+    # A real script path so the pure validate_control cases don't need disk
+    # I/O (file-existence is checked separately, in collect_errors).
+    real_script = "checks/token-audit.py"
+
+    # Valid: enforced=script + a matching script path → clean.
+    assert_control_clean("enforced script + script path",
+                         dict(valid_control, enforced="script", script=real_script))
+    # Valid: enforced=partial + a list of script paths → clean.
+    assert_control_clean("enforced partial + script list",
+                         dict(valid_control, enforced="partial",
+                              script=[real_script, "checks/contrast.py"]))
+    # Invalid enforced value → error.
+    assert_control_error("invalid enforced value",
+                         dict(valid_control, enforced="bogus", script=real_script),
+                         "invalid enforced 'bogus'")
+    # script present, enforced absent → error (script implies enforced must
+    # be script/partial; absent doesn't qualify).
+    assert_control_error("script without enforced",
+                         dict(valid_control, script=real_script),
+                         "'script' is present but 'enforced' is not 'script' or 'partial'")
+    # enforced=script but no script field → error.
+    assert_control_error("enforced script without script field",
+                         dict(valid_control, enforced="script"),
+                         "requires a 'script' field")
+    # enforced=evaluator on a deterministic check → error (evaluator only
+    # valid for judgment/hybrid).
+    assert_control_error("enforced evaluator on deterministic",
+                         dict(valid_control, enforced="evaluator"),
+                         "only valid on check 'judgment' or 'hybrid'")
+    # enforced=evaluator on a judgment check → clean.
+    assert_control_clean("enforced evaluator on judgment",
+                         dict(valid_control, check="judgment", enforced="evaluator"))
+    # script wrong type (int, not string/list) → error.
+    assert_control_error("script wrong type",
+                         dict(valid_control, enforced="script", script=42),
+                         "'script' must be a string or list of strings")
+
     # ── [COUNT-SYNC] cases ─────────────────────────────────────────────────
     count_tmp = tempfile.mkdtemp(prefix="validate-selftest-count-")
     try:
@@ -890,7 +971,20 @@ def run_self_test():
         if not any("requires a 'detail' file" in e for e in errs):
             failures.append(f"FAIL integration judgment no detail: expected a detail-file error — got: {errs}")
 
-        # Case 13: missing catalog → "file not found"
+        # Case 13: enforced=script with a nonexistent script path → error
+        # naming the path (this is the on-disk half of the enforcement
+        # rules — validate_control alone can't see the filesystem).
+        missing_script_catalog = json.loads(json.dumps(valid_catalog))
+        missing_script_catalog["controls"][0]["enforced"] = "script"
+        missing_script_catalog["controls"][0]["script"] = "checks/does-not-exist.py"
+        with open(catalog_path, "w") as fh:
+            yaml.safe_dump(missing_script_catalog, fh)
+        case_count += 1
+        errs = collect_errors(tmp_root)
+        if not any("checks/does-not-exist.py" in e and "does not exist" in e for e in errs):
+            failures.append(f"FAIL integration missing script path: expected a script-path error — got: {errs}")
+
+        # Case 14: missing catalog → "file not found"
         os.remove(catalog_path)
         case_count += 1
         errs = collect_errors(tmp_root)
