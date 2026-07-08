@@ -54,11 +54,13 @@ reference point like SGDS and GOV.UK, never a checkable standard: principles set
 trade-offs; they are not used to "check" work. The phase notes below name the ones
 that recur in this portfolio.
 
-**Layout controls (partial coverage).** Layout now has five checkable controls:
-LAY-2 (reflow at 320 px — WCAG 2.2 SC 1.4.10, L1), LAY-3 (page-template fit, L2),
-LAY-4 (body-text measure ≤ 80ch, target ~66ch — L2), LAY-5 (density fits the task,
-L2), and LAY-6 (edge / optical alignment, L2). Grid systems remain HIG +
-judgment until a declared product grid lands.
+**Layout controls.** Layout has seven controls: LAY-1 (the product's declared
+column grid and gutter scale — N/A where no grid is declared in `.tfx/design.json`
+`layout_system`; L2), LAY-2 (reflow at 320 px — WCAG 2.2 SC 1.4.10, L1), LAY-3
+(page-template fit, L2), LAY-4 (body-text measure ≤ 80ch, target ~66ch — L2),
+LAY-5 (density fits the task, L2), LAY-6 (edge / optical alignment, L2), and
+LAY-7 (one primary focal region; visual reading order matches the task's
+priority order — L2).
 
 ## New page vs. modification
 
@@ -193,9 +195,11 @@ pack: one clear focal point — the teacher's primary task and its single primar
 (CMP-5) — with related content grouped by proximity and a shared region rather than
 boxed in cards (SLP-11), and everything else stepped down so hierarchy does the
 explaining (SLP-6). Each option's layout is graded at verify against LAY-3 (does it fit
-a known page template for its type?), LAY-5 (does its density fit the task?), and
-LAY-6 (do shared edges align?) — design to them now, not as a cleanup pass. When
-diverging on an existing surface, the critique's layout suggestions seed the options.
+a known page template for its type?), LAY-5 (does its density fit the task?), LAY-6
+(do shared edges align?), and LAY-7 (one primary focal region; does the visual reading
+order match the task's priority order — the squint test) — design to them now, not as
+a cleanup pass. When diverging on an existing surface, the critique's layout
+suggestions seed the options.
 
 Output: the options with a recommendation. The user picks.
 
@@ -348,6 +352,10 @@ Build exactly the approved plan. Constraints, non-negotiable:
   and loading states (CMP-3); set density to the task (LAY-5); separate rows with spacing
   or hairline dividers, not nested-card chrome (SLP-4). If records are not compared across
   shared columns, a list or cards may fit better than a table (SLP-11).
+- **Identity**: product icons come only from the approved product-icon family (IDN-2,
+  L1); copy carries the product's calibrated tone register (IDN-3, L2); on CaseSync
+  surfaces, casework is treated as sensitive — no celebration/gamification around case
+  data (IDN-4, L1, CaseSync-scoped).
 - **Interface craft** (HIG: Craft) — the small details that read as care: tabular
   figures, concentric radius, property-scoped interruptible transitions, press
   feedback, hit-area expansion, feels-instant loading, layered shadows, type polish,

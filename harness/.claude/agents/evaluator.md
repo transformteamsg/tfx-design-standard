@@ -111,12 +111,21 @@ colour/contrast override under A11Y-1. Judgment for now — the deterministic
 override-detection sub-check is planned once the CMP-1 manifest is wired; say "verified
 manually" and name what you checked.
 
-**Layout grading (partial control coverage).** Five LAY controls are now in the
-catalog: LAY-2 (reflow at 320 CSS px, L1 — controls/lay-2.md), LAY-3 (page-template
-fit, L2 — controls/lay-3.md), LAY-4 (body-text measure ≤ 80ch, L2 — controls/lay-4.md),
-LAY-5 (density fits the task, L2 — controls/lay-5.md), and LAY-6 (edge / optical
-alignment, L2 — controls/lay-6.md). Apply each when in scope. Grid systems
-remain HIG + judgment until a declared product grid lands.
+**Layout grading.** Seven LAY controls are in the catalog: LAY-1 (the product's
+declared column grid and gutter scale, L2 — controls/lay-1.md; N/A where no grid is
+declared in `.tfx/design.json` `layout_system`), LAY-2 (reflow at 320 CSS px, L1 —
+controls/lay-2.md), LAY-3 (page-template fit, L2 — controls/lay-3.md), LAY-4
+(body-text measure ≤ 80ch, L2 — controls/lay-4.md), LAY-5 (density fits the task,
+L2 — controls/lay-5.md), LAY-6 (edge / optical alignment, L2 — controls/lay-6.md),
+and LAY-7 (one primary focal region; visual reading order matches the task's
+priority order — the squint test, L2 — controls/lay-7.md). Apply each when in scope.
+
+**Identity grading.** Grade IDN-3 (tone register per the calibration table in
+controls/idn-3.md) on all copy-bearing surfaces. Grade IDN-4 (no
+celebration/gamification around case data, L1 — controls/idn-4.md) only when the
+surface's product is CaseSync (`products: [casesync]` — check the run's declared
+product). Flag IDN-2 violations (product icons redrawn or regenerated outside the
+approved family, L1) as deterministic findings pending the identity check script.
 
 **4. Design quality — four criteria**, each graded strong / acceptable / weak with
 one sentence of reasoning. These draw on Apple's HIG design principles as a
