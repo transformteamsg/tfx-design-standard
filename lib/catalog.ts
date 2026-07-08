@@ -11,6 +11,8 @@ export type Control = {
   fails_when?: string[];
   products?: string[];
   audiences?: string[];
+  enforced?: "script" | "partial" | "manual" | "evaluator";
+  script?: string | string[];
 };
 
 type RawControl = Record<string, unknown> & { id: string };
@@ -36,6 +38,8 @@ const PUBLIC_FIELDS = [
   "fails_when",
   "products",
   "audiences",
+  "enforced",
+  "script",
 ] as const;
 
 function readCatalog(): RawCatalog {
@@ -62,6 +66,8 @@ export function getCatalog(): Control[] {
       fails_when: c.fails_when,
       products: c.products,
       audiences: c.audiences,
+      enforced: c.enforced,
+      script: c.script,
     } as Control;
   });
 }
