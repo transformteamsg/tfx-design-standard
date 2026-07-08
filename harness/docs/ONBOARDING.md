@@ -20,9 +20,10 @@ Follow the two commands in the [README Install section](../README.md#install):
 /plugin install tfx@tfx
 ```
 
-This installs the seven skills (`start`, `setup`, `design`, `critique`,
-`standards`, `content`, `feedback`), the `evaluator` subagent (which carries its own
-review procedure), and the control catalog (`standards/`) — the catalog ships with the
+This installs the eleven skills (`start`, `setup`, `design`, `critique`,
+`standards`, `copy`, `polish`, `motion`, `flow`, `layout`, `feedback`), the `evaluator`
+subagent (which carries its own review procedure), and the control catalog
+(`standards/`) — the catalog ships with the
 plugin, not with your repo. `/tfx:start` is the front door: it orients you and routes to
 the right skill.
 
@@ -107,7 +108,8 @@ loading rule: `docs/DESIGN-CONTEXT.md`.
 ## 3. Skills installed
 
 **What it means:** The TFX skills (`start`, `setup`, `design`, `critique`,
-`standards`, `content`, `feedback`) and the `evaluator` subagent must be
+`standards`, `copy`, `polish`, `motion`, `flow`, `layout`, `feedback`) and the
+`evaluator` subagent must be
 active in the product repo's Claude session for the harness to work. Without them, the agent
 has no loop structure, no catalog filters, and no evaluator procedure to follow.
 
@@ -126,7 +128,7 @@ check that the session is open in the product repo root, not in a subdirectory.
 hooks — scripts that run automatically at the implement and verify phases without
 waiting for agent judgment.
 
-**Status today:** The first check script is now available: `checks/token-audit.py` covers TOK-1 (raw colours), TOK-2 (off-scale spacing), TOK-3 (off-scale radius), and COL-1/COL-2 (Tailwind palette bypass). Run it manually against any file or directory: `python3 checks/token-audit.py <path>`. The remaining 11 check scripts are not built yet. The catalog validator (`checks/validate.py`) is a harness self-check — it validates the catalog file format, not your design output. In every verify phase today, deterministic controls beyond token-audit are verified manually: you run checks by hand or by reading the code, then record the result. Every verify verdict in this period will read "verified manually" for all deterministic controls except token-audit. This is expected and correct — it is not a misconfiguration or a gap in your setup.
+**Status today:** Ten check scripts are built and self-tested — `token-audit.py`, `a11y-static.py`, `contrast.py`, `content-lint.py`, `type-scan.py`, `component-manifest.py`, `audit-record.py`, `waiver-reconcile.py`, `reaudit-scope.py`, and the catalog validator `validate.py` — plus `detect.py`, a unified front-end that runs the relevant subset for a given file. See `checks/README.md` for exactly which controls each script covers. Run the ones that apply manually today; a deterministic control covered by a built script is checked by running that script. The controls with no script yet (listed in `checks/README.md`) are still verified manually: you run checks by hand or by reading the code, then record the result. Never report an unbuilt or un-run check as "passed" — say "verified manually" or "unverified" and name what a human should re-check.
 
 V1 will wire the check scripts as hooks; until then, manual verification is the
 protocol. The worked example at `docs/decisions/student-notes-empty-state.md` shows
@@ -200,9 +202,11 @@ page. Here is what the six phases feel like in practice:
 2. **Diverge** — 2–3 structural variants are presented, composed from your manifest
    components. You pick one. No code yet.
 3. **Plan** — a detailed plan names the components, the controls in scope, the tradeoffs,
-   and any proposed waivers. **You approve this before implementation begins.** In an
-   attended session you confirm explicitly; in an unattended run the plan records proxy
-   approval.
+   and any proposed waivers. **You approve this before implementation begins**, via a
+   three-stage gate: the plan is exposed in full, then grilled — the agent asks you
+   pointed questions about it one at a time — then you approve via a structured
+   Approve/Adjust turn. In an attended session you confirm explicitly; in an unattended
+   run the record shows proxy approval.
 4. **Implement** — the agent implements against the approved plan with catalog controls
    active. You should not need to intervene unless the plan was ambiguous.
 5. **Verify** — deterministic controls are checked manually (today), screenshots are

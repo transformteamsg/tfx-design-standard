@@ -323,7 +323,7 @@ td code { white-space: normal; overflow-wrap: break-word; }
 
 <div class="pill-row">
   <span class="pill pill--accent">The harness</span>
-  <span class="pill">38 controls</span>
+  <span class="pill">53 controls</span>
   <span class="pill">4 skills + 1 agent</span>
   <span class="pill">2 checks built</span>
 </div>
@@ -352,7 +352,7 @@ shipped UI.</p>
 <p>The harness ships as a Claude Code plugin. In a product repo (TW, CaseSync, Glow):</p>
 <pre><code>/plugin marketplace add transformteamsg/tfx-design-standard
 /plugin install tfx@tfx</code></pre>
-<p>This installs the four skills, the <code>evaluator</code> subagent (which carries its own
+<p>This installs the eleven skills, the <code>evaluator</code> subagent (which carries its own
 review procedure), and the control catalog —
 the catalog ships with the plugin, not with the product repo. Working on the harness itself? Open a
 Claude Code session in this repository; skills load from <code>.claude/skills/</code> automatically.</p>
@@ -369,12 +369,12 @@ Claude Code session in this repository; skills load from <code>.claude/skills/</
   <tr><th style="width:22%">Layer</th><th>What lives there</th><th style="width:34%">Mechanism</th></tr>
   <tr>
     <td><strong>Normative</strong><br><span style="font-size:12px;color:var(--text-muted)">what must be true</span></td>
-    <td>The control catalog — 38 controls (22 TFX-DS seed + 6 GovTech accessibility ratchet additions + 10 anti-slop controls), tiered L0/L1/L2</td>
+    <td>The control catalog — 53 controls (22 TFX-DS seed + 6 GovTech accessibility ratchet additions + 10 anti-slop controls + 15 later ratchet additions), tiered L0/L1/L2</td>
     <td><code>standards/catalog.yaml</code> + detail files</td>
   </tr>
   <tr>
     <td><strong>Harness</strong><br><span style="font-size:12px;color:var(--text-muted)">how the agent works</span></td>
-    <td>Five skills (probabilistic — the agent applies them with judgment) orchestrating the design loop, catalog mechanics, onboarding, and voice</td>
+    <td>Eleven skills (probabilistic — the agent applies them with judgment): routing and setup, the design loop, critique, five focused passes, catalog mechanics, and feedback</td>
     <td><code>.claude/skills/</code></td>
   </tr>
   <tr>
@@ -426,7 +426,7 @@ when a control is in scope.</p>
   <tr><td><code>judgment</code></td><td>Evaluator agent (or human), with quoted evidence</td><td>Plain-language naming, tone in error copy, pattern appropriateness</td></tr>
   <tr><td><code>hybrid</code></td><td>Script narrows the surface, evaluator judges the rest</td><td>Script proves loading/success/error states exist; evaluator confirms the copy communicates</td></tr>
 </table>
-<p>Categories: <code>A11Y</code> accessibility (11 controls — mirrors the
+<p>Categories: <code>A11Y</code> accessibility (eleven controls — mirrors the
 <a href="https://a11y.tech.gov.sg/checklist/">GovTech checklist</a> Essential tier) · <code>TOK</code>
 tokens · <code>TYP</code> typography · <code>COL</code> colour · <code>CMP</code> components ·
 <code>CNT</code> content &amp; naming · <code>MOT</code> motion · <code>IDN</code> identity.</p>
@@ -603,7 +603,7 @@ escalate to a human instead of manufacturing confidence.</p>
 <h2 id="checks">Checks &amp; commands <a class="anchor" href="#checks">#</a></h2>
 <p class="meta-line">scripts &amp; status: <a href="../checks/README.md">checks/README.md</a></p>
 <p>Every check exits 0 on pass and 1 on violation, printing <code>file:line</code>, the control id, and
-a fix suggestion — verbose on failure, silent on success. Inline waivers never silence L1 controls;
+a fix suggestion — verbose on failure, silent on success. Inline waivers never silence L1-tier controls;
 they downgrade the message to <code>[waiver-claimed]</code> and still fail until a human verifies the
 approver.</p>
 <table>
@@ -642,7 +642,7 @@ waivers with approvers, the verbatim evaluator verdict, and any control proposal
   <tr><th style="width:16%">Stage</th><th>Contents</th></tr>
   <tr>
     <td><strong>V0+ — now</strong></td>
-    <td>38-control catalog · four skills + evaluator agent · catalog validator and token-audit built · the loop piloted end-to-end twice with real evaluator verdicts; both runs fed controls back into the catalog. Testable today: ask a session in this repo to design a page.</td>
+    <td>53-control catalog · eleven skills + evaluator agent · catalog validator + ten check scripts built · the loop piloted end-to-end twice with real evaluator verdicts; both runs fed controls back into the catalog. Testable today: ask a session in this repo to design a page.</td>
   </tr>
   <tr>
     <td><strong>V1 — next</strong></td>
