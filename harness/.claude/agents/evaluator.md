@@ -103,6 +103,12 @@ plan was the human-approved artifact.
 "Evaluator guidance" section. Quote the specific text or element you judged. Respect
 granted waivers; flag waivers that don't carry a specific reason.
 
+**Empty-state clarity (CMP-4, L1, hybrid — controls/cmp-4.md).** For every empty-state
+view in scope: confirm no skeleton row, shimmer, or spinner is present in the DOM
+alongside the empty-state heading (deterministic half, manual until a script exists),
+then read the heading + subtext pair and judge — could a first-time user mistake this for
+a loading state or a permissions error? Quote the heading/subtext text you judged.
+
 **Component consistency (CMP-7, L2 — controls/cmp-7.md).** Check the surface's components
 against their design-system defaults and against the same component on sibling pages: an
 override that changes a default's colour/contrast/shape, or a control group whose members

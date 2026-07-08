@@ -55,6 +55,13 @@ with an async or destructive action inherits the `applies_to: [flow]` controls
 
 - **Screenshots:** (paths — width evidence at 360/768/1280, plus one frame per state
   asserted by each in-scope hybrid control, loading included)
+- **REQUIRED when CMP-3 is in scope** (harness rule — see
+  `docs/catalog-changes/evd-1-async-evidence.md`): the evidence listed above includes a
+  loading-state frame, a success-state frame, and an error-state frame — not only the
+  initial/empty state. Acceptable substitutes for any one frame: a video walkthrough
+  covering all three states, or a named human reviewer's attestation that they witnessed
+  the live render of all three. Note explicitly which of the three (frame / video /
+  attestation) covers each state.
 - **Token block line range:** (the `tfx-tokens` region exempt from token-audit, e.g.
   `attendance.html:12-68`)
 - **Dark mode:** supported (dark frame captured at <path>) | N/A — product has no

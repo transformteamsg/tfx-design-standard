@@ -352,6 +352,9 @@ Build exactly the approved plan. Constraints, non-negotiable:
   and loading states (CMP-3); set density to the task (LAY-5); separate rows with spacing
   or hairline dividers, not nested-card chrome (SLP-4). If records are not compared across
   shared columns, a list or cards may fit better than a table (SLP-11).
+- **Empty states** (CMP-4): whatever the surface, an empty state's heading and subtext
+  must read as "nothing here yet" — never as still loading or as a permissions error —
+  and no skeleton row, shimmer, or spinner may render alongside that heading.
 - **Identity**: product icons come only from the approved product-icon family (IDN-2,
   L1); copy carries the product's calibrated tone register (IDN-3, L2); on CaseSync
   surfaces, casework is treated as sensitive — no celebration/gamification around case
