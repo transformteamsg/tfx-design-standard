@@ -1,11 +1,23 @@
-# Proposed control: CNT-N (domain fidelity — the CNT family's fourth slot)
+# Proposed control: CNT-4 (domain fidelity — the CNT family's fourth slot)
 
 **Date:** 2026-07-08 · **Change type:** new control via ratchet (no tier change to any
-existing control) · **Approved by:** — pending.
+existing control) · **Approved by:** Reza Ilmi (design lead), 2026-07-08 — in-session
+directive ("execute all and then ship"); recommended options adopted. Committed to the
+catalog at **CNT-4**, **L2**, **judgment**, `phase: [intent, implement, verify]`,
+`applies_to: [content]`, `waiver: rationale`, with the `fails_when` bullets drafted
+below carried verbatim into the catalog entry and `controls/cnt-4.md`, exactly as
+proposed — no amendments at the gate. Open question 3 (where a domain-reviewer
+attestation is recorded) stays **unresolved**: per the plan's maintenance note, a
+decision-record template field is added only if the gate asks for one, and the gate's
+directive here approved the recommended options without adding new template fields —
+so `docs/decisions/TEMPLATE.md` is untouched by this control.
 
-> **Note on `CNT-N`:** placeholder, not a concrete number — `checks/validate.py`'s
-> cross-ref sweep flags any `PREFIX-<digit>` id not in the live catalog. At proposal
-> time the next free CNT slot is **4** (CNT-1..3 exist). Confirm and assign at the gate.
+> **Note on the `CNT-N` placeholder used below:** while this proposal was open,
+> `checks/validate.py`'s cross-ref sweep would have flagged a literal `CNT-4` reference
+> in this file as an unknown control id (the catalog didn't carry the entry yet), so
+> the body below still reads `CNT-N` in the specification sections — a drafting
+> artifact of the propose-then-approve sequence, not a live open question, per the
+> CMP-4 record's precedent for this same convention.
 
 This record lives in `docs/catalog-changes/` per the plan-053 placement rule. Plan:
 `harness/plans/066-ratchet-round-cnt4-slp12-cmp8.md`. Source: GitHub issue
@@ -70,17 +82,17 @@ that failure mode.
   framing, not factual/domain correctness. No overlap.
 - **vs. IDN-3** (tone calibration): tone register, not domain fidelity. No overlap.
 
-## Open questions (for the gate)
+## Open questions for the gate — resolved
 
-1. **Tier and check type:** L2, judgment, as proposed by the issue — confirm.
-2. **`phase` and `applies_to`:** `[intent, implement, verify]` and `[content]` —
-   confirm, or should `applies_to` extend to `[page]` for whole-surface domain framing
-   (e.g. an entire mock dashboard modeling a school term)?
-3. **Where the domain-reviewer attestation is recorded** — the decision-record evidence
-   ledger row is the natural place, but no template field exists yet for it. Per the
-   plan's maintenance note, a template field is added only if the gate asks for one —
-   this record does not add one speculatively.
-4. **`fails_when` bullets:** the three drafted above — confirm as proposed or amend.
+1. **Tier and check type:** confirmed L2, judgment, as proposed.
+2. **`phase` and `applies_to`:** confirmed `[intent, implement, verify]` and
+   `[content]` as proposed; not extended to `[page]`.
+3. **Where the domain-reviewer attestation is recorded** — left open. The gate approved
+   the recommended options without directing a template change, so
+   `docs/decisions/TEMPLATE.md` gains no new field this round. A future run may still
+   raise this if the gap is felt in practice.
+4. **`fails_when` bullets:** the three drafted above carried into the catalog entry and
+   detail file verbatim, unamended.
 
 ## Notes carried into the detail file (`controls/cnt-4.md`, if ratified)
 
@@ -92,8 +104,34 @@ that failure mode.
   in the decision record; a domain reviewer's (e.g. HOD) recorded sign-off closes the
   question even where a detail looks unusual to a non-specialist reader.
 
+## Re-audit set
+
+Run 2026-07-08, after the catalog commit, via `python3 checks/reaudit-scope.py CNT-4`:
+
+```
+Re-audit scope for CNT-4 (category: Content & naming)
+
+Directly in scope (0) — these records list CNT-4; re-check each against the changed clause:
+  (none)
+
+Same-category candidates (6) — these records touch the Content & naming domain but do NOT list CNT-4; they are candidates to confirm, not proven-affected. Confirm each actually uses the affected pattern:
+  - docs/decisions/attendance.md
+  - docs/decisions/broadcast-message.md
+  - docs/decisions/grade-entry.md
+  - docs/decisions/self-audit.md
+  - docs/decisions/student-notes-empty-state.md
+  - docs/decisions/submit-marks-review.md
+
+6 record(s) to re-audit (0 direct, 6 candidate).
+```
+
+None of the six declared CNT-4 in scope — expected, since the control didn't exist when
+they shipped. All six are candidates for a design-lead-directed re-audit pass: confirm
+whether each surface presents content that models a real-world artifact, and if so,
+whether that content is faithful or explicitly labelled illustrative.
+
 ---
 
-**Status:** propose-only, Step 1 of plan 066. Not committed to `standards/catalog.yaml`.
-Awaiting design-lead approve/amend/reject, recorded by name and date in this file before
-any catalog change happens.
+**Status:** APPROVED AS PROPOSED and committed to `standards/catalog.yaml` (Step 3 of
+plan 066). Catalog 54 → 57 controls (with CMP-8 and CMP-9). Re-audit set run and
+appended above (Step 3.5).

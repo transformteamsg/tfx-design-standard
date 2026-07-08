@@ -1,12 +1,24 @@
-# Proposed control: CMP-N (draft safety / escapability — closes the flow-pass gap)
+# Proposed control: CMP-8 (draft safety / escapability — closes the flow-pass gap)
 
 **Date:** 2026-07-08 · **Change type:** new control via ratchet (no tier change to any
-existing control) · **Approved by:** — pending.
+existing control) · **Approved by:** Reza Ilmi (design lead), 2026-07-08 — in-session
+directive ("execute all and then ship"); recommended options adopted. Committed to the
+catalog at **CMP-8**, **L1**, **hybrid**, `phase: [plan, implement, verify]`,
+`applies_to: [flow]`, `waiver: documented`, with the `fails_when` bullets drafted below
+carried verbatim into the catalog entry and `controls/cmp-8.md`, exactly as proposed —
+no amendments at the gate. The tier open question (L1 vs L2) is resolved as **L1**, the
+recommended option: losing a teacher's typed work is a trust breach, recoverable rather
+than catastrophic, hence L1 not L0. The mandatory deconfliction section below is
+carried into the detail file verbatim, per the gate's requirement that CMP-2 keep the
+destructive-action consequence/undo clause, CMP-8 cover in-progress work and the
+ability to leave, A11Y-11 keep focus/announcement, and SLP-10 keep page-vs-modal.
 
-> **Note on `CMP-N`:** placeholder, not a concrete number — `checks/validate.py`'s
-> cross-ref sweep flags any `PREFIX-<digit>` id not in the live catalog. At proposal
-> time the next free CMP slot is **8** (CMP-1..7 exist; CMP-4 filled its reserved slot
-> via plan 065). Confirm and assign at the gate.
+> **Note on the `CMP-N` placeholder used below:** while this proposal was open,
+> `checks/validate.py`'s cross-ref sweep would have flagged a literal `CMP-8` reference
+> in this file as an unknown control id (the catalog didn't carry the entry yet), so
+> the body below still reads `CMP-N` in the specification sections — a drafting
+> artifact of the propose-then-approve sequence, not a live open question, per the
+> CMP-4 record's precedent for this same convention.
 
 This record lives in `docs/catalog-changes/` per the plan-053 placement rule. Plan:
 `harness/plans/066-ratchet-round-cnt4-slp12-cmp8.md`. Source: a harness-internal audit
@@ -114,17 +126,17 @@ a blur, before approving.
 - **vs. A11Y-11**: see Deconfliction.
 - **vs. SLP-10**: see Deconfliction.
 
-## Open questions (for the gate)
+## Open questions for the gate — resolved
 
-1. **Tier: L1 vs L2.** Recommend **L1** — losing a teacher's typed work is a trust
-   breach, the same class as CMP-2's rationale for L0, but recoverable (the flow can be
-   redesigned or a draft restored after the fact) rather than catastrophic, hence L1 not
-   L0.
-2. **`fails_when` bullets:** the four drafted above — confirm as proposed or amend.
-3. **Deterministic sub-check**: "every step in a mapped flow has a reachable
-   cancel/back affordance" is asserted as planned, not built this round — confirm the
-   control still lands now with the judgment half doing the work in the interim, per
-   the CMP-4/CMP-7 precedent for controls whose deterministic half ships later.
+1. **Tier: L1 vs L2.** Resolved **L1**, the recommended option — losing a teacher's
+   typed work is a trust breach, the same class as CMP-2's rationale for L0, but
+   recoverable (the flow can be redesigned or a draft restored after the fact) rather
+   than catastrophic, hence L1 not L0.
+2. **`fails_when` bullets:** the four drafted above carried into the catalog entry and
+   detail file verbatim, unamended.
+3. **Deterministic sub-check**: confirmed planned, not built this round — the control
+   lands now with the judgment half doing the work in the interim, per the CMP-4/CMP-7
+   precedent for controls whose deterministic half ships later.
 
 ## Notes carried into the detail file (`controls/cmp-8.md`, if ratified)
 
@@ -138,8 +150,33 @@ a blur, before approving.
   explicit, confirmed discard the user chose (this control requires the *option* to preserve or
   explicitly discard — not that discarding is always wrong).
 
+## Re-audit set
+
+Run 2026-07-08, after the catalog commit, via `python3 checks/reaudit-scope.py CMP-8`:
+
+```
+Re-audit scope for CMP-8 (category: Components & patterns)
+
+Directly in scope (0) — these records list CMP-8; re-check each against the changed clause:
+  (none)
+
+Same-category candidates (5) — these records touch the Components & patterns domain but do NOT list CMP-8; they are candidates to confirm, not proven-affected. Confirm each actually uses the affected pattern:
+  - docs/decisions/attendance.md
+  - docs/decisions/broadcast-message.md
+  - docs/decisions/grade-entry.md
+  - docs/decisions/student-notes-empty-state.md
+  - docs/decisions/submit-marks-review.md
+
+5 record(s) to re-audit (0 direct, 5 candidate).
+```
+
+None of the five declared CMP-8 in scope — expected, since the control didn't exist
+when they shipped. All five are candidates for a design-lead-directed re-audit pass:
+confirm whether each surface is a multi-step or data-entry flow, and if so, whether
+every step offers a non-destructive exit and in-progress work survives interruption.
+
 ---
 
-**Status:** propose-only, Step 1 of plan 066. Not committed to `standards/catalog.yaml`.
-Awaiting design-lead approve/amend/reject, recorded by name and date in this file before
-any catalog change happens.
+**Status:** APPROVED AS PROPOSED and committed to `standards/catalog.yaml` (Step 3 of
+plan 066). Catalog 54 → 57 controls (with CNT-4 and CMP-9). Re-audit set run and
+appended above (Step 3.5).

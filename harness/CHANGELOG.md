@@ -59,6 +59,27 @@ Notable changes to the TFX Design Harness plugin. Versioning tracks
   planned follow-up, not part of this change — see
   `docs/catalog-changes/evd-1-async-evidence.md`.
 
+### Added — catalog (ratchet)
+- **CNT-4** — content that models a real-world artifact (a curriculum, a form, a
+  policy document) is faithful to it — correct scope, terminology, and structure — or
+  explicitly labelled illustrative/placeholder. L2, judgment check. From GitHub issue
+  #27 (a mock P1 report graded Science, which starts at P3 in Singapore, and showed a
+  P1 Mathematics learning outcome that read as invented). Design-lead approved
+  2026-07-08.
+- **CMP-8** — a multi-step or data-entry task offers a non-destructive exit at every
+  step, and in-progress work is preserved or explicitly discarded on interruption —
+  never silently lost. L1, hybrid check. Closes a gap the harness's own `flow` pass
+  advertised (grading "escapability, and draft safety") but its control list never
+  covered; carries a deconfliction section against CMP-2, A11Y-11, and SLP-10.
+  Design-lead approved 2026-07-08.
+- **CMP-9** — content authored by one user and rendered to another is sanitised at
+  the render boundary; author-time schema constraints are not sufficient. L1, hybrid
+  check. From GitHub issue #26 (teacher-authored rich text rendered to parents via
+  `dangerouslySetInnerHTML` with no render-time sanitiser). Filed as an anti-pattern
+  (SLP) proposal; committed as a **CMP** control instead — keeps SLP's charter to the
+  default-AI-aesthetic and puts this trust-and-safety rule alongside CMP-1/CMP-2.
+  Design-lead approved 2026-07-08. Catalog 54 → 57 controls (CNT-4, CMP-8, CMP-9).
+
 ## [0.6.0] — 2026-07-04
 
 Skill-stack restructure II: dimension-scoped improvement passes you can fire directly.

@@ -1,13 +1,22 @@
-# Proposed control: cross-user HTML sanitisation (category and id open — SLP-N vs CMP-N)
+# Proposed control: CMP-9 (cross-user HTML sanitisation — recommended CMP option adopted)
 
 **Date:** 2026-07-08 · **Change type:** new control via ratchet (no tier change to any
-existing control) · **Approved by:** — pending.
+existing control) · **Approved by:** Reza Ilmi (design lead), 2026-07-08 — in-session
+directive ("execute all and then ship"); recommended options adopted. Committed to the
+catalog as a **CMP control** (option (b) below — not SLP), at **CMP-9**, **L1**,
+**hybrid**, `phase: [implement, verify]`, `applies_to: [component, flow]`,
+`waiver: documented`, with the `fails_when` bullets drafted below carried verbatim into
+the catalog entry and `controls/cmp-9.md`, exactly as proposed — no amendments at the
+gate. The category call (option (a) SLP-N vs option (b) CMP-N) is resolved in favour of
+(b), as recommended: CMP keeps SLP aesthetically coherent as the default-AI-aesthetic
+family, and this rule sits in the same trust-and-safety register as CMP-1/CMP-2.
 
-> **Note on the placeholder id:** this record deliberately does not fix a prefix yet —
-> see "Category — the gate question" below. Whichever prefix is chosen, `checks/validate.py`'s
-> cross-ref sweep flags any `PREFIX-<digit>` id not in the live catalog, so the body below
-> uses `CMP-N` (the recommended prefix) as its working placeholder. Confirm and assign at
-> the gate.
+> **Note on the `CMP-N` placeholder used below:** while this proposal was open,
+> `checks/validate.py`'s cross-ref sweep would have flagged a literal `CMP-9` reference
+> in this file as an unknown control id (the catalog didn't carry the entry yet), so
+> the body below still reads `CMP-N` in the specification sections — a drafting
+> artifact of the propose-then-approve sequence, not a live open question, per the
+> CMP-4 record's precedent for this same convention.
 
 This record lives in `docs/catalog-changes/` per the plan-053 placement rule. Plan:
 `harness/plans/066-ratchet-round-cnt4-slp12-cmp8.md`. Source: GitHub issue
@@ -100,17 +109,18 @@ honestly:
   fidelity per this same round's CNT proposal); none of it governs HTML
   injection safety. No overlap.
 
-## Open questions (for the gate)
+## Open questions for the gate — resolved
 
-1. **Category: SLP-N vs CMP-N** — the core call above. Recommendation: CMP-N.
-2. **Numbering**: if both this round's draft-safety CMP proposal and this control
-   land in the same round, which takes the earlier number? No dependency either
-   way — order by whichever the gate approves first.
-3. **Tier and check type:** L1, hybrid — confirm as proposed.
-4. **`fails_when` bullets:** the three drafted above — confirm as proposed or amend.
-5. **Detector**: the grep detector is explicitly out of scope for this plan (a
-   follow-up check-script plan) — confirm the control still lands now, evaluator/manual-
-   verified in the interim, like CMP-7 did before its deterministic half existed.
+1. **Category: SLP-N vs CMP-N** — resolved **CMP-N** (option (b)), as recommended.
+2. **Numbering**: this control is **CMP-9**; the draft-safety proposal in the same
+   round is **CMP-8** — assigned in that order at the gate.
+3. **Tier and check type:** confirmed L1, hybrid, as proposed.
+4. **`fails_when` bullets:** the three drafted above carried into the catalog entry and
+   detail file verbatim, unamended.
+5. **Detector**: confirmed out of scope for this plan — the control lands now,
+   evaluator/manual-verified in the interim, per the CMP-7 precedent. The grep detector
+   is queued as a follow-up check-script plan (per plan 066's maintenance notes, behind
+   plan 067's `enforced:` field).
 
 ## Notes carried into the detail file (`controls/<id>.md`, if ratified)
 
@@ -123,8 +133,33 @@ honestly:
   decision record; sanitisation implemented as a render-time allowlist (e.g. DOMPurify)
   regardless of which library performs it.
 
+## Re-audit set
+
+Run 2026-07-08, after the catalog commit, via `python3 checks/reaudit-scope.py CMP-9`:
+
+```
+Re-audit scope for CMP-9 (category: Components & patterns)
+
+Directly in scope (0) — these records list CMP-9; re-check each against the changed clause:
+  (none)
+
+Same-category candidates (5) — these records touch the Components & patterns domain but do NOT list CMP-9; they are candidates to confirm, not proven-affected. Confirm each actually uses the affected pattern:
+  - docs/decisions/attendance.md
+  - docs/decisions/broadcast-message.md
+  - docs/decisions/grade-entry.md
+  - docs/decisions/student-notes-empty-state.md
+  - docs/decisions/submit-marks-review.md
+
+5 record(s) to re-audit (0 direct, 5 candidate).
+```
+
+None of the five declared CMP-9 in scope — expected, since the control didn't exist
+when they shipped. All five are candidates for a design-lead-directed re-audit pass:
+confirm whether each surface renders one user's authored content to a different user,
+and if so, whether sanitisation is enforced at the render boundary.
+
 ---
 
-**Status:** propose-only, Step 1 of plan 066. Not committed to `standards/catalog.yaml`.
-Awaiting design-lead approve/amend/reject (including the category call), recorded by
-name and date in this file before any catalog change happens.
+**Status:** APPROVED AS PROPOSED (as a CMP control, CMP-9) and committed to
+`standards/catalog.yaml` (Step 3 of plan 066). Catalog 54 → 57 controls (with CNT-4 and
+CMP-8). Re-audit set run and appended above (Step 3.5).
