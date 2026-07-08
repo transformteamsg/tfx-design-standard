@@ -49,6 +49,8 @@ controls:
     fails_when:
       - body copy under 4.5:1 against its background
       - gray text on coloured backgrounds that fails AA
+    enforced: partial
+    script: checks/contrast.py
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
 
   - id: A11Y-2
@@ -63,6 +65,8 @@ controls:
     fails_when:
       - focus ring removed without replacement
       - click handlers on non-focusable elements
+    enforced: partial
+    script: checks/a11y-static.py
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
 
   - id: A11Y-3
@@ -77,6 +81,8 @@ controls:
     fails_when:
       - placeholder used as the only label
       - icon-only button without aria-label
+    enforced: partial
+    script: checks/a11y-static.py
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
 
   - id: A11Y-4
@@ -152,6 +158,8 @@ controls:
       - custom control with no role or accessible name
       - visual state change with no ARIA state update
     detail: controls/a11y-8.md
+    enforced: partial
+    script: checks/a11y-static.py
     refs: [https://a11y.tech.gov.sg/checklist/]
 
   - id: A11Y-9
@@ -209,6 +217,8 @@ controls:
     fails_when:
       - hex/rgb/hsl literals in component code
     detail: controls/tok-1.md
+    enforced: script
+    script: checks/token-audit.py
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
 
   - id: TOK-2
@@ -222,6 +232,8 @@ controls:
     waiver: documented
     fails_when:
       - arbitrary pixel values for margin/padding/gap
+    enforced: script
+    script: checks/token-audit.py
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
 
   - id: TOK-3
@@ -238,6 +250,8 @@ controls:
       - child radius larger than parent (non-concentric nesting)
       - peer containers of the same kind use different corner radii — anchor to the product's Card/base radius
     detail: controls/tok-3.md
+    enforced: partial
+    script: checks/token-audit.py
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
 
   # ── Typography ────────────────────────────────────────────────────────
@@ -252,6 +266,8 @@ controls:
     waiver: documented
     fails_when:
       - any third typeface in product UI
+    enforced: partial
+    script: checks/type-scan.py
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
 
   - id: TYP-2
@@ -267,6 +283,8 @@ controls:
       - body copy below 14px
       - line-height under 1.5 on multi-line body text
     detail: controls/typ-2.md
+    enforced: partial
+    script: checks/type-scan.py
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
 
   - id: TYP-3
@@ -280,6 +298,8 @@ controls:
     waiver: documented
     fails_when:
       - font sizes not on the published scale
+    enforced: script
+    script: checks/type-scan.py
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
 
   - id: TYP-4
@@ -294,6 +314,8 @@ controls:
     fails_when:
       - all-caps text — labels, headings, or running text
       - text-transform uppercase used for styling (genuine acronyms excepted)
+    enforced: script
+    script: checks/type-scan.py
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
 
   # TYP-5: ratchet addition 2026-06-17 — tabular figures for numbers that align or
@@ -329,6 +351,8 @@ controls:
       - primary CTA in a colour that is not the product's primary
       - one product's primary used inside another product's surface
     detail: controls/col-1.md
+    enforced: partial
+    script: checks/token-audit.py
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
 
   # COL-2 broadened 2026-06-25 — ratchet, design-lead approved (small functional
@@ -347,6 +371,8 @@ controls:
       - red used decoratively
       - small functional-colour text (≤12px) on a tint uses step-11 (or lower) and falls below 4.5:1
     detail: controls/col-2.md
+    enforced: partial
+    script: [checks/token-audit.py, checks/contrast.py]
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
 
   # ── Components & patterns ─────────────────────────────────────────────
@@ -362,6 +388,8 @@ controls:
     fails_when:
       - custom dropdown/dialog/tooltip where the stack provides one
     detail: controls/cmp-1.md
+    enforced: partial
+    script: checks/component-manifest.py
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
 
   - id: CMP-2
@@ -520,6 +548,8 @@ controls:
       - '"Something went wrong" with no next step'
       - stack traces or codes shown to teachers
     detail: controls/cnt-1.md
+    enforced: partial
+    script: checks/content-lint.py
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
 
   - id: CNT-2
@@ -549,6 +579,8 @@ controls:
       - passive constructions in instructions
       - a title, description, or intro that opens with the mechanism (the tool, token, or library) instead of what it does for the teacher
     detail: controls/cnt-3.md
+    enforced: partial
+    script: checks/content-lint.py
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
 
   # CNT-4 added 2026-07-08 — ratchet, design-lead approved (domain fidelity,
@@ -771,6 +803,8 @@ controls:
       - chatbot artifacts ("Great question!", "I hope this helps")
       - '"It''s not just X, it''s Y" / "serves as a" / forced triads doing rhetoric, not enumeration'
     detail: controls/slp-9.md
+    enforced: partial
+    script: checks/content-lint.py
     refs: [https://github.com/transformteamsg/tfx-design-standard]
 
   - id: SLP-10

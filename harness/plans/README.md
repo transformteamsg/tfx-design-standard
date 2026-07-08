@@ -298,11 +298,13 @@ Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJE
   in-flight file overlaps (052/054 landed).
 - **Direction findings (grounded, not planned — operator to weigh)**:
   1. **Enforcement as data**: add a per-control `script:`/`enforced:` field to the
-     catalog schema so "deterministic but unscripted" (today: all of SLP-1..8, A11Y-4/5/6/9/10,
-     MOT-1, IDN-1, LAY-4, halves of CMP-2/3) is machine-visible, then build `slop-scan`
-     for the statically checkable SLP subset. impeccable.style's 45-rule deterministic
-     anti-pattern detector is precedent that this class of check works. Touches
-     schema.json, validate.py, and the website's `lib/catalog.ts` PUBLIC_FIELDS.
+     catalog schema so "deterministic but unscripted" is machine-visible, then build
+     `slop-scan` for the statically checkable SLP subset. impeccable.style's 45-rule
+     deterministic anti-pattern detector is precedent that this class of check works.
+     Touches schema.json, validate.py, and the website's `lib/catalog.ts`
+     PUBLIC_FIELDS. **The gap list is now derived, not hand-maintained** — run
+     `python3 checks/validate.py --coverage` for the live per-control table (id ·
+     tier · check · enforced[defaulted] · script) instead of enumerating ids here.
   2. **Per-product DESIGN.md** (impeccable pattern): make per-product nuance (accent,
      tone weighting, motion conventions, manifest pointer) a small machine-read file in
      each product repo consumed at Phases 2/4, instead of prose scattered across COL-1's

@@ -8,6 +8,8 @@ phase: [implement, verify]
 applies_to: [page, component]
 verify: "Scan changed files for raw hex/rgb/hsl; checks/token-audit; exit 1 on violation"
 waiver: documented
+enforced: script
+script: checks/token-audit.py
 refs:
   - https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb
 ---

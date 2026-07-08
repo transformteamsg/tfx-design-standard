@@ -13,6 +13,8 @@ fails_when:
   - label, sublabel, and helper saying the same thing
   - chatbot artifacts ("Great question!", "I hope this helps")
   - '"It''s not just X, it''s Y" / "serves as a" / forced triads doing rhetoric, not enumeration'
+enforced: partial
+script: checks/content-lint.py
 refs:
   - https://github.com/transformteamsg/tfx-design-standard
 ---

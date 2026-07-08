@@ -30,6 +30,8 @@ const PUBLIC_FIELDS_ALLOWLIST = [
   "fails_when",
   "products",
   "audiences",
+  "enforced",
+  "script",
 ];
 
 function readRawCatalog() {
@@ -96,6 +98,29 @@ describe("getPublicCatalogYaml — control projection", () => {
       if (globalIds.includes(c.id)) {
         expect("products" in c).toBe(false);
         expect("audiences" in c).toBe(false);
+      }
+    }
+  });
+
+  it("enforced/script survive projection on a stamped control and stay absent elsewhere (plan 067)", () => {
+    // TOK-1 is stamped enforced: script / script: checks/token-audit.py in
+    // the real catalog; controls with no enforced/script field (the default
+    // case) must not have them invented by the projection.
+    const raw = readRawCatalog();
+    const stampedIds = raw.controls.filter((c) => "enforced" in c).map((c) => c.id);
+    const unstampedIds = raw.controls.filter((c) => !("enforced" in c)).map((c) => c.id);
+    expect(stampedIds).toContain("TOK-1");
+    expect(unstampedIds.length).toBeGreaterThan(0);
+
+    const projected = parse(getPublicCatalogYaml()) as { controls: Record<string, unknown>[] };
+    const tok1 = projected.controls.find((c) => c.id === "TOK-1");
+    expect(tok1?.enforced).toBe("script");
+    expect(tok1?.script).toBe("checks/token-audit.py");
+
+    for (const c of projected.controls) {
+      if (unstampedIds.includes(c.id)) {
+        expect("enforced" in c).toBe(false);
+        expect("script" in c).toBe(false);
       }
     }
   });

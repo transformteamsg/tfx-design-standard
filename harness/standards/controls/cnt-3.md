@@ -8,6 +8,8 @@ phase: [implement, verify]
 applies_to: [content]
 verify: "Lint sentence length; evaluator judges voice and person, and that descriptive copy (titles, descriptions, section intros, empty states) leads with its purpose or role before the mechanism"
 waiver: rationale
+enforced: partial
+script: checks/content-lint.py
 refs:
   - https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb
 ---

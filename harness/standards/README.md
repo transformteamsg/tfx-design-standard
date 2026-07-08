@@ -29,6 +29,10 @@ standard.* Standards are the only layer the harness can enforce automatically. R
   verify: "Type-scale scan; checks/type-scan"
   waiver: documented            # none | documented | rationale  (follows tier)
   detail: controls/typ-2.md     # omit if the index entry is self-sufficient
+  enforced: partial             # OPTIONAL — script | partial | manual | evaluator.
+                                # See Enforcement below. Absent = default.
+  script: checks/type-scan.py   # OPTIONAL — only valid when enforced is script
+                                # or partial. String or list of repo-relative paths.
   refs:
     - https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb
 ```
@@ -95,6 +99,32 @@ A waiver without a specific reason is a violation, not a waiver. L0+L1 are the
 | `deterministic` | Script / scanner (`checks/`, axe). Binary pass/fail; non-skippable. | Contrast ratio, raw colour detection, label presence, reduced-motion support |
 | `judgment` | `evaluator` subagent (or human), graded with quoted evidence. | Plain-language naming, tone in error copy, pattern appropriateness |
 | `hybrid` | Script narrows the surface, evaluator judges the remainder. | Script proves error states exist; evaluator confirms the copy says what happened, what it means, what's next |
+
+## Enforcement — `enforced:` / `script:`
+
+`check:` says *who in principle* verifies a control (script / evaluator / both).
+`enforced:` says *what actually runs today* — orthogonal, because a
+`deterministic` control can still have no script built yet, and a `hybrid`
+control's judgment half is evaluator-verified by design, not a gap.
+
+Two OPTIONAL per-control fields (see the schema example above):
+
+- `enforced`: one of `script` | `partial` | `manual` | `evaluator`.
+  - `script` — a `checks/` script fully covers the control's deterministic claim.
+  - `partial` — a script covers a subset; the rest is manual or evaluator.
+  - `manual` — deterministic in principle, no script yet (the honest gap).
+  - `evaluator` — a judgment control; the `evaluator` subagent IS the
+    enforcement (not a gap to close).
+  - **Absent = default**: `manual` for `deterministic`/`hybrid` controls,
+    `evaluator` for `judgment` controls. Validators apply the default; never
+    write it back into the catalog.
+- `script`: repo-relative path(s) (string or list) to the covering script(s),
+  e.g. `checks/token-audit.py`. Only valid when `enforced` is `script` or
+  `partial`.
+
+Query the live picture with `python3 checks/validate.py --coverage` — a table
+of every control's `enforced` state (defaulted) and `script:` path, plus a
+summary count. This replaces hand-maintained gap lists, which drift.
 
 ## Authoring rules
 

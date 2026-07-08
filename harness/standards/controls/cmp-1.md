@@ -8,6 +8,8 @@ phase: [plan, implement, verify]
 applies_to: [page, component]
 verify: "Component usage diffed against the product manifest; evaluator judges 'exists for the need' edge cases; record carries one of the three fixed CMP-1 verdict forms (see controls/cmp-1.md)"
 waiver: documented
+enforced: partial
+script: checks/component-manifest.py
 refs:
   - https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb
 ---

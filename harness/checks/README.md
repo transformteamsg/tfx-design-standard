@@ -91,7 +91,20 @@ their behaviour is proven by their own `--self-test`s and a real-corpus run over
 
 The validator also enforces two **fragment-parity** sub-checks via `<!-- tfx-sync:… -->` markers: `[L0-SYNC]` (the inline "Non-negotiables (L0)" lists in `CLAUDE.md` and `design/SKILL.md` must equal the catalog's `tier: L0` set) and `[SLP9-SYNC]` (the `copy` buzzword summary must be a subset of the canonical list in `standards/controls/slp-9.md`). See [docs/SYNC.md](../docs/SYNC.md). A third check, `[COUNT-SYNC]`, needs no markers: every "`<N> controls`" claim in `README.md` **and `docs/index.html`** must equal the catalog's actual control count, so an added or removed control fails the build until the prose is updated.
 
-**Self-test:** `python3 checks/validate.py --self-test` → `SELF-TEST OK (36 cases)`.
+**Self-test:** `python3 checks/validate.py --self-test` → `SELF-TEST OK (45 cases)`.
+
+**Enforcement coverage (`enforced:` / `script:`).** Two OPTIONAL per-control catalog
+fields make the built/unbuilt boundary machine-readable instead of living in prose
+that drifts: `enforced` (`script` | `partial` | `manual` | `evaluator`) and `script`
+(repo-relative path or list of paths to the covering script(s)). Absent `enforced`
+defaults to `manual` for `deterministic`/`hybrid` controls and `evaluator` for
+`judgment` controls — a `judgment` control's evaluator-verified half is not a gap.
+`validate.py` enforces the pairing (`script:` requires `enforced: script|partial`;
+every `script:` path must exist on disk; `enforced: evaluator` only on
+`judgment`/`hybrid` controls). `python3 checks/validate.py --coverage` prints the
+live table (id · tier · check · enforced[defaulted] · script) and a summary count —
+this **replaces hand-maintained gap lists**, which drift as controls are added (see
+`standards/README.md` §Enforcement).
 
 
 ## Token audit (built)
