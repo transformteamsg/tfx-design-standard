@@ -3,7 +3,16 @@
 Notable changes to the TFX Design Harness plugin. Versioning tracks
 `.claude-plugin/plugin.json`.
 
-## [Unreleased]
+## [0.7.0] — 2026-07-08
+
+Ratchet-and-enforcement pass: the catalog grows from 53 to 57 controls (CMP-4
+empty-state clarity, CMP-8 draft safety, CMP-9 cross-user sanitisation, CNT-4 domain
+fidelity), the EVD-1 evidence rule lands in `design/verify.md` and
+`docs/decisions/TEMPLATE.md`, and the Phase 3 plan gate grows an interview stage. The
+same batch also lands `enforced`/`script` catalog schema fields plus
+`validate.py --coverage` (plan 067), wires LAY-1/LAY-7 and IDN-2/3/4 into the skills
+and evaluator (plan 063), and closes a doc-truth sweep with a `[COUNT-SYNC]` check on
+`docs/index.html` (plan 064).
 
 ### Added — Phase 3 grill
 - **`design/grill.md`** — a `grill-me`-inspired interview brought into the harness. After

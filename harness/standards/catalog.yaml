@@ -12,7 +12,7 @@
 
 meta:
   version: "0.1"
-  updated: "2026-07-06"
+  updated: "2026-07-08"
   waiver_syntax: 'tfx-waive <ID> reason="<specific reason>"'
   categories:
     A11Y: Accessibility
