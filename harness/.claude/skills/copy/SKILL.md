@@ -21,7 +21,8 @@ wins and the others are corrected.
 **Improve-the-copy pass.** For a scoped "improve / polish the copy on `<page>`" run —
 capture the surface, judge only the wording, propose ranked fixes, gate, and verify —
 follow `../critique/pass.md` with this skill's dimension subset: **CNT-1, CNT-2, CNT-3,
-and SLP-9**. The rest of this file is that pass's reference: it is what "on-voice" means.
+SLP-9, and IDN-3 (IDN-4 on CaseSync surfaces)**. The rest of this file is that pass's
+reference: it is what "on-voice" means.
 
 ## Who you're writing for
 
@@ -134,7 +135,10 @@ A name that requires explanation has already failed.
 
 ## Per-product tone calibration (§6)
 
-Same character everywhere; calibrate weight, never switch systems:
+Same character everywhere; calibrate weight, never switch systems. This table is the
+register IDN-3 checks (normative table in `standards/controls/idn-3.md`); the
+CaseSync row is hardened by IDN-4 (L1, CaseSync-scoped: no celebration/gamification
+around case data):
 
 - **Teacher Workspace** — calm daily command centre: neutral, steady, quietly confident.
 - **CaseSync** — higher gravity: more reserved, restrained celebration, privacy-forward
