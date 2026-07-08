@@ -78,6 +78,12 @@ honor its STOP conditions, and update your row when done.
 | 061 | Stack restructure I: `/tfx:start` router (user-invoked, auto-runs setup), `onboard`→`setup` (+DESIGN.md init), new `critique` verb, `standards` thinned to shell | P1 | L | 055; 058 soft; before 062 | DONE (executed 2026-07-03/04 @ worktree, Opus, multi-session [several limit-resumes, per-case checkpointed]; branch `advisor/061-stack-restructure` @ f96f442, 7 commits; drift-reconciled to 0aeee9d [056/058/060 edits verified preserved]; **reviewed APPROVE via 4-way adversarial fan-out** — sweep-integrity/skill-authoring/scope-preservation all SOUND, boundary reviewer caught a real blocker [critique↔content copy-improve collision], fixed with 1 NOT-clause on critique + independently re-verified: same-page minimal pair routes copy→content, page-improve→critique, named-change→design; full sweep effectively 53/53 [45 first-pass + 4 `(none)` flakes exonerated + idx14 critique-trigger fix + 3 tiebreak cases], both critique revision budgets used; stack now start/setup/design/critique/standards/content/feedback, 0.5.0; gates validate 48 + plugin validate + build green. Non-blocking: idx47 feedback pre-existing probe flake [untouched skill]; skill-authoring nits [COL-2 threshold gloss, 'preserved is not waived' ×4]. **062 coordination**: critique's copy NOT-clause targets `content` → becomes `copy` when 062 lands. lay-7 record layout-patterns.md ref now location-stale [reconcile at LAY-7 ratification]) |
 | 062 | Stack restructure II: five focused passes — `copy` (absorbs `content`), `polish`, `motion`, `flow`, `layout` — shared pass.md, all model-invoked | P2 | L | 061 (hard) | DONE (executed 2026-07-04 @ worktree, Opus; branch `advisor/062-focused-passes` @ 99dc09c, 8 commits; re-stamped d37e7fb + reconciliation [content→copy consequential edits done: validate.py:262 + SYNC.md:49 paths→copy, critique NOT-clause→copy, design refs; website content/ dir confirmed untouched]; **reviewed APPROVE via 4-way adversarial fan-out** — scope + skill-authoring SOUND, sweep-integrity blocker was a stale-matrix artifact [idx62→critique re-verified by hand], boundary reviewer caught a real polish↔layout "hierarchy" collision → fixed with the visual-hierarchy→layout / type-hierarchy→polish split, independently re-verified; sweep 67/67 [65 + 2 hierarchy tiebreaks], both permitted revisions used [polish dimensionless→critique, polish↔layout hierarchy]; content→copy rename = git R086 [SLP9 marker preserved, [SLP9-SYNC] green]; stack now 11 skills start/setup/design/critique/standards/feedback + copy/polish/motion/flow/layout; 0.6.0; gates validate 48 + self-test 34 + plugin validate + build green. **Post-merge follow-ups (non-blocking, from the 062 review — track, not planned)**: critique cannibalises dimension asks phrased with its own verbs ("improve the colours on X"); flow↔design & motion↔design blur on soft change verbs ("make the panel fade in", "add a Back step"); motion/SKILL.md reproduces SLP-8's title near-verbatim; polish SLP-6 1.25x / layout LAY-4 80ch numeric thresholds inline [cite-not-restate]) |
 
+| 063 | Wire the 2026-07-06 controls (LAY-1/LAY-7/IDN-2/3/4) into skills + evaluator | P1 | S | — | TODO |
+| 064 | Doc-truth sweep (index.html 38→53 / four→eleven skills; ONBOARDING seven-skills + "11 checks unbuilt" + grill gate; checks/README counts) + [COUNT-SYNC] covers index.html | P1 | S–M | — | TODO |
+| 065 | Ratchet: ratify CMP-4 (empty-state clarity, reserved slot) + decide EVD-1 (async-state evidence: control vs harness rule) | P1 | M | design-lead gate; before 066 (count bumps) | TODO |
+| 066 | Ratchet round: propose CNT-4 (domain fidelity, #27) + cross-user HTML sanitisation (#26) + CMP-8 (draft safety/escapability — flow-pass gap); gate also adjudicates #9 close-or-promote | P2 | M | design-lead gate; after 065 (ordering only) | TODO |
+| 067 | Enforcement as data: optional `enforced:`/`script:` catalog fields, validate + `--coverage` listing, website projection | P2 | M | — (soft: after 065/066 to stamp their controls) | TODO |
+
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJECTED (with one-line rationale)
 
 ## Dependency notes
@@ -377,6 +383,35 @@ Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJE
   5-skill consolidation" note: the operator chose navigability over minimal
   description count, with the router + shared pass.md holding duplication down.
 
+### Batch 10 (063–067) — added 2026-07-08 from an /improve audit: "review the state of the harness skill, review the control catalog, improve and extend it to more controls"
+
+- Source: a three-way read-only audit (skill-stack staleness · catalog-gap evidence
+  mining · enforcement-coverage map) at commit `e673294`. All findings vetted against
+  the live files by the advisor before planning. **Selection note: run
+  non-interactively** — plans written for the top five by leverage; the operator can
+  prune rows rather than execute blindly.
+- Headline findings: (1) the five controls committed 2026-07-06 (LAY-1, LAY-7,
+  IDN-2/3/4) are wired into **no skill and not the evaluator** — `grep -rn "IDN-"
+  harness/.claude/` returns nothing, and three surfaces still say "five LAY controls /
+  grid isn't checkable yet" → plan 063; (2) `docs/index.html` says 38 controls / four
+  skills, ONBOARDING says seven skills incl. the renamed `content` and "11 check
+  scripts are not built yet" (ten are built, all self-tests green) → plan 064; (3) two
+  fully-specified control proposals (CMP-4, EVD-1) have been gate-pending since
+  2026-06-16 with a reserved catalog slot → plan 065; (4) three evidence-grounded
+  gaps have proposals in open issues (#27 domain fidelity, #26 cross-user HTML
+  sanitisation) or in the harness's own pass↔catalog asymmetry (flow grades draft
+  safety/escapability with no control to cite) → plan 066; (5) ~20 deterministic
+  controls are unscripted and the only record of that is a hand list here that has
+  already drifted (missing IDN-2/LAY-1) → plan 067.
+- **Order**: 063 and 064 first, independent and parallel-safe (disjoint files). 065
+  before 066 (both bump `[COUNT-SYNC]` counts — ordering, not logic). 067 last (soft),
+  so newly gated controls get stamped. 065/066 are **gated ratchets** (053/057
+  pattern): unattended runs stop at DONE-AS-PROPOSED; only the design lead's approval
+  commits catalog changes.
+- Check health at audit time: all 12 self-tests green, `validate.py` → `OK: 53
+  controls valid`; `detect.py` confirmed a façade over the six page-check scripts
+  (adds no coverage of its own).
+
 ## Findings considered and rejected
 
 - **Tier-waiver mapping duplicated across three files** (standards/README.md,
@@ -499,6 +534,36 @@ Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJE
   "teach me the harness" trigger is genuinely distinct, the file is cheap, and 047
   shortens its name to `onboard`. Decision recorded so it isn't re-litigated.
 - **`tsconfig.tsbuildinfo` in the working tree**: gitignored and untracked; no leak.
+
+### Batch 10 — findings considered and rejected / deferred (2026-07-08)
+
+- **Component-inventory control (issues #13/#16/#19 — "no required component
+  inventory for a surface")**: real and high-severity, but it intersects the unbuilt
+  component-manifest mechanism (plan 019 Stage-C territory) — a control demanding an
+  inventory before the manifest format settles would be process without teeth.
+  Deferred, not rejected: revisit when the manifest ships; the issues stay open as
+  the record. Plan 066's EVD/evidence theme covers the adjacent "evaluator grades the
+  evidence set" half.
+- **LAY-8 peer radius/shape consistency (issue #9 / spike Q3)**: not planned as a
+  control — TOK-3's peer-radius clause + CMP-7's sibling-consistency control
+  (both post-date the issue) likely cover the ask. Folded into plan 066's gate as a
+  close-or-promote decision item for the design lead.
+- **Motion controls beyond MOT-1 (enter/exit choreography, stagger)**: rejected —
+  pure asymmetry inference; the motion pass's advertised dimensions all map to
+  existing controls (MOT-1 + A11Y-5 + SLP-8) and no recorded run surfaced a motion
+  failure the catalog missed. Proposing one would violate the ratchet's
+  no-speculation rule. Revisit only on a real incident.
+- **Building the missing check scripts now (slop-scan, layout-scan, tabular-nums,
+  identity, targets, …)**: deferred behind plan 067 — the `enforced:` field makes the
+  backlog queryable and keeps each script plan honest; building ~10 scripts blind
+  would swamp the batch. First candidate after 067: `slop-scan` (SLP-1..8, the
+  biggest deterministic-unscripted cluster).
+- **checks/README token-audit COL-1 attribution gloss**: folded into plan 064 (one
+  rewording line), not its own finding.
+- **A validator sub-check asserting checks/README's per-script `SELF-TEST OK (N)`
+  counts against actual script output**: noted in plan 064's maintenance notes;
+  not planned — two stale counts in one doc don't yet justify a meta-check that
+  runs every self-test inside validate.py.
 
 ### Post-execution eval (2026-06-15, suite run against `advisor/harness-feedback-all`)
 
