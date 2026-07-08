@@ -355,6 +355,12 @@ Build exactly the approved plan. Constraints, non-negotiable:
 - **Empty states** (CMP-4): whatever the surface, an empty state's heading and subtext
   must read as "nothing here yet" — never as still loading or as a permissions error —
   and no skeleton row, shimmer, or spinner may render alongside that heading.
+- **Cross-user content** (CMP-9): where content authored by one user renders to a
+  different user (a teacher's comment shown to a parent, a message shown to another
+  staff member), sanitise it at the render boundary — an allowlist sanitiser
+  immediately before render. A "schema-constrained editor" claim at author time is not
+  sufficient on its own; the guarantee must hold where the HTML actually reaches the
+  other user's screen.
 - **Identity**: product icons come only from the approved product-icon family (IDN-2,
   L1); copy carries the product's calibrated tone register (IDN-3, L2); on CaseSync
   surfaces, casework is treated as sensitive — no celebration/gamification around case
