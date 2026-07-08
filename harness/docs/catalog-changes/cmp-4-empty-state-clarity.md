@@ -91,11 +91,32 @@ transcribed faithfully into the full proposal at
 
 ## Re-audit set
 
-To be run after the catalog commit (Step 5 of plan 065):
-`python3 checks/reaudit-scope.py` against the assigned id — output pasted below once the
-control is committed.
+Run 2026-07-08, after the catalog commit, via `python3 checks/reaudit-scope.py CMP-4`:
+
+```
+Re-audit scope for CMP-4 (category: Components & patterns)
+
+Directly in scope (0) — these records list CMP-4; re-check each against the changed clause:
+  (none)
+
+Same-category candidates (5) — these records touch the Components & patterns domain but do NOT list CMP-4; they are candidates to confirm, not proven-affected. Confirm each actually uses the affected pattern:
+  - docs/decisions/attendance.md
+  - docs/decisions/broadcast-message.md
+  - docs/decisions/grade-entry.md
+  - docs/decisions/student-notes-empty-state.md
+  - docs/decisions/submit-marks-review.md
+
+5 record(s) to re-audit (0 direct, 5 candidate).
+```
+
+None of the four shipped surfaces (`student-notes-empty-state.md` is the triggering run
+itself, listed here as a same-category candidate like the others) directly declared CMP-4
+in their "Controls in scope" section — expected, since the control didn't exist when they
+shipped. All five listed records are candidates for a design-lead-directed re-audit pass:
+confirm whether each surface's empty state (if it has one) currently satisfies CMP-4
+before treating it as compliant.
 
 ---
 
 **Status:** APPROVED AS PROPOSED and committed to `standards/catalog.yaml` (Step 3 of
-plan 065). Catalog 53 → 54 controls. Re-audit set to be appended below per Step 5.
+plan 065). Catalog 53 → 54 controls. Re-audit set run and appended above (Step 5).
