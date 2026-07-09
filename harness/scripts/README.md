@@ -31,3 +31,26 @@ python3 scripts/file-feedback-issue.py --self-test
   tool dedups against existing issues before filing. If `gh` is unavailable, it prints
   the issue that *would* have been filed and the reason, and exits non-zero — never a
   silent skip.
+
+## generate-design-json.py
+
+Generates a product repo's `.tfx/design.json` (the machine twin) from its human-owned
+`DESIGN.md` (per-product visual parameters). Spec: `docs/DESIGN-CONTEXT.md`. Pure
+standard-library Python 3. `.tfx/design.json` is generated only — never hand-edited.
+
+```
+# generate .tfx/design.json under the product repo root
+python3 scripts/generate-design-json.py <repo-root>
+
+# CI freshness gate — exit 2 if .tfx/design.json is stale vs DESIGN.md, write nothing
+python3 scripts/generate-design-json.py <repo-root> --check
+
+# pure logic test — writes only inside a temp dir
+python3 scripts/generate-design-json.py --self-test
+```
+
+- Parses `DESIGN.md`'s `## ` sections into one json key each (`colour`, `tone`, `motion`,
+  `layout_system`, `components`); `- key: value` bullets become structured fields, a
+  prose section becomes its text verbatim, HTML comments are stripped.
+- Exit codes: `0` wrote / up to date · `1` no `DESIGN.md` (portfolio defaults apply —
+  not a failure) · `2` `--check` found a stale twin.

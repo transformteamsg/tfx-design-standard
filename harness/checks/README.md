@@ -5,20 +5,113 @@ Scripts that verify `check: deterministic` controls (and the deterministic half 
 violation, and prints violations with file/line/element and the control id — verbose
 on failure, silent on success.
 
+## Detector — one entry over the checks (built)
+
+`python3 checks/detect.py [<path>...]` is the **unified entry point**: a façade that
+invokes the individual check scripts below (whose rules it never changes), maps their
+exit codes onto one contract, and adds a config-based ignore layer. Targets are files
+or directories (recursive); the default target is `.`. This is the check surface hooks
+wire to (plan 060) — "fast signal without asking an AI".
+
+**Wired as a hook (plan 060, opt-in).** `hooks/design-hook.py` is a consented Claude
+Code PostToolUse hook that runs this detector's **curated profile only** (token-audit,
+contrast, a11y-static, TYP-1) on an edited UI file and reminds the agent on new
+findings — it never blocks an edit, and its "clean" is the curated subset's clean, not
+a whole-catalog pass. Off by default; install via the snippet in [`../hooks/README.md`](../hooks/README.md).
+
+**Exit contract (0 / 2 / 1).** `detect.py` adopts Impeccable's codes, which differ from
+the per-script 0/1: **0 = clean, 2 = findings, 1 = tool failure** (a wrapped script
+crashed, or `.tfx/config.json` is invalid). A wrapped script's exit 1 (violations) maps
+to detect's exit 2; detect reserves exit 1 for crashes and misconfiguration. A script
+that exits 1 with a stderr traceback, exits with a code outside {0,1}, or exits 1 with
+no parseable `ERROR` line is treated as a crash — detect fails loud rather than passing
+silently.
+
+**Profiles.** The default is the **curated, low-false-positive subset**:
+`token-audit`, `contrast`, `a11y-static`, and `type-scan`'s **TYP-1 rule only** (via
+`type-scan --rules TYP-1`). The noisier rules — TYP-2 size floor and the rest — stay
+recording-only. `--all` runs every page-check script: the curated set with `type-scan`'s
+full rule set (so TYP-2 runs), plus `content-lint` and `component-manifest` (the latter
+only when a `.tfx/component-manifest.json` exists; otherwise it is reported skipped).
+
+**Output.** Text mode groups each script's findings under a `── <check> ──` header and
+passes through its `ERROR`/`NOTE` lines. `--json` emits
+`{"findings": [{"check", "control", "file", "line", "message"}], "counts": …}` on stdout,
+parsed from the scripts' `ERROR <file>:<line> [<CTL>] …` convention. An `ERROR` line that
+does not carry a `[<CTL>]` bracket (operational errors like path-not-found, and
+`component-manifest`'s `ERROR <file>:<line>: … (CMP-1 finding)` import-diff lines) is kept
+as a **control-less finding** — captured, counted toward exit 2, and printed; never
+dropped or silently passed.
+
+**Config ignores (`.tfx/config.json` at the target repo root).**
+
+```json
+{"detector": {"ignoreFiles": ["legacy/*"], "ignoreValues": ["amber-11"], "ignoreRules": ["TYP-2"]}}
+```
+
+- `ignoreFiles` — glob-filters the scanned targets (drop a legacy folder). Globs match the
+  repo-relative path or basename; `*` spans `/`.
+- `ignoreValues` — fed to `token-audit`'s `--allow` mechanism (licence a sanctioned
+  colour name / raw value); it feeds that allowlist, it does not replace it.
+- `ignoreRules` — drops whole control ids from the run (post-parse; an operational,
+  control-less finding is never dropped).
+
+`--no-config` bypasses the file entirely. An invalid or wrong-shaped `.tfx/config.json` is
+a misconfiguration → exit 1. `--tokens <css>` overrides the contrast token map (default:
+auto-discover `app/globals.css` under the repo root).
+
+**Config ignores complement tier waivers — they never replace them.** A waiver is a
+per-instance control exception with a named approver (the tier-waiver system); a config
+ignore is scan-noise control — a legacy folder detect should not walk, or a raw value the
+team has sanctioned. Neither silences an L0: `ignoreRules` on an L0 only hides it from the
+detector's own report; the L0 rule and its L0-never waiver policy are unchanged in the
+underlying scripts and the catalog. Use a waiver to *except* a control instance; use a
+config ignore to *quiet scan noise*.
+
+**Honest enforcement still binds.** `detect.py` runs only the checks that are built (the
+curated or `--all` set). It never reports an unbuilt or un-run control as "passed" — read
+its output as "the built checks found nothing", not "the design is compliant". Per-control
+coverage and the always-manual gaps are in the sections below.
+
+**Design-context freshness.** When `.tfx/design.json` exists at the target repo root and
+058's generator (`scripts/generate-design-json.py`) is present, detect also runs the
+generator in `--check` mode; a stale `design.json` (generator exit 2) is surfaced as a
+finding (exit 2), never a crash.
+
+**Self-test:** `python3 checks/detect.py --self-test` → `SELF-TEST OK (35 cases)` — profile
+selection, the 0/2/1 exit mapping (incl. curated excluding TYP-2 / `--all` including it),
+each ignore type, invalid-config → exit 1, `ERROR`-line parsing, and the JSON shape. The
+wrapped scripts are not invoked in the self-test (it exercises detect's own pure logic);
+their behaviour is proven by their own `--self-test`s and a real-corpus run over
+`docs/loop-run/`.
+
 ## Validator (built)
 
 `python3 checks/validate.py` — validates `standards/catalog.yaml` against the schema in `standards/README.md`: field presence and allowed values, tier→waiver pairing, `detail:` file existence, detail-frontmatter ↔ catalog consistency, and that every control ID referenced in skills/docs exists in the catalog. Exit 0 on pass, exit 1 with `ERROR` lines on failure. This is the repo's verification baseline — run it before committing any `standards/` change.
 
-The validator also enforces two **fragment-parity** sub-checks via `<!-- tfx-sync:… -->` markers: `[L0-SYNC]` (the inline "Non-negotiables (L0)" lists in `CLAUDE.md` and `tfx-design-ui/SKILL.md` must equal the catalog's `tier: L0` set) and `[SLP9-SYNC]` (the `tfx-content-style` buzzword summary must be a subset of the canonical list in `standards/controls/slp-9.md`). See [docs/SYNC.md](../docs/SYNC.md).
+The validator also enforces two **fragment-parity** sub-checks via `<!-- tfx-sync:… -->` markers: `[L0-SYNC]` (the inline "Non-negotiables (L0)" lists in `CLAUDE.md` and `design/SKILL.md` must equal the catalog's `tier: L0` set) and `[SLP9-SYNC]` (the `copy` buzzword summary must be a subset of the canonical list in `standards/controls/slp-9.md`). See [docs/SYNC.md](../docs/SYNC.md). A third check, `[COUNT-SYNC]`, needs no markers: every "`<N> controls`" claim in `README.md` **and `docs/index.html`** must equal the catalog's actual control count, so an added or removed control fails the build until the prose is updated.
 
-**Self-test:** `python3 checks/validate.py --self-test` → `SELF-TEST OK (27 cases)`.
+**Self-test:** `python3 checks/validate.py --self-test` → `SELF-TEST OK (45 cases)`.
+
+**Enforcement coverage (`enforced:` / `script:`).** Two OPTIONAL per-control catalog
+fields make the built/unbuilt boundary machine-readable instead of living in prose
+that drifts: `enforced` (`script` | `partial` | `manual` | `evaluator`) and `script`
+(repo-relative path or list of paths to the covering script(s)). Absent `enforced`
+defaults to `manual` for `deterministic`/`hybrid` controls and `evaluator` for
+`judgment` controls — a `judgment` control's evaluator-verified half is not a gap.
+`validate.py` enforces the pairing (`script:` requires `enforced: script|partial`;
+every `script:` path must exist on disk; `enforced: evaluator` only on
+`judgment`/`hybrid` controls). `python3 checks/validate.py --coverage` prints the
+live table (id · tier · check · enforced[defaulted] · script) and a summary count —
+this **replaces hand-maintained gap lists**, which drift as controls are added (see
+`standards/README.md` §Enforcement).
 
 
 ## Token audit (built)
 
 `python3 checks/token-audit.py <path>...` — scans `.css`, `.html`, `.jsx`, `.tsx`, `.js`, `.ts`, `.vue`, and `.svelte` files for raw colour values, off-scale spacing, and off-scale border-radius that should be replaced with design tokens. Accepts files or directories (recursive). Exit 0 silent on pass; exit 1 with `ERROR` lines on failure.
 
-**Coverage:** TOK-1 (raw hex/rgb/hsl/oklch/named-colour in style contexts, plus raw colour inside Tailwind arbitrary-value utilities e.g. `bg-[…]` — see below), TOK-2 (off-scale spacing — shadcn default scale), TOK-3 (off-scale border-radius), COL-1/COL-2 (Tailwind palette utility classes bypassing the semantic layer). Suggests the nearest scale value or token pattern on every violation.
+**Coverage:** TOK-1 (raw hex/rgb/hsl/oklch/named-colour in style contexts, plus raw colour inside Tailwind arbitrary-value utilities e.g. `bg-[…]` — see below), TOK-2 (off-scale spacing — shadcn default scale), TOK-3 (off-scale border-radius), COL-2 (Tailwind palette utility classes bypassing the semantic layer; COL-1 partial — palette bypass only, product-primary resolution is judgment). Suggests the nearest scale value or token pattern on every violation.
 
 **Token-definition exemption:** raw values inside a `:root { --*: … }` custom-property block or a `/* tfx-tokens */` … `/* /tfx-tokens */` region are exempt — tokens must be defined somewhere.
 
@@ -134,26 +227,26 @@ This closes the loop `token-audit.py` leaves open ("a human closes the decision-
 
 ## Content lint (built — static subset)
 
-`python3 checks/content-lint.py <path>...` — scans `.mdx`, `.md`, `.tsx`, `.jsx`, `.ts`, `.js`, `.vue`, `.svelte`, `.css`, and `.html` files for the statically-resolvable subset of CNT-1, CNT-3, CNT-4, CNT-6, and the deterministic (lint) half of SLP-9. Accepts files or directories (recursive). Exit 0 silent on pass; exit 1 with `ERROR` lines on failure.
+`python3 checks/content-lint.py <path>...` — scans `.mdx`, `.md`, `.tsx`, `.jsx`, `.ts`, `.js`, `.vue`, `.svelte`, `.css`, and `.html` files for the statically-resolvable subset of CNT-1, CNT-3, CNT-5, CNT-6, and the deterministic (lint) half of SLP-9. Accepts files or directories (recursive). Exit 0 silent on pass; exit 1 with `ERROR` lines on failure.
 
-**Single-source word lists:** the SLP-9 buzzword, AI-vocabulary, filler, and chatbot-artifact lists are **read at runtime** from `standards/controls/slp-9.md` (resolved relative to the check, from the `<!-- tfx-sync:slp9-buzzwords -->` marked span and the named bullets in "How to verify") — never embedded as a third copy, so the lint and the catalog cannot diverge. The CNT-4 device-verb list is read the same way from `cnt-4.md` (`<!-- tfx-sync:cnt4-verbs -->`), and the CNT-6 opener/filler lists from `cnt-6.md` (`<!-- tfx-sync:cnt6-openers -->`, `<!-- tfx-sync:cnt6-filler -->`). If a file cannot be found or parsed, the check falls back to a small embedded copy and prints a `NOTE` saying so — never silently.
+**Single-source word lists:** the SLP-9 buzzword, AI-vocabulary, filler, and chatbot-artifact lists are **read at runtime** from `standards/controls/slp-9.md` (resolved relative to the check, from the `<!-- tfx-sync:slp9-buzzwords -->` marked span and the named bullets in "How to verify") — never embedded as a third copy, so the lint and the catalog cannot diverge. The CNT-5 device-verb list is read the same way from `cnt-5.md` (`<!-- tfx-sync:cnt5-verbs -->`), and the CNT-6 opener/filler lists from `cnt-6.md` (`<!-- tfx-sync:cnt6-openers -->`, `<!-- tfx-sync:cnt6-filler -->`). If a file cannot be found or parsed, the check falls back to a small embedded copy and prints a `NOTE` saying so — never silently.
 
 **Rules:**
 
 - **SLP-9 (L2, lint half):** a word-boundaried, case-insensitive hit on the buzzword or AI-vocabulary list; a hit on the filler or chatbot-artifact phrase lists; or two or more em dashes inside one sentence. Markdown table rows (lines starting `|`) are skipped for the em-dash rule — those dashes are structural per SLP-9's "Do not flag" list.
 - **CNT-3 (L2):** a user-facing string literal (in code) or MDX/MD prose line whose longest sentence exceeds 25 words.
 - **CNT-1 (L1):** a user-facing string that is *only* a raw error code (`ERR_SYNC_500`, `0x…`, an all-caps token), or the bare literal "Something went wrong" with no actionable next step on the same or next line. Conservative — when unsure, does not flag.
-- **CNT-4 (L2):** a device-bound action verb (click/tap/swipe and inflections) inside a multi-word user-facing string or MDX prose line. Bare event names and identifiers (`onClick`, `addEventListener("click", …)`) are not copy and are not flagged.
+- **CNT-5 (L2):** a device-bound action verb (click/tap/swipe and inflections) inside a multi-word user-facing string or MDX prose line. Bare event names and identifiers (`onClick`, `addEventListener("click", …)`) are not copy and are not flagged.
 - **CNT-6 (L2):** a sentence-*initial* empty opener ("There is", "There are", "It is", "This is") or a safe-subset filler word (just, really, very, please) in a multi-word user-facing string or MDX prose line. "In order to" is deliberately NOT in the CNT-6 lists — SLP-9's filler-phrase rule owns it, so one token never fires two controls.
 
 **Static-subset caveat — what this script does NOT verify:**
 
 - Non-literal / interpolated strings (`{var}`, template `${…}`, concatenation) — out of static reach; not flagged and not passed silently; the manual / evaluator pass covers them.
 - Whether a string is truly user-facing vs. an internal label, key, className, or path — conservative heuristics; coordinate / SVG-path data (mostly numeric tokens) is excluded.
-- CNT-3's "leads with its purpose" *semantic* half — judgment (evaluator).
+- CNT-7 (descriptive copy leads with its purpose) — judgment (evaluator); split from CNT-3.
 - SLP-9's structural-tell *evaluator* half — negative parallelism, forced triads, copula avoidance, significance inflation, redundant label/helper pairs, em-dash clustering across a paragraph — all judgment (evaluator).
 - CNT-1's full "what happened → what it means → what to do next" anatomy — judgment (evaluator); the script only catches the raw-code-only and bare-"Something went wrong" cases.
-- CNT-4's harder half — "press" and "see", ambiguous link text ("click here", "read more"), and confirming a hit is a UI instruction rather than incidental prose — judgment (evaluator).
+- CNT-5's harder half — "press" and "see", ambiguous link text ("click here", "read more"), and confirming a hit is a UI instruction rather than incidental prose — judgment (evaluator).
 - CNT-6's harder half — "such", "that", droppable articles/conjunctions ("a", "the", "and"), and the clarity exception on every hit ("only if it does not reduce clarity") — judgment (evaluator).
 
 **Self-test:** `python3 checks/content-lint.py --self-test` → `SELF-TEST OK (34 cases)`.
@@ -180,7 +273,7 @@ This closes the loop `token-audit.py` leaves open ("a human closes the decision-
 - All-caps set via camelCase inline style (TYP-4) — `style={{textTransform:'uppercase'}}` in JSX is not matched; only the CSS `text-transform: uppercase` form and the Tailwind `uppercase` utility are.
 - Fonts / sizes set in a separate stylesheet the line-local rule can't see, or composed from variables / class-name interpolation — out of static reach.
 
-**Self-test:** `python3 checks/type-scan.py --self-test` → `SELF-TEST OK (27 cases)`.
+**Self-test:** `python3 checks/type-scan.py --self-test` → `SELF-TEST OK (42 cases)`.
 
 ## Component manifest (built)
 
@@ -211,7 +304,7 @@ Planned for V1 (remaining):
 | ~~`type-scan`~~ | ~~TYP-1..4~~ | ✅ built (static subset) — `type-scan` covers TYP-1 (font families), TYP-2 (size floor + unitless line-height), TYP-3 (on-scale, scale sourced from the catalog), TYP-4 (no all-caps, acronyms exempt); font *weights*, the label-vs-body floor decision, and px/% line-heights still need rendered context |
 | `destructive` | CMP-2 (deterministic half) | Enumerate destructive actions; assert consequence surface + undo/confirm exists |
 | `async-states` | CMP-3 (deterministic half) | Enumerate async actions; assert loading/success/error states exist and are reachable |
-| ~~`content-lint`~~ | ~~CNT-1, CNT-3, CNT-4, CNT-6, SLP-9 (deterministic half)~~ | ✅ built (static subset) — `content-lint` covers CNT-1 (raw codes), CNT-3 (sentence length), CNT-4 (device verbs, from `cnt-4.md`), CNT-6 (sentence-initial empty openers + safe filler subset, from `cnt-6.md`), and the SLP-9 lint lists (read live from `standards/controls/slp-9.md`) + em-dash chains; the SLP-9 structural-tell evaluator half, CNT-5 (lead-with-purpose, split from CNT-3), and the CNT-4/CNT-6 judgment halves stay evaluator |
+| ~~`content-lint`~~ | ~~CNT-1, CNT-3, CNT-5, CNT-6, SLP-9 (deterministic half)~~ | ✅ built (static subset) — `content-lint` covers CNT-1 (raw codes), CNT-3 (sentence length), CNT-5 (device verbs, from `cnt-5.md`), CNT-6 (sentence-initial empty openers + safe filler subset, from `cnt-6.md`), and the SLP-9 lint lists (read live from `standards/controls/slp-9.md`) + em-dash chains; the SLP-9 structural-tell evaluator half, CNT-7 (lead-with-purpose, split from CNT-3), and the CNT-5/CNT-6 judgment halves stay evaluator |
 | `motion` | MOT-1, SLP-8 | Animation durations within 100–300ms, standard easing, none decorative on critical paths; no bounce/elastic/overshoot easing |
 | `identity` | IDN-1 | Logo/lockup files resolve to the approved asset library; no inline redraws |
 | `slop-scan` | SLP-1..4 | Stylesheet/DOM scan: purple-violet gradient palettes, cyan-on-dark theming, glow accents, gradient text, thick side-tab borders on rounded cards, nested cards |

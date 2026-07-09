@@ -1,13 +1,14 @@
-import { isValidElement, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import { notFound } from "next/navigation";
 import { compileMDX } from "next-mdx-remote/rsc";
 import remarkGfm from "remark-gfm";
 import clsx from "clsx";
 import { getControlDetail, listControlIds } from "@/lib/control-detail";
+import { getScopeMeta } from "@/lib/catalog";
 import { mdAlternate, NO_EXTENDED_DETAIL } from "@/lib/markdown-twin";
 import { tierStyles, tierLabels } from "@/lib/tier-style";
 import { Breadcrumb } from "@/components/breadcrumb";
-import { slugify } from "@/lib/toc";
+import { heading } from "@/components/mdx";
 
 export const dynamic = "force-static";
 export const dynamicParams = false;
@@ -28,21 +29,6 @@ export async function generateMetadata({
     title: `${detail.id} — ${detail.statement}`,
     ...mdAlternate(`/standards/catalog/${detail.slug}`),
   };
-}
-
-function textOf(node: ReactNode): string {
-  if (typeof node === "string" || typeof node === "number") return String(node);
-  if (Array.isArray(node)) return node.map(textOf).join("");
-  if (isValidElement(node)) return textOf((node.props as { children?: ReactNode }).children);
-  return "";
-}
-
-/* Heading ids mirror DocPage so anchors are stable across the site. */
-function heading(Tag: "h2" | "h3") {
-  function Heading({ children }: { children?: ReactNode }) {
-    return <Tag id={slugify(textOf(children))}>{children}</Tag>;
-  }
-  return Heading;
 }
 
 export default async function ControlDetailPage({
@@ -99,6 +85,20 @@ export default async function ControlDetailPage({
       <h1 className="mt-3 font-display text-[32px] font-semibold leading-tight tracking-tight">
         {detail.statement}
       </h1>
+      {(detail.products || detail.audiences) &&
+        (() => {
+          const scopeMeta = getScopeMeta();
+          const names = [
+            ...(detail.products ?? []).map((p) => scopeMeta.products[p] ?? p),
+            ...(detail.audiences ?? []).map((a) => scopeMeta.audiences[a] ?? a),
+          ];
+          return (
+            <p className="mt-3 text-[14px] text-muted-foreground">
+              <span className="font-semibold text-foreground">Scope:</span>{" "}
+              {names.join(" · ")}
+            </p>
+          );
+        })()}
       {detail.fails_when && (
         <p className="mt-3 text-[16px] text-muted-foreground">
           <span className="font-semibold text-danger">Fails when:</span>{" "}

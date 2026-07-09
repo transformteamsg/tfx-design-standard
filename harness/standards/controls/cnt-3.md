@@ -8,6 +8,8 @@ phase: [implement, verify]
 applies_to: [content]
 verify: "Lint sentence length; evaluator judges voice and person"
 waiver: rationale
+enforced: partial
+script: checks/content-lint.py
 refs:
   - https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb
 ---
@@ -20,7 +22,7 @@ appears as prose — instructional text, help copy, confirmation messages, empty
 and error messages. Labels and fragments are not sentences and are not in scope for
 the word-count or voice rules.
 
-See also: CNT-5 (descriptive copy leads with its purpose before the mechanism) —
+See also: CNT-7 (descriptive copy leads with its purpose before the mechanism) —
 split out of this control on 2026-07-03; the purpose rule for titles, descriptions,
 and intros lives there now.
 

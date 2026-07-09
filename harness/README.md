@@ -11,13 +11,15 @@ is a defect. Speed comes from the automation — quality comes from the contract
 surviving the whole way to shipped UI.
 
 ```
-NORMATIVE LAYER                       HARNESS                            ENFORCEMENT
-standards/catalog.yaml                .claude/skills/                    checks/ + evaluator agent
-├─ TFX-DS standards tier              ├─ tfx-design-ui      (the loop)       ├─ Deterministic: scripts, a11y scan,
-│   47 controls (latest ratchet 2026-06-17)  ├─ tfx-design-standards (catalog use)  │   DOM checks — non-skippable
-├─ WCAG 2.2 AA (self-imposed floor)   ├─ tfx-content-style  (voice & tone)   ├─ Judgment: tfx-design-evaluator subagent
-└─ References: SGDS, GOV.UK           └─ tfx-design-review  (evaluator)      └─ Human gates: plan approval, L1 waivers
-   (reference points, not rules)
+NORMATIVE LAYER                       HARNESS                              ENFORCEMENT
+standards/catalog.yaml                .claude/skills/                      checks/ + evaluator agent
+├─ TFX-DS standards tier              ├─ start (router; /tfx:start)        ├─ Deterministic: scripts, a11y scan,
+│   60 controls (latest ratchet 2026-07-08) ├─ setup (per-user tools + context)  │   DOM checks — non-skippable
+├─ WCAG 2.2 AA (self-imposed floor)   ├─ design (the loop)                 ├─ Judgment: evaluator subagent
+└─ References: SGDS, GOV.UK           ├─ critique (evaluate + polish)      └─ Human gates: plan approval, L1 waivers
+                                      ├─ standards (catalog use)
+   (reference points, not rules)      ├─ copy·polish·motion·flow·layout (focused passes)
+                                      └─ feedback (harness issue filing)
 ```
 
 Normative source: [TFX-DS v0.1 draft](https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb)
@@ -54,28 +56,48 @@ Jakarta Sans + Inter; Teacher & School Blue `#0064FF`.
 design-harness/
 ├── README.md
 ├── CLAUDE.md                # always-on project facts — makes the harness discoverable
-│                            # from any entry point, not just the tfx-design-ui loop
+│                            # from any entry point, not just the design loop
+├── CHANGELOG.md             # catalog + skill versions, tracked with plugin.json
+├── CONTRIBUTING.md          # ratchet flow: how a new control gets proposed and merged
 ├── standards/
 │   ├── README.md            # control catalog format spec + authoring guide
-│   ├── catalog.yaml         # TFX-DS catalog: 47 controls (always loaded)
+│   ├── catalog.yaml         # TFX-DS catalog: 60 controls (always loaded)
+│   ├── schema.json          # machine-checkable schema validate.py validates against
 │   └── controls/            # one file per control: YAML frontmatter + rationale,
 │                            # pass/fail examples, verification detail (loaded on demand)
 ├── .claude/
 │   ├── skills/
-│   │   ├── tfx-design-ui/           # orchestrates the loop: intent → diverge → plan →
-│   │   │                        # implement → verify
-│   │   ├── tfx-design-standards/    # how to read, filter, and apply the catalog
-│   │   ├── tfx-content-style/       # TFX voice & tone + naming, applied at generation time
-│   │   └── tfx-design-review/       # evaluator procedure (used by the subagent)
+│   │   ├── start/            # user-invoked router: orient, context check, route (/tfx:start)
+│   │   ├── setup/            # per-user tool setup + product context-layer init
+│   │   ├── design/           # orchestrates the loop: intent → diverge → plan →
+│   │   │                     # implement → verify (implement-craft.md: implement detail)
+│   │   ├── critique/         # evaluate an existing page → ranked suggestions → gated fixes
+│   │   │                     # (critique.md + layout-patterns.md; pass.md: shared pass procedure)
+│   │   ├── standards/        # how to read, filter, and apply the catalog
+│   │   ├── copy/             # TFX voice & tone + naming; also the improve-the-copy pass
+│   │   ├── polish, motion, flow, layout/   # focused single-dimension passes (share critique/pass.md)
+│   │   └── feedback/         # captures harness feedback mid-turn, files it as an issue
 │   └── agents/
-│       └── tfx-design-evaluator.md  # reviewer subagent — generator/evaluator split
-├── checks/
-│   └── README.md            # deterministic check scripts, mapped to control ids (planned)
+│       └── evaluator.md      # reviewer subagent — generator/evaluator split;
+│                             # carries its own review procedure
+├── checks/                  # 10 check scripts + fixtures/ — see checks/README.md for coverage
+├── evals/
+│   ├── golden/               # known-correct + planted-trap tasks that score loop output
+│   ├── routing/               # prompts.yaml — catches skill-description drift
+│   └── evaluator-recall/      # checks the evaluator subagent's own recall, not the loop
+├── plans/                   # numbered improvement plans (this file's own backlog)
+├── scripts/                 # repo-maintenance one-offs (e.g. file-feedback-issue.py)
 └── docs/
-    ├── index.html           # visual explainer of how the harness works
-    ├── SYNC.md              # fragment sync: tfx-sync markers + validate.py parity checks
-    └── decisions/
-        └── TEMPLATE.md      # design decision record — one per page/change
+    ├── index.html            # visual explainer of how the harness works
+    ├── SYNC.md                # fragment sync: tfx-sync markers + validate.py parity checks
+    ├── ONBOARDING.md          # adopting the harness in a product repo
+    ├── UPDATING.md            # plugin update steps + auto-update setting
+    ├── harness-feedback.md    # running log of feedback on the harness itself
+    ├── decisions/             # one design decision record per page/change
+    ├── loop-run/              # end-to-end loop run transcripts/evidence
+    ├── reviews/               # standalone review writeups
+    ├── spikes/                # exploratory spikes (e.g. layout-category)
+    └── catalog-changes/       # ratchet proposals and their outcomes
 ```
 
 Fragment sync (markers + validation): [docs/SYNC.md](docs/SYNC.md).
@@ -86,10 +108,12 @@ The harness ships as a Claude Code plugin. In your product repo (TW, CaseSync, G
 
 ```
 /plugin marketplace add transformteamsg/tfx-design-standard
-/plugin install tfx-design-harness@tfx
+/plugin install tfx@tfx
 ```
 
-This installs the five skills (`tfx-design-ui`, `tfx-design-standards`, `tfx-content-style`, `tfx-design-review`, `tfx-design-onboarding`), the `tfx-design-evaluator` subagent, and the control catalog (`standards/`) — the catalog ships with the plugin, not with your repo.
+This installs the eleven skills (`start`, `setup`, `design`, `critique`, `standards`, `feedback`, and the five focused passes — `copy`, `polish`, `motion`, `flow`, `layout`), the `evaluator` subagent (which carries its own review procedure), and the control catalog (`standards/`) — the catalog ships with the plugin, not with your repo. Run `/tfx:start` for orientation and routing to the right one.
+
+The design loop captures screenshots with the agent-browser CLI — to set it and the other per-user tools up, run `/tfx:start` (or invoke the `setup` skill directly) and follow the checklist (it lives in .claude/skills/setup/setup.md).
 
 To work on the harness itself, just open a Claude Code session in this repository: the skills load from `.claude/skills/` automatically; no install step.
 
@@ -97,7 +121,7 @@ To work on the harness itself, just open a Claude Code session in this repositor
 
 Adopting the harness in a product repo? Follow [docs/ONBOARDING.md](docs/ONBOARDING.md).
 
-## The loop (summary — full procedure in `tfx-design-ui` skill)
+## The loop (summary — full procedure in `design` skill)
 
 | Phase | Actor | Gate |
 |---|---|---|
@@ -114,16 +138,16 @@ Aligned to TFX-DS v0.1 (June 2026). Catalog: the 22-control TFX-DS seed, plus 6
 ratchet additions (GovTech a11y checklist, 2026-06-11), the 10 anti-slop controls
 (SLP-1..10) adopted from the TFX-DS site seed catalog in the 2026-06-11
 consolidation, and later ratchet additions (LAY-2/3/4/5/6, TYP-5, SLP-11, CMP-5,
-CMP-6) — 47 controls, one file, consumed by both the harness (enforcement) and the
+CMP-6, LAY-1/7, IDN-2/3/4, CMP-4, CNT-4, CMP-8, CMP-9) — 60 controls, one file, consumed by both the harness (enforcement) and the
 TFX-DS website (presentation).
 
 - **V0 — now**: this standard as catalog source; skills installed; loop runnable in a
   Claude session (verify phase runs manually — see the "v0 reality" note in
-  `tfx-design-ui`). Verification baseline: `python3 checks/validate.py`.
+  `design`). Verification baseline: `python3 checks/validate.py`.
 - **V1 — next**: the deterministic floor — check scripts wired as hooks during
-  implement and as the verify gate. MVP bet per TFX-DS: `tfx-design-review` as a
-  screen-linter against the seed catalog + `tfx-content-style` so generated screens ship
-  with on-voice copy; first user = designers.
+  implement and as the verify gate. MVP bet per TFX-DS: the evaluator's grading
+  procedure as a screen-linter against the seed catalog + `content` so
+  generated screens ship with on-voice copy; first user = designers.
 - **V2 — later**: component manifest via MCP, screenshot-diff against approved
   baselines, full catalog buildout from ratchet evidence.
 

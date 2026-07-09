@@ -1,4 +1,4 @@
-import { getCatalog } from "@/lib/catalog";
+import { getCatalog, getScopeMeta } from "@/lib/catalog";
 import { CatalogBrowser } from "@/components/catalog-browser";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { mdAlternate } from "@/lib/markdown-twin";
@@ -7,6 +7,7 @@ export const metadata = { title: "Control catalog", ...mdAlternate("/standards/c
 
 export default function CatalogPage() {
   const controls = getCatalog();
+  const scopeMeta = getScopeMeta();
   return (
     <div>
       <div className="max-w-[720px]">
@@ -34,7 +35,11 @@ export default function CatalogPage() {
           </a>
         </p>
       </div>
-      <CatalogBrowser controls={controls} />
+      <CatalogBrowser
+        controls={controls}
+        productNames={scopeMeta.products}
+        audienceNames={scopeMeta.audiences}
+      />
     </div>
   );
 }

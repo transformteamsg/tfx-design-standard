@@ -1,91 +1,81 @@
 ---
 id: CNT-4
 source: TFX-DS
-title: UI action words name the action, not the input device — "choose", "select", "view", never "click", "tap", "swipe", or "press"
+title: Content that models a real-world artifact is faithful to it (scope, terminology, structure) or explicitly labelled illustrative
 tier: L2
-check: hybrid
-phase: [implement, verify]
+check: judgment
+phase: [intent, implement, verify]
 applies_to: [content]
-verify: "Lint flags device-bound verbs (click/tap/swipe) in user-facing copy; evaluator confirms the word is a UI action instruction and judges the harder calls (press, see) and ambiguous link text"
+verify: "Evaluator + named domain reviewer sign-off before user testing, or the illustrative label present in-product and in the decision record"
 waiver: rationale
+fails_when:
+  - a curriculum/subject/level detail a practitioner would recognise as wrong (e.g. a subject graded at a level where it isn't taught)
+  - invented specifics presented as real in a user-testing surface
+  - placeholder content with no illustrative label
 refs:
   - https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb
 ---
 
 ## Requirement
 
-Write action words that describe the action, not the input device. Say "choose",
-"select", "open", or "view"; never "click", "tap", "swipe", or "press". Link and
-button text names where the action goes or what it does — never "click here" or
-"read more". Applies to all user-facing copy: buttons, links, instructions, help
-text, empty states.
+When a surface presents content that models a real-world artifact — a curriculum, a
+form, a policy document, a report — the content must be faithful to that artifact:
+correct scope, terminology, and structure. Where full fidelity is not yet available,
+the content must be explicitly labelled illustrative or placeholder, in-product and in
+the decision record. "Format is right but the specifics are invented" is a fail for any
+surface used in user testing, because testers judge credibility on the specifics, not
+the shell.
 
 ## Rationale
 
-Teachers reach TFX products on laptops, tablets, and phones, and through screen
-readers and switch devices. "Click the button" is wrong for a teacher on a tablet
-and meaningless to someone navigating by voice — the instruction names an input the
-reader may not use. Device-agnostic verbs work everywhere at once, which is the
-kind thing to do: the copy is correct for every teacher without a variant per
-device. Ambiguous link text ("click here") fails the same test twice — it names the
-device *and* tells a screen-reader user nothing about the destination when links are
-read out of context.
+The triggering incident: a mock P1 report graded learning outcomes for Science (which
+starts at P3 in Singapore, not P1) and showed a P1 Mathematics learning outcome
+"Statistics & Probability" — both read as fake to a real P1 teacher. The Science case
+was caught and fixed by hand; the wording case remained flagged as illustrative pending
+HOD confirmation. Two evaluator passes graded this ad hoc against the sprint contract
+because no control named the failure mode — a naming/voice/tone-clean surface can still
+read as fake if the domain details inside it are wrong. CNT-1..3 grade error anatomy,
+naming, and voice mechanics; none of them checks whether the *content* is true to the
+thing it claims to model.
 
-This control was mapped from the HDB e-services UX-writing guide (Step 9,
-accessibility) during the writing-guide port, and complements A11Y-7 (link text
-makes sense out of context) on the content side.
+## Passes when
 
-## Passes when / Fails when
+- A domain detail matches the real-world artifact it models (correct level, subject,
+  terminology, structure) — verifiable against the source, or by a named domain
+  reviewer.
+- Content that cannot yet be verified is explicitly labelled illustrative/placeholder,
+  both in the UI and in the decision record.
+- A named domain reviewer (e.g. a Head of Department) has signed off before the surface
+  is shown to real practitioners for user testing.
 
-**Passes:**
+## Fails when
 
-- "Choose a class to begin."
-- "Select the students to mark present."
-- "View the full report" (link text names the destination).
-- "Open Student Notes."
-
-**Fails:**
-
-- "Click here to view your class list." (device verb + ambiguous link text)
-- "Tap to continue." / "Swipe to see more."
-- "Press the button to submit." (device verb; "press" is the evaluator's call)
-- "Read more" / "Click here" as standalone link text.
-
-## How to verify
-
-**Deterministic half (lint):** case-insensitive, word-boundaried scan of user-facing
-copy for the device-verb list —
-<!-- tfx-sync:cnt4-verbs source -->
-click, clicks, clicked, clicking, tap, taps, tapped, tapping, swipe, swipes, swiped, swiping
-<!-- /tfx-sync:cnt4-verbs -->
-— each hit is a candidate finding. The list is read at runtime by
-`checks/content-lint.py` from this file, so the lint and the catalog never diverge.
-The lint stays out of code identifiers (`onClick`, `element.click()`) by scanning
-only multi-word user-facing strings and MDX prose, not bare tokens.
-
-**Evaluator half:** the lint is scoped to the unambiguous verbs; the harder calls
-need judgment — see below.
+- A curriculum/subject/level detail a practitioner would recognise as wrong — e.g. a
+  subject graded at a school level where it is not taught.
+- Invented specifics presented as real in a surface used for user testing, with no
+  illustrative label.
+- Placeholder content ships with no label at all, so a tester cannot tell it from real
+  data.
 
 ## Evaluator guidance
 
-Quote the offending copy in every finding.
+Judgment, with a domain-reviewer dependency the evaluator cannot substitute for: read
+the content against the real-world artifact it claims to model (a national curriculum,
+a form, a policy). Where the evaluator lacks the domain expertise to judge a detail
+directly — most curriculum specifics will be exactly this — say so and flag the item
+for a named domain reviewer rather than guessing. Confirm either (a) a named domain
+reviewer's sign-off is recorded before the surface reaches user testing, or (b) the
+content carries an explicit illustrative/placeholder label, in-product and in the
+decision record. A surface with neither is a finding regardless of how polished it
+otherwise reads.
 
-**Flag:**
+## Do not flag
 
-- Any device verb (click, tap, swipe, press) used as a UI action instruction — the
-  imperative CTA case is the core of this control.
-- "See" used as a UI action ("see the report") where "view" carries the meaning.
-- Ambiguous link text — "click here", "read more", "learn more" as the whole link —
-  even when no device verb is present (the link must name its destination; A11Y-7).
-
-**Do not flag:**
-
-- Incidental, non-UI prose where the word is not an instruction: "press release",
-  "the press", "click rate", "tap water", "a firm tap on the shoulder". The lint
-  will surface these as candidates; dismiss them — they are advisories, not blocks.
-- Device verbs inside a waiver (`tfx-waive CNT-4 reason="..."`) — e.g. quoting a
-  third-party UI or OS gesture that must be named verbatim.
-- Code identifiers and API names (`onClick`, `onTap`, event names) — these are not
-  copy.
-
-This is L2 — a deliberate deviation carries an inline rationale, not a rewrite war.
+- Content explicitly labelled illustrative/placeholder, in-product and in the decision
+  record — the label is the control working as intended, not a defect to chase away.
+- A detail that looks unusual to a non-specialist evaluator but carries a named domain
+  reviewer's recorded sign-off. The reviewer's judgment settles the question; do not
+  override it with a generalist read.
+- Settled, verified reference facts restated verbatim from an authoritative source
+  (e.g. a quoted syllabus line) — the fidelity requirement is about invented specifics,
+  not about the source material itself.

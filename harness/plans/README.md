@@ -39,7 +39,7 @@ honor its STOP conditions, and update your row when done.
 | 023 | LAY ratchet — commit LAY-2 (reflow, WCAG-320) + LAY-4 (measure ≤80ch) to the catalog | P2 | S–M | 020 | DONE @ 7038aa6 (reviewed; LAY category + LAY-2/LAY-4 + 2 detail files + schema.json id_prefixes; validate.py 40; LAY-1/3/5/6/7 + LAY-4 check deferred) |
 | 024 | Onboarding leads with explanation + routes by run-shape (HF-17) | P2 | S | — | DONE (executed 2026-06-25; branch advisor/batch3-execute; onboarding now leads with the orientation, then one run-shape question replaces the flat menu; greps ≥3/≥1, plugin validate OK) |
 | 025 | Preserving intent never exempts an element from its controls — generator + evaluator (HF-18) | P1 | M | — | DONE (executed 2026-06-25; UI critique + conservative-defaults say preserve protects look not compliance; review skill + evaluator agent grade preserved elements and gate out-of-scope-chrome on where it renders; all 5 greps ≥1) |
-| 026 | Phase-3 approval = structured Approve/Adjust in the follow-up turn (HF-6) | P2 | S | — | DONE (executed 2026-06-25; two-turn gate: turn 1 plan in body, turn 2 structured Approve/Adjust; same-turn prohibition + proxy paths intact; Approve/Adjust=2) |
+| 026 | Phase-3 approval = structured Approve/Adjust in the follow-up turn (HF-6) | P2 | S | — | DONE (executed 2026-06-25; two-turn gate: turn 1 plan in body, turn 2 structured Approve/Adjust; same-turn prohibition + proxy paths intact; Approve/Adjust=2). Superseded 2026-07-07 — the gate is now three stages (expose → grill → Approve/Adjust, see design/grill.md); the plan's two-turn wording greps no longer apply. |
 | 027 | Component-default / sibling-page consistency control — ratchet (HF-19) | P2 | M | gate (design lead) | DONE (executed 2026-06-25; Step 1 propose-only record + Step 2 **design-lead approved in session** → CMP-7 L2 judgment committed + controls/cmp-7.md + skill wiring; validate 48 controls) |
 | 028 | Build `checks/contrast` — static A11Y-1 contrast subset (HF-9) | P1 | L | — | DONE (executed 2026-06-25; contrast.py self-test 15, OKLab matches globals ratios [warning-subtle 6.13 vs ~6.1], real corpus clean; avatar 3.60 flagged; unresolvable→NOTE; listed in README/CLAUDE/ui skill) |
 | 029 | Broaden COL-2 — small functional text uses Radix step-12 — ratchet (HF-9) | P2 | S–M | gate (design lead) | DONE (executed 2026-06-25; Step 1 record + Step 2 **design-lead approved** → COL-2 broadened [still L1] + controls/col-2.md with computed Radix table (amber-11 on amber-3 = 4.25:1, the HF-9 trap); ui skill step-12 line; validate 48) |
@@ -59,6 +59,30 @@ honor its STOP conditions, and update your row when done.
 | 043 | Escape the bare `<date>` token in `controls/cmp-1.md` (042 follow-up F1) | P3 | XS | — | DONE (executed; branch advisor/batch5-execute; line 91 `<date>` backticked, 71/78/79 untouched; `/standards/catalog/cmp-1` renders as MDX prose — `<pre>` fallback gone, 7 h2; twin still 200) |
 | 044 | Close the type-scan TYP-1 blind spot — flag named `font-mono`/`font-serif` utilities | P1 | S–M | — | DONE (executed; branch advisor/batch5-execute; self-test 23; flags `font-mono` at catalog-browser:96, never weight utilities [font-semibold clean]; validate OK; stays unwired until 045 clears the 3 sites) |
 | 045 | Resolve the `font-mono` TYP-1 self-compliance gap on the site | P2 | S/M | 044 (verify gate) | DONE (executed; branch advisor/batch5-execute; **Option A** chosen by design-lead — `font-mono` removed from catalog-browser:96 / [id]:83 / illo:25, IDs render in Inter; type-scan TYP-1 count now 0; build 0) |
+| 046 | Fold the `tfx-design-review` skill into the evaluator agent | P2 | S–M | — (before 047) | DONE (executed 2026-07-02, sonnet-xhigh @ worktree; branch `advisor/046-fold-review-skill` @ 9d1799e; reviewed APPROVE — fold verbatim [MECHANICAL RULE + LEDGER intact], 12 files all in scope, validate 48 OK, self-tests 27/21, build 166 pages, live-ref sweep clean; judgment calls: diagram slot → onboarding skill, index.html section merge) |
+| 047 | Rename plugin → `tfx`, skills → design/standards/content/onboard | P1 | M–L | 046 (soft) | DONE (executed 2026-07-02, sonnet @ worktree, 2 sessions; branch `advisor/047-rename-skill-stack` @ d81c133, stacked on 046; reviewed APPROVE — plugin `tfx@0.3.0`, marketplace entry renamed, 4 skills single-token, validate.py paths live [L0-SYNC negative test fired], old-name sweep clean, build green, **routing sweep 33/33** via `--plugin-dir harness` [global install is stale 0.2.0 — re-confirm after real reinstall]; CHANGELOG 0.3.0 + UPDATING migration in) |
+| 048 | Doc truth: 48-control count + [COUNT-SYNC], layout diagram, self-test counts, catalog `verify:` names | P1 | S–M | 047 (soft) | DONE (executed 2026-07-02, sonnet @ worktree; branch `advisor/048-doc-truth` @ e35b2f8, stacked on 047; reviewed APPROVE — counts 47→48 + [COUNT-SYNC] guard live [negative test fired, self-test 27→30], diagram regenerated and matches disk, type-scan doc 27→34, A11Y-3/TYP-5 verify strings fixed [+typ-5.md parity sync, correct adaptation], validate + build green) |
+| 049 | Slim the design skill — extract verify.md/critique.md, pointers over restatements | P2 | M | 047 (hard) | DONE (executed 2026-07-02, sonnet @ worktree; branch `advisor/049-slim-design-skill` @ 1a669c5, stacked on 047; reviewed APPROVE — extractions byte-verbatim [executor diffed], SKILL.md 451→371 [plan's ≤320 target was miscalibrated arithmetic; accepted — further cuts would breach the plan's own out-of-scope list], verify.md 69 + critique.md 26 with explicit read triggers, L0 block + description byte-identical, validate green, golden evals unaffected [0 phrase hits]) |
+| 050 | App hygiene: DocPage MDX fallback, drop `shadcn` dep, stale tracing entry | P2 | S | — | DONE (executed 2026-07-02, sonnet-xhigh @ worktree; branch `advisor/050-app-hygiene` @ 272ad9d; reviewed APPROVE — helpers deduped to components/mdx.tsx, fallback mirrors exemplar, negative test proven via built HTML grep then reverted, shadcn gone [-297 pkgs], llms-full tracing gone, builds green) |
+| 051 | App verification baseline: ESLint flat config, typecheck, Vitest characterization, CI job | P2 | M | — (coord. 050 on package.json) | DONE (executed 2026-07-02, sonnet @ worktree, one REVISE round; branch `advisor/051-verification-baseline` @ 16ccf0e, stacked on 050; reviewed APPROVE — first attempt STOPPED correctly on eslint@10 + eslint-config-next@16 FlatCompat crash [version mismatch vs Next 15]; revision pinned eslint@9.39.4 + eslint-config-next@15.5.19; lint 0 errors/4 pre-existing warnings, typecheck clean, 17/17 characterization tests [no catalog-projection leak], ci.yml added, deploy.yml untouched; reviewer re-ran lint+typecheck+test green; nit: branch carries its own plans/README row — resolve at merge) |
+| 052 | Layout taste pass: agent-browser capture first, structured layout read, ranked suggestions | P1 | M | 049 (hard) | DONE (executed 2026-07-02, sonnet @ worktree; branch `advisor/052-layout-taste-pass` @ 28c12f7, converges 049+048; reviewed APPROVE — layout-patterns.md [8 anchored patterns + screenshot-reading procedure, 58 lines], critique = capture → layout read → works/underperforms → ≤5 ranked suggestions through the plan gate, evaluator SUGGESTIONS section [ledger untouched, audit-record self-test green], agent-browser first in both capture conventions; live smoke test run with real capture; note: agent-browser build lacks a working viewport-resize subcommand — width-setting guidance may need a follow-up) |
+| 053 | Layout ratchet round 2: propose LAY-1 grid + LAY-7 focal point (design-lead gated) | P2 | M | — (052 soft sibling) | DONE-AS-PROPOSED (executed 2026-07-02, sonnet-xhigh @ worktree; branch `advisor/053-layout-ratchet-2` @ 54d8cd2; reviewed APPROVE — two ratchet records [LAY-N placeholder per 3ef1920 precedent], catalog untouched, validate 48 OK, evidence honestly "standards-derived, no incident"; **Step 3 gate-pending: design lead**) → **GATE CLEARED 2026-07-06** (Reza Ilmi, in-session approval): committed **LAY-1** (L2 hybrid, N/A until a product declares a grid) + **LAY-7** (L2 judgment; phase remapped `[diverge,verify]`→`[plan,verify]` to fit the schema); validate 53 OK, self-test 34, check-standards + build OK; branch `advisor/catalog-gate-057-053`. **DONE.** |
+| 054 | `feedback` skill: mid-turn harness feedback → GitHub issue on the harness repo | P2 | M | 047 (hard) | DONE (executed 2026-07-02, sonnet @ worktree; branch `advisor/054-feedback-skill` @ 557df92, stacked on 052 [full harness chain]; reviewed APPROVE — 49-line skill with hold-don't-derail, consent gate + dry-run preview, unattended = queued-not-filed, helper-only filing to the harness repo, no label-list duplication; routing spot-check 5/5 live incl. both negative boundary cases [`--plugin-dir`]; rehearsal confirmed nothing filed [gh authenticated, issue list unchanged]; all 6 surfaces point at it; validate + build green) |
+| 055 | `onboard` = tour + per-user setup: `setup.md` dependency checklist (agent-browser CLI + skill, gh, PyYAML), setup triggers in description, capture-fallthrough pointers | P2 | M | — (047/052/054 landed) | DONE (executed 2026-07-02/03, fable @ worktree, 2 sessions [usage-limit cut before sweep; resumed]; branch `advisor/055-onboard-setup` @ 03d8f4e; reviewed APPROVE — setup.md verbatim [consent gate, unattended = report-not-install], description + shape (4) + probe line in, capture pointers 1× each in verify/critique, single-source grep clean, validate 48 OK, plugin validate OK, 0.4.0 + CHANGELOG; **full routing sweep run**: 42/43 first-attempt, sole fail = pre-existing `content` case 16 ["review … copy for tone"] proven flaky by baseline probes [pristine harness also fails it intermittently; edited passes 2/2 both roots] — not a 055 regression, no description revision used; all 3 anti-greedy traps [32/33/37] → design; matrix in commit body + transcripts archived in session scratchpad; judgment call: description single-quoted for YAML validity, parsed value char-identical to plan text; follow-ups: ONBOARDING.md item 0 says "four skills" [stale since `feedback`], content-trigger flakiness on the tone-review phrasing is harness-feedback material) |
+
+| 056 | Catalog scope dimensions: optional `products:`/`audiences:` fields (absent = global), student age bands, validators + skills + website filtering | P1 | M–L | — (055 landed) | DONE (executed 2026-07-03 @ worktree; branch `advisor/056-catalog-scope` @ 43dbe97, 4 commits; reviewed APPROVE — schema+meta+validators [self-test 30→34], skills body-only [descriptions diff-proven untouched], projection+facets+Scope line [temp-scoped control render-proven then reverted], structural record "all 48 stay global"; gates: validate 48 OK, check-standards OK, vitest 18/18, build green, routing spot-check 5/5; judgment call: `getScopeMeta()` export added [in-scope, required by step 9.1]) |
+| 057 | Per-product branding controls — extend IDN via ratchet records (icons, tone calibration, CaseSync register); first users of `products:` | P2 | M | 056 (hard) + design-lead gate | DONE-AS-PROPOSED (executed 2026-07-03 @ worktree, Opus after 2 Fable-limit retries; branch `advisor/057-branding-ratchet` @ 5b0ed56; reviewed APPROVE — 3 propose-only records [IDN-2 icons / IDN-3 tone / IDN-4 CaseSync-scoped], catalog byte-untouched, validate 48 + self-test 34, `IDN-N` placeholders keep xref clean, evidence honest "standards-derived, no incident"; **Step 3 catalog commit gate-pending: design lead** — must weigh IDN-4 as first product-scoped control [tension w/ authoring rule 5, resolved via §Scope opt-in], IDN-2 fold-into-IDN-1 option, IDN-2 source [product-icons.mdx] itself `status: proposed`, IDN-3 tone-table = POINT-not-sync for v1) → **GATE CLEARED 2026-07-06** (Reza Ilmi, in-session approval): committed **IDN-2** (L1, kept separate — not folded into IDN-1), **IDN-3** (L2, per-product tone table normative in detail file), **IDN-4** (**separate + L1** — the gate chose separate over fold and L1 over the proposed L2; first `products:[casesync]`-scoped control); validate 53 OK, self-test 34, check-standards + build OK; branch `advisor/catalog-gate-057-053`. **DONE.** |
+| 058 | Context layer: per-product DESIGN.md + generated `.tfx/design.json` (absorbs 053's layout-system.json), loaded by the design loop, code-overrides-stale-docs | P1 | M | — (053 coordination note) | DONE (executed 2026-07-03 @ worktree, Opus; branch `advisor/058-context-layer` @ 31f1bf7; drift-reconciled to a8316df first [056 had edited the same 2 design-skill paras — 058's edits confirmed ADDITIVE, 056 clauses intact]; reviewed APPROVE — DESIGN-CONTEXT.md spec + template [43 lines] + generator [self-test 15, template roundtrip → valid JSON 5 sections, `--check` staleness ignoring generated_at, missing-DESIGN.md exits honest], design skill loads DESIGN.md [desc untouched], 053 record location-supersession note, ONBOARDING item "2a" [optional, keeps the six-item framing honest]; gates validate 48 / plugin validate / routing 5/5) |
+| 059 | Unified detector `checks/detect.py` — curated low-FP profile, `--json`, 0/2/1 exits, `.tfx/config.json` ignores (complement, never replace, tier waivers) | P2 | M | 058 (soft); before 060 | DONE (executed 2026-07-03 @ worktree, Opus; branch `advisor/059-unified-detector` @ 8a03297; reviewed APPROVE — detect.py [635 lines, self-test 35], exit contract 0/2/1 re-verified by hand [findings=2, clean=0, unknown-rule/invalid-config=1], four wrapped self-tests green, type-scan `--rules` purely additive [34→42 cases, default byte-unchanged], TYP-2 NOT promoted [F3 honoured], config ignores + `--no-config` + design.json `--check` staleness [never crashes detect]; documented deviation: component-manifest CMP-1 line captured as control-less finding, never dropped; catalog/skills/validate untouched) |
+| 060 | Design hook: detector on UI-file edits — curated + quiet + per-dev consent + repeat-suppression (the V1 wiring deferred since plan 007) | P2 | S–M | 059 (hard) | DONE (executed 2026-07-03 @ worktree, Opus; branch `advisor/060-design-hook` @ 027ca54; reviewed APPROVE — design-hook.py [self-test 25], smoke re-verified by hand [raw-hex .tsx → reminder names TOK-1 · clean → silent · TFX_HOOK_DISABLED=1 → silent]; Step-1 schema findings: PostToolUse returns text via `additionalContext` on exit 0 [hook always exits 0, can only remind never block], plugin hooks CAN'T default-off → chose settings.json paste-in consent snippet [plugin.json UNTOUCHED, no plugin hooks.json]; honest messaging "not the full catalog"; useful clarification: token-audit flags raw hex only in style contexts [CSS / css`` / Tailwind arbitrary-value], not inline JSX style objects; validate 48 + plugin validate green) |
+| 061 | Stack restructure I: `/tfx:start` router (user-invoked, auto-runs setup), `onboard`→`setup` (+DESIGN.md init), new `critique` verb, `standards` thinned to shell | P1 | L | 055; 058 soft; before 062 | DONE (executed 2026-07-03/04 @ worktree, Opus, multi-session [several limit-resumes, per-case checkpointed]; branch `advisor/061-stack-restructure` @ f96f442, 7 commits; drift-reconciled to 0aeee9d [056/058/060 edits verified preserved]; **reviewed APPROVE via 4-way adversarial fan-out** — sweep-integrity/skill-authoring/scope-preservation all SOUND, boundary reviewer caught a real blocker [critique↔content copy-improve collision], fixed with 1 NOT-clause on critique + independently re-verified: same-page minimal pair routes copy→content, page-improve→critique, named-change→design; full sweep effectively 53/53 [45 first-pass + 4 `(none)` flakes exonerated + idx14 critique-trigger fix + 3 tiebreak cases], both critique revision budgets used; stack now start/setup/design/critique/standards/content/feedback, 0.5.0; gates validate 48 + plugin validate + build green. Non-blocking: idx47 feedback pre-existing probe flake [untouched skill]; skill-authoring nits [COL-2 threshold gloss, 'preserved is not waived' ×4]. **062 coordination**: critique's copy NOT-clause targets `content` → becomes `copy` when 062 lands. lay-7 record layout-patterns.md ref now location-stale [reconcile at LAY-7 ratification]) |
+| 062 | Stack restructure II: five focused passes — `copy` (absorbs `content`), `polish`, `motion`, `flow`, `layout` — shared pass.md, all model-invoked | P2 | L | 061 (hard) | DONE (executed 2026-07-04 @ worktree, Opus; branch `advisor/062-focused-passes` @ 99dc09c, 8 commits; re-stamped d37e7fb + reconciliation [content→copy consequential edits done: validate.py:262 + SYNC.md:49 paths→copy, critique NOT-clause→copy, design refs; website content/ dir confirmed untouched]; **reviewed APPROVE via 4-way adversarial fan-out** — scope + skill-authoring SOUND, sweep-integrity blocker was a stale-matrix artifact [idx62→critique re-verified by hand], boundary reviewer caught a real polish↔layout "hierarchy" collision → fixed with the visual-hierarchy→layout / type-hierarchy→polish split, independently re-verified; sweep 67/67 [65 + 2 hierarchy tiebreaks], both permitted revisions used [polish dimensionless→critique, polish↔layout hierarchy]; content→copy rename = git R086 [SLP9 marker preserved, [SLP9-SYNC] green]; stack now 11 skills start/setup/design/critique/standards/feedback + copy/polish/motion/flow/layout; 0.6.0; gates validate 48 + self-test 34 + plugin validate + build green. **Post-merge follow-ups (non-blocking, from the 062 review — track, not planned)**: critique cannibalises dimension asks phrased with its own verbs ("improve the colours on X"); flow↔design & motion↔design blur on soft change verbs ("make the panel fade in", "add a Back step"); motion/SKILL.md reproduces SLP-8's title near-verbatim; polish SLP-6 1.25x / layout LAY-4 80ch numeric thresholds inline [cite-not-restate]) |
+
+| 063 | Wire the 2026-07-06 controls (LAY-1/LAY-7/IDN-2/3/4) into skills + evaluator | P1 | S | — | DONE (executed 2026-07-08, sonnet @ worktree; branch `advisor/063-wire-newest-controls` @ ef34e56, merged 7f58602; reviewed APPROVE — reviewer re-ran criteria: IDN refs 9/LAY-7 refs 4/stale phrases 0, validate 53 OK, build 0, body-only [no description changed], scope exactly the 5 files; LAY-1 N/A qualifier + IDN-4 casesync scoping consistent at every mention) |
+| 064 | Doc-truth sweep (index.html 38→53 / four→eleven skills; ONBOARDING seven-skills + "11 checks unbuilt" + grill gate; checks/README counts) + [COUNT-SYNC] covers index.html | P1 | S–M | — | DONE (executed 2026-07-08, sonnet @ worktree, 1 REVISE round; branch `advisor/064-doc-truth` @ 37d986b, merged ac462aa; reviewed APPROVE — reviewer re-ran validate 53 OK + self-test 36 [2 new index.html COUNT-SYNC cases, negative test fired], stale-phrase greps 0, skill-count sweep clean; documented deviations accepted: two COUNT-SYNC regex false-positives rephrased ["eleven controls", "L1-tier controls"]; REVISE caught index.html:377 "Five skills" the plan missed [flagged by executor, fixed round 1]; NOTE: five "eleven skills" prose sites remain hand-maintained — only control counts are machine-guarded) |
+| 065 | Ratchet: ratify CMP-4 (empty-state clarity, reserved slot) + decide EVD-1 (async-state evidence: control vs harness rule) | P1 | M | design-lead gate; before 066 (count bumps) | DONE (executed 2026-07-08, sonnet @ worktree; branch `catalog/cmp-4-empty-state-clarity` @ 729f223, 4 commits, merged e0d73a8; **gate cleared via design-lead in-session directive "execute all and then ship" — recommended options adopted**: CMP-4 committed as proposed [L1 hybrid, reserved slot, 54 controls], EVD-1 as HARNESS RULE not a control [EVD prefix unused; verify.md + TEMPLATE.md carry the evidence-set requirement; audit-record assertion deliberately deferred — corpus-grandfathering class]; reviewed APPROVE — reviewer re-ran validate 54 OK, self-test 36, audit-record 6 OK; entry is a faithful proposal transcription [no scope drift]; records attributed, both decision-record markers closed, reaudit set pasted [0 direct / 5 candidates]) |
+| 066 | Ratchet round: propose CNT-4 (domain fidelity, #27) + cross-user HTML sanitisation (#26) + CMP-8 (draft safety/escapability — flow-pass gap); gate also adjudicates #9 close-or-promote | P2 | M | design-lead gate; after 065 (ordering only) | DONE (executed 2026-07-08, sonnet @ worktree, fresh restart after 2 infra stalls [zero work lost — stalled worktree verified clean before removal]; branch `catalog/ratchet-round-cnt4-slp12-cmp8` @ 2209e1c, 3 commits, merged 5c42260; **gate cleared via design-lead in-session directive "execute all and then ship" — recommended options adopted**: CNT-4 [L2 judgment], CMP-8 [L1 hybrid, deconfliction vs CMP-2/A11Y-11/SLP-10 in record + detail file — closes the flow-pass↔catalog asymmetry], sanitisation as **CMP-9 not SLP** [L1 hybrid]; 57 controls; issue #9 adjudicated covered-by-TOK-3+CMP-7, no LAY-8, closure text in executor notes — issue NOT auto-closed; reviewed APPROVE — reviewer re-ran validate 57 OK, self-test 36, audit-record 6 OK, records attributed + reaudit sets pasted, wiring extends [not rewrites] 063's lines, evidence quoted from live gh issue bodies; follow-ups queued behind 067: CMP-9 grep detector, CMP-8 cancel/back script; catalog meta.updated left at 2026-07-06 [matches 065 precedent — bump at next release]) |
+| 067 | Enforcement as data: optional `enforced:`/`script:` catalog fields, validate + `--coverage` listing, website projection | P2 | M | — (soft: after 065/066 to stamp their controls) | DONE (executed 2026-07-08, sonnet @ worktree; branch `advisor/067-enforcement-as-data` @ 7d4f999, 5 commits, merged post-5c42260; reviewed APPROVE — reviewer re-ran validate 57 OK, self-test 45 [9 new field-rule cases], `--coverage` sums 4 script / 13 partial / 28 manual / 12 evaluator = 57, vitest 19/19, check-standards.mjs OK, catalog diff purely additive [zero removed lines], negative test [nonexistent script path] fired incl. bonus frontmatter-parity error, then reverted; 17 controls stamped; documented deviation accepted: TYP-1 stamped `partial` not `script` — checks/README records type-scan's weight-half as manual, plan's own trust-checks-README rule; 065/066's new controls correctly default [CMP-4/8/9 manual, CNT-4 evaluator]; hand-maintained gap list in this file replaced by the `--coverage` pointer) |
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJECTED (with one-line rationale)
 
@@ -218,6 +242,178 @@ Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJE
   (`docs/catalog-changes/` propose-only → design-lead approval) for the TYP-1 amendment.
 - **Recommended order:** 044 → 045 (045 needs 044 for its gate); 043 is independent.
 
+### Batch 6 (046–051) — added 2026-07-02 from an app + harness review (skill-stack simplification & naming)
+
+- Source: an `/improve` audit invoked as "review the state of the app, review the design
+  harness, simplify the skill stacks and naming (too long), make the harness follow design
+  best practice — inspiration: impeccable.style". All stamp commit `c42d695` and use SHA
+  drift checks. Selection note: run non-interactively — plans written for the invoker's two
+  explicit asks (stack/naming: 046/047/049; harness truth: 048) plus the top app-side
+  leverage (050/051); prune rather than execute blindly if priorities changed.
+- **Recommended order**: 046 → 047 → 048 → 049 (each builds on the previous's file
+  state; 048/049 assume post-047 names). 050 and 051 are website-side and independent —
+  parallel-safe with the harness chain, but 050 and 051 both edit `package.json`
+  (different regions; land one, rebase the other).
+- **The naming decision (047)**: plugin `tfx-design-harness` → `tfx` (marketplace is
+  already `tfx`), skills → single tokens (`tfx:design`, `tfx:standards`, `tfx:content`,
+  `tfx:onboard`), agent → `tfx:evaluator`. Routing is decided by `description:`
+  frontmatter, not names (per `evals/routing/prompts.yaml`), but name mentions inside
+  descriptions change too, so 047 mandates the FULL 33-case routing sweep. Fallback
+  scheme on collision: drop only the `tfx-` prefix (`design-ui`, `content-style`, …).
+- **Historical records are never rewritten** by 046/047: `plans/`, `CHANGELOG.md`
+  entries, `docs/reviews/`, `docs/catalog-changes/`, existing `docs/decisions/` records,
+  `docs/loop-run/`, `evals/evaluator-recall/RESULTS.md` keep the old names as history.
+- **Consumer impact (047)**: product repos must reinstall (`tfx-design-harness` 0.2.x →
+  `tfx` 0.3.0); `docs/UPDATING.md` gains the migration steps. Coordinate the merge with
+  an announcement to TW/CaseSync/Glow.
+- **Added same day (user follow-ups)**: **052** (make the harness *improve* layout, not
+  just verify it: agent-browser capture first, a structured layout read of the
+  screenshot, ranked improvement suggestions offered through the plan gate, plus a
+  `layout-patterns.md` guidance file distilled from HIG + the LAY spike + impeccable's
+  restraint/register principles), **053** (put layout/pattern best practice in the
+  *controls*: propose-only records for LAY-1 grid — with the `.tfx/layout-system.json`
+  declaration format — and LAY-7 focal point/hierarchy-matches-task; catalog commit
+  strictly behind the design-lead gate, per the 020→023/027/029 governance), and
+  **054** (a `feedback` skill: recognise harness feedback mid-turn in any session,
+  capture context, confirm with the user, file `[harness-feedback]` issues to
+  `transformteamsg/tfx-design-standard` via `scripts/file-feedback-issue.py` — never
+  the product repo, never raw `gh`, never unconfirmed). 054 consciously adds a fifth
+  skill back after 046 cut one: unlike the review skill, this one is user-routed —
+  that is its whole point.
+- **Order for the follow-ups**: 052 after 049; 053 anytime (gate-bound); 054 after 047.
+  052 and 054 both touch `design/SKILL.md` (different sections — critique pointer vs
+  Phase 6) and `onboard`/README/skills.mdx — land one, rebase the other.
+- **Added 2026-07-02 (user follow-up, planned at `34c333c`)**: **055** — make `onboard`
+  a real onboarding skill (operator direction: "add harness setup as part of the
+  onboarding … set up the dependency like installing the agent-browser skill and cli").
+  Adds a setup branch behind a `setup.md` context pointer (writing-great-skills
+  principles inlined in the plan): ask-first install gate over the per-user inventory —
+  agent-browser CLI (`npm i -g agent-browser && agent-browser install`) + its
+  vercel-labs plugin skill, authenticated `gh`, Python + PyYAML — unattended runs
+  report instead of installing; verify.md/critique.md capture preference (1) points at
+  the checklist instead of silently falling through. **Name stays `onboard`** (047's
+  single-token decision; routing is description-driven — do not re-litigate). The
+  description changes, so the **full routing sweep is mandatory** (38 → 43 cases incl.
+  two new negative guards). Plugin 0.3.0 → 0.4.0. Independent of 053's gate; no
+  in-flight file overlaps (052/054 landed).
+- **Direction findings (grounded, not planned — operator to weigh)**:
+  1. **Enforcement as data**: add a per-control `script:`/`enforced:` field to the
+     catalog schema so "deterministic but unscripted" is machine-visible, then build
+     `slop-scan` for the statically checkable SLP subset. impeccable.style's 45-rule
+     deterministic anti-pattern detector is precedent that this class of check works.
+     Touches schema.json, validate.py, and the website's `lib/catalog.ts`
+     PUBLIC_FIELDS. **The gap list is now derived, not hand-maintained** — run
+     `python3 checks/validate.py --coverage` for the live per-control table (id ·
+     tier · check · enforced[defaulted] · script) instead of enumerating ids here.
+  2. **Per-product DESIGN.md** (impeccable pattern): make per-product nuance (accent,
+     tone weighting, motion conventions, manifest pointer) a small machine-read file in
+     each product repo consumed at Phases 2/4, instead of prose scattered across COL-1's
+     table and the content skill's calibration section. (053's `.tfx/layout-system.json`
+     is the first concrete slice of this.)
+  3. **Standalone critique entry point**: impeccable splits evaluate (audit/critique)
+     from create. Partially realised by 052 (the layout read + suggestions live in
+     `critique.md` inside the loop); a fully standalone "critique only, change nothing"
+     entry would add another skill name — weigh against the simplification just done.
+
+### Batch 7 (056–057) — added 2026-07-03: catalog scope refactor (operator-directed)
+
+- Source: operator direction — restructure the catalog into **global / per-product
+  (incl. branding) / per-audience** standards, with students split by age band
+  (primary vs secondary-and-up). Three decisions confirmed interactively 2026-07-03:
+  **(1) one catalog.yaml + optional scope fields**, not split files (the file is
+  served raw and read by 12 consumers; taxonomy is data, views are rendered);
+  **(2) authoring scope = taxonomy + branding only** — no speculative student/parent
+  controls (ratchet principle: controls grow from real surfaces); **(3) audience
+  filtering is live behaviour** — teacher surfaces are the only live ones today
+  (default = teachers at intent), student and parent surfaces are planned, so
+  `students-primary` / `students-secondary` / `parents` ship as real filter values.
+  Both stamp `48d13dd`.
+- **Load-bearing rule (056): all 48 existing controls stay GLOBAL — no scope fields
+  stamped on them.** Scoping the existing floor to `teachers` would exempt future
+  student/parent surfaces from A11Y/SLP/TOK. Scoping is opt-in per control; adding
+  scope to an existing control later deserves ratchet-record rigour.
+- **056** is schema/tooling/presentation on the normal PR path (no control semantics
+  change; structural record written to `docs/catalog-changes/`); **057** is a real
+  catalog ratchet — propose-only records (IDN-2 icons, IDN-3 tone calibration,
+  IDN-4 CaseSync register — extending IDN, deliberately no new `BRD` prefix) with
+  the catalog commit behind the design-lead gate, and the [COUNT-SYNC] prose bump.
+- **Order**: 056 → 057 (hard: 057's drafts use `products:`). 056's skill edits are
+  body-only (descriptions untouched → 5-case routing spot-check, not the full sweep);
+  if an executor believes a description must change, that is a STOP.
+
+### Batch 8 (058–060) — added 2026-07-03: impeccable.style-inspired context/detector/hook layers
+
+- Source: operator direction to research impeccable.style's docs (context system,
+  detector, hooks, config) and refactor the harness structure accordingly, sharpened
+  through a grilling session. Decisions recorded: **dogfooding is the strategy**
+  (adoption pressure accepted; 058–060 proceed); **context layer = per-product
+  DESIGN.md + generated `.tfx/design.json` from day one, NO PRODUCT.md** (audience is
+  056's dimension, voice is content §6); **hook/detector default = curated low-FP
+  subset** (token-audit, contrast, a11y-static, TYP-1 — TYP-2 stays recording-only per
+  the F3 deferral); **no `register` dimension** (brand impact ≈ colour choices, already
+  carried by DESIGN.md + COL-1; field reserved, plan 061 dropped). All stamp `48d13dd`.
+- **Order**: 058 → 059 → 060 (059 soft-depends 058; 060 hard-depends 059). Independent
+  of the batch-7 catalog chain except: 058 amends the gate-pending lay-1-grid record
+  (location-only supersession of `.tfx/layout-system.json` into `design.json`), and
+  DESIGN.md's tone section must share a source with 057's IDN-3 if that lands.
+- **Deliberately kept over impeccable's versions**: tier waivers (named approver) over
+  config ignores — ignores are scan-noise control only; the 5-skill consolidation over
+  their 20-command verb taxonomy (a standalone critique skill was weighed and dropped —
+  direction finding #3 stays open); the eval layers (routing/golden/recall), which
+  impeccable has no analog of.
+
+### Batch 9 (061–062) — added 2026-07-03: intent-shaped skill stack (operator-directed)
+
+- Source: operator finding "I'm confused when to use which skill", sharpened against
+  impeccable.style's verb taxonomy. Target: **one entry (`/tfx:start`, user-invoked,
+  auto-runs setup on missing deps/context) · two verbs (`design` create, `critique`
+  evaluate+polish) · five model-invoked focused passes (`copy` `polish` `motion`
+  `flow` `layout`) · one support (`feedback`) · `standards` kept as a thin shell**
+  (the memory-answer guard on waiver questions; body → pointers at
+  standards/README.md). `onboard`→`setup` (+ context-layer init from 058);
+  `content`→`copy` (inherits its triggers so copy asks keep auto-routing). All
+  operator decisions recorded in the plans as do-not-relitigate. Stamp `48d13dd`;
+  re-stamp before executing (056–060 may land first — their edits carry forward).
+- **Order**: 061 → 062, strictly. Both are routing-risk-concentrated: each mandates
+  the full sweep, grows the suite (~55 then ~60 cases), and **re-baselines existing
+  expectations** (improvement-phrasing design→critique; content cases→copy) — the
+  re-baseline table ships in each commit body as the sign-off record.
+- Interactions: 061 setup-init degrades gracefully without 058; 062 layout pass
+  consumes 052's layout-patterns.md (moved to critique/ by 061), 053's LAY records if
+  gated in, and 058's design.json when present. This batch supersedes direction
+  finding #3 (standalone critique — now planned) and revisits batch-8's "keep the
+  5-skill consolidation" note: the operator chose navigability over minimal
+  description count, with the router + shared pass.md holding duplication down.
+
+### Batch 10 (063–067) — added 2026-07-08 from an /improve audit: "review the state of the harness skill, review the control catalog, improve and extend it to more controls"
+
+- Source: a three-way read-only audit (skill-stack staleness · catalog-gap evidence
+  mining · enforcement-coverage map) at commit `e673294`. All findings vetted against
+  the live files by the advisor before planning. **Selection note: run
+  non-interactively** — plans written for the top five by leverage; the operator can
+  prune rows rather than execute blindly.
+- Headline findings: (1) the five controls committed 2026-07-06 (LAY-1, LAY-7,
+  IDN-2/3/4) are wired into **no skill and not the evaluator** — `grep -rn "IDN-"
+  harness/.claude/` returns nothing, and three surfaces still say "five LAY controls /
+  grid isn't checkable yet" → plan 063; (2) `docs/index.html` says 38 controls / four
+  skills, ONBOARDING says seven skills incl. the renamed `content` and "11 check
+  scripts are not built yet" (ten are built, all self-tests green) → plan 064; (3) two
+  fully-specified control proposals (CMP-4, EVD-1) have been gate-pending since
+  2026-06-16 with a reserved catalog slot → plan 065; (4) three evidence-grounded
+  gaps have proposals in open issues (#27 domain fidelity, #26 cross-user HTML
+  sanitisation) or in the harness's own pass↔catalog asymmetry (flow grades draft
+  safety/escapability with no control to cite) → plan 066; (5) ~20 deterministic
+  controls are unscripted and the only record of that is a hand list here that has
+  already drifted (missing IDN-2/LAY-1) → plan 067.
+- **Order**: 063 and 064 first, independent and parallel-safe (disjoint files). 065
+  before 066 (both bump `[COUNT-SYNC]` counts — ordering, not logic). 067 last (soft),
+  so newly gated controls get stamped. 065/066 are **gated ratchets** (053/057
+  pattern): unattended runs stop at DONE-AS-PROPOSED; only the design lead's approval
+  commits catalog changes.
+- Check health at audit time: all 12 self-tests green, `validate.py` → `OK: 53
+  controls valid`; `detect.py` confirmed a façade over the six page-check scripts
+  (adds no coverage of its own).
+
 ## Findings considered and rejected
 
 - **Tier-waiver mapping duplicated across three files** (standards/README.md,
@@ -320,6 +516,56 @@ Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJE
   `student-notes-empty-state.md`): expected — CMP-1 is a process waiver asserted in the verdict,
   never an inline code comment, so `waiver-reconcile` finds no inline usage to match. Not a defect;
   a trivial periodic confirm-or-retire the design-lead can do directly. No plan.
+
+### Batch 6 — findings considered and rejected (2026-07-02)
+
+- **Fonts via `next/font` instead of `@fontsource` imports** (`app/layout.tsx:2-3`):
+  real but marginal — the fontsource variable fonts are already self-hosted on a
+  static docs site; the switch risks regressing the `--font-*` token wiring in
+  `globals.css` for a small LCP/CLS win. Not worth it now.
+- **LAY controls out of id-order in catalog.yaml** (LAY-4 before LAY-3): cosmetic;
+  every consumer filters by id. Reordering is churn in a normative file.
+- **"26 detail files vs 48 controls" as a coverage gap**: by design — only
+  `judgment`/`hybrid` controls require detail files (design-standards skill rule),
+  and every judgment/hybrid control has one; `validate.py` enforces it. Do not
+  re-audit.
+- **Per-build fs/YAML re-reads in `lib/content.ts`/`lib/catalog.ts`**: build-time
+  only (all routes `force-static`), small corpus, `allTwins()` already memoized.
+  Negligible.
+- **Folding the onboarding skill away** (65 lines, mostly hands off): kept — the
+  "teach me the harness" trigger is genuinely distinct, the file is cheap, and 047
+  shortens its name to `onboard`. Decision recorded so it isn't re-litigated.
+- **`tsconfig.tsbuildinfo` in the working tree**: gitignored and untracked; no leak.
+
+### Batch 10 — findings considered and rejected / deferred (2026-07-08)
+
+- **Component-inventory control (issues #13/#16/#19 — "no required component
+  inventory for a surface")**: real and high-severity, but it intersects the unbuilt
+  component-manifest mechanism (plan 019 Stage-C territory) — a control demanding an
+  inventory before the manifest format settles would be process without teeth.
+  Deferred, not rejected: revisit when the manifest ships; the issues stay open as
+  the record. Plan 066's EVD/evidence theme covers the adjacent "evaluator grades the
+  evidence set" half.
+- **LAY-8 peer radius/shape consistency (issue #9 / spike Q3)**: not planned as a
+  control — TOK-3's peer-radius clause + CMP-7's sibling-consistency control
+  (both post-date the issue) likely cover the ask. Folded into plan 066's gate as a
+  close-or-promote decision item for the design lead.
+- **Motion controls beyond MOT-1 (enter/exit choreography, stagger)**: rejected —
+  pure asymmetry inference; the motion pass's advertised dimensions all map to
+  existing controls (MOT-1 + A11Y-5 + SLP-8) and no recorded run surfaced a motion
+  failure the catalog missed. Proposing one would violate the ratchet's
+  no-speculation rule. Revisit only on a real incident.
+- **Building the missing check scripts now (slop-scan, layout-scan, tabular-nums,
+  identity, targets, …)**: deferred behind plan 067 — the `enforced:` field makes the
+  backlog queryable and keeps each script plan honest; building ~10 scripts blind
+  would swamp the batch. First candidate after 067: `slop-scan` (SLP-1..8, the
+  biggest deterministic-unscripted cluster).
+- **checks/README token-audit COL-1 attribution gloss**: folded into plan 064 (one
+  rewording line), not its own finding.
+- **A validator sub-check asserting checks/README's per-script `SELF-TEST OK (N)`
+  counts against actual script output**: noted in plan 064's maintenance notes;
+  not planned — two stale counts in one doc don't yet justify a meta-check that
+  runs every self-test inside validate.py.
 
 ### Post-execution eval (2026-06-15, suite run against `advisor/harness-feedback-all`)
 

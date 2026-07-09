@@ -10,6 +10,9 @@ Validates standards/catalog.yaml for internal consistency:
      controls must carry one. meta.categories covers every ID prefix.
   6. Reverse check: every standards/controls/*.md frontmatter matches catalog.
   7. Cross-reference sweep: every control ID mentioned in prose exists in catalog.
+  8. tfx-sync parity: [L0-SYNC], [SLP9-SYNC], and [COUNT-SYNC] (every "<N> controls"
+     claim in README.md or docs/index.html must equal the catalog's actual
+     control count).
 Exit 0 and print "OK: <n> controls valid" on success.
 Exit 1 and print "ERROR <location>: <message>" lines on failure.
 """
@@ -30,7 +33,7 @@ REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Frontmatter fields compared against the catalog in the Step-6 reverse check.
 FRONTMATTER_FIELDS = ["id", "source", "title", "tier", "check", "phase",
-                      "applies_to", "verify", "waiver"]
+                      "applies_to", "verify", "waiver", "enforced", "script"]
 
 
 def load_schema_bits(repo_root):
@@ -56,6 +59,9 @@ def load_schema_bits(repo_root):
         "allowed_phases": set(schema["phases"]),
         "allowed_applies_to": set(schema["applies_to"]),
         "allowed_waivers": set(tier_waiver.values()),
+        "allowed_products": set(schema["products"]),
+        "allowed_audiences": set(schema["audiences"]),
+        "allowed_enforced": set(schema["enforced"]),
         "control_id_re": re.compile(rf"^({prefixes})-\d+$"),
         "xref_re": re.compile(rf"\b({prefixes})-\d+\b"),
     }
@@ -118,9 +124,55 @@ def validate_control(control, idx, schema_bits):
             if bad:
                 err(loc, f"invalid applies_to values {bad} — allowed: {sorted(allowed_applies_to)}")
 
+    # 2c. Optional scope fields — products / audiences. Absent = global;
+    # an empty list is an error (omit the field for global instead).
+    for scope_field, allowed_key in (("products", "allowed_products"),
+                                     ("audiences", "allowed_audiences")):
+        value = control.get(scope_field)
+        if value is None:
+            continue
+        allowed = schema_bits[allowed_key]
+        if not isinstance(value, list):
+            err(loc, f"'{scope_field}' must be a list, got {type(value).__name__}")
+        elif len(value) == 0:
+            err(loc, f"'{scope_field}' must not be an empty list — omit the field for global (all)")
+        else:
+            bad = [v for v in value if v not in allowed]
+            if bad:
+                err(loc, f"invalid {scope_field} values {bad} — allowed: {sorted(allowed)}")
+
     waiver = control.get("waiver")
     if waiver is not None and waiver not in allowed_waivers:
         err(loc, f"invalid waiver '{waiver}' — allowed: {sorted(allowed_waivers)}")
+
+    # 2d. Optional enforcement fields — enforced / script. Orthogonal to
+    # `check:` (who verifies in principle) — this says what actually runs
+    # today. Absent enforced defaults to 'manual' (deterministic/hybrid) or
+    # 'evaluator' (judgment); the default is never written back.
+    allowed_enforced = schema_bits["allowed_enforced"]
+    enforced = control.get("enforced")
+    script = control.get("script")
+
+    if enforced is not None and enforced not in allowed_enforced:
+        err(loc, f"invalid enforced '{enforced}' — allowed: {sorted(allowed_enforced)}")
+
+    script_list = None
+    if script is not None:
+        if isinstance(script, str):
+            script_list = [script]
+        elif isinstance(script, list) and all(isinstance(s, str) for s in script):
+            script_list = script
+        else:
+            err(loc, f"'script' must be a string or list of strings, got {script!r}")
+
+    if script is not None and enforced not in ("script", "partial"):
+        err(loc, "'script' is present but 'enforced' is not 'script' or 'partial'")
+
+    if enforced in ("script", "partial") and script is None:
+        err(loc, f"enforced '{enforced}' requires a 'script' field")
+
+    if enforced == "evaluator" and check not in ("judgment", "hybrid"):
+        err(loc, f"enforced 'evaluator' is only valid on check 'judgment' or 'hybrid' — got '{check}'")
 
     # 3. Tier→waiver pairing
     if tier in tier_waiver and waiver is not None:
@@ -160,7 +212,7 @@ def cross_ref_errors(rel_path, text, catalog_ids, xref_re):
 # markers and compared against its source here. See docs/SYNC.md.
 
 # REQUIRED_CORE — a hard-coded floor of buzzwords that must appear in BOTH the
-# canonical slp-9.md list and the tfx-content-style summary. NOT synced from
+# canonical slp-9.md list and the copy skill's summary. NOT synced from
 # slp-9.md by design, so the check keeps an anchor even if both lists are edited.
 # If the canonical list ever drops one of these, update this set too (see SYNC.md).
 REQUIRED_CORE = {"streamline", "empower", "supercharge"}
@@ -202,14 +254,14 @@ def tokenize_buzzwords(span):
 def l0_parity_errors(repo_root, catalog_by_id, xref_re):
     """
     [L0-SYNC] Each inline 'Non-negotiables (L0)' list (CLAUDE.md and the
-    tfx-design-ui SKILL.md) must equal the catalog's tier:L0 set. Missing
+    design skill's SKILL.md) must equal the catalog's tier:L0 set. Missing
     markers are an error. Set comparison, so prose/order around the IDs is free.
     """
     errors = []
     source = {cid for cid, c in catalog_by_id.items() if c.get("tier") == "L0"}
     consumers = [
         os.path.join(repo_root, "CLAUDE.md"),
-        os.path.join(repo_root, ".claude", "skills", "tfx-design-ui", "SKILL.md"),
+        os.path.join(repo_root, ".claude", "skills", "design", "SKILL.md"),
     ]
     for fpath in consumers:
         if not os.path.isfile(fpath):
@@ -232,13 +284,13 @@ def l0_parity_errors(repo_root, catalog_by_id, xref_re):
 
 def slp9_parity_errors(repo_root):
     """
-    [SLP9-SYNC] The tfx-content-style buzzword summary must be a SUBSET of the
+    [SLP9-SYNC] The copy skill's buzzword summary must be a SUBSET of the
     canonical slp-9.md buzzword list (the skill may show fewer words, never more),
     and REQUIRED_CORE must appear in both. Missing markers are an error.
     """
     errors = []
     src_path = os.path.join(repo_root, "standards", "controls", "slp-9.md")
-    con_path = os.path.join(repo_root, ".claude", "skills", "tfx-content-style", "SKILL.md")
+    con_path = os.path.join(repo_root, ".claude", "skills", "copy", "SKILL.md")
 
     source = None
     if os.path.isfile(src_path):
@@ -284,6 +336,36 @@ def slp9_parity_errors(repo_root):
                 f"ERROR standards/controls/slp-9.md [SLP9-SYNC]: required core "
                 f"buzzword(s) {{{', '.join(sorted(missing))}}} absent"
             )
+    return errors
+
+
+COUNT_SYNC_PATHS = ("README.md", "docs/index.html")
+
+
+def count_parity_errors(repo_root, catalog_count, relpaths=COUNT_SYNC_PATHS):
+    """
+    [COUNT-SYNC] Every "<N> controls" claim in README.md or docs/index.html
+    must equal the catalog's actual control count. Catches the class of
+    drift where a control is added/removed but a prose count is never
+    updated. A file with no count claim (or that doesn't exist) is not an
+    error (nothing to check).
+    """
+    errors = []
+    for relpath in relpaths:
+        path = os.path.join(repo_root, relpath)
+        if not os.path.isfile(path):
+            continue
+        rel = os.path.relpath(path, repo_root)
+        with open(path) as fh:
+            text = fh.read()
+        seen = set()
+        for m in re.finditer(r"(\d+) controls", text):
+            n = int(m.group(1))
+            if n != catalog_count and n not in seen:
+                seen.add(n)
+                errors.append(
+                    f"ERROR {rel} [COUNT-SYNC]: says {n} controls, catalog has {catalog_count}"
+                )
     return errors
 
 
@@ -380,6 +462,19 @@ def collect_errors(repo_root, _return_count=False):
                 err(loc, f"detail file 'standards/{detail}' does not exist")
         elif check in {"judgment", "hybrid"}:
             err(loc, f"check '{check}' requires a 'detail' file (rationale + pass/fail examples)")
+
+        # 5c. script: every path exists on disk (repo-relative to repo_root).
+        # Type errors (non-string entries) are already reported by
+        # validate_control; here we only resolve well-formed string paths.
+        script = control.get("script")
+        if script is not None:
+            script_list = script if isinstance(script, list) else [script]
+            for sp in script_list:
+                if not isinstance(sp, str):
+                    continue
+                script_abs = os.path.join(repo_root, sp)
+                if not os.path.isfile(script_abs):
+                    err(loc, f"script path '{sp}' does not exist")
 
     # ── Step 5b: meta.categories covers every ID prefix ──────────────────────
     # The TFX-DS website derives control categories from this map; a missing
@@ -508,6 +603,7 @@ def collect_errors(repo_root, _return_count=False):
     # Inline restatements (L0 list, SLP-9 buzzwords) must not drift from source.
     errors.extend(l0_parity_errors(repo_root, catalog_by_id, xref_re))
     errors.extend(slp9_parity_errors(repo_root))
+    errors.extend(count_parity_errors(repo_root, len(catalog_by_id)))
 
     return result(len(catalog_by_id))
 
@@ -708,6 +804,100 @@ def run_self_test():
                  buzz_errs("empower, supercharge"),
                  "required core buzzword(s)")
 
+    # ── Scope field (products / audiences) cases ───────────────────────────
+    # Scoped control with valid values → passes.
+    assert_control_clean("scoped control valid",
+                         dict(valid_control, products=["glow"],
+                              audiences=["students-primary"]))
+    # Unknown product value → error.
+    assert_control_error("unknown product value",
+                         dict(valid_control, products=["glow", "bogus"]),
+                         "invalid products values ['bogus']")
+    # Empty products list → error telling the author to omit the field.
+    assert_control_error("empty products list",
+                         dict(valid_control, products=[]),
+                         "omit the field for global")
+    # audiences as a string, not a list → error.
+    assert_control_error("audiences not a list",
+                         dict(valid_control, audiences="teachers"),
+                         "'audiences' must be a list")
+
+    # ── Enforcement field (enforced / script) cases ─────────────────────────
+    # A real script path so the pure validate_control cases don't need disk
+    # I/O (file-existence is checked separately, in collect_errors).
+    real_script = "checks/token-audit.py"
+
+    # Valid: enforced=script + a matching script path → clean.
+    assert_control_clean("enforced script + script path",
+                         dict(valid_control, enforced="script", script=real_script))
+    # Valid: enforced=partial + a list of script paths → clean.
+    assert_control_clean("enforced partial + script list",
+                         dict(valid_control, enforced="partial",
+                              script=[real_script, "checks/contrast.py"]))
+    # Invalid enforced value → error.
+    assert_control_error("invalid enforced value",
+                         dict(valid_control, enforced="bogus", script=real_script),
+                         "invalid enforced 'bogus'")
+    # script present, enforced absent → error (script implies enforced must
+    # be script/partial; absent doesn't qualify).
+    assert_control_error("script without enforced",
+                         dict(valid_control, script=real_script),
+                         "'script' is present but 'enforced' is not 'script' or 'partial'")
+    # enforced=script but no script field → error.
+    assert_control_error("enforced script without script field",
+                         dict(valid_control, enforced="script"),
+                         "requires a 'script' field")
+    # enforced=evaluator on a deterministic check → error (evaluator only
+    # valid for judgment/hybrid).
+    assert_control_error("enforced evaluator on deterministic",
+                         dict(valid_control, enforced="evaluator"),
+                         "only valid on check 'judgment' or 'hybrid'")
+    # enforced=evaluator on a judgment check → clean.
+    assert_control_clean("enforced evaluator on judgment",
+                         dict(valid_control, check="judgment", enforced="evaluator"))
+    # script wrong type (int, not string/list) → error.
+    assert_control_error("script wrong type",
+                         dict(valid_control, enforced="script", script=42),
+                         "'script' must be a string or list of strings")
+
+    # ── [COUNT-SYNC] cases ─────────────────────────────────────────────────
+    count_tmp = tempfile.mkdtemp(prefix="validate-selftest-count-")
+    try:
+        readme_path = os.path.join(count_tmp, "README.md")
+
+        with open(readme_path, "w") as fh:
+            fh.write("This catalog has 48 controls, all documented.")
+        assert_clean("count-sync matching count",
+                     count_parity_errors(count_tmp, 48))
+
+        with open(readme_path, "w") as fh:
+            fh.write("This catalog has 49 controls, all documented.")
+        assert_error("count-sync mismatched count",
+                     count_parity_errors(count_tmp, 48), "[COUNT-SYNC]")
+
+        with open(readme_path, "w") as fh:
+            fh.write("No count claim in this README at all.")
+        assert_clean("count-sync no claim",
+                     count_parity_errors(count_tmp, 48))
+
+        docs_dir = os.path.join(count_tmp, "docs")
+        os.makedirs(docs_dir, exist_ok=True)
+        index_path = os.path.join(docs_dir, "index.html")
+
+        with open(readme_path, "w") as fh:
+            fh.write("No count claim in this README at all.")
+        with open(index_path, "w") as fh:
+            fh.write('<span class="pill">48 controls</span>')
+        assert_clean("count-sync index.html matching count",
+                     count_parity_errors(count_tmp, 48))
+
+        with open(index_path, "w") as fh:
+            fh.write('<span class="pill">47 controls</span>')
+        assert_error("count-sync index.html mismatched count",
+                     count_parity_errors(count_tmp, 48), "[COUNT-SYNC]")
+    finally:
+        shutil.rmtree(count_tmp, ignore_errors=True)
+
     # ── Filesystem integration case for collect_errors ───────────────────────
 
     tmp_root = tempfile.mkdtemp(prefix="validate-selftest-")
@@ -781,7 +971,20 @@ def run_self_test():
         if not any("requires a 'detail' file" in e for e in errs):
             failures.append(f"FAIL integration judgment no detail: expected a detail-file error — got: {errs}")
 
-        # Case 13: missing catalog → "file not found"
+        # Case 13: enforced=script with a nonexistent script path → error
+        # naming the path (this is the on-disk half of the enforcement
+        # rules — validate_control alone can't see the filesystem).
+        missing_script_catalog = json.loads(json.dumps(valid_catalog))
+        missing_script_catalog["controls"][0]["enforced"] = "script"
+        missing_script_catalog["controls"][0]["script"] = "checks/does-not-exist.py"
+        with open(catalog_path, "w") as fh:
+            yaml.safe_dump(missing_script_catalog, fh)
+        case_count += 1
+        errs = collect_errors(tmp_root)
+        if not any("checks/does-not-exist.py" in e and "does not exist" in e for e in errs):
+            failures.append(f"FAIL integration missing script path: expected a script-path error — got: {errs}")
+
+        # Case 14: missing catalog → "file not found"
         os.remove(catalog_path)
         case_count += 1
         errs = collect_errors(tmp_root)
@@ -801,6 +1004,77 @@ def run_self_test():
         sys.exit(0)
 
 
+# ── Coverage listing ─────────────────────────────────────────────────────────
+
+def effective_enforcement(control):
+    """
+    Resolve a control's effective 'enforced' value, applying the schema
+    default when the field is absent: 'manual' for deterministic/hybrid,
+    'evaluator' for judgment. Returns (value, was_defaulted). Pure — no I/O.
+    """
+    enforced = control.get("enforced")
+    if enforced is not None:
+        return enforced, False
+    return ("evaluator" if control.get("check") == "judgment" else "manual"), True
+
+
+def format_script(control):
+    """Render a control's script: field (string, list, or absent) as one cell."""
+    script = control.get("script")
+    if isinstance(script, list):
+        return ", ".join(script)
+    if isinstance(script, str):
+        return script
+    return "—"
+
+
+def print_coverage(repo_root):
+    """
+    Print the derived enforcement-coverage table (id · tier · check ·
+    enforced[defaulted] · script) plus a summary count line, and exit 0.
+    This replaces hand-maintained gap lists (e.g. plans/README.md's
+    direction-finding #1), which drift as controls are added. Read-only —
+    never writes back a defaulted value into the catalog.
+    """
+    catalog_path = os.path.join(repo_root, "standards", "catalog.yaml")
+    with open(catalog_path) as fh:
+        catalog_data = yaml.safe_load(fh)
+    controls = sorted(catalog_data.get("controls", []), key=lambda c: c.get("id", ""))
+
+    counts = {"script": 0, "partial": 0, "manual": 0, "evaluator": 0}
+    rows = []
+    for control in controls:
+        enforced, defaulted = effective_enforcement(control)
+        counts[enforced] = counts.get(enforced, 0) + 1
+        rows.append((
+            control.get("id", "?"),
+            control.get("tier", "?"),
+            control.get("check", "?"),
+            f"{enforced} (default)" if defaulted else enforced,
+            format_script(control),
+        ))
+
+    header = ("id", "tier", "check", "enforced", "script")
+    widths = [
+        max(len(header[i]), *(len(r[i]) for r in rows)) if rows else len(header[i])
+        for i in range(len(header))
+    ]
+
+    def fmt(row):
+        return "  ".join(str(cell).ljust(w) for cell, w in zip(row, widths))
+
+    print(fmt(header))
+    print(fmt(tuple("-" * w for w in widths)))
+    for row in rows:
+        print(fmt(row))
+    print()
+    print(
+        f"{counts['script']} script / {counts['partial']} partial / "
+        f"{counts['manual']} manual / {counts['evaluator']} evaluator "
+        f"(total {len(controls)})"
+    )
+
+
 # ── Entry point ──────────────────────────────────────────────────────────────────
 
 def main():
@@ -809,6 +1083,10 @@ def main():
     if "--self-test" in args:
         run_self_test()
         return  # run_self_test calls sys.exit
+
+    if "--coverage" in args:
+        print_coverage(REPO_ROOT)
+        sys.exit(0)
 
     errors, n = collect_errors(REPO_ROOT, _return_count=True)
 

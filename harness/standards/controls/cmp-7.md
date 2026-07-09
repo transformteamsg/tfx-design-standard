@@ -81,7 +81,7 @@ manifest is what makes "overrode a default" mechanically detectable) — until t
 - A *deliberate, recorded* override — one with a waiver carrying a real reason, or a
   documented decision. The control protects against silent divergence, not justified
   design decisions.
-- A product's documented nuance calibration (accent / tone per `tfx-design-standards`).
+- A product's documented nuance calibration (accent / tone per `standards`).
 - Semantic colour-coding itself — that is never the finding here (per the review skill's
   originality criterion). The finding is the *unjustified divergence*, not the use of
   colour or a variant.

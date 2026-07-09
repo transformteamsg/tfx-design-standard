@@ -17,16 +17,25 @@ Follow the two commands in the [README Install section](../README.md#install):
 
 ```
 /plugin marketplace add transformteamsg/tfx-design-standard
-/plugin install tfx-design-harness@tfx
+/plugin install tfx@tfx
 ```
 
-This installs the five skills (`tfx-design-ui`, `tfx-design-standards`, `tfx-content-style`,
-`tfx-design-review`, `tfx-design-onboarding`), the `tfx-design-evaluator` subagent, and the control catalog
-(`standards/`) — the catalog ships with the plugin, not with your repo.
+This installs the eleven skills (`start`, `setup`, `design`, `critique`,
+`standards`, `copy`, `polish`, `motion`, `flow`, `layout`, `feedback`), the `evaluator`
+subagent (which carries its own review procedure), and the control catalog
+(`standards/`) — the catalog ships with the
+plugin, not with your repo. `/tfx:start` is the front door: it orients you and routes to
+the right skill.
 
 If you are working on the harness itself (not a product repo), open a Claude Code
 session in this repository directly: the skills load from `.claude/skills/`
 automatically and no install step is needed.
+
+**Per-user tools.** The plugin install is per-repo; the capture and
+filing tools are per-person. Each teammate runs `/tfx:start` (or invokes the `setup`
+skill directly), which follows the checklist (`.claude/skills/setup/setup.md` in this
+repo): the agent-browser CLI + skill for screenshots, an authenticated `gh` for
+harness feedback, Python with PyYAML for the check scripts.
 
 ---
 
@@ -69,18 +78,46 @@ must be consistent across TW, CaseSync, and Glow.
 
 ---
 
+## 2a. Per-product context — `DESIGN.md` (optional, recommended)
+
+**What it means:** The catalog is portfolio-wide and product-agnostic on purpose. A
+`DESIGN.md` at your repo root records the few *visual parameters* that make your product
+itself — its primary colour, tone weighting, motion conventions, and column grid — and its
+generated twin `.tfx/design.json` lets the check scripts and the design loop read them.
+This is the one item that is **optional** and not counted among the six: a repo with no
+`DESIGN.md` gets the portfolio defaults everywhere, which is a valid, complete state — it
+is never graded as a failure. Add one only if your product's parameters actually differ.
+
+**The concrete step:**
+
+1. Copy the annotated template from the harness: `docs/templates/DESIGN.md` →
+   `your-repo/DESIGN.md`.
+2. Fill in only the parameters that *differ* from the portfolio default; delete every
+   section that matches it. Parameters only — never restate a catalog rule (that recreates
+   the drift `docs/SYNC.md` exists to prevent).
+3. Generate the machine twin and commit **both** files:
+   `python3 <harness>/scripts/generate-design-json.py .`
+4. Regenerate whenever you edit `DESIGN.md` (the twin is generated only, never
+   hand-edited); CI can gate freshness with `--check`.
+
+Full spec — the sections, the parameters-only rule, and the "code overrides stale docs"
+loading rule: `docs/DESIGN-CONTEXT.md`.
+
+---
+
 ## 3. Skills installed
 
-**What it means:** The TFX skills (`tfx-design-ui`, `tfx-design-standards`,
-`tfx-content-style`, `tfx-design-review`, `tfx-design-onboarding`) must be active in the product repo's Claude session
-for the harness to work. Without them, the agent has no loop structure, no catalog
-filters, and no evaluator procedure to follow.
+**What it means:** The TFX skills (`start`, `setup`, `design`, `critique`,
+`standards`, `copy`, `polish`, `motion`, `flow`, `layout`, `feedback`) and the
+`evaluator` subagent must be
+active in the product repo's Claude session for the harness to work. Without them, the agent
+has no loop structure, no catalog filters, and no evaluator procedure to follow.
 
 **The concrete step:** After running the install commands in item 0, verify the skills
 loaded. Open a Claude Code session in your product repo and ask: "design a test page."
-The `tfx-design-ui` loop must trigger and ask intent questions — purpose, the teacher
+The `design` loop must trigger and ask intent questions — purpose, the teacher
 and moment, page type, done-criteria. If it does not, run `/plugin list` and confirm
-`tfx-design-harness` is enabled. If the plugin appears but the skill does not trigger,
+`tfx` is enabled. If the plugin appears but the skill does not trigger,
 check that the session is open in the product repo root, not in a subdirectory.
 
 ---
@@ -91,12 +128,20 @@ check that the session is open in the product repo root, not in a subdirectory.
 hooks — scripts that run automatically at the implement and verify phases without
 waiting for agent judgment.
 
-**Status today:** The first check script is now available: `checks/token-audit.py` covers TOK-1 (raw colours), TOK-2 (off-scale spacing), TOK-3 (off-scale radius), and COL-1/COL-2 (Tailwind palette bypass). Run it manually against any file or directory: `python3 checks/token-audit.py <path>`. The remaining 11 check scripts are not built yet. The catalog validator (`checks/validate.py`) is a harness self-check — it validates the catalog file format, not your design output. In every verify phase today, deterministic controls beyond token-audit are verified manually: you run checks by hand or by reading the code, then record the result. Every verify verdict in this period will read "verified manually" for all deterministic controls except token-audit. This is expected and correct — it is not a misconfiguration or a gap in your setup.
+**Status today:** Ten check scripts are built and self-tested — `token-audit.py`, `a11y-static.py`, `contrast.py`, `content-lint.py`, `type-scan.py`, `component-manifest.py`, `audit-record.py`, `waiver-reconcile.py`, `reaudit-scope.py`, and the catalog validator `validate.py` — plus `detect.py`, a unified front-end that runs the relevant subset for a given file. See `checks/README.md` for exactly which controls each script covers. Run the ones that apply manually today; a deterministic control covered by a built script is checked by running that script. The controls with no script yet (listed in `checks/README.md`) are still verified manually: you run checks by hand or by reading the code, then record the result. Never report an unbuilt or un-run check as "passed" — say "verified manually" or "unverified" and name what a human should re-check.
 
 V1 will wire the check scripts as hooks; until then, manual verification is the
 protocol. The worked example at `docs/decisions/student-notes-empty-state.md` shows
 the full manual-verification table, including which checks the evaluator was unable
 to verify from screenshots alone (see the ADVISORY on CMP-3 in that record).
+
+**Optional — auto-run the detector on your edits.** `hooks/design-hook.py` is a
+per-developer, opt-in PostToolUse hook: it runs the curated detector on each UI file
+you edit and reminds you (never blocks) on new findings. It is off until you install
+it. To enable, paste the snippet from `hooks/README.md` into your
+`.claude/settings.local.json`; `TFX_HOOK_DISABLED=1` mutes it for a session. It runs
+the curated subset only — a quiet edit is not a whole-catalog pass, so the manual
+verification protocol above still stands.
 
 ---
 
@@ -148,7 +193,7 @@ designer is not co-located.
 
 ## First real page — what to expect
 
-Once the six items above are satisfied, run the `tfx-design-ui` loop on your first real
+Once the six items above are satisfied, run the `design` loop on your first real
 page. Here is what the six phases feel like in practice:
 
 1. **Intent** — the agent asks four questions (purpose, the teacher and moment, page
@@ -157,13 +202,15 @@ page. Here is what the six phases feel like in practice:
 2. **Diverge** — 2–3 structural variants are presented, composed from your manifest
    components. You pick one. No code yet.
 3. **Plan** — a detailed plan names the components, the controls in scope, the tradeoffs,
-   and any proposed waivers. **You approve this before implementation begins.** In an
-   attended session you confirm explicitly; in an unattended run the plan records proxy
-   approval.
+   and any proposed waivers. **You approve this before implementation begins**, via a
+   three-stage gate: the plan is exposed in full, then grilled — the agent asks you
+   pointed questions about it one at a time — then you approve via a structured
+   Approve/Adjust turn. In an attended session you confirm explicitly; in an unattended
+   run the record shows proxy approval.
 4. **Implement** — the agent implements against the approved plan with catalog controls
    active. You should not need to intervene unless the plan was ambiguous.
 5. **Verify** — deterministic controls are checked manually (today), screenshots are
-   captured at 360/768/1280 px, and the `tfx-design-evaluator` subagent grades the judgment
+   captured at 360/768/1280 px, and the `evaluator` subagent grades the judgment
    controls and four quality criteria. Note: in an unattended single-agent session, the
    evaluator spawn requires an orchestrator-level dispatch after the executor stops —
    see the friction report headline finding for the working pattern.
@@ -184,7 +231,7 @@ empty state in Teacher Workspace — is available at:
 
 The evaluator verdict in that example was produced via orchestrator-level dispatch
 after the executor stopped — not from within the executor's session. In an interactive
-session you run directly, the `tfx-design-ui` skill spawns the `tfx-design-evaluator`
+session you run directly, the `design` skill spawns the `evaluator`
 subagent directly from Phase 5.
 
 ---
@@ -196,7 +243,7 @@ subagent directly from Phase 5.
 leaves an L0 violation unresolved.
 
 **A control seems wrong for your context** — use the waiver protocol in the
-`tfx-design-standards` skill, not silent deviation. A silent deviation is a compliance gap;
+`standards` skill, not silent deviation. A silent deviation is a compliance gap;
 a waiver with a reason and a named approver is an intentional decision. The catalog is
 built to evolve — if a control is wrong in principle, raise it via the ratchet.
 

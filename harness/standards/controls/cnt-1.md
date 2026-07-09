@@ -8,6 +8,8 @@ phase: [implement, verify]
 applies_to: [content]
 verify: "Script finds error surfaces and flags raw codes; evaluator judges 'what happened -> what it means -> what to do next'"
 waiver: documented
+enforced: partial
+script: checks/content-lint.py
 refs:
   - https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb
 ---
@@ -44,4 +46,4 @@ whether this tool is on their side.
 Deterministic half — `checks/content-lint` (planned): find error-state strings, flag
 raw codes appearing as primary copy. Judgment half — the evaluator quotes each error
 message and grades it against the three questions, using the tone-by-context table in
-the `tfx-content-style` skill (error tone: calm, helpful).
+the `content` skill (error tone: calm, helpful).

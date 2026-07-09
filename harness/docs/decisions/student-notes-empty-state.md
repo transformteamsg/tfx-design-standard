@@ -222,7 +222,7 @@ The design-evaluator (opus) independently confirmed two uncovered gaps in its UN
 **Triggering evidence (evaluator UNCOVERED, verbatim):**
 > "No control governs empty-state disambiguation — whether an empty state correctly signals 'empty' vs 'still loading' vs 'error/permissions.' This page handles it well ('No notes yet' + explanatory subtext, no list chrome that could read as loading), and it is the central done-criterion (contract item 1), yet no catalog control directly grades it; it currently rides on CMP-3 and judgment. The generator flagged this as a candidate but correctly declined to self-propose. As the independent read, I confirm the gap: recommend a ratchet proposal for an empty-state-clarity control."
 
-`[proposed — pending design-lead approval]`
+`[approved — 2026-07-08, see docs/catalog-changes/cmp-4-empty-state-clarity.md]`
 
 ---
 
@@ -247,4 +247,4 @@ The design-evaluator (opus) independently confirmed two uncovered gaps in its UN
 **Additional triggering evidence (evaluator ADVISORY on CMP-3, verbatim):**
 > "none of the three screenshots capture the loading, success, or error states — all three frames (360/768/1280) show only the initial empty state. The control requires the success state be 'perceivable by the user' and the error/loading states reachable; I can confirm reachability from the code but cannot verify perceptibility (timing, placement, no off-screen render) from the evidence given."
 
-`[proposed — pending design-lead approval]`
+`[approved as harness rule — 2026-07-08, see docs/catalog-changes/evd-1-async-evidence.md]`

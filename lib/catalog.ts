@@ -9,6 +9,10 @@ export type Control = {
   check: "deterministic" | "judgment" | "hybrid";
   category: string;
   fails_when?: string[];
+  products?: string[];
+  audiences?: string[];
+  enforced?: "script" | "partial" | "manual" | "evaluator";
+  script?: string | string[];
 };
 
 type RawControl = Record<string, unknown> & { id: string };
@@ -32,6 +36,10 @@ const PUBLIC_FIELDS = [
   "verify",
   "waiver",
   "fails_when",
+  "products",
+  "audiences",
+  "enforced",
+  "script",
 ] as const;
 
 function readCatalog(): RawCatalog {
@@ -56,12 +64,36 @@ export function getCatalog(): Control[] {
       check: c.check,
       category,
       fails_when: c.fails_when,
+      products: c.products,
+      audiences: c.audiences,
+      enforced: c.enforced,
+      script: c.script,
     } as Control;
   });
 }
 
+/* Scope display maps from the catalog meta block — value → display name.
+   Absent maps project to empty objects (older catalog versions). */
+export function getScopeMeta(): {
+  products: Record<string, string>;
+  audiences: Record<string, string>;
+} {
+  const { meta } = readCatalog();
+  return {
+    products: (meta.products as Record<string, string>) ?? {},
+    audiences: (meta.audiences as Record<string, string>) ?? {},
+  };
+}
+
 /* meta keys the public routes expose — deny-by-default, like PUBLIC_FIELDS. */
-const PUBLIC_META = ["version", "updated", "waiver_syntax", "categories"] as const;
+const PUBLIC_META = [
+  "version",
+  "updated",
+  "waiver_syntax",
+  "categories",
+  "products",
+  "audiences",
+] as const;
 
 export function getPublicCatalogYaml(): string {
   const { meta, controls } = readCatalog();

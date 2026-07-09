@@ -8,6 +8,8 @@ phase: [implement, verify]
 applies_to: [component]
 verify: "No off-scale border-radius values; checks/token-audit"
 waiver: documented
+enforced: partial
+script: checks/token-audit.py
 refs:
   - https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb
 ---

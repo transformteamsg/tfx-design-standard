@@ -12,6 +12,8 @@ fails_when:
   - custom green/red/amber values
   - red used decoratively
   - small functional-colour text (≤12px) on a tint uses step-11 (or lower) and falls below 4.5:1
+enforced: partial
+script: [checks/token-audit.py, checks/contrast.py]
 refs:
   - https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb
 ---

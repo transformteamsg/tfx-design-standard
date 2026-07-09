@@ -2,13 +2,13 @@
 """
 Content lint — checks/content-lint.py
 Scans UI source and content files for the statically-resolvable subset of
-CNT-1, CNT-3, CNT-4, CNT-6, and the deterministic (lint) half of SLP-9 — the
+CNT-1, CNT-3, CNT-5, CNT-6, and the deterministic (lint) half of SLP-9 — the
 parts detectable from source text alone, without rendered layout or human
 judgement.
 
-The SLP-9 word lists, the CNT-4 device-verb list, and the CNT-6 opener/filler
+The SLP-9 word lists, the CNT-5 device-verb list, and the CNT-6 opener/filler
 lists are NOT embedded here. They are read at runtime from
-standards/controls/slp-9.md, cnt-4.md, and cnt-6.md (resolved relative to this
+standards/controls/slp-9.md, cnt-5.md, and cnt-6.md (resolved relative to this
 file), so the lint and the catalog can never diverge — if a list grows, this
 check picks it up. If a file cannot be found or parsed, the check falls back to
 a small embedded copy and prints a NOTE saying so — never silently.
@@ -33,9 +33,9 @@ CNT-1           CNT-1     A user-facing string that is ONLY a raw error code
                 (L1)      (e.g. "ERR_SYNC_500", "0x80004005", an all-caps
                           token), or the literal "Something went wrong" with no
                           actionable next step on the same or next line.
-CNT-4           CNT-4     A device-bound action verb (click, tap, swipe, and
+CNT-5           CNT-5     A device-bound action verb (click, tap, swipe, and
                 (L2)      inflections) inside a multi-word user-facing string or
-                          MDX prose line, read from cnt-4.md. Names the input
+                          MDX prose line, read from cnt-5.md. Names the input
                           device instead of the action.
 CNT-6           CNT-6     A low-informational-value word in a user-facing string
                 (L2)      or MDX prose line, read from cnt-6.md: a sentence-
@@ -64,7 +64,7 @@ What this script does NOT verify
 - CNT-1's "what happened → what it means → what to do next" structure — the
   evaluator judges the full anatomy; this check only catches the raw-code-only
   and bare-"Something went wrong" cases.
-- CNT-4's harder half — "press" and "see" (too common in innocent prose to lint
+- CNT-5's harder half — "press" and "see" (too common in innocent prose to lint
   cleanly), ambiguous link text ("click here", "read more"), and confirming a hit
   is a UI instruction rather than incidental prose ("press release", "tap water").
   This check lints only the unambiguous device verbs; the evaluator judges the rest.
@@ -102,15 +102,15 @@ SLP9_PATH = os.path.join(
     "standards", "controls", "slp-9.md",
 )
 
-# ── CNT-4 device-verb-list source ──────────────────────────────────────────────
-# Resolved relative to this file: ../standards/controls/cnt-4.md from checks/.
-CNT4_PATH = os.path.join(
+# ── CNT-5 device-verb-list source ──────────────────────────────────────────────
+# Resolved relative to this file: ../standards/controls/cnt-5.md from checks/.
+CNT5_PATH = os.path.join(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-    "standards", "controls", "cnt-4.md",
+    "standards", "controls", "cnt-5.md",
 )
 
-# Embedded fallback device-verb list — used only if cnt-4.md can't be read/parsed.
-# A NOTE is printed whenever this fallback is used. cnt-4.md is the single source
+# Embedded fallback device-verb list — used only if cnt-5.md can't be read/parsed.
+# A NOTE is printed whenever this fallback is used. cnt-5.md is the single source
 # of truth; this is the escape hatch for product repos without the full controls dir.
 # Scoped to the unambiguous verbs (click/tap/swipe); "press" and "see" are left to
 # the evaluator half because they collide with innocent prose.
@@ -299,9 +299,9 @@ def load_slp9_lists(path=SLP9_PATH):
     )
 
 
-def load_cnt4_verbs(path=CNT4_PATH):
+def load_cnt5_verbs(path=CNT5_PATH):
     """
-    Parse the CNT-4 device-verb list from cnt-4.md's <!-- tfx-sync:cnt4-verbs -->
+    Parse the CNT-5 device-verb list from cnt-5.md's <!-- tfx-sync:cnt5-verbs -->
     span. Returns (verbs_list, used_fallback, note) — mirrors load_slp9_lists so
     the lint and the catalog can never diverge. Falls back to the embedded copy
     (with a NOTE) if the file is missing, the marker is absent, or the list is empty.
@@ -313,18 +313,18 @@ def load_cnt4_verbs(path=CNT4_PATH):
         return (
             FALLBACK_DEVICE_VERBS, True,
             f"NOTE content-lint: could not read {path}; using embedded "
-            f"fallback CNT-4 device-verb list",
+            f"fallback CNT-5 device-verb list",
         )
 
     marker = re.search(
-        r"<!--\s*tfx-sync:cnt4-verbs\b[^>]*-->(.*?)<!--\s*/tfx-sync:cnt4-verbs\s*-->",
+        r"<!--\s*tfx-sync:cnt5-verbs\b[^>]*-->(.*?)<!--\s*/tfx-sync:cnt5-verbs\s*-->",
         text, flags=re.DOTALL,
     )
     verbs = _split_list_items(marker.group(1)) if marker else []
     if not verbs:
         return (
             FALLBACK_DEVICE_VERBS, True,
-            f"NOTE content-lint: parsed {path} but the cnt4-verbs list was empty; "
+            f"NOTE content-lint: parsed {path} but the cnt5-verbs list was empty; "
             f"using embedded fallback",
         )
     return (verbs, False, None)
@@ -335,7 +335,7 @@ def load_cnt6_lists(path=CNT6_PATH):
     Parse the CNT-6 empty-opener and filler-word lists from cnt-6.md's
     <!-- tfx-sync:cnt6-openers --> and <!-- tfx-sync:cnt6-filler --> spans.
     Returns (lists_dict, used_fallback, note) with keys "openers" and "filler" —
-    mirrors load_cnt4_verbs so the lint and the catalog can never diverge.
+    mirrors load_cnt5_verbs so the lint and the catalog can never diverge.
     """
     fallback = {
         "openers": FALLBACK_CNT6_OPENERS,
@@ -479,7 +479,7 @@ def check_file(filepath, lists=None, phrase_res=None, word_res=None, device_re=N
             "chatbot": _build_phrase_regex(lists["chatbot"]),
         }
     if device_re is None:
-        device_verbs, _dv_fallback, _dv_note = load_cnt4_verbs()
+        device_verbs, _dv_fallback, _dv_note = load_cnt5_verbs()
         device_re = _build_word_regex(device_verbs)
     if cnt6_res is None:
         cnt6_lists, _c6_fallback, _c6_note = load_cnt6_lists()
@@ -568,7 +568,7 @@ def check_file(filepath, lists=None, phrase_res=None, word_res=None, device_re=N
                 prose = re.sub(r"`[^`]*`", "", scan_line)  # drop inline code
                 _check_cnt3_text(prose, emit)
                 _check_cnt1_text(prose.strip(), line, lineno, lines, emit)
-                _check_cnt4_text(prose, emit, device_re)
+                _check_cnt5_text(prose, emit, device_re)
                 _check_cnt6_text(prose, emit, cnt6_res)
         elif is_code:
             # Code: only inspect quoted string literals that look user-facing.
@@ -583,7 +583,7 @@ def check_file(filepath, lists=None, phrase_res=None, word_res=None, device_re=N
                 if _looks_user_facing(literal):
                     _check_cnt3_text(literal, emit)
                     _check_cnt1_text(literal, line, lineno, lines, emit)
-                    _check_cnt4_text(literal, emit, device_re)
+                    _check_cnt5_text(literal, emit, device_re)
                     _check_cnt6_text(literal, emit, cnt6_res)
 
     return errors
@@ -626,9 +626,9 @@ def _check_cnt3_text(text, emit):
             return
 
 
-def _check_cnt4_text(text, emit, device_re):
+def _check_cnt5_text(text, emit, device_re):
     """
-    CNT-4: flag a device-bound action verb (click/tap/swipe) inside user-facing
+    CNT-5: flag a device-bound action verb (click/tap/swipe) inside user-facing
     copy. Scoped to multi-word strings so bare event names / identifiers ("click"
     as an addEventListener arg, an `onClick` prop) are not flagged — those are code,
     not copy. "press" and "see" are deliberately left to the evaluator (they collide
@@ -640,7 +640,7 @@ def _check_cnt4_text(text, emit, device_re):
         return
     m = device_re.search(text)
     if m:
-        emit("CNT-4", f'device-bound verb "{m.group(0)}"',
+        emit("CNT-5", f'device-bound verb "{m.group(0)}"',
              'name the action, not the device — use "choose", "select", or "view"')
 
 
@@ -649,7 +649,7 @@ def _check_cnt6_text(text, emit, cnt6_res):
     CNT-6: flag low-informational-value words in user-facing copy — an empty
     opener at the START of a sentence ("There is", "There are", "It is",
     "This is"), or a safe-subset filler word (just, really, very, please) at any
-    position. Scoped to multi-word strings, like CNT-4, so identifiers are not
+    position. Scoped to multi-word strings, like CNT-5, so identifiers are not
     flagged. The harder calls (such/that/articles, the clarity exception) are the
     evaluator's; "in order to" is SLP-9's.
     """
@@ -746,7 +746,7 @@ def scan_paths(paths):
     lists, used_fallback, note = load_slp9_lists()
     if used_fallback and note:
         print(note)
-    device_verbs, dv_fallback, dv_note = load_cnt4_verbs()
+    device_verbs, dv_fallback, dv_note = load_cnt5_verbs()
     if dv_fallback and dv_note:
         print(dv_note)
     cnt6_lists, c6_fallback, c6_note = load_cnt6_lists()
@@ -804,7 +804,7 @@ def run_self_test():
         "filler": _build_phrase_regex(lists["filler"]),
         "chatbot": _build_phrase_regex(lists["chatbot"]),
     }
-    device_verbs, _dv_fallback, _dv_note = load_cnt4_verbs()
+    device_verbs, _dv_fallback, _dv_note = load_cnt5_verbs()
     device_re = _build_word_regex(device_verbs)
     cnt6_lists, _c6_fallback, _c6_note = load_cnt6_lists()
     cnt6_res = _build_cnt6_res(cnt6_lists)
@@ -951,34 +951,34 @@ def run_self_test():
         ".tsx",
     )
 
-    # ── CNT-4 cases ─────────────────────────────────────────────────────────────
+    # ── CNT-5 cases ─────────────────────────────────────────────────────────────
     assert_violations(
-        "CNT-4: 'click here' in MDX prose",
+        "CNT-5: 'click here' in MDX prose",
         "Click here to view your class list.",
-        ".mdx", ["CNT-4"],
+        ".mdx", ["CNT-5"],
     )
     assert_violations(
-        "CNT-4: device verb in a string literal",
+        "CNT-5: device verb in a string literal",
         'const cta = "Tap to continue";',
-        ".tsx", ["CNT-4"],
+        ".tsx", ["CNT-5"],
     )
     assert_violations(
-        "CNT-4: inflected device verb (swiping) in prose",
+        "CNT-5: inflected device verb (swiping) in prose",
         "Keep swiping to see the rest of the term.",
-        ".mdx", ["CNT-4"],
+        ".mdx", ["CNT-5"],
     )
     assert_clean(
-        "CNT-4: device-agnostic verb is fine",
+        "CNT-5: device-agnostic verb is fine",
         "Choose a class to begin.",
         ".mdx",
     )
     assert_clean(
-        "CNT-4: bare event-name identifier is not copy",
+        "CNT-5: bare event-name identifier is not copy",
         'element.addEventListener("click", handler);',
         ".tsx",
     )
     assert_clean(
-        "CNT-4: onClick prop is code, not copy",
+        "CNT-5: onClick prop is code, not copy",
         "<button onClick={submit}>Save marks</button>",
         ".tsx",
     )
@@ -1026,7 +1026,7 @@ def run_self_test():
             f"got {sorted(all_buzz)} (used_fallback={used_fallback})"
         )
 
-    # CNT-4 loader: the device-verb list must carry the core verbs (from cnt-4.md
+    # CNT-5 loader: the device-verb list must carry the core verbs (from cnt-5.md
     # or the embedded fallback).
     case_count += 1
     all_verbs = set(device_verbs)
