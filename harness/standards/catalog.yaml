@@ -566,18 +566,21 @@ controls:
     detail: controls/cnt-2.md
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
 
+  # CNT-3 narrowed 2026-07-03: the lead-with-purpose clause moved to CNT-5 (split
+  # PROPOSAL, PR'd together with CNT-5 — pending design-lead approval). CNT-3 keeps
+  # the mechanical voice rules; its lint half is unchanged.
   - id: CNT-3
     source: TFX-DS
-    title: Copy leads with its purpose, uses second person and active voice, and keeps sentences to 25 words or fewer
+    title: Copy uses second person and active voice, and keeps sentences to 25 words or fewer
     tier: L2
     check: hybrid
     phase: [implement, verify]
     applies_to: [content]
-    verify: "Lint sentence length; evaluator judges voice and person, and that descriptive copy (titles, descriptions, section intros, empty states) leads with its purpose or role before the mechanism"
+    verify: "Lint sentence length; evaluator judges voice and person"
     waiver: rationale
     fails_when:
       - passive constructions in instructions
-      - a title, description, or intro that opens with the mechanism (the tool, token, or library) instead of what it does for the teacher
+      - third-person references to the user ("Teachers can…")
     detail: controls/cnt-3.md
     enforced: partial
     script: checks/content-lint.py
@@ -599,6 +602,74 @@ controls:
       - invented specifics presented as real in a user-testing surface
       - placeholder content with no illustrative label
     detail: controls/cnt-4.md
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
+  # CNT-5: ratchet PROPOSAL 2026-07-02 — device-agnostic action verbs, mapped from
+  # the HDB e-services UX-writing guide (Step 9, accessibility) during the writing-
+  # guide port. Built as the exemplar new content control. Renumbered from the
+  # proposed CNT-4 after CNT-4 was assigned to domain fidelity (issue #27) on main.
+  # Pending design-lead approval; re-audit set = every shipped surface carrying CTA
+  # or link copy.
+  - id: CNT-5
+    source: TFX-DS
+    title: UI action words name the action, not the input device — "choose", "select", "view", never "click", "tap", "swipe", or "press"
+    tier: L2
+    check: hybrid
+    phase: [implement, verify]
+    applies_to: [content]
+    verify: "Lint flags device-bound verbs (click/tap/swipe) in user-facing copy; evaluator confirms the word is a UI action instruction and judges the harder calls (press, see) and ambiguous link text"
+    waiver: rationale
+    fails_when:
+      - '"Click here" / "Tap to continue" / "Press the button" as UI copy'
+      - a device verb in an instruction a screen reader reads aloud on a touch device
+      - ambiguous link text ("click here", "read more") that names the device, not the destination
+    detail: controls/cnt-5.md
+    enforced: partial
+    script: checks/content-lint.py
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
+  # CNT-6: ratchet PROPOSAL 2026-07-03 — low-informational-value words, from the
+  # writing-guide port (edit-to-be-concise). Boundary with SLP-9: SLP-9 catches
+  # AI-writing tells (buzzwords, phrase filler, structural tells); CNT-6 catches
+  # no-op words in any copy regardless of author; lint lists stay disjoint so one
+  # token never fires two controls. Pending design-lead approval; re-audit set =
+  # every shipped surface carrying user-facing copy.
+  - id: CNT-6
+    source: TFX-DS
+    title: Copy carries no low-informational-value words — no empty openers, filler words, or droppable articles and conjunctions, unless removing them hurts clarity
+    tier: L2
+    check: hybrid
+    phase: [implement, verify]
+    applies_to: [content]
+    verify: "Lint flags sentence-initial empty openers (There is, There are, It is, This is) and the safe filler subset (just, really, very, please); evaluator judges the context-dependent words (such, that, articles and conjunctions) and the clarity exception"
+    waiver: rationale
+    fails_when:
+      - a sentence opening with an empty opener that reads fine without it
+      - filler words (just, really, very, please) carrying no meaning in UI copy
+    detail: controls/cnt-6.md
+    enforced: partial
+    script: checks/content-lint.py
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
+  # CNT-7: ratchet PROPOSAL 2026-07-03 — split out of CNT-3 during the writing-guide
+  # port. The purpose clause is pure judgment and kept straddling guideline sections,
+  # while CNT-3's other clauses are mechanical; one ID for both made findings and
+  # waivers ambiguous. Renumbered from the proposed CNT-5 after CNT-5 was assigned to
+  # device verbs. Pending design-lead approval; re-audit set = every shipped surface
+  # carrying descriptive prose (page titles, descriptions, section intros, empty
+  # states, feature blurbs — in this repo, all content/**.mdx frontmatter and intros).
+  - id: CNT-7
+    source: TFX-DS
+    title: Descriptive copy leads with its purpose — what it does for the teacher and when to reach for it — before the mechanism
+    tier: L2
+    check: judgment
+    phase: [implement, verify]
+    applies_to: [content]
+    verify: "Evaluator reads the first line of titles, descriptions, section intros, empty states, and feature blurbs: purpose or role first, mechanism after"
+    waiver: rationale
+    fails_when:
+      - a title, description, or intro that opens with the mechanism (the tool, token, or library) instead of what it does for the teacher
+    detail: controls/cnt-7.md
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
 
   # ── Motion & identity ─────────────────────────────────────────────────

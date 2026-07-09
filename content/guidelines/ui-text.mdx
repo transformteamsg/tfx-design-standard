@@ -1,0 +1,190 @@
+---
+title: UI text
+description: Not written to be read. Written to be acted on.
+status: proposed
+---
+
+Teachers don't come to our products to read. They come to look up a student, find the right tool, or complete admin tasks. The words along the way exist to move that task forward, not to decorate. Every extra word slows a teacher down, so weigh each one.
+
+UI text is the product's microcopy: words and phrases tied directly to a teacher's actions. Button labels, tooltips, help text, error messages — everything a teacher reads while working.
+
+That job separates UI text from our other writing. Informational content explains how the product works; marketing promotes it; UI text gets the task done with as little reading as possible. So we write in a straightforward, conversational tone, and put clarity and usability ahead of expressive language.
+
+For specific guidance, go deeper with [Grammar & mechanics](/guidelines/grammar-mechanics), [Voice & tone](/guidelines/voice-tone), and [Components & text patterns](/guidelines/text-patterns).
+
+## 1. Clarify the context, then draft
+
+UI text exists to help a user complete a task. Before writing, clarify three things: the user, their goal, and what the product needs the text to do. For an error message, the teacher's goal is to understand what went wrong; the product's goal is to help them recover quickly.
+
+Then write your first draft. Simply write what you want to say to the user. Don't worry; we will polish it later.
+
+Example:
+
+`You have entered an incorrect postal code.`
+
+## 2. Edit to be purposeful
+
+Every word on the screen should serve the teacher's goal and the product's. Edit the first draft to ensure it meets all goals.
+
+When there is more than 1 goal to convey in your writing, order them effectively:
+
+- **Begin with your most important goal.** The first idea is scanned first and is the
+  second most memorable goal (primacy effect). This should signal to the users that
+  they have found the idea they are seeking.
+- **Follow up with any other goals, in order of importance.** Arrange them logically
+  and coherently so that users can easily follow along.
+- **End with the goal that informs the next step.** The last idea is the most
+  memorable (recency effect) and impacts the user's action.
+
+Before:
+
+`You have entered an incorrect postal code.`
+
+Help users recover:
+
+`You have entered an incorrect postal code. Please enter a valid postal code e.g. 310480.`
+
+## 3. Edit to be concise
+
+Teachers come to the interface to complete a task. They scan for the smallest amount of text that helps them understand and act. Write concisely so they can process information quickly and continue their work.
+
+- **Copy should lead with its purpose.** Start with what it does for the teacher and
+  when to use it before explaining how. A teacher should understand why something
+  exists from the start. Front load essential information, such as the teacher's
+  goal, benefit, or action to take ([CNT-7](/standards/catalog/cnt-7)).
+- **Use short sentences or phrases.** Keep sentences to 25 words or fewer
+  ([CNT-3](/standards/catalog/cnt-3)).
+- **Try different arrangements.** Rewrite the same message in a few ways and keep the
+  clearest concise option.
+- **Remove low value words.** Do this only when clarity and readability stay intact
+  ([CNT-6](/standards/catalog/cnt-6)):
+  - Empty openers (e.g. `There is`, `There are`, `It is`, `This is`, and `In order to`)
+  - Filler words (e.g. `such`, `just`, `that`, `really`, `very`, and `please`)
+  - Articles and conjunctions (e.g. `a`, `the`, and `and`)
+- **Check for low value words introduced by AI.** Look for buzzwords, filler phrases,
+  negative parallelism, copula avoidance, and forced triads
+  ([SLP-9](/standards/catalog/slp-9)).
+
+Before:
+
+`You have entered an incorrect postal code. Please enter a valid postal code e.g. 310480.`
+
+Remove words with low informational value:
+
+`Incorrect postal code. Enter valid postal code e.g. 310480.`
+
+## 4. Edit to be conversational
+
+Concision can leave copy sounding robotic. UI text is a conversation: messages and instructions are the product talking to the teacher; buttons and inputs are the teacher replying. Read the copy aloud; if it sounds robotic, rewrite it until it sounds like a person.
+
+- Second person and active voice: `We'll send a reminder`, not `A reminder will be
+  sent` ([CNT-3](/standards/catalog/cnt-3), voice and person).
+- Replace a buried `to be` verb with a plain action verb: `is a requirement` becomes
+  `you must`.
+- Watch for actions buried in nouns — they drag a `to be` verb along with them:
+
+| Look for | For example | Use the verb |
+| --- | --- | --- |
+| -tion | recommendation | recommend |
+| -ment | assignment | assign |
+| -ance | maintenance | maintain, keep |
+| -ure | failure | fail |
+
+- Soften sensitive moments. For a disabled account, `We've disabled your account`
+  reads warmer than `Your account is disabled` — the product owns the action instead
+  of announcing a verdict.
+
+The conversational pass puts the warmth back — and lands on the error shape [CNT-1](/standards/catalog/cnt-1) asks for: what happened, then what to do next.
+
+Example:
+
+`That doesn't look like the right postal code. Please enter a valid postal code e.g. 310480.`
+
+## 5. Edit to be clear
+
+Clarity wins over everything. Clear copy sets expectations and builds trust. After one read, a teacher should know two things: what it means, and what the next step is.
+
+- One idea per sentence; simple present tense where it fits: `Application submitted`,
+  not `Application has been submitted`.
+- Avoid double negatives: `I want to receive reminders`, not `I do not want to opt
+  out of reminders`.
+- Unstack nouns — usually only one word is the true noun, and the rest can go back to
+  being verbs: `Were you employed continuously?`, not `Were you in continuous
+  employment?`.
+- Use short and simple words:
+
+| Instead of | Write | Instead of | Write |
+| --- | --- | --- | --- |
+| attempt | try | required | need |
+| inquire | ask | prior to | before |
+| initiate | begin | subsequent | next |
+| terminate | end | utilise | use |
+| obtain | get | purchase | buy |
+
+- Buttons name the action they take: "Save changes", not "Submit".
+- A quick exposure test: show someone the screen for five seconds, then ask what it
+  means and what to do next. If they can't answer, edit again.
+
+The clear pass spells out what a valid entry looks like, simply.
+
+Example:
+
+`That doesn't look like the right postal code. Please enter at least 6 digits and only numbers.`
+
+The copy is edited. The remaining passes are checks — run them before the text ships.
+
+## 6. Check consistency
+
+One term per thing, everywhere. Switching terms mid-product makes a teacher stop and wonder whether two words mean two things.
+
+- Internal consistency: the same action keeps the same name across the product —
+  `Edit`, never a mix of `Amend`, `Change`, and `Modify`.
+- External consistency: use the terms teachers already meet across the web instead of
+  inventing your own — a search field's placeholder says `Search`, not `Find`.
+
+[CNT-2](/standards/catalog/cnt-2) carries the naming rules; [Naming](/guidelines/naming) is the deep-dive.
+
+## 7. Check readability
+
+- Sentence case everywhere: capitalise the first word and proper nouns only.
+- Short sentences, one idea each ([CNT-3](/standards/catalog/cnt-3), sentence ceiling).
+
+[Grammar & mechanics](/guidelines/grammar-mechanics) carries the conventions: capitalisation, numbers, punctuation.
+
+## 8. Check legibility
+
+Legibility is visual, not verbal. Text size, contrast, and alignment belong to the typography and accessibility controls ([TYP-2](/standards/catalog/typ-2) size floors, [A11Y-1](/standards/catalog/a11y-1) contrast), not to this page. If the copy is hard to see, fix it there before rewording anything.
+
+## 9. Check accessibility
+
+Accessible copy works for teachers with motor, vision, or hearing impairments — and reads better for everyone else too.
+
+- Write chronologically, not spatially or visually. Screen readers parse top to
+  bottom, so avoid position words (`above`, `below`) and colour references
+  (`the blue button`).
+- Put important text before the control it informs: above buttons, beside field
+  labels. Text placed after a button is announced after it — too late to help the
+  decision.
+- Link text names its destination: `View the report`, never `click here` or
+  `read more` ([CNT-5](/standards/catalog/cnt-5),
+  [A11Y-7](/standards/catalog/a11y-7)).
+- Name the action, not the device: use `choose`, `select`, or `view` — never
+  `click`, `tap`, or `swipe` ([CNT-5](/standards/catalog/cnt-5)).
+- Give briefly shown surfaces (toasts, tooltips) enough time to be read before they
+  disappear.
+- Write informative, unique page titles; in a multi-step flow, include the current
+  step ([A11Y-9](/standards/catalog/a11y-9)).
+
+[Components & text patterns](/guidelines/text-patterns) carries the per-surface shapes: errors, empty states, loading, confirmations.
+
+## 10. Check grammar and spelling
+
+Editing for concision may cut articles, and that trade is fine — in microcopy, clarity and scannability outrank strict grammar. Everything that remains must still read cleanly, so proofread the final text. A spelling error breaks trust faster than any style slip. Singapore English spelling (British base): organise, colour, centre.
+
+## 11. Check voice and tone
+
+Our voice is warm, assuring, and respectful — Kind Utility in words. Tone adapts to context: errors stay calm, success stays brief, destructive actions stay sober. [Voice & tone](/guidelines/voice-tone) carries the voice attributes and the tone-by-context table.
+
+## Cut the AI-writing tells
+
+A final pass: [SLP-9](/standards/catalog/slp-9) carries the full list — marketing buzzwords, em-dash chains, filler, and redundant label/helper pairs. When copy sounds impressive but says little, it has already failed.

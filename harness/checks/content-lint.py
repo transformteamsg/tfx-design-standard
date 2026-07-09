@@ -2,14 +2,16 @@
 """
 Content lint — checks/content-lint.py
 Scans UI source and content files for the statically-resolvable subset of
-CNT-1, CNT-3, and the deterministic (lint) half of SLP-9 — the parts detectable
-from source text alone, without rendered layout or human judgement.
+CNT-1, CNT-3, CNT-5, CNT-6, and the deterministic (lint) half of SLP-9 — the
+parts detectable from source text alone, without rendered layout or human
+judgement.
 
-The SLP-9 word lists are NOT embedded here. They are read at runtime from
-standards/controls/slp-9.md (resolved relative to this file), so the lint and
-the catalog can never diverge — if the buzzword list grows, this check picks it
-up. If that file cannot be found or parsed, the check falls back to a small
-embedded copy and prints a NOTE saying so — never silently.
+The SLP-9 word lists, the CNT-5 device-verb list, and the CNT-6 opener/filler
+lists are NOT embedded here. They are read at runtime from
+standards/controls/slp-9.md, cnt-5.md, and cnt-6.md (resolved relative to this
+file), so the lint and the catalog can never diverge — if a list grows, this
+check picks it up. If a file cannot be found or parsed, the check falls back to
+a small embedded copy and prints a NOTE saying so — never silently.
 
 Detection rules (line-local only)
 ──────────────────────────────────
@@ -31,6 +33,15 @@ CNT-1           CNT-1     A user-facing string that is ONLY a raw error code
                 (L1)      (e.g. "ERR_SYNC_500", "0x80004005", an all-caps
                           token), or the literal "Something went wrong" with no
                           actionable next step on the same or next line.
+CNT-5           CNT-5     A device-bound action verb (click, tap, swipe, and
+                (L2)      inflections) inside a multi-word user-facing string or
+                          MDX prose line, read from cnt-5.md. Names the input
+                          device instead of the action.
+CNT-6           CNT-6     A low-informational-value word in a user-facing string
+                (L2)      or MDX prose line, read from cnt-6.md: a sentence-
+                          INITIAL empty opener ("There is", "There are", "It is",
+                          "This is") or a safe-subset filler word (just, really,
+                          very, please) at any position.
 
 What this script does NOT verify
 ─────────────────────────────────
@@ -53,6 +64,17 @@ What this script does NOT verify
 - CNT-1's "what happened → what it means → what to do next" structure — the
   evaluator judges the full anatomy; this check only catches the raw-code-only
   and bare-"Something went wrong" cases.
+- CNT-5's harder half — "press" and "see" (too common in innocent prose to lint
+  cleanly), ambiguous link text ("click here", "read more"), and confirming a hit
+  is a UI instruction rather than incidental prose ("press release", "tap water").
+  This check lints only the unambiguous device verbs; the evaluator judges the rest.
+- CNT-6's harder half — "such", "that", and droppable articles/conjunctions
+  ("a", "the", "and") are far too context-dependent to lint (every "the" would be
+  noise), and the clarity exception on every hit ("only if it does not reduce
+  clarity") is judgement. "In order to" is deliberately NOT in the CNT-6 lint
+  lists — SLP-9's filler-phrase list already flags it, and one token never fires
+  two controls. This check lints only sentence-initial openers and the safe
+  filler subset; the evaluator judges the rest.
 
 Output
 ──────
@@ -79,6 +101,39 @@ SLP9_PATH = os.path.join(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
     "standards", "controls", "slp-9.md",
 )
+
+# ── CNT-5 device-verb-list source ──────────────────────────────────────────────
+# Resolved relative to this file: ../standards/controls/cnt-5.md from checks/.
+CNT5_PATH = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+    "standards", "controls", "cnt-5.md",
+)
+
+# Embedded fallback device-verb list — used only if cnt-5.md can't be read/parsed.
+# A NOTE is printed whenever this fallback is used. cnt-5.md is the single source
+# of truth; this is the escape hatch for product repos without the full controls dir.
+# Scoped to the unambiguous verbs (click/tap/swipe); "press" and "see" are left to
+# the evaluator half because they collide with innocent prose.
+FALLBACK_DEVICE_VERBS = [
+    "click", "clicks", "clicked", "clicking",
+    "tap", "taps", "tapped", "tapping",
+    "swipe", "swipes", "swiped", "swiping",
+]
+
+# ── CNT-6 opener/filler-list source ────────────────────────────────────────────
+# Resolved relative to this file: ../standards/controls/cnt-6.md from checks/.
+CNT6_PATH = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+    "standards", "controls", "cnt-6.md",
+)
+
+# Embedded fallback CNT-6 lists — used only if cnt-6.md can't be read/parsed.
+# cnt-6.md is the single source of truth; a NOTE is printed on fallback. Openers
+# are matched sentence-initially only; filler is word-boundaried at any position.
+# "in order to" is deliberately absent (SLP-9's filler-phrase list owns it);
+# "such", "that", and articles/conjunctions are evaluator-only.
+FALLBACK_CNT6_OPENERS = ["there is", "there are", "it is", "this is"]
+FALLBACK_CNT6_FILLER = ["just", "really", "very", "please"]
 
 # ── Embedded fallback word lists (used only if slp-9.md can't be read/parsed) ──
 # A NOTE is printed whenever this fallback is used. Kept in sync with slp-9.md
@@ -244,6 +299,76 @@ def load_slp9_lists(path=SLP9_PATH):
     )
 
 
+def load_cnt5_verbs(path=CNT5_PATH):
+    """
+    Parse the CNT-5 device-verb list from cnt-5.md's <!-- tfx-sync:cnt5-verbs -->
+    span. Returns (verbs_list, used_fallback, note) — mirrors load_slp9_lists so
+    the lint and the catalog can never diverge. Falls back to the embedded copy
+    (with a NOTE) if the file is missing, the marker is absent, or the list is empty.
+    """
+    try:
+        with open(path, encoding="utf-8") as fh:
+            text = fh.read()
+    except OSError:
+        return (
+            FALLBACK_DEVICE_VERBS, True,
+            f"NOTE content-lint: could not read {path}; using embedded "
+            f"fallback CNT-5 device-verb list",
+        )
+
+    marker = re.search(
+        r"<!--\s*tfx-sync:cnt5-verbs\b[^>]*-->(.*?)<!--\s*/tfx-sync:cnt5-verbs\s*-->",
+        text, flags=re.DOTALL,
+    )
+    verbs = _split_list_items(marker.group(1)) if marker else []
+    if not verbs:
+        return (
+            FALLBACK_DEVICE_VERBS, True,
+            f"NOTE content-lint: parsed {path} but the cnt5-verbs list was empty; "
+            f"using embedded fallback",
+        )
+    return (verbs, False, None)
+
+
+def load_cnt6_lists(path=CNT6_PATH):
+    """
+    Parse the CNT-6 empty-opener and filler-word lists from cnt-6.md's
+    <!-- tfx-sync:cnt6-openers --> and <!-- tfx-sync:cnt6-filler --> spans.
+    Returns (lists_dict, used_fallback, note) with keys "openers" and "filler" —
+    mirrors load_cnt5_verbs so the lint and the catalog can never diverge.
+    """
+    fallback = {
+        "openers": FALLBACK_CNT6_OPENERS,
+        "filler": FALLBACK_CNT6_FILLER,
+    }
+    try:
+        with open(path, encoding="utf-8") as fh:
+            text = fh.read()
+    except OSError:
+        return (
+            fallback, True,
+            f"NOTE content-lint: could not read {path}; using embedded "
+            f"fallback CNT-6 lists",
+        )
+
+    def _span(name):
+        m = re.search(
+            r"<!--\s*tfx-sync:" + name + r"\b[^>]*-->(.*?)<!--\s*/tfx-sync:" + name + r"\s*-->",
+            text, flags=re.DOTALL,
+        )
+        return _split_list_items(m.group(1)) if m else []
+
+    openers = _span("cnt6-openers")
+    filler = _span("cnt6-filler")
+    if not (openers and filler):
+        return (
+            fallback, True,
+            f"NOTE content-lint: parsed {path} but a CNT-6 list was empty "
+            f"(openers={len(openers)}, filler={len(filler)}); using embedded fallback",
+        )
+    return ({"openers": openers, "filler": filler}, False, None)
+
+
 def _build_word_regex(words):
     """
     Build a case-insensitive word-boundaried alternation regex for a list of
@@ -255,6 +380,23 @@ def _build_word_regex(words):
         return None
     # \b on each side; for hyphenated tokens \b still anchors at the outer edges.
     return re.compile(r"(?<![\w-])(?:" + "|".join(parts) + r")(?![\w-])", re.IGNORECASE)
+
+
+def _build_cnt6_res(cnt6_lists):
+    """
+    Build the CNT-6 regex pair from the loaded lists: `openers` anchored to the
+    start of a sentence (the caller splits sentences), `filler` word-boundaried
+    at any position.
+    """
+    opener_parts = [
+        r"\s+".join(re.escape(tok) for tok in p.split())
+        for p in sorted(cnt6_lists["openers"], key=len, reverse=True) if p
+    ]
+    openers_re = (
+        re.compile(r"^(?:" + "|".join(opener_parts) + r")\b", re.IGNORECASE)
+        if opener_parts else None
+    )
+    return {"openers": openers_re, "filler": _build_word_regex(cnt6_lists["filler"])}
 
 
 def _build_phrase_regex(phrases):
@@ -293,9 +435,12 @@ NEXT_STEP_VERB_RE = re.compile(
 
 
 def _split_sentences(text):
-    """Crude sentence split on . ! ? followed by space/end. Good enough for a
-    word-count floor; over-splitting only makes the count more conservative."""
-    parts = re.split(r"(?<=[.!?])\s+", text.strip())
+    """Crude sentence split on . ! ? followed by space/end, and on the mid-dot
+    (·) fragment separator — CNT-3 excludes labels and fragments, and a
+    ·-separated Do/Don't list is fragments, not one long sentence. Good enough
+    for a word-count floor; over-splitting only makes the count more
+    conservative."""
+    parts = re.split(r"(?<=[.!?])\s+|\s*·\s*", text.strip())
     return [p for p in parts if p.strip()]
 
 
@@ -308,12 +453,13 @@ def _is_interpolated(s):
     return "${" in s or "{" in s or "}" in s
 
 
-def check_file(filepath, lists=None, phrase_res=None, word_res=None):
+def check_file(filepath, lists=None, phrase_res=None, word_res=None, device_re=None,
+               cnt6_res=None):
     """
     Scan a single file and return a list of error / note strings.
-    `lists`/`phrase_res`/`word_res` are precomputed by scan_paths; if omitted
-    they are built here (so check_file works standalone in tests).
-    Each ERROR string: ERROR <file>:<line> [CTL-ID] <found> — suggest: <...>
+    `lists`/`phrase_res`/`word_res`/`device_re`/`cnt6_res` are precomputed by
+    scan_paths; if omitted they are built here (so check_file works standalone in
+    tests). Each ERROR string: ERROR <file>:<line> [CTL-ID] <found> — suggest: <...>
     """
     errors = []
     ext = os.path.splitext(filepath)[1].lower()
@@ -332,6 +478,12 @@ def check_file(filepath, lists=None, phrase_res=None, word_res=None):
             "filler": _build_phrase_regex(lists["filler"]),
             "chatbot": _build_phrase_regex(lists["chatbot"]),
         }
+    if device_re is None:
+        device_verbs, _dv_fallback, _dv_note = load_cnt5_verbs()
+        device_re = _build_word_regex(device_verbs)
+    if cnt6_res is None:
+        cnt6_lists, _c6_fallback, _c6_note = load_cnt6_lists()
+        cnt6_res = _build_cnt6_res(cnt6_lists)
 
     try:
         with open(filepath, encoding="utf-8", errors="replace") as fh:
@@ -365,23 +517,29 @@ def check_file(filepath, lists=None, phrase_res=None, word_res=None):
         stripped = scan_line.strip()
 
         # ── SLP-9 lint half (line-local, on the comment-stripped line) ────────
+        # In Markdown, inline-code spans are quoted example material (a guideline
+        # listing `In order to` as a banned phrase is teaching, not using it) —
+        # SLP-9's own Do-not-flag calibration exempts quoted examples, so the
+        # word/phrase scans skip code spans on md/mdx. Code files scan in full:
+        # a buzzword in a shipped string literal is still a tell.
+        slp_scan = re.sub(r"`[^`]*`", "", scan_line) if is_md else scan_line
         if word_res["buzzwords"]:
-            m = word_res["buzzwords"].search(scan_line)
+            m = word_res["buzzwords"].search(slp_scan)
             if m:
                 emit("SLP-9", f'buzzword "{m.group(0)}"',
                      "say what the thing does, in plain language")
         if word_res["ai_vocab"]:
-            m = word_res["ai_vocab"].search(scan_line)
+            m = word_res["ai_vocab"].search(slp_scan)
             if m:
                 emit("SLP-9", f'AI-vocabulary word "{m.group(0)}"',
                      "use a plainer word")
         if phrase_res["filler"]:
-            m = phrase_res["filler"].search(scan_line)
+            m = phrase_res["filler"].search(slp_scan)
             if m:
                 emit("SLP-9", f'filler phrase "{m.group(0).strip()}"',
                      "cut it — say the thing directly")
         if phrase_res["chatbot"]:
-            m = phrase_res["chatbot"].search(scan_line)
+            m = phrase_res["chatbot"].search(slp_scan)
             if m:
                 emit("SLP-9", f'chatbot artifact "{m.group(0).strip()}"',
                      "remove conversational filler from UI copy")
@@ -410,6 +568,8 @@ def check_file(filepath, lists=None, phrase_res=None, word_res=None):
                 prose = re.sub(r"`[^`]*`", "", scan_line)  # drop inline code
                 _check_cnt3_text(prose, emit)
                 _check_cnt1_text(prose.strip(), line, lineno, lines, emit)
+                _check_cnt5_text(prose, emit, device_re)
+                _check_cnt6_text(prose, emit, cnt6_res)
         elif is_code:
             # Code: only inspect quoted string literals that look user-facing.
             for sm in STRING_LITERAL_RE.finditer(scan_line):
@@ -423,6 +583,8 @@ def check_file(filepath, lists=None, phrase_res=None, word_res=None):
                 if _looks_user_facing(literal):
                     _check_cnt3_text(literal, emit)
                     _check_cnt1_text(literal, line, lineno, lines, emit)
+                    _check_cnt5_text(literal, emit, device_re)
+                    _check_cnt6_text(literal, emit, cnt6_res)
 
     return errors
 
@@ -462,6 +624,51 @@ def _check_cnt3_text(text, emit):
             emit("CNT-3", f"sentence of {n} words (> 25)",
                  "split into shorter sentences")
             return
+
+
+def _check_cnt5_text(text, emit, device_re):
+    """
+    CNT-5: flag a device-bound action verb (click/tap/swipe) inside user-facing
+    copy. Scoped to multi-word strings so bare event names / identifiers ("click"
+    as an addEventListener arg, an `onClick` prop) are not flagged — those are code,
+    not copy. "press" and "see" are deliberately left to the evaluator (they collide
+    with innocent prose); the lint covers only the unambiguous verbs.
+    """
+    if device_re is None:
+        return
+    if len(text.split()) < 2:
+        return
+    m = device_re.search(text)
+    if m:
+        emit("CNT-5", f'device-bound verb "{m.group(0)}"',
+             'name the action, not the device — use "choose", "select", or "view"')
+
+
+def _check_cnt6_text(text, emit, cnt6_res):
+    """
+    CNT-6: flag low-informational-value words in user-facing copy — an empty
+    opener at the START of a sentence ("There is", "There are", "It is",
+    "This is"), or a safe-subset filler word (just, really, very, please) at any
+    position. Scoped to multi-word strings, like CNT-5, so identifiers are not
+    flagged. The harder calls (such/that/articles, the clarity exception) are the
+    evaluator's; "in order to" is SLP-9's.
+    """
+    if cnt6_res is None:
+        return
+    if len(text.split()) < 2:
+        return
+    if cnt6_res["openers"]:
+        for sentence in _split_sentences(text):
+            m = cnt6_res["openers"].match(sentence.strip())
+            if m:
+                emit("CNT-6", f'empty opener "{m.group(0)}"',
+                     "start with the point of the sentence, unless clarity suffers")
+                break
+    if cnt6_res["filler"]:
+        m = cnt6_res["filler"].search(text)
+        if m:
+            emit("CNT-6", f'filler word "{m.group(0)}"',
+                 "cut it if the sentence reads the same without it")
 
 
 def _check_cnt1_text(text, raw_line, lineno, all_lines, emit):
@@ -539,6 +746,12 @@ def scan_paths(paths):
     lists, used_fallback, note = load_slp9_lists()
     if used_fallback and note:
         print(note)
+    device_verbs, dv_fallback, dv_note = load_cnt5_verbs()
+    if dv_fallback and dv_note:
+        print(dv_note)
+    cnt6_lists, c6_fallback, c6_note = load_cnt6_lists()
+    if c6_fallback and c6_note:
+        print(c6_note)
     word_res = {
         "buzzwords": _build_word_regex(lists["buzzwords"]),
         "ai_vocab": _build_word_regex(lists["ai_vocab"]),
@@ -547,11 +760,14 @@ def scan_paths(paths):
         "filler": _build_phrase_regex(lists["filler"]),
         "chatbot": _build_phrase_regex(lists["chatbot"]),
     }
+    device_re = _build_word_regex(device_verbs)
+    cnt6_res = _build_cnt6_res(cnt6_lists)
 
     all_errors = []
     for p in paths:
         if os.path.isfile(p):
-            all_errors.extend(check_file(p, lists, phrase_res, word_res))
+            all_errors.extend(
+                check_file(p, lists, phrase_res, word_res, device_re, cnt6_res))
         elif os.path.isdir(p):
             for root, dirs, files in os.walk(p):
                 dirs[:] = [d for d in dirs if not d.startswith(".")]
@@ -560,7 +776,8 @@ def scan_paths(paths):
                     if ext in TARGET_EXTENSIONS:
                         all_errors.extend(
                             check_file(os.path.join(root, fname),
-                                       lists, phrase_res, word_res)
+                                       lists, phrase_res, word_res, device_re,
+                                       cnt6_res)
                         )
         else:
             print(f"ERROR content-lint: path not found: {p}")
@@ -587,6 +804,10 @@ def run_self_test():
         "filler": _build_phrase_regex(lists["filler"]),
         "chatbot": _build_phrase_regex(lists["chatbot"]),
     }
+    device_verbs, _dv_fallback, _dv_note = load_cnt5_verbs()
+    device_re = _build_word_regex(device_verbs)
+    cnt6_lists, _c6_fallback, _c6_note = load_cnt6_lists()
+    cnt6_res = _build_cnt6_res(cnt6_lists)
 
     failures = []
     case_count = 0
@@ -595,7 +816,8 @@ def run_self_test():
         with tempfile.NamedTemporaryFile(suffix=ext, mode="w", delete=False, encoding="utf-8") as tf:
             tf.write(content)
             tf.flush()
-            errs = check_file(tf.name, lists, phrase_res, word_res)
+            errs = check_file(tf.name, lists, phrase_res, word_res, device_re,
+                              cnt6_res)
         os.unlink(tf.name)
         return errs
 
@@ -670,6 +892,16 @@ def run_self_test():
         "| **4 — Orchestrate** | Hand over outcomes | — |",
         ".mdx",
     )
+    assert_clean(
+        "SLP-9: banned phrase quoted in md inline code is teaching, not usage",
+        "Cut filler phrases like `In order to` and buzzwords like `streamline`.",
+        ".mdx",
+    )
+    assert_violations(
+        "SLP-9: buzzword in a code string literal still flags",
+        'const tagline = "Streamline your marking";',
+        ".tsx", ["SLP-9"],
+    )
 
     # ── CNT-3 cases ───────────────────────────────────────────────────────────
     long_sentence = ("This sentence has way more than twenty five words in it "
@@ -683,6 +915,13 @@ def run_self_test():
     )
     assert_clean("CNT-3: 10-word sentence (mdx)",
                  "This short sentence stays well under the documented limit.", ".mdx")
+    assert_clean(
+        "CNT-3: mid-dot-separated fragments are not one long sentence",
+        "**Don't:** corporate flat-pack style · cartoonish proportions · sharp "
+        "aggressive angles · neon or harsh colours · hand-coded SVG mascots as "
+        "fallbacks (ship no illustration rather than a sketchy one).",
+        ".mdx",
+    )
     assert_clean(
         "CNT-3: SVG path-data string is coordinate data, not prose",
         '<path d="M16.17 7.68 C15.71 9.19 15.41 10.50 14.52 13.12 M14.44 13.17 '
@@ -712,6 +951,70 @@ def run_self_test():
         ".tsx",
     )
 
+    # ── CNT-5 cases ─────────────────────────────────────────────────────────────
+    assert_violations(
+        "CNT-5: 'click here' in MDX prose",
+        "Click here to view your class list.",
+        ".mdx", ["CNT-5"],
+    )
+    assert_violations(
+        "CNT-5: device verb in a string literal",
+        'const cta = "Tap to continue";',
+        ".tsx", ["CNT-5"],
+    )
+    assert_violations(
+        "CNT-5: inflected device verb (swiping) in prose",
+        "Keep swiping to see the rest of the term.",
+        ".mdx", ["CNT-5"],
+    )
+    assert_clean(
+        "CNT-5: device-agnostic verb is fine",
+        "Choose a class to begin.",
+        ".mdx",
+    )
+    assert_clean(
+        "CNT-5: bare event-name identifier is not copy",
+        'element.addEventListener("click", handler);',
+        ".tsx",
+    )
+    assert_clean(
+        "CNT-5: onClick prop is code, not copy",
+        "<button onClick={submit}>Save marks</button>",
+        ".tsx",
+    )
+
+    # ── CNT-6 cases ─────────────────────────────────────────────────────────────
+    assert_violations(
+        "CNT-6: sentence-initial empty opener",
+        "There is a problem with your form.",
+        ".mdx", ["CNT-6"],
+    )
+    assert_violations(
+        "CNT-6: filler words in prose",
+        "Enter your postal code to really get started.",
+        ".mdx", ["CNT-6"],
+    )
+    assert_violations(
+        "CNT-6: filler word in a string literal",
+        'const msg = "Just enter your postal code to finish";',
+        ".tsx", ["CNT-6"],
+    )
+    assert_clean(
+        "CNT-6: clean copy",
+        "Enter your postal code to finish.",
+        ".mdx",
+    )
+    assert_clean(
+        "CNT-6: opener words mid-sentence are not flagged",
+        "We saved the draft where it is safe.",
+        ".mdx",
+    )
+    assert_clean(
+        "CNT-6: opener/filler examples in inline code are not flagged",
+        "- Empty openers (e.g. `There is`) and filler (e.g. `just`, `really`)",
+        ".mdx",
+    )
+
     # ── Word-list loader case ─────────────────────────────────────────────────
     # Assert the loader picked up a known buzzword. If using the fallback the
     # NOTE path is exercised; either way "supercharge" must be present.
@@ -721,6 +1024,31 @@ def run_self_test():
         failures.append(
             f"FAIL loader: expected 'supercharge' in buzzword list — "
             f"got {sorted(all_buzz)} (used_fallback={used_fallback})"
+        )
+
+    # CNT-5 loader: the device-verb list must carry the core verbs (from cnt-5.md
+    # or the embedded fallback).
+    case_count += 1
+    all_verbs = set(device_verbs)
+    if not {"click", "tap", "swipe"} <= all_verbs:
+        failures.append(
+            f"FAIL loader: expected click/tap/swipe in device-verb list — "
+            f"got {sorted(all_verbs)}"
+        )
+
+    # CNT-6 loader: the opener and filler lists must carry the core entries, and
+    # "in order to" must NOT be present (SLP-9 owns it — dedup by design).
+    case_count += 1
+    if "there is" not in cnt6_lists["openers"] or "just" not in cnt6_lists["filler"]:
+        failures.append(
+            f"FAIL loader: expected 'there is'/'just' in CNT-6 lists — "
+            f"got openers={cnt6_lists['openers']}, filler={cnt6_lists['filler']}"
+        )
+    case_count += 1
+    if "in order to" in cnt6_lists["openers"] + cnt6_lists["filler"]:
+        failures.append(
+            "FAIL loader: 'in order to' must stay out of CNT-6 lint lists "
+            "(SLP-9's filler-phrase list owns it)"
         )
 
     # ── Report ─────────────────────────────────────────────────────────────────

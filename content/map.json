@@ -11,6 +11,9 @@
     "label": "Guidelines",
     "slugs": [
       "voice-tone",
+      "grammar-mechanics",
+      "ui-text",
+      "text-patterns",
       "naming",
       "interaction",
       "web-interface",

@@ -227,25 +227,29 @@ This closes the loop `token-audit.py` leaves open ("a human closes the decision-
 
 ## Content lint (built — static subset)
 
-`python3 checks/content-lint.py <path>...` — scans `.mdx`, `.md`, `.tsx`, `.jsx`, `.ts`, `.js`, `.vue`, `.svelte`, `.css`, and `.html` files for the statically-resolvable subset of CNT-1, CNT-3, and the deterministic (lint) half of SLP-9. Accepts files or directories (recursive). Exit 0 silent on pass; exit 1 with `ERROR` lines on failure.
+`python3 checks/content-lint.py <path>...` — scans `.mdx`, `.md`, `.tsx`, `.jsx`, `.ts`, `.js`, `.vue`, `.svelte`, `.css`, and `.html` files for the statically-resolvable subset of CNT-1, CNT-3, CNT-5, CNT-6, and the deterministic (lint) half of SLP-9. Accepts files or directories (recursive). Exit 0 silent on pass; exit 1 with `ERROR` lines on failure.
 
-**Single-source word lists:** the SLP-9 buzzword, AI-vocabulary, filler, and chatbot-artifact lists are **read at runtime** from `standards/controls/slp-9.md` (resolved relative to the check, from the `<!-- tfx-sync:slp9-buzzwords -->` marked span and the named bullets in "How to verify") — never embedded as a third copy, so the lint and the catalog cannot diverge. If `slp-9.md` cannot be found or parsed, the check falls back to a small embedded copy and prints a `NOTE` saying so — never silently.
+**Single-source word lists:** the SLP-9 buzzword, AI-vocabulary, filler, and chatbot-artifact lists are **read at runtime** from `standards/controls/slp-9.md` (resolved relative to the check, from the `<!-- tfx-sync:slp9-buzzwords -->` marked span and the named bullets in "How to verify") — never embedded as a third copy, so the lint and the catalog cannot diverge. The CNT-5 device-verb list is read the same way from `cnt-5.md` (`<!-- tfx-sync:cnt5-verbs -->`), and the CNT-6 opener/filler lists from `cnt-6.md` (`<!-- tfx-sync:cnt6-openers -->`, `<!-- tfx-sync:cnt6-filler -->`). If a file cannot be found or parsed, the check falls back to a small embedded copy and prints a `NOTE` saying so — never silently.
 
 **Rules:**
 
 - **SLP-9 (L2, lint half):** a word-boundaried, case-insensitive hit on the buzzword or AI-vocabulary list; a hit on the filler or chatbot-artifact phrase lists; or two or more em dashes inside one sentence. Markdown table rows (lines starting `|`) are skipped for the em-dash rule — those dashes are structural per SLP-9's "Do not flag" list.
 - **CNT-3 (L2):** a user-facing string literal (in code) or MDX/MD prose line whose longest sentence exceeds 25 words.
 - **CNT-1 (L1):** a user-facing string that is *only* a raw error code (`ERR_SYNC_500`, `0x…`, an all-caps token), or the bare literal "Something went wrong" with no actionable next step on the same or next line. Conservative — when unsure, does not flag.
+- **CNT-5 (L2):** a device-bound action verb (click/tap/swipe and inflections) inside a multi-word user-facing string or MDX prose line. Bare event names and identifiers (`onClick`, `addEventListener("click", …)`) are not copy and are not flagged.
+- **CNT-6 (L2):** a sentence-*initial* empty opener ("There is", "There are", "It is", "This is") or a safe-subset filler word (just, really, very, please) in a multi-word user-facing string or MDX prose line. "In order to" is deliberately NOT in the CNT-6 lists — SLP-9's filler-phrase rule owns it, so one token never fires two controls.
 
 **Static-subset caveat — what this script does NOT verify:**
 
 - Non-literal / interpolated strings (`{var}`, template `${…}`, concatenation) — out of static reach; not flagged and not passed silently; the manual / evaluator pass covers them.
 - Whether a string is truly user-facing vs. an internal label, key, className, or path — conservative heuristics; coordinate / SVG-path data (mostly numeric tokens) is excluded.
-- CNT-3's "leads with its purpose" *semantic* half — judgment (evaluator).
+- CNT-7 (descriptive copy leads with its purpose) — judgment (evaluator); split from CNT-3.
 - SLP-9's structural-tell *evaluator* half — negative parallelism, forced triads, copula avoidance, significance inflation, redundant label/helper pairs, em-dash clustering across a paragraph — all judgment (evaluator).
 - CNT-1's full "what happened → what it means → what to do next" anatomy — judgment (evaluator); the script only catches the raw-code-only and bare-"Something went wrong" cases.
+- CNT-5's harder half — "press" and "see", ambiguous link text ("click here", "read more"), and confirming a hit is a UI instruction rather than incidental prose — judgment (evaluator).
+- CNT-6's harder half — "such", "that", droppable articles/conjunctions ("a", "the", "and"), and the clarity exception on every hit ("only if it does not reduce clarity") — judgment (evaluator).
 
-**Self-test:** `python3 checks/content-lint.py --self-test` → `SELF-TEST OK (19 cases)`.
+**Self-test:** `python3 checks/content-lint.py --self-test` → `SELF-TEST OK (34 cases)`.
 
 ## Type scan (built — static subset)
 
@@ -300,7 +304,7 @@ Planned for V1 (remaining):
 | ~~`type-scan`~~ | ~~TYP-1..4~~ | ✅ built (static subset) — `type-scan` covers TYP-1 (font families), TYP-2 (size floor + unitless line-height), TYP-3 (on-scale, scale sourced from the catalog), TYP-4 (no all-caps, acronyms exempt); font *weights*, the label-vs-body floor decision, and px/% line-heights still need rendered context |
 | `destructive` | CMP-2 (deterministic half) | Enumerate destructive actions; assert consequence surface + undo/confirm exists |
 | `async-states` | CMP-3 (deterministic half) | Enumerate async actions; assert loading/success/error states exist and are reachable |
-| ~~`content-lint`~~ | ~~CNT-1, CNT-3, SLP-9 (deterministic half)~~ | ✅ built (static subset) — `content-lint` covers CNT-1 (raw codes), CNT-3 (sentence length), and the SLP-9 lint lists (read live from `standards/controls/slp-9.md`) + em-dash chains; the SLP-9 structural-tell evaluator half and the CNT-3 lead-with-purpose semantic half stay judgment |
+| ~~`content-lint`~~ | ~~CNT-1, CNT-3, CNT-5, CNT-6, SLP-9 (deterministic half)~~ | ✅ built (static subset) — `content-lint` covers CNT-1 (raw codes), CNT-3 (sentence length), CNT-5 (device verbs, from `cnt-5.md`), CNT-6 (sentence-initial empty openers + safe filler subset, from `cnt-6.md`), and the SLP-9 lint lists (read live from `standards/controls/slp-9.md`) + em-dash chains; the SLP-9 structural-tell evaluator half, CNT-7 (lead-with-purpose, split from CNT-3), and the CNT-5/CNT-6 judgment halves stay evaluator |
 | `motion` | MOT-1, SLP-8 | Animation durations within 100–300ms, standard easing, none decorative on critical paths; no bounce/elastic/overshoot easing |
 | `identity` | IDN-1 | Logo/lockup files resolve to the approved asset library; no inline redraws |
 | `slop-scan` | SLP-1..4 | Stylesheet/DOM scan: purple-violet gradient palettes, cyan-on-dark theming, glow accents, gradient text, thick side-tab borders on rounded cards, nested cards |
