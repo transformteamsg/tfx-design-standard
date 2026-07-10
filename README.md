@@ -1,4 +1,4 @@
-# TFX Design Standard
+# DXD Design Standard
 
 The design standard website for **TransformX** (Teacher & School portfolio, GovTech Singapore) — for human builders **and** AI agents.
 
@@ -9,8 +9,8 @@ The design standard website for **TransformX** (Teacher & School portfolio, GovT
 ## Install the design harness (Claude Code plugin)
 
 The harness installs as a [Claude Code](https://code.claude.com/docs) plugin: four
-skills (`tfx:design` the loop, `tfx:standards` catalog mechanics, `tfx:content`
-voice & tone, and `tfx:onboard` a guided tour), the `tfx:evaluator`
+skills (`dxd:design` the loop, `dxd:standards` catalog mechanics, `dxd:content`
+voice & tone, and `dxd:onboard` a guided tour), the `dxd:evaluator`
 agent (which carries its own review procedure), and the control catalog. It ships
 its own catalog, so it works in any repo you open, not only this one.
 
@@ -19,15 +19,18 @@ its own catalog, so it works in any repo you open, not only this one.
 /plugin marketplace add transformteamsg/tfx-design-standard
 
 # 2. install the harness
-/plugin install tfx@tfx
+/plugin install dxd@dxd
 
 # 3. later, pull new controls and skills
-/plugin update tfx@tfx
+/plugin update dxd@dxd
 ```
 
-Confirm it loaded with `/plugin` (look for `tfx`, enabled). New to it?
-Run `/tfx:onboard` (or just say "onboard me") for a guided tour — then ask Claude
-to design or change a page and the `tfx:design` loop takes over, enforcing the catalog
+(The GitHub repo has not yet been renamed to `dxd-design-standard` — see
+[harness/docs/MIGRATION-DXD.md](harness/docs/MIGRATION-DXD.md).)
+
+Confirm it loaded with `/plugin` (look for `dxd`, enabled). New to it?
+Run `/dxd:onboard` (or just say "onboard me") for a guided tour — then ask Claude
+to design or change a page and the `dxd:design` loop takes over, enforcing the catalog
 throughout. Rolling it out across a product team? Follow the
 [team onboarding guide](harness/docs/ONBOARDING.md).
 
@@ -69,4 +72,4 @@ pnpm dev
 
 ## Governance
 
-This site renders the TFX Design Standard v0.1 working draft. ⚑ Proposed content is an opinionated position for the team to react to — change it by PR. The catalog only grows from observed failures (the ratchet), never speculation.
+This site renders the DXD Design Standard v0.1 working draft. ⚑ Proposed content is an opinionated position for the team to react to — change it by PR. The catalog only grows from observed failures (the ratchet), never speculation.

@@ -26,7 +26,7 @@ export default function Landing() {
   const why = (doc.data.why ?? []) as WhyItem[];
   const team = (doc.data.team ?? []) as TeamMember[];
   const readers = (doc.data.readers ?? []) as Reader[];
-  const cta = (doc.data.cta as string) ?? "See the TFX Design Standard";
+  const cta = (doc.data.cta as string) ?? "See the DXD Design Standard";
 
   return (
     <div className="mx-auto max-w-[880px]">

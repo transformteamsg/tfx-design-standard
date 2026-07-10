@@ -7,7 +7,7 @@ import { TopBar } from "@/components/topbar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
 export const metadata: Metadata = {
-  title: { default: "TFX Design Standard", template: "%s — TFX Design Standard" },
+  title: { default: "DXD Design Standard", template: "%s — DXD Design Standard" },
   description:
     "How TransformX designs the Teacher & School portfolio: principles, checkable standards, guidelines, foundations, and the AI design harness. For human builders and AI agents.",
 };

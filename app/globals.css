@@ -5,7 +5,7 @@
    OS colour-scheme preference — this site is light-only (no .dark layer). */
 @custom-variant dark (&:is(.dark *));
 
-/* ── TFX Design Standard — neutral shadcn-style tokens, visual direction TBD ── */
+/* ── DXD Design Standard — neutral shadcn-style tokens, visual direction TBD ── */
 :root {
   --background: #fafafa;
   --surface: #ffffff;

@@ -6,11 +6,11 @@ product
 
 ## Users
 
-Two audiences. Humans: TFX builders, designers, and engineers across the Teacher & School portfolio (Teacher Workspace, CaseSync, Glow) who consult the standard while shipping; they arrive mid-task and want an answer, not a brochure. Agents: AI coding tools that read /llms.txt and the YAML control catalog to build to the bar without a designer present.
+Two audiences. Humans: DXD builders, designers, and engineers across the Teacher & School portfolio (Teacher Workspace, CaseSync, Glow) who consult the standard while shipping; they arrive mid-task and want an answer, not a brochure. Agents: AI coding tools that read /llms.txt and the YAML control catalog to build to the bar without a designer present.
 
 ## Product Purpose
 
-The TFX Design Standard site is the single source of truth for how TransformX designs for Singapore's teachers. It publishes principles that settle arguments, machine-checkable controls (the catalog), guidelines, foundations, and a harness. Success: any builder, human or agent, ships UI that passes the catalog on the first review.
+The DXD Design Standard site is the single source of truth for how TransformX designs for Singapore's teachers. It publishes principles that settle arguments, machine-checkable controls (the catalog), guidelines, foundations, and a harness. Success: any builder, human or agent, ships UI that passes the catalog on the first review.
 
 ## Brand Personality
 
