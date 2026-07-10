@@ -2,16 +2,16 @@
 """
 Content lint — checks/content-lint.py
 Scans UI source and content files for the statically-resolvable subset of
-CNT-1, CNT-3, CNT-5, CNT-6, and the deterministic (lint) half of SLP-9 — the
-parts detectable from source text alone, without rendered layout or human
+CNT-1, CNT-3, CNT-5, CNT-6, CNT-13, and the deterministic (lint) half of SLP-9 —
+the parts detectable from source text alone, without rendered layout or human
 judgement.
 
-The SLP-9 word lists, the CNT-5 device-verb list, and the CNT-6 opener/filler
-lists are NOT embedded here. They are read at runtime from
-standards/controls/slp-9.md, cnt-5.md, and cnt-6.md (resolved relative to this
-file), so the lint and the catalog can never diverge — if a list grows, this
-check picks it up. If a file cannot be found or parsed, the check falls back to
-a small embedded copy and prints a NOTE saying so — never silently.
+The SLP-9 word lists, the CNT-5 device-verb list, the CNT-6 opener/filler lists,
+and the CNT-13 spelling maps are NOT embedded here. They are read at runtime from
+standards/controls/slp-9.md, cnt-5.md, cnt-6.md, and cnt-13.md (resolved relative
+to this file), so the lint and the catalog can never diverge — if a list grows,
+this check picks it up. If a file cannot be found or parsed, the check falls back
+to a small embedded copy and prints a NOTE saying so — never silently.
 
 Detection rules (line-local only)
 ──────────────────────────────────
@@ -42,6 +42,10 @@ CNT-6           CNT-6     A low-informational-value word in a user-facing string
                           INITIAL empty opener ("There is", "There are", "It is",
                           "This is") or a safe-subset filler word (just, really,
                           very, please) at any position.
+CNT-13          CNT-13    A US spelling or common misspelling in a multi-word
+                (L2)      user-facing string or MDX prose line, read from
+                          cnt-13.md (color→colour, organize→organise,
+                          recieve→receive). Suggests the British / correct form.
 
 What this script does NOT verify
 ─────────────────────────────────
@@ -134,6 +138,25 @@ CNT6_PATH = os.path.join(
 # "such", "that", and articles/conjunctions are evaluator-only.
 FALLBACK_CNT6_OPENERS = ["there is", "there are", "it is", "this is"]
 FALLBACK_CNT6_FILLER = ["just", "really", "very", "please"]
+
+# ── CNT-13 spelling/misspelling-map source ─────────────────────────────────────
+# Resolved relative to this file: ../standards/controls/cnt-13.md from checks/.
+CNT13_PATH = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+    "standards", "controls", "cnt-13.md",
+)
+
+# Embedded fallback CNT-13 maps — used only if cnt-13.md can't be read/parsed.
+# cnt-13.md is the single source of truth; a NOTE is printed on fallback. Each map
+# is {wrong_spelling: correct_spelling}; hits are word-boundaried, any position.
+FALLBACK_CNT13_USUK = {
+    "color": "colour", "colors": "colours", "organize": "organise",
+    "center": "centre", "behavior": "behaviour", "favorite": "favourite",
+}
+FALLBACK_CNT13_TYPOS = {
+    "recieve": "receive", "seperate": "separate", "occured": "occurred",
+    "teh": "the",
+}
 
 # ── Embedded fallback word lists (used only if slp-9.md can't be read/parsed) ──
 # A NOTE is printed whenever this fallback is used. Kept in sync with slp-9.md
@@ -369,6 +392,74 @@ def load_cnt6_lists(path=CNT6_PATH):
     return ({"openers": openers, "filler": filler}, False, None)
 
 
+def _parse_spelling_map(text):
+    """
+    Parse a "wrong -> right, wrong2 -> right2" span into a {wrong: right} dict.
+    Keys are lowercased (matching is case-insensitive); values keep their case so
+    the suggestion is the correctly-cased British/correct spelling.
+    """
+    text = re.sub(r"<!--.*?-->", " ", text, flags=re.DOTALL)
+    mapping = {}
+    for raw in text.split(","):
+        tok = raw.strip()
+        if not tok or "->" not in tok:
+            continue
+        wrong, right = tok.split("->", 1)
+        wrong = wrong.strip().strip('"“”‘’').lower()
+        right = right.strip().strip('"“”‘’')
+        if wrong and right:
+            mapping[wrong] = right
+    return mapping
+
+
+def load_cnt13_lists(path=CNT13_PATH):
+    """
+    Parse the CNT-13 US→British spelling map and common-misspelling map from
+    cnt-13.md's <!-- tfx-sync:cnt13-usuk --> and <!-- tfx-sync:cnt13-typos -->
+    spans. Returns (lists_dict, used_fallback, note) with keys "usuk" and "typos"
+    — mirrors load_cnt6_lists so the lint and the catalog can never diverge.
+    """
+    fallback = {"usuk": FALLBACK_CNT13_USUK, "typos": FALLBACK_CNT13_TYPOS}
+    try:
+        with open(path, encoding="utf-8") as fh:
+            text = fh.read()
+    except OSError:
+        return (
+            fallback, True,
+            f"NOTE content-lint: could not read {path}; using embedded "
+            f"fallback CNT-13 spelling maps",
+        )
+
+    def _span(name):
+        m = re.search(
+            r"<!--\s*tfx-sync:" + name + r"\b[^>]*-->(.*?)<!--\s*/tfx-sync:" + name + r"\s*-->",
+            text, flags=re.DOTALL,
+        )
+        return _parse_spelling_map(m.group(1)) if m else {}
+
+    usuk = _span("cnt13-usuk")
+    typos = _span("cnt13-typos")
+    if not (usuk and typos):
+        return (
+            fallback, True,
+            f"NOTE content-lint: parsed {path} but a CNT-13 map was empty "
+            f"(usuk={len(usuk)}, typos={len(typos)}); using embedded fallback",
+        )
+    return ({"usuk": usuk, "typos": typos}, False, None)
+
+
+def _build_cnt13_res(cnt13_lists):
+    """
+    Build the CNT-13 lookup from the loaded maps: a single word-boundaried,
+    case-insensitive regex over every wrong spelling, plus the merged {wrong:
+    right} map so a hit can suggest the correct spelling.
+    """
+    mapping = {}
+    mapping.update(cnt13_lists["usuk"])
+    mapping.update(cnt13_lists["typos"])
+    return {"regex": _build_word_regex(list(mapping.keys())), "map": mapping}
+
+
 def _build_word_regex(words):
     """
     Build a case-insensitive word-boundaried alternation regex for a list of
@@ -454,12 +545,13 @@ def _is_interpolated(s):
 
 
 def check_file(filepath, lists=None, phrase_res=None, word_res=None, device_re=None,
-               cnt6_res=None):
+               cnt6_res=None, cnt13_res=None):
     """
     Scan a single file and return a list of error / note strings.
-    `lists`/`phrase_res`/`word_res`/`device_re`/`cnt6_res` are precomputed by
-    scan_paths; if omitted they are built here (so check_file works standalone in
-    tests). Each ERROR string: ERROR <file>:<line> [CTL-ID] <found> — suggest: <...>
+    `lists`/`phrase_res`/`word_res`/`device_re`/`cnt6_res`/`cnt13_res` are
+    precomputed by scan_paths; if omitted they are built here (so check_file works
+    standalone in tests). Each ERROR string:
+    ERROR <file>:<line> [CTL-ID] <found> — suggest: <...>
     """
     errors = []
     ext = os.path.splitext(filepath)[1].lower()
@@ -484,6 +576,9 @@ def check_file(filepath, lists=None, phrase_res=None, word_res=None, device_re=N
     if cnt6_res is None:
         cnt6_lists, _c6_fallback, _c6_note = load_cnt6_lists()
         cnt6_res = _build_cnt6_res(cnt6_lists)
+    if cnt13_res is None:
+        cnt13_lists, _c13_fallback, _c13_note = load_cnt13_lists()
+        cnt13_res = _build_cnt13_res(cnt13_lists)
 
     try:
         with open(filepath, encoding="utf-8", errors="replace") as fh:
@@ -570,6 +665,7 @@ def check_file(filepath, lists=None, phrase_res=None, word_res=None, device_re=N
                 _check_cnt1_text(prose.strip(), line, lineno, lines, emit)
                 _check_cnt5_text(prose, emit, device_re)
                 _check_cnt6_text(prose, emit, cnt6_res)
+                _check_cnt13_text(prose, emit, cnt13_res)
         elif is_code:
             # Code: only inspect quoted string literals that look user-facing.
             for sm in STRING_LITERAL_RE.finditer(scan_line):
@@ -585,6 +681,7 @@ def check_file(filepath, lists=None, phrase_res=None, word_res=None, device_re=N
                     _check_cnt1_text(literal, line, lineno, lines, emit)
                     _check_cnt5_text(literal, emit, device_re)
                     _check_cnt6_text(literal, emit, cnt6_res)
+                    _check_cnt13_text(literal, emit, cnt13_res)
 
     return errors
 
@@ -671,6 +768,25 @@ def _check_cnt6_text(text, emit, cnt6_res):
                  "cut it if the sentence reads the same without it")
 
 
+def _check_cnt13_text(text, emit, cnt13_res):
+    """
+    CNT-13: flag a US spelling or common misspelling in user-facing copy and
+    suggest the British / correct form. Scoped to multi-word strings, like CNT-5
+    and CNT-6, so a bare one-word identifier in code ("color" as a prop value) is
+    not flagged — a single-word label is left to the evaluator. Contextual typos
+    and homophones (their/there, form/from) are the evaluator's half.
+    """
+    if cnt13_res is None or not cnt13_res["regex"]:
+        return
+    if len(text.split()) < 2:
+        return
+    m = cnt13_res["regex"].search(text)
+    if m:
+        found = m.group(0)
+        right = cnt13_res["map"].get(found.lower(), "the British / correct spelling")
+        emit("CNT-13", f'spelling "{found}"', f'use "{right}"')
+
+
 def _check_cnt1_text(text, raw_line, lineno, all_lines, emit):
     """
     CNT-1: flag a user-facing string that is ONLY a raw error code, or the bare
@@ -752,6 +868,9 @@ def scan_paths(paths):
     cnt6_lists, c6_fallback, c6_note = load_cnt6_lists()
     if c6_fallback and c6_note:
         print(c6_note)
+    cnt13_lists, c13_fallback, c13_note = load_cnt13_lists()
+    if c13_fallback and c13_note:
+        print(c13_note)
     word_res = {
         "buzzwords": _build_word_regex(lists["buzzwords"]),
         "ai_vocab": _build_word_regex(lists["ai_vocab"]),
@@ -762,12 +881,14 @@ def scan_paths(paths):
     }
     device_re = _build_word_regex(device_verbs)
     cnt6_res = _build_cnt6_res(cnt6_lists)
+    cnt13_res = _build_cnt13_res(cnt13_lists)
 
     all_errors = []
     for p in paths:
         if os.path.isfile(p):
             all_errors.extend(
-                check_file(p, lists, phrase_res, word_res, device_re, cnt6_res))
+                check_file(p, lists, phrase_res, word_res, device_re, cnt6_res,
+                           cnt13_res))
         elif os.path.isdir(p):
             for root, dirs, files in os.walk(p):
                 dirs[:] = [d for d in dirs if not d.startswith(".")]
@@ -777,7 +898,7 @@ def scan_paths(paths):
                         all_errors.extend(
                             check_file(os.path.join(root, fname),
                                        lists, phrase_res, word_res, device_re,
-                                       cnt6_res)
+                                       cnt6_res, cnt13_res)
                         )
         else:
             print(f"ERROR content-lint: path not found: {p}")
@@ -808,6 +929,8 @@ def run_self_test():
     device_re = _build_word_regex(device_verbs)
     cnt6_lists, _c6_fallback, _c6_note = load_cnt6_lists()
     cnt6_res = _build_cnt6_res(cnt6_lists)
+    cnt13_lists, _c13_fallback, _c13_note = load_cnt13_lists()
+    cnt13_res = _build_cnt13_res(cnt13_lists)
 
     failures = []
     case_count = 0
@@ -817,7 +940,7 @@ def run_self_test():
             tf.write(content)
             tf.flush()
             errs = check_file(tf.name, lists, phrase_res, word_res, device_re,
-                              cnt6_res)
+                              cnt6_res, cnt13_res)
         os.unlink(tf.name)
         return errs
 
@@ -1015,6 +1138,38 @@ def run_self_test():
         ".mdx",
     )
 
+    # ── CNT-13 cases ────────────────────────────────────────────────────────────
+    assert_violations(
+        "CNT-13: US spelling in prose",
+        "Choose a color for the class label.",
+        ".mdx", ["CNT-13"],
+    )
+    assert_violations(
+        "CNT-13: US -ize spelling in prose",
+        "Organize your marks before the term ends.",
+        ".mdx", ["CNT-13"],
+    )
+    assert_violations(
+        "CNT-13: common misspelling in prose",
+        "You will recieve a confirmation shortly.",
+        ".mdx", ["CNT-13"],
+    )
+    assert_violations(
+        "CNT-13: US spelling in a string literal",
+        'const label = "Center the panel";',
+        ".tsx", ["CNT-13"],
+    )
+    assert_clean(
+        "CNT-13: British spelling is fine",
+        "Organise your marks and centre the panel.",
+        ".mdx",
+    )
+    assert_clean(
+        "CNT-13: US spelling quoted in inline code is teaching, not usage",
+        "Prefer `colour` over `color` in copy.",
+        ".mdx",
+    )
+
     # ── Word-list loader case ─────────────────────────────────────────────────
     # Assert the loader picked up a known buzzword. If using the fallback the
     # NOTE path is exercised; either way "supercharge" must be present.
@@ -1049,6 +1204,17 @@ def run_self_test():
         failures.append(
             "FAIL loader: 'in order to' must stay out of CNT-6 lint lists "
             "(SLP-9's filler-phrase list owns it)"
+        )
+
+    # CNT-13 loader: the spelling maps must carry core entries and resolve the
+    # correct British / corrected spelling.
+    case_count += 1
+    if (cnt13_lists["usuk"].get("color") != "colour"
+            or cnt13_lists["typos"].get("recieve") != "receive"):
+        failures.append(
+            f"FAIL loader: expected color→colour / recieve→receive in CNT-13 maps — "
+            f"got usuk-keys={sorted(cnt13_lists['usuk'])[:5]}…, "
+            f"typos-keys={sorted(cnt13_lists['typos'])[:5]}…"
         )
 
     # ── Report ─────────────────────────────────────────────────────────────────
