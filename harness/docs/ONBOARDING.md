@@ -257,3 +257,5 @@ Do not wait for CONTRIBUTING.md (plan 006) before proposing — the decision rec
 the right place until a formal contribution process exists. The worked example at
 `docs/decisions/student-notes-empty-state.md` demonstrates this: two proposed controls
 (CMP-4 and EVD-1) are recorded there, pending design-lead approval.
+
+Adopting the harness as a new domain? See [PILOT-EDUPASS.md](PILOT-EDUPASS.md) for the pilot playbook that validates this path end to end.
