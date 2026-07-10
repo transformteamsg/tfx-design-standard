@@ -32,8 +32,8 @@ export function AdoptionJourney() {
 
         {steps.map((s, i) => (
           <g key={s.label}>
-            <circle cx="26" cy={s.cy} r="12" fill="var(--tw-blue)" />
-            <text x="26" y={s.cy + 4} textAnchor="middle" fontSize="11" fontWeight="600" fill="var(--surface)">
+            <circle cx="26" cy={s.cy} r="12" fill="var(--primary)" />
+            <text x="26" y={s.cy + 4} textAnchor="middle" fontSize="11" fontWeight="600" fill="var(--primary-foreground)">
               {i + 1}
             </text>
             <text x="48" y={s.cy - 1} fontSize="13" fontWeight="600" fill="var(--foreground)">

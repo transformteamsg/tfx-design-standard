@@ -17,7 +17,7 @@ export function FoundationProfile() {
       <svg
         viewBox="0 0 360 212"
         role="img"
-        aria-label="The foundation — a catalog of controls and principles — is specialised by four domains: Teachers & School, Students, Parents, and Platform. Your product adopts the standard through its domain."
+        aria-label="The foundation — a catalog of controls and principles — is specialised by four domains: Teachers & School, Students, Parents, and Platform. Your product, shown beneath the domains, adopts the standard through whichever domain is its own."
         style={{ width: "100%", height: "auto", fontFamily: font }}
       >
         {/* foundation */}
@@ -56,16 +56,19 @@ export function FoundationProfile() {
           </g>
         ))}
 
-        {/* your product, pointing up at its domain */}
-        <path d="M303 160 V138" fill="none" stroke="var(--tw-blue)" strokeWidth="2" markerEnd="url(#fp-arrow)" />
-        <rect x="270" y="160" width="66" height="34" rx="6" fill="var(--tw-blue)" />
-        <text x="303" y="181" textAnchor="middle" fontSize="10.5" fontWeight="600" fill="var(--surface)">
+        {/* your product, centred — it adopts through whichever domain is its own */}
+        <path d="M180 160 V140" fill="none" stroke="var(--primary)" strokeWidth="2" markerEnd="url(#fp-arrow)" />
+        <rect x="141" y="160" width="78" height="34" rx="6" fill="var(--primary)" />
+        <text x="180" y="181" textAnchor="middle" fontSize="10.5" fontWeight="600" fill="var(--primary-foreground)">
           your product
+        </text>
+        <text x="196" y="153" fontSize="9.5" fill="var(--muted-foreground)">
+          through its domain
         </text>
 
         <defs>
           <marker id="fp-arrow" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
-            <path d="M1 1 L7 4 L1 7 Z" fill="var(--tw-blue)" />
+            <path d="M1 1 L7 4 L1 7 Z" fill="var(--primary)" />
           </marker>
         </defs>
       </svg>

@@ -46,8 +46,8 @@ export function DesignLoop() {
                 width="264"
                 height="30"
                 rx="15"
-                fill={p.gate ? "var(--tw-blue)" : "var(--surface)"}
-                stroke={p.gate ? "var(--tw-blue)" : "var(--border)"}
+                fill={p.gate ? "var(--primary)" : "var(--surface)"}
+                stroke={p.gate ? "var(--primary)" : "var(--border)"}
               />
               <text
                 x="180"
@@ -55,16 +55,16 @@ export function DesignLoop() {
                 textAnchor="middle"
                 fontSize="11.5"
                 fontWeight={p.gate ? "600" : "400"}
-                fill={p.gate ? "var(--surface)" : "var(--foreground)"}
+                fill={p.gate ? "var(--primary-foreground)" : "var(--foreground)"}
               >
                 {p.label}
               </text>
               {p.gate && (
                 <>
-                  <text x="320" y={cy - 2} fontSize="9.5" fontWeight="600" fill="var(--tw-blue)">
+                  <text x="320" y={cy - 2} fontSize="9.5" fontWeight="600" fill="var(--primary)">
                     human
                   </text>
-                  <text x="320" y={cy + 9} fontSize="9.5" fontWeight="600" fill="var(--tw-blue)">
+                  <text x="320" y={cy + 9} fontSize="9.5" fontWeight="600" fill="var(--primary)">
                     gate
                   </text>
                 </>
