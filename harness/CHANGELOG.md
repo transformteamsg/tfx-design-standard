@@ -1,7 +1,27 @@
 # Changelog
 
-Notable changes to the TFX Design Harness plugin. Versioning tracks
-`.claude-plugin/plugin.json`.
+Notable changes to the DXD Design Harness plugin (formerly the TFX Design Harness).
+Versioning tracks `.claude-plugin/plugin.json`.
+
+## [0.8.0] — 2026-07-10
+
+Rename pass (plan 001): the standard's identity moves from TFX to DXD (Digital
+Products & Excellence Division), which now spans Students, Parents, and Platform
+domain leads beyond Teacher & School. "TFX" is retained only where it correctly
+names the Teacher & School domain or quotes history.
+
+- Plugin id `tfx` → `dxd`; marketplace name `tfx` → `dxd`. Display name "TFX Design
+  Harness" → "DXD Design Harness". Skill invocation prefix changes accordingly:
+  `/tfx:start` → `/dxd:start`, etc.
+- Waiver syntax: new canonical form is `dxd-waive <ID> reason="<specific reason>"`.
+  **Legacy `tfx-waive` markers remain valid and continue to be parsed** — this is a
+  compatibility guarantee, not a deprecation.
+- Context dir: the generator now writes `.dxd/design.json`. **Readers fall back to
+  `.tfx/design.json`** for repos that predate the rename; both paths keep working.
+- GitHub repo rename (`tfx-design-standard` → `dxd-design-standard`) is a **flagged
+  human step**, not done by this release — see `docs/MIGRATION-DXD.md`.
+- Control ids, catalog bodies, and the TFX-DS normative source citation are
+  unchanged — TFX-DS remains the real normative source link.
 
 ## [0.7.0] — 2026-07-08
 
