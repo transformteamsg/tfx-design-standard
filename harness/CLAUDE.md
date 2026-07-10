@@ -14,11 +14,15 @@ triggered.
   "just a small change" is still in scope.
 - **Brand essence is Kind Utility** — useful first, kind at the surface. The one
   test: does this help teachers work faster with less stress? If not, don't build it.
-- **The stack is fixed and boring on purpose**: Base UI components, Radix Colors,
-  shadcn/ui default tokens. Plus Jakarta Sans (600) display, Inter (400/500/600)
-  body. Each product's **own** primary for primary actions and brand moments (TW →
-  T&S Blue `#0064FF`; Glow → orange; CaseSync → indigo; COL-1).
-  Semantic tokens only — never raw colour/spacing/radius values (TOK-1..3).
+- **Semantic tokens only** — never raw colour/spacing/radius values (TOK-1..3).
+  The foundation demands token-shaped behaviour but does **not** name a stack,
+  typeface, or primary — declare those in your domain profile
+  (`standards/domains/<slug>.yaml`) or per-product `DESIGN.md`. Each product
+  anchors primary actions and brand moments in its **own** primary (COL-1).
+  T&S profile (`standards/domains/teachers-school.yaml`): Base UI + Radix Colors
+  + shadcn/ui default tokens; Plus Jakarta Sans (600) display, Inter
+  (400/500/600) body; per-product primaries (TW → T&S Blue `#0064FF`; Glow →
+  orange; CaseSync → indigo).
 <!-- tfx-sync:L0 source=catalog -->
 - **Non-negotiables (L0) that bind even outside the loop**: AA contrast (A11Y-1),
   keyboard reach + visible focus (A11Y-2), visible labels on every field (A11Y-3),
