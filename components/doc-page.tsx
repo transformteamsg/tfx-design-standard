@@ -17,6 +17,7 @@ const sectionCrumbs: Record<string, { label: string; href: string }> = {
   guidelines: { label: "Guidelines", href: "/guidelines" },
   foundations: { label: "Foundations", href: "/foundations" },
   products: { label: "Products", href: "/products" },
+  domains: { label: "Domains", href: "/domains" },
   harness: { label: "Harness", href: "/harness" },
 };
 
