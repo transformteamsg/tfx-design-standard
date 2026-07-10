@@ -94,6 +94,16 @@ const nav: NavGroup[] = [
     ],
   },
   {
+    label: "Domains",
+    href: "/domains",
+    items: [
+      { href: "/domains/teachers-school", title: "Teachers & School" },
+      { href: "/domains/students", title: "Students" },
+      { href: "/domains/parents", title: "Parents" },
+      { href: "/domains/platform", title: "Platform" },
+    ],
+  },
+  {
     label: "Harness",
     href: "/harness",
     items: [

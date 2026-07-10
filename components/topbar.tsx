@@ -30,7 +30,8 @@ export function TopBar() {
             </span>
           </Link>
         </div>
-        <nav aria-label="Primary" className="flex items-center text-[14px] font-medium text-muted-foreground">
+        <nav aria-label="Primary" className="flex items-center gap-5 text-[14px] font-medium text-muted-foreground">
+          <Link href="/domains" className="hover:text-foreground">Domains</Link>
           <Link href="/for-agents" className="hover:text-foreground">For agents</Link>
         </nav>
       </div>
