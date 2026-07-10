@@ -10,6 +10,8 @@ content skill's §6, motion nowhere, grid in a separate proposed `.tfx/layout-sy
 This layer gives each product repo one place for "what makes this product this product":
 
 - **`DESIGN.md`** — human-owned, at the product repo root. Per-product visual parameters.
+  You need not write it by hand: the setup wizard writes this file for you (`/dxd:setup` →
+  "onboard my product").
 - **`.dxd/design.json`** — its machine twin, **generated** from `DESIGN.md` by
   `scripts/generate-design-json.py`, so checks and hooks can read the same parameters the
   agent reads. Never hand-edited.
