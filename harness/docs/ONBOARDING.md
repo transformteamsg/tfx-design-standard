@@ -5,6 +5,13 @@ their repo "harness-ready".
 
 **Time:** approximately one hour plus team decisions (mainly items 5 and 6 below).
 
+**Two onboarding paths, one story.** This doc is about **your repo and your team** — the
+stack, the manifest, where records live, who approves L1 waivers. Your **machine and your
+product's brand context** are the setup wizard's job: run `/dxd:setup` → "onboard my
+product" and it interviews you for your brand basics and writes your `DESIGN.md` for you
+(item 2a below points there). Do the repo-and-team items here; let the wizard do the
+machine-and-brand items.
+
 This guide walks through the six harness-ready checklist items in order. Work through them
 once per product repo, not once per page. After setup, every design session runs the
 same loop automatically.
@@ -87,22 +94,17 @@ must be consistent across TW, CaseSync, and Glow.
 **What it means:** The catalog is portfolio-wide and product-agnostic on purpose. A
 `DESIGN.md` at your repo root records the few *visual parameters* that make your product
 itself — its primary colour, tone weighting, motion conventions, and column grid — and its
-generated twin `.tfx/design.json` lets the check scripts and the design loop read them.
+generated twin `.dxd/design.json` lets the check scripts and the design loop read them.
 This is the one item that is **optional** and not counted among the six: a repo with no
 `DESIGN.md` gets the portfolio defaults everywhere, which is a valid, complete state — it
 is never graded as a failure. Add one only if your product's parameters actually differ.
 
-**The concrete step:**
-
-1. Copy the annotated template from the harness: `docs/templates/DESIGN.md` →
-   `your-repo/DESIGN.md`.
-2. Fill in only the parameters that *differ* from the portfolio default; delete every
-   section that matches it. Parameters only — never restate a catalog rule (that recreates
-   the drift `docs/SYNC.md` exists to prevent).
-3. Generate the machine twin and commit **both** files:
-   `python3 <harness>/scripts/generate-design-json.py .`
-4. Regenerate whenever you edit `DESIGN.md` (the twin is generated only, never
-   hand-edited); CI can gate freshness with `--check`.
+**The concrete step:** run the setup wizard — `/dxd:setup` → "onboard my product". It
+interviews you in plain language for your brand basics (name, domain, primary colour,
+typefaces, and a few optional extras), writes `DESIGN.md` for you, and generates the
+`.dxd/design.json` twin — no file editing, no YAML. Every question you skip falls back to
+the standard's default. Re-run it any time to add or change a parameter; the wizard
+regenerates the twin (never hand-edit it; CI can gate freshness with `--check`).
 
 Full spec — the sections, the parameters-only rule, and the "code overrides stale docs"
 loading rule: `docs/DESIGN-CONTEXT.md`.
