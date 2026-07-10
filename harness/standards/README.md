@@ -49,23 +49,35 @@ which renders this same file):
   with a detail file these summarise the detail's "Fails when" section; the
   detail file remains the fuller account.
 - a top-level `meta:` block — `version`, `updated`, `waiver_syntax`, a
-  `categories` map from prefix to display name, and `products` / `audiences`
-  maps from scope value to display name (see Scope below).
+  `categories` map from prefix to display name, `products` / `audiences`
+  maps from scope value to display name (see Scope below), and a `domains`
+  map from domain slug to display name (the domain registry — see Domains
+  below).
 
 ## Scope
 
-Two optional per-control fields scope a control to part of the portfolio:
-`products:` (subset of `tw | casesync | glow`) and `audiences:` (subset of
-`teachers | students-primary | students-secondary | parents`).
+Three optional per-control fields scope a control to part of the portfolio:
+`products:` (subset of `tw | casesync | glow`), `audiences:` (subset of
+`teachers | students-primary | students-secondary | parents`), and `domains:`
+(subset of `teachers-school | students | parents | platform` — keys of
+`meta.domains`).
 
 - **Absent = global.** A control without a scope field applies to every
-  product / every audience. Never write an empty list — the validators reject
-  `products: []`; omit the field instead.
+  product / every audience / every domain. Never write an empty list — the
+  validators reject `products: []` (and likewise `domains: []`); omit the field
+  instead.
 - **Filtering is an intersection.** A control is in scope for a run when its
   `phase` matches AND `applies_to` (the *surface* dimension — page /
   component / flow / content, unchanged and distinct from these fields)
-  matches AND (`products` absent OR contains the active product) AND
-  (`audiences` absent OR contains the active audience).
+  matches AND (`domains` absent OR contains the active domain) AND (`products`
+  absent OR contains the active product) AND (`audiences` absent OR contains
+  the active audience).
+- **`domains:` and `products:` must be consistent.** A product belongs to
+  exactly one domain (the mapping is noted in `meta.products`), so a control
+  carrying both fields must name that product's domain — e.g. a control scoped
+  `products: [glow]` may also carry `domains: [teachers-school]`, never
+  `domains: [platform]`. Prefer the narrowest scope that expresses the intent;
+  a `products:` scope already implies its domain.
 - **Audience defaults to `teachers`** at the intent phase when unstated —
   today's live surfaces are teacher-facing. The design loop asks when a
   surface could plausibly serve students or parents.
@@ -74,11 +86,31 @@ Two optional per-control fields scope a control to part of the portfolio:
 - **Do not stamp scope onto floor controls.** Stamping
   `audiences: [teachers]` onto existing global controls would *exempt* future
   student and parent surfaces from the accessibility floor, anti-slop, and
-  tokens — the opposite of safe. The safety net travels to every audience by
-  default; scoping is opt-in per control, used only when a control genuinely
-  binds one product or audience.
+  tokens — the opposite of safe. The identical rule holds for domains:
+  **never stamp `domains:` onto floor controls** — stamping
+  `domains: [teachers-school]` onto a global control would exempt every future
+  domain from that floor. The safety net travels to every product, audience,
+  and domain by default; scoping is opt-in per control, used only when a
+  control genuinely binds one product, audience, or domain.
 - TW-adjacent surfaces (Posts, PG Staff Portal) count as `tw` — the same rule
   the content skill's tone table uses.
+
+## Domains
+
+A **domain** is a portfolio-level brand boundary — a set of products that share
+a declared brand (colours, typefaces, illustration, voice, stack, audiences).
+The registry lives in `meta.domains`; each domain's declared parameters live in
+a profile at `standards/domains/<slug>.yaml` (format: `standards/domains/README.md`).
+The four domains today are `teachers-school`, `students`, `parents`, and
+`platform`.
+
+The relationship to the catalog is strictly **additive**: a domain may *add*
+scoped controls via the ratchet (a control carrying `domains: [<slug>]`), but
+**no domain may weaken, override, or globally waive a foundation control** — the
+L0/L1 floor binds every domain, and waivers stay per-instance (an inline
+`dxd-waive` at one deviation site, never a domain-wide exemption). A domain
+profile carries brand *parameters*, never catalog-rule restatements; an absent
+profile field means the foundation default applies. See `standards/domains/`.
 
 ## Tiers → enforcement
 
