@@ -61,6 +61,7 @@ def load_schema_bits(repo_root):
         "allowed_waivers": set(tier_waiver.values()),
         "allowed_products": set(schema["products"]),
         "allowed_audiences": set(schema["audiences"]),
+        "allowed_domains": set(schema["domains"]),
         "allowed_enforced": set(schema["enforced"]),
         "control_id_re": re.compile(rf"^({prefixes})-\d+$"),
         "xref_re": re.compile(rf"\b({prefixes})-\d+\b"),
@@ -124,10 +125,11 @@ def validate_control(control, idx, schema_bits):
             if bad:
                 err(loc, f"invalid applies_to values {bad} — allowed: {sorted(allowed_applies_to)}")
 
-    # 2c. Optional scope fields — products / audiences. Absent = global;
+    # 2c. Optional scope fields — products / audiences / domains. Absent = global;
     # an empty list is an error (omit the field for global instead).
     for scope_field, allowed_key in (("products", "allowed_products"),
-                                     ("audiences", "allowed_audiences")):
+                                     ("audiences", "allowed_audiences"),
+                                     ("domains", "allowed_domains")):
         value = control.get(scope_field)
         if value is None:
             continue
@@ -821,6 +823,17 @@ def run_self_test():
     assert_control_error("audiences not a list",
                          dict(valid_control, audiences="teachers"),
                          "'audiences' must be a list")
+    # Domain-scoped control with a valid registry value → passes.
+    assert_control_clean("domain-scoped control valid",
+                         dict(valid_control, domains=["students"]))
+    # Unknown domain value → error.
+    assert_control_error("unknown domain value",
+                         dict(valid_control, domains=["bogus"]),
+                         "invalid domains values ['bogus']")
+    # Empty domains list → error telling the author to omit the field.
+    assert_control_error("empty domains list",
+                         dict(valid_control, domains=[]),
+                         "omit the field for global")
 
     # ── Enforcement field (enforced / script) cases ─────────────────────────
     # A real script path so the pure validate_control cases don't need disk

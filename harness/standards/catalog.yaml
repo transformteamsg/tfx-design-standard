@@ -12,7 +12,7 @@
 
 meta:
   version: "0.1"
-  updated: "2026-07-08"
+  updated: "2026-07-10"
   waiver_syntax: 'dxd-waive <ID> reason="<specific reason>"'  # legacy `tfx-waive` markers remain valid
   categories:
     A11Y: Accessibility
@@ -25,15 +25,20 @@ meta:
     IDN: Identity
     SLP: Anti-slop
     LAY: Layout
-  products:
-    tw: Teacher Workspace   # TW-adjacent surfaces (Posts, PG Staff Portal) count as tw
-    casesync: CaseSync
-    glow: Glow
+  products:                 # operational scope unit; each product belongs to one domain (below)
+    tw: Teacher Workspace   # TW-adjacent surfaces (Posts, PG Staff Portal) count as tw — domain: teachers-school
+    casesync: CaseSync      # domain: teachers-school
+    glow: Glow              # domain: teachers-school
   audiences:
     teachers: Teachers & school staff
     students-primary: Students — primary
     students-secondary: Students — secondary and up
     parents: Parents & guardians
+  domains:                  # portfolio domains; profiles in standards/domains/<slug>.yaml (see README §Domains)
+    teachers-school: Teachers & School   # TransformX portfolio: tw, casesync, glow
+    students: Students
+    parents: Parents
+    platform: Platform                   # incl. EduPass
 
 controls:
   # ── Accessibility (WCAG 2.2 AA — self-imposed floor) ──────────────────
