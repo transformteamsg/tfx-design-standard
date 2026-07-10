@@ -3,6 +3,8 @@ import { slugify } from "@/lib/toc";
 import { FoundationProfile } from "@/components/diagrams/foundation-profile";
 import { DesignLoop } from "@/components/diagrams/loop";
 import { AdoptionJourney } from "@/components/diagrams/adoption-journey";
+import { Ladder } from "@/components/diagrams/ladder";
+import { Ratchet } from "@/components/diagrams/ratchet";
 
 export function textOf(node: ReactNode): string {
   if (typeof node === "string" || typeof node === "number") return String(node);
@@ -27,4 +29,6 @@ export const mdxComponents = {
   FoundationProfile,
   DesignLoop,
   AdoptionJourney,
+  Ladder,
+  Ratchet,
 };

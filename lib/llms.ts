@@ -66,11 +66,13 @@ export function llmsIndex(): string {
     lines.push(`## ${def.label}`);
     lines.push("");
 
-    // Root sections (e.g. governance) are a single doc at the section path.
+    // Root sections (e.g. governance): the first slug is the doc at the
+    // section path itself; any further slugs live at /section/slug.
     if (def.root) {
-      for (const slug of def.slugs) {
+      for (const [i, slug] of def.slugs.entries()) {
         const doc = getDoc(key, slug);
-        if (doc) lines.push(item(doc.title, `/${key}.md`, doc.description));
+        const mdPath = i === 0 ? `/${key}.md` : `/${key}/${slug}.md`;
+        if (doc) lines.push(item(doc.title, mdPath, doc.description));
       }
       lines.push("");
       continue;

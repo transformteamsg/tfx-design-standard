@@ -74,7 +74,7 @@ None — this sprint removes violations rather than waiving them. No L0/L1/L2 wa
 
 ## Plan approval
 
-- **Approved by:** wondo.jeong@gt.tech.gov.sg (session operator, attended run)
+- **Approved by:** design lead (session operator, attended run)
 - **Approved on:** 2026-06-16
 
 ## Verify verdict

@@ -129,9 +129,10 @@ const sidebarHrefs = new Set(
 
 const expectedHrefs = new Set();
 for (const [section, def] of Object.entries(map)) {
-  for (const slug of def.slugs) {
-    // Root sections render their single doc at the section href itself.
-    const href = def.root ? `/${section}` : `/${section}/${slug}`;
+  for (const [i, slug] of def.slugs.entries()) {
+    // Root sections render their first doc at the section href itself;
+    // any further slugs are normal /section/slug pages.
+    const href = def.root && i === 0 ? `/${section}` : `/${section}/${slug}`;
     expectedHrefs.add(href);
     if (!sidebarHrefs.has(href))
       err("components/sidebar.tsx", `no nav entry for registered doc '${href}'`);

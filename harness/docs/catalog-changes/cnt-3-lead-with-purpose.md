@@ -1,7 +1,7 @@
 # CNT-3 broadened: lead with purpose, not mechanism
 
 **Date:** 2026-06-16 · **Change type:** scope broadening of an existing control (no
-new control, no tier change) · **Approved by:** design lead (wondo.jeong, repo owner),
+new control, no tier change) · **Approved by:** design lead (repo owner),
 interactively in session 2026-06-16 — CNT-3 wording and this record reviewed and approved.
 
 This record lives outside `docs/decisions/` deliberately: that directory is audited by

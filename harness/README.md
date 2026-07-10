@@ -23,7 +23,7 @@ standards/catalog.yaml                .claude/skills/                      check
 ```
 
 Normative source: [TFX-DS v0.1 draft](https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb)
-(owner: Wondo Jeong). Harness lead: Reza Ilmi. The design stack is deliberately
+(owner: design lead). Harness lead: Reza Ilmi. The design stack is deliberately
 boring and AI-legible: Base UI + Radix Colors + shadcn/ui default tokens; Plus
 Jakarta Sans + Inter; Teacher & School Blue `#0064FF`.
 

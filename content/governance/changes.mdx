@@ -1,0 +1,61 @@
+---
+title: Change log
+description: What changed in the standard and its harness, release by release — newest first.
+status: settled
+---
+
+Each entry records what shipped, in the order it landed. Proposals that have
+not shipped live in [How this evolves](/governance), not here. The harness
+plugin keeps its own detailed `CHANGELOG.md` in the repo; this page is the
+readable summary.
+
+## 10 July 2026 — DXD program: one foundation, four domains
+
+The standard's identity moved from TFX (a TransformX team standard) to DXD
+(the division standard). One foundation now serves four domain expressions:
+Teachers & School, Students, Parents, and Platform (including EduPass).
+
+- **Domains section.** Four [domain pages](/domains), each a portfolio-level
+  brand boundary with its own profile — colours, typography, voice. Teachers &
+  School is settled; the other three are stubs awaiting their leads.
+- **Domain registry and profile schema.** Profiles live in
+  `standards/domains/<slug>.yaml`; catalog controls can scope to a domain.
+- **De-branded skills.** Harness skills no longer hardcode Teacher & School
+  branding — brand resolves from the domain profile at run time.
+- **Domain onboarding.** Setup became a wizard that walks a new domain lead
+  through declaring a profile, documented at [Get started](/harness/get-started).
+- **Harness 0.8.0 rename.** Plugin id `tfx` → `dxd`, waivers written
+  `dxd-waive` (legacy `tfx-waive` stays valid), context dir `.dxd/` with a
+  `.tfx/` fallback. Control ids and catalog bodies are unchanged.
+- **Governance roles.** Two named roles: the foundation owner approves
+  ratchets; domain leads own their profile and domain-scoped controls.
+
+## 8 July 2026 — Harness 0.7.0: ratchet and enforcement
+
+- **Catalog 53 → 57 controls.** CMP-4 (empty states signal "no content
+  exists"), CMP-8 (non-destructive exits, draft safety), CMP-9 (render-time
+  sanitisation of cross-user content), CNT-4 (content modelling real-world
+  artifacts is faithful or labelled illustrative).
+- **Async-state evidence rule.** When loading/success/error states are in
+  scope, the verify evidence must capture all of them — adopted as a harness
+  rule in `design/verify.md`, deliberately not a new catalog category.
+- **Enforcement as data.** New `enforced`/`script` fields in the catalog
+  schema plus a coverage check, so how a control is checked lives in the
+  catalog itself.
+- **The grill.** The plan gate grew a red-team interview stage: the loop
+  questions its own plan, one decision at a time, before asking for approval.
+
+## 4 July 2026 — Harness 0.6.0: work by intent
+
+- **Intent routing.** You say what you want to do; the harness picks the
+  skill. Skill names no longer gate discovery.
+- **Focused passes.** Five dimension-scoped passes — copy, polish, motion,
+  flow, layout — improve one dimension of an existing page without the full
+  loop.
+- **Scoped rulebook.** Controls declare which products and audiences they
+  bind, so a check run loads only the rules that apply.
+- **Product identity in one place.** Each product carries a `DESIGN.md`;
+  scattered brand assets consolidated there.
+
+The full release note for 0.6.0, with before-and-after comparisons, is at
+[harness-changes.html](/harness-changes.html).

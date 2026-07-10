@@ -1,4 +1,5 @@
 import { MDXRemote } from "next-mdx-remote/rsc";
+import { mdxComponents } from "@/components/mdx";
 import { getDoc } from "@/lib/content";
 import { sectionTopics } from "@/lib/directory";
 import { sectionInk, TopicCard } from "@/components/thumbnails";
@@ -26,7 +27,7 @@ export function SectionIndex({ sectionKey }: { sectionKey: string }) {
       )}
       {doc.content.trim() && (
         <div className="prose mt-4 text-[16px]">
-          <MDXRemote source={doc.content} />
+          <MDXRemote source={doc.content} components={mdxComponents} />
         </div>
       )}
       {doc.illustration && <Illo subject={doc.illustration} />}

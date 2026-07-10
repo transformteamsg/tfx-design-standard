@@ -15,6 +15,7 @@ const tiles = [
   { key: "guidelines", href: "/guidelines", art: "guidelines/voice-tone" },
   { key: "foundations", href: "/foundations", art: "foundations/colour" },
   { key: "products", href: "/products", art: "products/teacher-workspace" },
+  { key: "domains", href: "/domains", art: "domains/teachers-school" },
   { key: "harness", href: "/harness", art: "harness/loop" },
 ];
 

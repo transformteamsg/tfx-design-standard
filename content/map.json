@@ -40,7 +40,7 @@
   },
   "governance": {
     "label": "Governance",
-    "slugs": ["governance"],
+    "slugs": ["governance", "changes"],
     "root": true
   }
 }

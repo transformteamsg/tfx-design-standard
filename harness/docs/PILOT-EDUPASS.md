@@ -15,7 +15,7 @@ this pilot exits.
 
 - **Platform domain lead** — to be named.
 - **One EduPass builder** — to be named.
-- **Foundation owner** (Wondo Jeong) observes. The foundation owner never
+- **Foundation owner** (a design lead) observes. The foundation owner never
   drives the pilot.
 
 ## Entry criteria

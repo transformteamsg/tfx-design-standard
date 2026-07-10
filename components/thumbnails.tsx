@@ -16,6 +16,7 @@ export const sectionInk: Record<string, string> = {
   products: "var(--sec-products)",
   harness: "var(--sec-harness)",
   governance: "var(--sec-governance)",
+  domains: "var(--sec-domains)",
 };
 
 /* A generated ink glyph, centred in the 96x60 canvas. The rough.js bake is
