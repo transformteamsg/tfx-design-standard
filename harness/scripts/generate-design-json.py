@@ -8,7 +8,8 @@ read (readers fall back to `.tfx/design.json` in repos that predate the rename).
 Spec — read it first: `docs/DESIGN-CONTEXT.md`.
 
 The parse is deterministic (stdlib only):
-  - Split `DESIGN.md` on `## ` headings; map each to a json key (Colour/Color -> colour,
+  - Split `DESIGN.md` on `## ` headings; map each to a json key (Domain -> domain,
+    Colour/Color -> colour, Typography -> typography, Stack -> stack,
     Tone weighting/Tone -> tone, Motion -> motion, Layout system -> layout_system,
     Components -> components; any other heading is slugified so nothing is dropped).
   - Strip HTML comments from the section body (guidance never reaches the json).
@@ -40,8 +41,11 @@ GENERATED_FROM = "DESIGN.md"
 
 # Canonical heading -> json key (lower-cased lookup). Unknown headings are slugified.
 SECTION_MAP = {
+    "domain": "domain",
     "colour": "colour",
     "color": "colour",
+    "typography": "typography",
+    "stack": "stack",
     "tone weighting": "tone",
     "tone": "tone",
     "motion": "motion",

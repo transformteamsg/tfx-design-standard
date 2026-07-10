@@ -44,11 +44,22 @@ normative source in each section you keep.
 
 | Section (`## `) | json key | Carries | Normative source to cite |
 |---|---|---|---|
+| `Domain` | `domain` | the registry key of the domain this product belongs to (`teachers-school`, `students`, `parents`, `platform`) — connects the repo to its domain profile in `standards/domains/<slug>.yaml` | `meta.domains` (catalog) |
 | `Colour` | `colour` | primary + accent token/hex, usage beyond COL-1's table | COL-1 |
+| `Typography` | `typography` | this product's display/body typefaces + any wordmark face, where it differs from the domain profile | TYP-1 |
+| `Stack` | `stack` | this product's component/token stack, where it differs from the domain profile | the domain profile (`standards/domains/<slug>.yaml`) |
 | `Tone weighting` | `tone` | pointer to content §6 + this product's weighting note | content skill §6 |
 | `Motion` | `motion` | product motion conventions (durations, signature moves) | MOT-1, SLP-8, A11Y-5 |
 | `Layout system` | `layout_system` | the declared column grid (see below) | LAY-1 proposal (`docs/catalog-changes/lay-1-grid.md`) |
 | `Components` | `components` | product-specific component notes (e.g. AvatarFallback default) | CMP-1, CMP-7 |
+
+**Resolution order.** A parameter resolves **product `DESIGN.md` > domain
+profile (`standards/domains/<slug>.yaml`) > foundation default.** `Domain`
+names which domain profile supplies the middle layer; a product need only
+restate `Typography`/`Stack`/`Colour` in its `DESIGN.md` where it *differs* from
+its domain's declared values. Omit a section and its domain profile (then the
+foundation default) applies — an absent section still means "inherit", never
+"unspecified".
 
 **Layout system** absorbs the `.tfx/layout-system.json` proposed in
 `docs/catalog-changes/lay-1-grid.md` (plan 053): its object (`columns`, `gutter`,
@@ -82,7 +93,8 @@ Generated only, never hand-edited. Shape:
 
 `scripts/generate-design-json.py` (stdlib-only) does a deterministic parse:
 
-1. Split on `## ` headings; map each heading to its json key (`Colour`/`Color` → `colour`,
+1. Split on `## ` headings; map each heading to its json key (`Domain` → `domain`,
+   `Colour`/`Color` → `colour`, `Typography` → `typography`, `Stack` → `stack`,
    `Tone weighting`/`Tone` → `tone`, `Motion` → `motion`, `Layout system` → `layout_system`,
    `Components` → `components`; any other heading is slugified so nothing is dropped).
 2. Strip HTML comments (`<!-- ... -->`) from the section body — comments are guidance and
