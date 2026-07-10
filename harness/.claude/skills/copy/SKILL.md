@@ -182,5 +182,5 @@ around case data):
 ## What to do on conflict
 
 Mandated programme names and legally vetted text win over style rules — record a
-waiver (`tfx-waive CNT-2 reason="..."` inline, or in the decision record for
-non-markup content) rather than rewording.
+waiver (`dxd-waive CNT-2 reason="..."` inline — legacy `tfx-waive` markers remain
+valid — or in the decision record for non-markup content) rather than rewording.

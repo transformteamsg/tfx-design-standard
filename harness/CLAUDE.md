@@ -35,8 +35,8 @@ triggered.
   not every control has a script yet.** Never report an unbuilt or un-run check as
   "passed"; say "verified manually" or "unverified" and name what a human should
   re-check. Full statement and per-script coverage: `checks/README.md`.
-- Waiver syntax: `tfx-waive <CTL-ID> reason="..."` — L0 never, L1 needs a named human
-  approver, L2 needs a specific real reason.
+- Waiver syntax: `dxd-waive <CTL-ID> reason="..."` (legacy `tfx-waive` markers remain
+  valid) — L0 never, L1 needs a named human approver, L2 needs a specific real reason.
 - Singapore English spelling (British base): organise, colour, centre.
 
 ## Where things live

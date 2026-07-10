@@ -33,7 +33,8 @@ Jakarta Sans + Inter; Teacher & School Blue `#0064FF`.
    with an `id`, `tier`, and `check` type. The litmus: if you can't check it, it's a
    principle or guideline — not a standard. Tiers map to enforcement: L0 blocks
    outright (trust/safety/a11y floor), L1 must pass verification, L2 is a strong
-   default waivable with inline rationale (`tfx-waive` protocol).
+   default waivable with inline rationale (`dxd-waive` protocol — legacy
+   `tfx-waive` markers remain valid).
 2. **Blueprint structure (Stripe Minions pattern).** The design loop alternates creative
    agent phases with deterministic checkpoints that always run. The agent cannot skip a
    checkpoint by judgment.

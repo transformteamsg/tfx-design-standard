@@ -162,9 +162,9 @@ it needs to know where to point humans for approval and audit.
 
 L1 waivers live in the decision records until a central waiver registry exists. When
 you grant a waiver, record it in the `## Waivers granted` table of the decision record
-with a named approver, a specific reason, and the `tfx-waive` inline marker in the
-code. L0 controls are never waivable. A waiver without a named human approver is not a
-valid L1 waiver.
+with a named approver, a specific reason, and the `dxd-waive` inline marker (legacy
+`tfx-waive` markers remain valid) in the code. L0 controls are never waivable. A
+waiver without a named human approver is not a valid L1 waiver.
 
 ---
 

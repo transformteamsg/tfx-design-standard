@@ -251,6 +251,7 @@ def audit_record(text, name, repo_root):
                 "CMP-1: verified against .tfx/component-manifest.json",
                 "CMP-1: asserted, no manifest",
                 "CMP-1: waived — tfx-waive CMP-1",
+                "CMP-1: waived — dxd-waive CMP-1",
             ]
             found_forms = [f for f in cmp1_forms if f in verdict_section]
             if len(found_forms) == 0:
@@ -259,7 +260,8 @@ def audit_record(text, name, repo_root):
                     "use one of the three fixed forms: "
                     "'CMP-1: verified against .tfx/component-manifest.json (…)', "
                     "'CMP-1: asserted, no manifest — manifest absent for <product>', "
-                    "or 'CMP-1: waived — tfx-waive CMP-1 reason=\"...\"'"
+                    "or 'CMP-1: waived — dxd-waive CMP-1 reason=\"...\"' "
+                    "(legacy 'tfx-waive CMP-1' markers remain valid)"
                 )
             elif len(found_forms) > 1:
                 messages.append(

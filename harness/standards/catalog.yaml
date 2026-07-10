@@ -13,7 +13,7 @@
 meta:
   version: "0.1"
   updated: "2026-07-08"
-  waiver_syntax: 'tfx-waive <ID> reason="<specific reason>"'
+  waiver_syntax: 'dxd-waive <ID> reason="<specific reason>"'  # legacy `tfx-waive` markers remain valid
   categories:
     A11Y: Accessibility
     TOK: Tokens & theming
