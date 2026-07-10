@@ -107,6 +107,7 @@ const nav: NavGroup[] = [
     label: "Harness",
     href: "/harness",
     items: [
+      { href: "/harness/get-started", title: "Get started" },
       { href: "/harness/loop", title: "The loop" },
       { href: "/harness/skills", title: "Skills" },
       { href: "/harness/tools", title: "Tools" },

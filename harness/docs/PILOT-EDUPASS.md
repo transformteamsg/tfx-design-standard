@@ -2,7 +2,8 @@
 
 ## Purpose
 
-Validate the full adoption path — the website's "Get started" page, plugin
+Validate the full adoption path — the website's "Get started" page
+(`/harness/get-started`), plugin
 install, the `/dxd:setup` wizard, and one screen shipped through the design
 loop — with zero hand-holding beyond those artifacts. The Platform domain is
 the pilot adopter: its users (teachers and HQ officers) sit close to the

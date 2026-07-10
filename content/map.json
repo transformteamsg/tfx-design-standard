@@ -36,7 +36,7 @@
   },
   "harness": {
     "label": "Harness",
-    "slugs": ["loop", "skills", "tools", "on-ramp"]
+    "slugs": ["get-started", "loop", "skills", "tools", "on-ramp"]
   },
   "governance": {
     "label": "Governance",

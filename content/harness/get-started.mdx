@@ -1,0 +1,102 @@
+---
+title: Get started
+description: What this standard is, what the plugin does, and what your team decides before adopting — in plain language, with pictures.
+status: settled
+---
+
+New here? Start on this page. It explains what the standard is, what the plugin
+and its skills do, how the design loop works, and what your team decides before
+adopting. You do not need to be technical to follow it. Once you know how far you
+want to hand work over, the [designer on-ramp](/harness/on-ramp) picks up where
+this page ends.
+
+## What this is
+
+This standard has two layers, and your product can adopt both. The
+**foundation** is a catalog of controls and a set of principles that every
+Teacher &amp; School product shares — how colour, type, spacing, and copy behave.
+On top sits your **domain**: the part of the portfolio your product belongs to,
+which sets the brand basics for products like yours. Your product inherits both,
+then declares only the few things that make it its own.
+
+<FoundationProfile />
+
+You never restate the shared rules. You declare your values — your primary
+colour, your fonts — and the standard fills in the rest from your domain, then
+the foundation.
+
+## What the plugin and skills are
+
+The **plugin** is a package you install into Claude Code once. Claude Code is the
+tool your builder already uses to write and change code; the plugin adds this
+standard's know-how to it. Installing takes two lines, and you do it a single
+time per repository.
+
+A **skill** is a command you type to Claude Code. Each is named for what it does:
+
+- `/dxd:start` orients you and points you to the right next step.
+- `/dxd:setup` onboards your product by asking you a few questions (more on that
+  below).
+- `/dxd:design` runs the design loop to build or change a screen.
+
+One word you will meet: an **agent** is Claude doing a task for you, step by step,
+the way a capable teammate would. The skills tell the agent to follow this
+standard while it works.
+
+## How the loop works
+
+When you ask for a screen, the `/dxd:design` skill runs a loop of six phases. The
+important one is the **plan**: the agent writes down what it intends to build, and
+nothing gets built until you approve it.
+
+<DesignLoop />
+
+So you are never handed a surprise. You say what you mean, you see the plan, you
+approve it, and only then does the agent build. Afterwards a separate agent checks
+the result against what you asked for.
+
+## What adopting takes
+
+Adopting is lighter than it sounds. You need:
+
+- a Claude Code session (your builder has one),
+- about 15 minutes with the setup wizard, and
+- your brand basics: your primary colour and your fonts. Your domain and
+  everything else can use the standard's default.
+
+Here is the whole path, start to finish:
+
+<AdoptionJourney />
+
+To install the plugin, your builder runs these two lines in Claude Code, once per
+repository:
+
+```
+/plugin marketplace add transformteamsg/tfx-design-standard
+/plugin install dxd@dxd
+```
+
+Then `/dxd:setup` walks you through the questions above.
+
+## How to customise
+
+Customising means answering the wizard. It asks, one question at a time, for your
+**product name**, **domain**, **audiences**, **primary colour**, **typefaces**,
+**stack**, **illustration** direction, and **voice**. Every question except the
+name is skippable, and skipping means "use the standard's default". You declare
+values like a colour or a font name, and the standard never makes you restate a
+rule.
+
+When you finish, the wizard writes your product's `DESIGN.md` for you. You never
+edit a file yourself. Want to see what your domain already sets, or change it
+later? Read your domain's page under [Domains](/domains) and re-run the wizard any
+time.
+
+## Where to get help
+
+- **Stuck or confused by the harness itself?** Say so in your session — the
+  feedback skill files it for the team, even mid-task.
+- **A question about the standard?** Ask the foundation owner, who maintains the
+  catalog and principles.
+- **What applies to a product like yours?** Your domain's page under
+  [Domains](/domains) lists the brand basics and any domain-specific rules.

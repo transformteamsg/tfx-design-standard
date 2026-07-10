@@ -53,6 +53,12 @@ export default function Landing() {
           >
             Building with an AI agent?
           </Link>
+          <Link
+            href="/harness/get-started"
+            className="text-[14px] font-medium text-muted-foreground underline underline-offset-2 hover:text-foreground"
+          >
+            New here? Get started
+          </Link>
         </div>
       </section>
 
