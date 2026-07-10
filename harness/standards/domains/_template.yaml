@@ -1,0 +1,32 @@
+# Domain profile template — copy to <slug>.yaml and fill in.
+# Format spec: standards/domains/README.md.
+# Rule: brand PARAMETERS, never catalog-rule restatements. Absent field =
+# foundation default. A profile is additive to the catalog, never normative
+# over it. `_`-prefixed files are excluded from validation.
+
+domain: ""            # required — registry key from catalog.yaml meta.domains; must equal the filename
+name: ""              # required — display name (matches meta.domains[domain])
+status: proposed      # required — settled | proposed
+owner: ""             # domain lead
+
+# --- Everything below is optional; omit any field that matches the foundation default. ---
+
+# products: []        # registry keys from catalog meta.products that belong to this domain
+# audiences: []       # registry keys from catalog meta.audiences this domain serves
+
+# colour:
+#   primaries:        # per-product primary, per COL-1 (cite the control)
+#     <product>: "--token #hex"
+
+# typography:         # per TYP-1
+#   display: ""
+#   body: ""
+
+# stack: ""           # component/token stack (foundation demands semantic tokens only; the stack lives here)
+
+# illustration:
+#   direction: ""     # prose pointer
+#   sref: []          # Midjourney SREF codes
+
+# voice: ""           # voice/tone pointer
+# notes: ""
