@@ -86,6 +86,26 @@ markers + `validate.py` parity checks — see [docs/SYNC.md](docs/SYNC.md).
 Copy the block from the **PR template** section and fill in all five fields. An empty
 field is a missing justification and the PR will be sent back.
 
+## Domain proposals
+
+Two proposal types route through this same evidence-first process, alongside
+new controls and revisions. The rules both must satisfy — additive-only, no
+weakening or overriding a foundation control, profiles carry parameters not
+rules — live in `standards/README.md` §Domains; this section only routes the
+proposal, it does not restate those rules.
+
+- **Domain profile change** — a new or updated `standards/domains/<slug>.yaml`.
+  Approver: the foundation owner **and** the domain lead named in that file.
+  Wizard-drafted profile snippets produced by the setup skill's
+  onboard-my-product mode enter the flow here, as a profile-change proposal —
+  they are a draft, not a merge.
+- **Domain-scoped control** — a control carrying a `domains:` field. Same
+  evidence bar as any control proposal (decision record, tier, verification
+  steps), plus one additional gate before approval: does this control weaken,
+  override, or globally waive any foundation control for that domain? If yes,
+  reject it — the additive-only rule in `standards/README.md` §Domains is
+  non-negotiable.
+
 ## Revising an existing control
 
 The flow above covers *new* controls surfaced by loop runs. A **revision** (scope

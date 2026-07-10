@@ -22,3 +22,27 @@ status: proposed
 | Debt register trend | Down and to the right |
 | No-designer shipments | **The mission metric** |
 | Evidence-closed OPQs | Are we closing debates by evidence or opinion? |
+
+## Domains
+
+As the standard scales past Teacher & School, it scales as a set of domains — each
+a portfolio-level brand boundary with its own products, colours, and voice. Two
+roles own this:
+
+- **Foundation owner** (Wondo Jeong) owns the foundation catalog and approves
+  every ratchet today.
+- **Domain lead** owns their domain's profile (`standards/domains/<slug>.yaml`)
+  and site page, and proposes domain-scoped controls and profile changes.
+
+The rules that keep this safe live in `harness/standards/README.md` under
+"Domains" — this page cites them rather than restating them: a domain may only
+add scoped controls, never weaken, override, or globally waive a foundation
+control, and a profile carries brand parameters, never catalog rules.
+
+A domain starts life as a stub marked `proposed`. Its domain lead declares the
+profile through the ratchet; once approved, the domain is `settled` and the
+lead can propose domain-scoped controls the same way any control is proposed.
+
+**Looking ahead:** once two or more domains are actively ratcheting, a
+cross-domain design council will take over approving foundation ratchets. Until
+that condition is met, the foundation owner decides alone.
