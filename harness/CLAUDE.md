@@ -1,7 +1,7 @@
 # Design Harness — project memory
 
-This repo is the **TFX design harness**: the control catalog plus Claude Code skills
-that make an agent follow the TFX Design Standard (TFX-DS) when designing or changing
+This repo is the **DXD design harness**: the control catalog plus Claude Code skills
+that make an agent follow the DXD Design Standard (normative source: TFX-DS) when designing or changing
 UI for the Teacher & School portfolio (Teacher Workspace, CaseSync, Glow, TW
 surfaces). These facts apply to every session, whether or not the full design loop is
 triggered.
@@ -43,7 +43,7 @@ triggered.
 
 | Task | Use |
 |---|---|
-| Orient, check the machine/repo, and route to the right skill | `start` skill (user-invoked: `/tfx:start`) |
+| Orient, check the machine/repo, and route to the right skill | `start` skill (user-invoked: `/dxd:start`) |
 | Create a page / form / flow, or make a named change to one | `design` skill (runs the loop) |
 | Review, improve, or polish an existing page (no specific change named) | `critique` skill (evaluate → gated fixes) |
 | Improve one named dimension of an existing page | a focused pass — `copy` · `polish` · `motion` · `flow` · `layout` (each captures → ranks → gates → verifies) |

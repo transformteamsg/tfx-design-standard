@@ -1,4 +1,4 @@
-# Adopting the TFX design harness — product team guide
+# Adopting the DXD design harness — product team guide
 
 **Audience:** an engineer or designer on Teacher Workspace, CaseSync, or Glow making
 their repo "harness-ready".
@@ -17,14 +17,18 @@ Follow the two commands in the [README Install section](../README.md#install):
 
 ```
 /plugin marketplace add transformteamsg/tfx-design-standard
-/plugin install tfx@tfx
+/plugin install dxd@dxd
 ```
+
+(The GitHub repo has not yet been renamed to `dxd-design-standard` — see
+[MIGRATION-DXD.md](MIGRATION-DXD.md). If you have an existing `tfx@tfx` install,
+that same doc covers the uninstall/reinstall steps.)
 
 This installs the eleven skills (`start`, `setup`, `design`, `critique`,
 `standards`, `copy`, `polish`, `motion`, `flow`, `layout`, `feedback`), the `evaluator`
 subagent (which carries its own review procedure), and the control catalog
 (`standards/`) — the catalog ships with the
-plugin, not with your repo. `/tfx:start` is the front door: it orients you and routes to
+plugin, not with your repo. `/dxd:start` is the front door: it orients you and routes to
 the right skill.
 
 If you are working on the harness itself (not a product repo), open a Claude Code
@@ -32,7 +36,7 @@ session in this repository directly: the skills load from `.claude/skills/`
 automatically and no install step is needed.
 
 **Per-user tools.** The plugin install is per-repo; the capture and
-filing tools are per-person. Each teammate runs `/tfx:start` (or invokes the `setup`
+filing tools are per-person. Each teammate runs `/dxd:start` (or invokes the `setup`
 skill directly), which follows the checklist (`.claude/skills/setup/setup.md` in this
 repo): the agent-browser CLI + skill for screenshots, an authenticated `gh` for
 harness feedback, Python with PyYAML for the check scripts.
@@ -117,7 +121,7 @@ has no loop structure, no catalog filters, and no evaluator procedure to follow.
 loaded. Open a Claude Code session in your product repo and ask: "design a test page."
 The `design` loop must trigger and ask intent questions — purpose, the teacher
 and moment, page type, done-criteria. If it does not, run `/plugin list` and confirm
-`tfx` is enabled. If the plugin appears but the skill does not trigger,
+`dxd` is enabled. If the plugin appears but the skill does not trigger,
 check that the session is open in the product repo root, not in a subdirectory.
 
 ---

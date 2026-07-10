@@ -1,4 +1,4 @@
-# Contributing to the TFX design harness
+# Contributing to the DXD design harness
 
 This document covers **process**: how changes reach this repository, who approves
 them, and what a proposal looks like. It does not restate content rules — those live

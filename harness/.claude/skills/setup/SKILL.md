@@ -1,6 +1,6 @@
 ---
 name: setup
-description: 'Set up a person''s machine for the TFX design harness, and orient someone new to it. Two jobs: (1) install and verify the per-user tools the loop relies on — the agent-browser capture CLI + skill, an authenticated gh for feedback issues, Python + PyYAML for the checks — and optionally seed a product''s DESIGN.md context layer; (2) orient a newcomer. Use to set up, install, or fix that tooling ("set up the harness", "install the harness dependencies", "agent-browser isn''t installed"), or when someone asks to be onboarded to or taught the harness itself ("onboard me", "I''m new to the harness", "how do I use this harness", "teach me the loop"). NOT for designing or changing a page, screen, form, or component; those always go to design, even when phrased as "how do I…". NOT for repo-level harness adoption — stack, manifest, record locations, the L1 approver; that is the team onboarding guide.'
+description: 'Set up a person''s machine for the DXD design harness, and orient someone new to it. Two jobs: (1) install and verify the per-user tools the loop relies on — the agent-browser capture CLI + skill, an authenticated gh for feedback issues, Python + PyYAML for the checks — and optionally seed a product''s DESIGN.md context layer; (2) orient a newcomer. Use to set up, install, or fix that tooling ("set up the harness", "install the harness dependencies", "agent-browser isn''t installed"), or when someone asks to be onboarded to or taught the harness itself ("onboard me", "I''m new to the harness", "how do I use this harness", "teach me the loop"). NOT for designing or changing a page, screen, form, or component; those always go to design, even when phrased as "how do I…". NOT for repo-level harness adoption — stack, manifest, record locations, the L1 approver; that is the team onboarding guide.'
 ---
 
 # Harness setup — per-user tools and context
@@ -9,10 +9,10 @@ Get a person's machine ready for the design loop, and seed a product's context l
 Brand essence is **Kind Utility**: useful first, kind at the surface. Keep turns short;
 ask before you install.
 
-**New to the harness?** Two lines: the harness makes an agent follow the TFX Design
+**New to the harness?** Two lines: the harness makes an agent follow the DXD Design
 Standard whenever it builds Teacher & School UI — one promise, *intent without loss*,
 held by a six-phase loop and a tiered control catalog. For the full orientation and
-routing to the right skill, run `/tfx:start`; this skill's own job is getting your
+routing to the right skill, run `/dxd:start`; this skill's own job is getting your
 machine and repo ready, so continue here for that.
 
 ## 1. Set up the per-user tools

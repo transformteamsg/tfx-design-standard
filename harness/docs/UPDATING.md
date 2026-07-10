@@ -1,11 +1,13 @@
-# Updating the TFX Design Harness plugin
+# Updating the DXD Design Harness plugin
 
 Consumer guide for product teams (Teacher Workspace, CaseSync, Glow) keeping the
 installed harness plugin up to date.
 
-- **Plugin:** `tfx`
-- **Marketplace:** `tfx`
-- **Source:** `github.com/transformteamsg/tfx-design-standard` (the marketplace tracks the `main` branch)
+- **Plugin:** `dxd`
+- **Marketplace:** `dxd`
+- **Source:** `github.com/transformteamsg/tfx-design-standard` (the marketplace tracks
+  the `main` branch; the repo itself has not yet been renamed — see
+  [MIGRATION-DXD.md](MIGRATION-DXD.md))
 
 ## First-time install
 
@@ -13,8 +15,11 @@ Skip this if the plugin is already installed.
 
 ```
 /plugin marketplace add transformteamsg/tfx-design-standard
-/plugin install tfx@tfx
+/plugin install dxd@dxd
 ```
+
+If you have an existing `tfx@tfx` install, see
+[MIGRATION-DXD.md](MIGRATION-DXD.md) for the uninstall/reinstall steps.
 
 This installs the eleven skills (`start`, `setup`, `design`, `critique`,
 `standards`, `feedback`, and the five focused passes — `copy`, `polish`,
@@ -25,14 +30,14 @@ control catalog — the catalog ships with the plugin, not with your repo.
 ## Update to the latest
 
 ```
-/plugin marketplace update tfx     # pull the latest marketplace.json + plugin from main
+/plugin marketplace update dxd     # pull the latest marketplace.json + plugin from main
 /reload-plugins                    # activate the new skills/agents/catalog in this session
 ```
 
 Restarting Claude Code does the same as `/reload-plugins`. Confirm the result:
 
 ```
-/plugin list                       # tfx should be present and enabled
+/plugin list                       # dxd should be present and enabled
 ```
 
 Quick check: ask "design a test page" — the `design` loop should trigger and
@@ -41,13 +46,13 @@ ask its intent questions.
 ## How updates work here
 
 - **Updates are manual.** Third-party marketplaces have auto-update off by default, so
-  a new release arrives only when you run `/plugin marketplace update tfx`. To make it
-  automatic, add `autoUpdate` for the `tfx` marketplace in `.claude/settings.json`:
+  a new release arrives only when you run `/plugin marketplace update dxd`. To make it
+  automatic, add `autoUpdate` for the `dxd` marketplace in `.claude/settings.json`:
 
   ```json
   {
     "extraKnownMarketplaces": {
-      "tfx": {
+      "dxd": {
         "source": { "source": "github", "repo": "transformteamsg/tfx-design-standard" },
         "autoUpdate": true
       }
@@ -55,7 +60,7 @@ ask its intent questions.
   }
   ```
 
-  or open `/plugin`, go to the Marketplaces tab, and enable auto-update for `tfx`.
+  or open `/plugin`, go to the Marketplaces tab, and enable auto-update for `dxd`.
 
 - **The marketplace tracks `main`.** A marketplace update pulls whatever `main` holds
   now. To pin to a tagged release instead, add the marketplace with a ref —
