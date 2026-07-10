@@ -10,7 +10,7 @@ The catalog (`standards/catalog.yaml`) is the normative layer of this harness �
 ## Reading and filtering
 
 - Load the index once per session; read a control's `detail` file only when it is in scope (details carry rationale, examples, and evaluator guidance). A control with no `detail:` is self-sufficient — `title` + `verify` are the whole rule; a `judgment`/`hybrid` control missing its detail is a catalog defect (raise it, don't improvise a rubric).
-- Filter by `phase`, `applies_to`, and scope: `products` / `audiences` — a control without those fields is global and always in scope; a scoped one applies only when the run's product/audience is listed. Audience defaults to teachers when the intent phase didn't establish one. A content-only change pulls `applies_to: [content]` controls, not the whole catalog.
+- Filter by `phase`, `applies_to`, and scope: `products` / `audiences` — a control without those fields is global and always in scope; a scoped one applies only when the run's product/audience is listed. Audience is the product's declared audience (its domain profile `audiences:` / `DESIGN.md`); if the intent phase didn't establish one, ask. A content-only change pulls `applies_to: [content]` controls, not the whole catalog.
 - Portfolio-wide: one set of controls for every product; per-product difference is nuance calibration, never separate rules.
 
 ## Applying tiers and waivers

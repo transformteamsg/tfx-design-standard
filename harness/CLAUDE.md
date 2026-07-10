@@ -12,8 +12,11 @@ triggered.
   tier. WCAG 2.2 AA is the self-imposed accessibility floor; SGDS, GOV.UK, and
   Apple's HIG design principles are reference points, not rules. Consult the catalog for any design or content change —
   "just a small change" is still in scope.
-- **Brand essence is Kind Utility** — useful first, kind at the surface. The one
-  test: does this help teachers work faster with less stress? If not, don't build it.
+- **Every domain declares its brand essence** in its profile
+  (`standards/domains/<slug>.yaml`); the always-on test: does this help your users get
+  their task done faster with less stress? If not, don't build it. *(Teachers & School:
+  **Kind Utility** — useful first, kind at the surface; there the test names teachers —
+  see `standards/domains/teachers-school.yaml`.)*
 - **Semantic tokens only** — never raw colour/spacing/radius values (TOK-1..3).
   The foundation demands token-shaped behaviour but does **not** name a stack,
   typeface, or primary — declare those in your domain profile

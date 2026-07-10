@@ -78,9 +78,10 @@ Three optional per-control fields scope a control to part of the portfolio:
   `products: [glow]` may also carry `domains: [teachers-school]`, never
   `domains: [platform]`. Prefer the narrowest scope that expresses the intent;
   a `products:` scope already implies its domain.
-- **Audience defaults to `teachers`** at the intent phase when unstated —
-  today's live surfaces are teacher-facing. The design loop asks when a
-  surface could plausibly serve students or parents.
+- **Audience is the product's declared audience** — from its domain profile
+  `audiences:` (or the product's `DESIGN.md`). When the intent phase has not
+  established one, the design loop asks rather than assuming; it does not default to
+  a single audience.
 - Age bands: `students-primary` = primary school; `students-secondary` =
   secondary school and up.
 - **Do not stamp scope onto floor controls.** Stamping
