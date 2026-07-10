@@ -23,7 +23,7 @@ you have seen and judged the current state. Before Phase 1's contract:
    critique's "what underperforms" list as before; everything else that would
    make the layout better becomes a **suggestion**.
 3. **Write a short design critique of what is there** — against the in-scope
-   catalog controls *and* Kind Utility: what works and should be preserved
+   catalog controls *and* the product's brand essence: what works and should be preserved
    (call out established iconography, radius, layout, and copy that are
    deliberate — do not "fix" them, cf. the conservative-defaults rule in
    Phase 3/4) — **but verify, do not assume: every element you list as
@@ -32,9 +32,9 @@ you have seen and judged the current state. Before Phase 1's contract:
    "preserve" means do not restyle a deliberate choice, it never means skip the
    check** — and what
    genuinely underperforms (control violations, hierarchy,
-   friction in the teacher's task). Ground each point in the screenshot.
+   friction in the user's task). Ground each point in the screenshot.
 4. **Layout suggestions (ranked).** Up to 5, ordered by impact on the
-   teacher's task. Each names: the concrete change ("merge the two summary
+   user's task. Each names: the concrete change ("merge the two summary
    cards into one calm header row"), the pattern or control it serves
    (layout-patterns.md #4, LAY-5), and the cost (S/M). Suggestions are OFFERS
    for the Phase 1 contract and Phase 3 plan — the user picks; unpicked

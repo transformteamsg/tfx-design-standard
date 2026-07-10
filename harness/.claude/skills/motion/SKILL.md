@@ -1,6 +1,6 @@
 ---
 name: motion
-description: Smooth the motion on an existing Teacher & School product page — transitions, easing, timing, and reduced-motion. Use for a scoped ask that names this dimension — "smooth the animations", "the motion feels janky", "the transitions are too slow", "fix the animation on <page>" — with no structural change named. NOT for a whole-page review with no dimension named (that is critique); NOT for a named change like adding a new transition or interaction (that is design). Styling goes to polish, layout to layout.
+description: Smooth the motion on an existing product page — transitions, easing, timing, and reduced-motion. Use for a scoped ask that names this dimension — "smooth the animations", "the motion feels janky", "the transitions are too slow", "fix the animation on <page>" — with no structural change named. NOT for a whole-page review with no dimension named (that is critique); NOT for a named change like adding a new transition or interaction (that is design). Styling goes to polish, layout to layout.
 ---
 
 # Smooth the motion on an existing surface

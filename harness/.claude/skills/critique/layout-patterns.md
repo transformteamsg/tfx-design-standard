@@ -1,16 +1,16 @@
 # Layout patterns (guidance, not controls)
 
 This file is a judgment aid, like `implement-craft.md` — it distils what a good
-layout looks like for Teacher & School products so the critique step (see
+layout looks like for product surfaces in your portfolio so the critique step (see
 `critique.md`) can suggest improvements, not just flag violations. **Where a
 pattern here conflicts with a catalog control, the control wins.**
 
-Teacher & School products are the **product register**: dense, calm,
+These are the **product register**: dense, calm,
 task-first professional tools — not marketing pages. The patterns below are
 written for that register, not for a brand or marketing surface, which would
 read looser and more spacious by design.
 
-1. **One focal point.** The eye lands on the teacher's primary task first;
+1. **One focal point.** The eye lands on the user's primary task first;
    everything else steps down in size, weight, or position. If two regions
    compete for attention, demote one — don't let both fight for the same
    visual weight (ties to CMP-5, one primary action; SLP-6, type-scale
