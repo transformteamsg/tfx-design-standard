@@ -1,4 +1,4 @@
-# Per-product context layer — `DESIGN.md` + `.tfx/design.json`
+# Per-product context layer — `DESIGN.md` + `.dxd/design.json`
 
 The control catalog is portfolio-wide and product-agnostic on purpose (see
 `standards/README.md` rule 5: no per-product control overlays). But real products differ
@@ -10,12 +10,18 @@ content skill's §6, motion nowhere, grid in a separate proposed `.tfx/layout-sy
 This layer gives each product repo one place for "what makes this product this product":
 
 - **`DESIGN.md`** — human-owned, at the product repo root. Per-product visual parameters.
-- **`.tfx/design.json`** — its machine twin, **generated** from `DESIGN.md` by
+- **`.dxd/design.json`** — its machine twin, **generated** from `DESIGN.md` by
   `scripts/generate-design-json.py`, so checks and hooks can read the same parameters the
   agent reads. Never hand-edited.
 
 Both are **optional**. A repo with neither gets portfolio defaults everywhere; that is a
 valid, complete state — never grade a missing context file as a failure.
+
+**Legacy path.** `.dxd/design.json` is the canonical path as of the DXD rename
+(plan 001); the generator writes only here now. Readers (the design skill, `evaluator`,
+`checks/detect.py`) resolve `.dxd/design.json` first, falling back to `.tfx/design.json`
+in repos that predate the rename — that legacy path keeps working, it is just no longer
+where the generator writes.
 
 ## The one rule: parameters, never catalog-rule restatements
 
@@ -33,7 +39,7 @@ Omit any section that does not differ from the portfolio default. An absent sect
 
 ## `DESIGN.md` — sections (all optional)
 
-Each `## ` heading below maps to one top-level key in `.tfx/design.json`. Cite the
+Each `## ` heading below maps to one top-level key in `.dxd/design.json`. Cite the
 normative source in each section you keep.
 
 | Section (`## `) | json key | Carries | Normative source to cite |
@@ -53,7 +59,7 @@ declared**; declaring one here only moves the declaration's location.
 A `register:` field (brand-register impact) is **reserved for the future** and is not used
 today — brand impact is carried by the colour parameters plus COL-1. Do not add it now.
 
-## `.tfx/design.json` — the generated twin
+## `.dxd/design.json` — the generated twin
 
 Generated only, never hand-edited. Shape:
 
@@ -109,11 +115,11 @@ After editing `DESIGN.md`, regenerate and commit both files:
 python3 scripts/generate-design-json.py <product-repo-root>
 ```
 
-CI can assert freshness with `--check` (exit 2 when `.tfx/design.json` is stale vs the
+CI can assert freshness with `--check` (exit 2 when `.dxd/design.json` is stale vs the
 markdown).
 
 The unified detector consumes this: `checks/detect.py` (plan 059) runs the generator in
-`--check` mode whenever a `.tfx/design.json` exists at the target repo root, so a stale
-twin surfaces as a detector finding (exit 2), never a crash. A repo with no
-`.tfx/design.json` skips the check entirely — a missing context layer is a valid, complete
-state, never graded as a failure.
+`--check` mode whenever a `.dxd/design.json` exists at the target repo root (falling back
+to `.tfx/design.json` in repos that predate the rename), so a stale twin surfaces as a
+detector finding (exit 2), never a crash. A repo with neither path skips the check
+entirely — a missing context layer is a valid, complete state, never graded as a failure.

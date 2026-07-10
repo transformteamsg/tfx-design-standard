@@ -135,7 +135,8 @@ An in-code "schema-constrained" comment is not evidence of render-time sanitisat
 
 **Layout grading.** Seven LAY controls are in the catalog: LAY-1 (the product's
 declared column grid and gutter scale, L2 — controls/lay-1.md; N/A where no grid is
-declared in `.tfx/design.json` `layout_system`), LAY-2 (reflow at 320 CSS px, L1 —
+declared in `.dxd/design.json` `layout_system` — fall back to `.tfx/design.json` in
+repos that predate the rename), LAY-2 (reflow at 320 CSS px, L1 —
 controls/lay-2.md), LAY-3 (page-template fit, L2 — controls/lay-3.md), LAY-4
 (body-text measure ≤ 80ch, L2 — controls/lay-4.md), LAY-5 (density fits the task,
 L2 — controls/lay-5.md), LAY-6 (edge / optical alignment, L2 — controls/lay-6.md),

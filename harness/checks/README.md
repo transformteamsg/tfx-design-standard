@@ -73,10 +73,11 @@ curated or `--all` set). It never reports an unbuilt or un-run control as "passe
 its output as "the built checks found nothing", not "the design is compliant". Per-control
 coverage and the always-manual gaps are in the sections below.
 
-**Design-context freshness.** When `.tfx/design.json` exists at the target repo root and
-058's generator (`scripts/generate-design-json.py`) is present, detect also runs the
-generator in `--check` mode; a stale `design.json` (generator exit 2) is surfaced as a
-finding (exit 2), never a crash.
+**Design-context freshness.** When `.dxd/design.json` exists at the target repo root
+(falling back to `.tfx/design.json` in repos that predate the rename) and 058's generator
+(`scripts/generate-design-json.py`) is present, detect also runs the generator in
+`--check` mode; a stale `design.json` (generator exit 2) is surfaced as a finding
+(exit 2), never a crash.
 
 **Self-test:** `python3 checks/detect.py --self-test` → `SELF-TEST OK (35 cases)` — profile
 selection, the 0/2/1 exit mapping (incl. curated excluding TYP-2 / `--all` including it),

@@ -23,8 +23,9 @@ space only; token/type/colour craft is a `polish` matter and gets NOTED and rout
   unit; group static content with space and dividers).
 
 **Reference:** `../critique/layout-patterns.md` (the regions → squint-test → alignment →
-density → grouping read). When the product ships one, `.tfx/design.json` `layout_system`
-declares its column grid — where declared, LAY-1 makes the grid checkable; treat it
-as layout context otherwise.
+density → grouping read). When the product ships one, `.dxd/design.json` `layout_system`
+(fall back to `.tfx/design.json` in repos that predate the rename) declares its column
+grid — where declared, LAY-1 makes the grid checkable; treat it as layout context
+otherwise.
 
 **Procedure:** follow `../critique/pass.md` with the subset above.

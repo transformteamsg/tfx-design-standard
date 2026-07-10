@@ -328,9 +328,12 @@ def run_checks(specs, targets, ignore_rules, repo_root):
 
 
 def run_generator_check(repo_root, findings, results):
-    """If `.tfx/design.json` exists and the 058 generator is present, run it in
-    `--check` mode. Staleness (exit 2) is a finding, never a crash."""
-    design_json = os.path.join(repo_root, ".tfx", "design.json")
+    """If `.dxd/design.json` exists (or, in repos that predate the rename,
+    `.tfx/design.json`) and the 058 generator is present, run it in `--check`
+    mode. Staleness (exit 2) is a finding, never a crash."""
+    design_json_dxd = os.path.join(repo_root, ".dxd", "design.json")
+    design_json_tfx = os.path.join(repo_root, ".tfx", "design.json")
+    design_json = design_json_dxd if os.path.isfile(design_json_dxd) else design_json_tfx
     if not os.path.isfile(design_json) or not os.path.isfile(GENERATOR):
         return
     rc, out, _err = _run_subprocess([sys.executable, GENERATOR, repo_root, "--check"])

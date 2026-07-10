@@ -36,8 +36,9 @@ list.
 
 A product's `DESIGN.md` records the few visual parameters that make it itself — primary
 colour, tone weighting, motion conventions, column grid — and its generated twin
-`.tfx/design.json` lets the loop and checks read them. A repo with neither just gets the
-portfolio defaults everywhere, which is a valid, complete state — never a failure.
+`.dxd/design.json` (fall back to `.tfx/design.json` in repos that predate the rename)
+lets the loop and checks read them. A repo with neither just gets the portfolio
+defaults everywhere, which is a valid, complete state — never a failure.
 
 If the product repo has no `DESIGN.md` and the annotated template ships with this
 harness (`../../../docs/templates/DESIGN.md`), offer to:

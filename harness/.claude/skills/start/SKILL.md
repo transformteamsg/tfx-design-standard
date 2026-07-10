@@ -31,9 +31,10 @@ text drifts):
 Before routing, confirm the loop's tools and per-product context are in place:
 
 - Run `agent-browser --help` once. If it fails, capture is not set up.
-- Look in the product repo root for `DESIGN.md` and its generated twin `.tfx/design.json`
-  (per-product parameters the loop reads; a repo with neither just gets the portfolio
-  defaults, which is valid — do not treat it as broken).
+- Look in the product repo root for `DESIGN.md` and its generated twin `.dxd/design.json`
+  (fall back to `.tfx/design.json` in repos that predate the rename; per-product
+  parameters the loop reads; a repo with neither just gets the portfolio defaults, which
+  is valid — do not treat it as broken).
 
 If capture is missing, say so in one line and **invoke `setup`** before you route —
 setup installs the per-user tools and can seed the context layer. If everything checks
