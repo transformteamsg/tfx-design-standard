@@ -614,6 +614,7 @@ controls:
     source: TFX-DS
     title: UI action words name the action, not the input device — "choose", "select", "view", never "click", "tap", "swipe", or "press"
     tier: L2
+    status: proposed
     check: hybrid
     phase: [implement, verify]
     applies_to: [content]
@@ -638,6 +639,7 @@ controls:
     source: TFX-DS
     title: Copy carries no low-informational-value words — no empty openers, filler words, or droppable articles and conjunctions, unless removing them hurts clarity
     tier: L2
+    status: proposed
     check: hybrid
     phase: [implement, verify]
     applies_to: [content]
@@ -662,6 +664,7 @@ controls:
     source: TFX-DS
     title: Descriptive copy leads with its purpose — what it does for the teacher and when to reach for it — before the mechanism
     tier: L2
+    status: proposed
     check: judgment
     phase: [implement, verify]
     applies_to: [content]
