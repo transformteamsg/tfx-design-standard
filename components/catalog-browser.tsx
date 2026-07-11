@@ -142,6 +142,11 @@ export function CatalogBrowser({
                 {c.check}
               </span>
               <span className="text-[11px] text-muted-foreground">{c.category}</span>
+              {c.status === "proposed" && (
+                <span className="rounded-full border border-warning-muted bg-warning-subtle px-2 py-0.5 text-[11px] font-medium text-warning">
+                  Proposed
+                </span>
+              )}
               {(c.products || c.audiences) && (
                 <span className="rounded-full border border-border px-2 py-0.5 text-[11px] text-muted-foreground">
                   {[
