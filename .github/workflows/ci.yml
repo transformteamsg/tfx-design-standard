@@ -41,3 +41,17 @@ jobs:
 
       - name: Standards gate
         run: node scripts/check-standards.mjs
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install PyYAML
+        run: pip install pyyaml
+
+      - name: Python standards gate
+        run: |
+          python3 harness/checks/validate.py --self-test
+          python3 harness/checks/validate.py
+          python3 harness/checks/token-audit.py app components lib
+          python3 harness/checks/a11y-static.py app components
