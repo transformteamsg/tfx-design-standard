@@ -66,6 +66,14 @@ EXIT_FAILURE = 1
 # The per-subprocess timeout (a hung script is a tool failure, not a silent pass).
 CHECK_TIMEOUT = 180
 
+# Directories never scanned during ignoreFiles expansion (mirrors the check
+# scripts' own recursion, which skips vendor and build output).
+PRUNE_DIRS = {"node_modules", "dist", "build", "out", "coverage", "vendor", "__pycache__"}
+
+# Union of every wrapped check's TARGET_EXTENSIONS (content-lint adds .md/.mdx).
+SCAN_EXTENSIONS = {".css", ".html", ".jsx", ".tsx", ".js", ".ts", ".vue",
+                   ".svelte", ".md", ".mdx"}
+
 # ERROR-line convention (checks/README.md):
 #   ERROR <file>:<line> [<CTL>] <message>
 #   ERROR <file>:<line> [<CTL>][waiver-claimed] <message>   (token-audit)
@@ -158,16 +166,24 @@ def is_ignored(path, globs, repo_root):
 def expand_targets(paths, ignore_globs, repo_root):
     """Expand dir targets into a flat file list and drop ignoreFiles matches. Only
     called when ignoreFiles is set — otherwise the raw targets are passed straight
-    through (each script recurses itself)."""
+    through (each script recurses itself).
+
+    Directory targets are walked with PRUNE_DIRS (vendor/build dirs) and dot-dirs
+    pruned, and only files whose extension is in SCAN_EXTENSIONS are kept — this
+    keeps the expanded argv well under ARG_MAX on real repos. Explicit file targets
+    (the os.path.isfile branch) pass through unfiltered: a user who names a file
+    gets it scanned regardless of extension."""
     files = []
     for p in paths:
         if os.path.isfile(p):
             files.append(p)
         elif os.path.isdir(p):
             for root, dirs, fnames in os.walk(p):
-                dirs[:] = [d for d in dirs if not d.startswith(".")]
+                dirs[:] = [d for d in dirs
+                           if not d.startswith(".") and d not in PRUNE_DIRS]
                 for fn in sorted(fnames):
-                    files.append(os.path.join(root, fn))
+                    if os.path.splitext(fn)[1].lower() in SCAN_EXTENSIONS:
+                        files.append(os.path.join(root, fn))
         else:
             files.append(p)  # let the script report the missing path
     return [f for f in files if not is_ignored(f, ignore_globs, repo_root)]
@@ -576,6 +592,35 @@ def run_self_test():
         got2 = expand_targets([td], ["*.css"], td)
         rels2 = {os.path.relpath(f, td) for f in got2}
         check("ignoreFiles *.css glob drops the css", "legacy/old.css" not in rels2)
+
+    # 10b. Vendor dirs (PRUNE_DIRS) are never walked even for scan extensions.
+    with tempfile.TemporaryDirectory() as td:
+        os.makedirs(os.path.join(td, "node_modules", "pkg"))
+        os.makedirs(os.path.join(td, "src"))
+        open(os.path.join(td, "node_modules", "pkg", "index.js"), "w").close()
+        open(os.path.join(td, "src", "page.tsx"), "w").close()
+        got = expand_targets([td], ["legacy/*"], td)
+        rels = {os.path.relpath(f, td) for f in got}
+        check("prune keeps src/page.tsx", "src/page.tsx" in rels)
+        check("prune drops node_modules .js",
+              not any(r.startswith("node_modules") for r in rels))
+
+    # 10c. Non-scan extensions are filtered out of dir expansion.
+    with tempfile.TemporaryDirectory() as td:
+        os.makedirs(os.path.join(td, "src"))
+        open(os.path.join(td, "src", "notes.txt"), "w").close()
+        open(os.path.join(td, "src", "page.tsx"), "w").close()
+        got = expand_targets([td], ["legacy/*"], td)
+        rels = {os.path.relpath(f, td) for f in got}
+        check("extension filter keeps src/page.tsx", "src/page.tsx" in rels)
+        check("extension filter drops src/notes.txt", "src/notes.txt" not in rels)
+
+    # 10d. An explicit file target survives regardless of extension (isfile branch).
+    with tempfile.TemporaryDirectory() as td:
+        weird = os.path.join(td, "weird.xyz")
+        open(weird, "w").close()
+        got = expand_targets([weird], ["legacy/*"], td)
+        check("explicit non-scan file target survives expansion", weird in got)
 
     # 11. Config loading.
     with tempfile.TemporaryDirectory() as td:
