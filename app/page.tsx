@@ -31,7 +31,7 @@ export default function Landing() {
   return (
     <div className="mx-auto max-w-[880px]">
       <section className="pt-10 sm:pt-16">
-        <p className="text-[12px] font-semibold uppercase tracking-widest text-tw-blue">
+        <p className="text-[13px] font-semibold text-tw-blue">
           TransformX · Teacher &amp; School portfolio
         </p>
         <h1 className="mt-4 max-w-[16ch] font-display text-[48px] font-semibold leading-[1.04] tracking-tight sm:text-[72px]">
@@ -54,10 +54,10 @@ export default function Landing() {
             Building with an AI agent?
           </Link>
           <Link
-            href="/harness/get-started"
+            href="/how-to-read"
             className="text-[14px] font-medium text-muted-foreground underline underline-offset-2 hover:text-foreground"
           >
-            New here? Get started
+            New here? Start here
           </Link>
         </div>
       </section>
@@ -106,7 +106,7 @@ export default function Landing() {
       </section>
 
       <section className="mt-14 rounded-xl bg-tw-blue px-8 py-10 text-white sm:px-12">
-        <p className="text-[12px] font-semibold uppercase tracking-widest text-white">
+        <p className="text-[13px] font-semibold text-white">
           The one test
         </p>
         <p className="mt-3 max-w-[24ch] font-display text-[24px] font-semibold leading-snug sm:text-[32px]">

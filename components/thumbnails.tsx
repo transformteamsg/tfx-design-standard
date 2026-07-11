@@ -93,7 +93,7 @@ export function Thumb({ ink: inkVar, art }: { ink: string; art: ReactNode }) {
     >
       <svg
         viewBox="0 0 96 60"
-        className="h-full w-full"
+        className="h-full w-full transition-transform duration-150 ease-out motion-reduce:transition-none group-hover:-translate-y-0.5"
         strokeLinecap="round"
         strokeLinejoin="round"
         aria-hidden="true"
@@ -140,7 +140,7 @@ export function SectionTile({ topic, tag, count }: { topic: Topic; tag?: string;
       <div className="mt-3 flex items-baseline justify-between gap-3">
         <p className="font-display text-[18px] font-semibold leading-snug">{topic.title}</p>
         {tag && (
-          <span className="shrink-0 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+          <span className="shrink-0 text-[12px] font-semibold text-muted-foreground">
             {tag}
           </span>
         )}
