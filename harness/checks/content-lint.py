@@ -661,6 +661,10 @@ def check_file(filepath, lists=None, phrase_res=None, word_res=None, device_re=N
             else:
                 # Treat the whole prose line as text for sentence-length.
                 prose = re.sub(r"`[^`]*`", "", scan_line)  # drop inline code
+                # Strip list/blockquote markers so anchored checks (CNT-6
+                # openers, CNT-1) see the sentence start: "- ", "* ", "+ ",
+                # "1. ", "> " — repeated for nested "> - " forms.
+                prose = re.sub(r"^(?:\s*(?:[-*+]|\d{1,3}[.)]|>)\s+)+", "", prose)
                 _check_cnt3_text(prose, emit)
                 _check_cnt1_text(prose.strip(), line, lineno, lines, emit)
                 _check_cnt5_text(prose, emit, device_re)
@@ -1135,6 +1139,31 @@ def run_self_test():
     assert_clean(
         "CNT-6: opener/filler examples in inline code are not flagged",
         "- Empty openers (e.g. `There is`) and filler (e.g. `just`, `really`)",
+        ".mdx",
+    )
+    assert_violations(
+        "CNT-6: empty opener behind a bullet marker",
+        "- There is a problem with your form.",
+        ".mdx", ["CNT-6"],
+    )
+    assert_violations(
+        "CNT-6: empty opener behind a blockquote marker",
+        "> There is a delay.",
+        ".mdx", ["CNT-6"],
+    )
+    assert_violations(
+        "CNT-6: empty opener behind a numbered-list marker",
+        "1. There is one step.",
+        ".mdx", ["CNT-6"],
+    )
+    assert_clean(
+        "CNT-6: clean bulleted copy stays clean",
+        "- Choose a class to continue.",
+        ".mdx",
+    )
+    assert_clean(
+        "CNT-6: front-matter rule (---) is still skipped, not stripped into a marker",
+        "---",
         ".mdx",
     )
 
