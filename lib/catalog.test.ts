@@ -32,6 +32,7 @@ const PUBLIC_FIELDS_ALLOWLIST = [
   "audiences",
   "enforced",
   "script",
+  "status",
 ];
 
 function readRawCatalog() {
@@ -124,9 +125,29 @@ describe("getPublicCatalogYaml — control projection", () => {
       }
     }
   });
+
+  it("status: proposed survives projection for exactly the three stamped proposals (plan 011)", () => {
+    const yaml = getPublicCatalogYaml();
+    expect(yaml.match(/status: proposed/g)?.length).toBe(3);
+
+    const projected = parse(yaml) as { controls: Record<string, unknown>[] };
+    const proposedIds = projected.controls
+      .filter((c) => c.status === "proposed")
+      .map((c) => c.id)
+      .sort();
+    expect(proposedIds).toEqual(["CNT-5", "CNT-6", "CNT-7"]);
+  });
 });
 
 describe("getCatalog", () => {
+  it("carries status: proposed on CNT-5/6/7 and leaves settled controls undefined", () => {
+    const controls = getCatalog();
+    for (const id of ["CNT-5", "CNT-6", "CNT-7"]) {
+      expect(controls.find((c) => c.id === id)?.status).toBe("proposed");
+    }
+    expect(controls.find((c) => c.id === "A11Y-1")?.status).toBeUndefined();
+  });
+
   it("returns a non-empty list of controls with a category resolved from meta.categories", () => {
     const controls = getCatalog();
     expect(controls.length).toBeGreaterThan(0);
