@@ -48,7 +48,7 @@ What this script does NOT verify
 Waiver suppression
 ──────────────────
 A11Y-2 and A11Y-3 are L0 — never waivable. This script does NOT parse
-tfx-waive markers for these controls; every violation is emitted as a hard ERROR.
+dxd-waive/tfx-waive markers for these controls; every violation is emitted as a hard ERROR.
 A11Y-8 (KBD sub-rule) is L1; waiver parsing is also omitted here because the
 static check is a subset — the full evaluation still goes through the manual
 pass. Implementing waiver parsing for a partial check risks creating a false

@@ -1,13 +1,19 @@
 ---
 name: design
-description: Design or change a Teacher & School product UI — a new page, screen, form, flow, OR a modification to an existing one (adding a field, editing copy, restyling a component). Use whenever the user asks to design, create, build, add to, change, fix, or restyle any page, screen, form, component, or user flow — and whenever they ask to re-audit, re-check, or re-verify an existing page against the standards catalog (e.g. after the catalog gains new controls). Orchestrates the full loop — intent, diverge, plan (human gate), implement, verify — with the TFX-DS standards catalog enforced throughout. For copy-only edits the copy skill is sufficient; for questions about the catalog itself use standards; and to review, improve, or polish an existing page with no specific change named — or when the user just says they don't like it — use critique.
+description: Design or change a product UI in a DXD portfolio — a new page, screen, form, flow, OR a modification to an existing one (adding a field, editing copy, restyling a component). Use whenever the user asks to design, create, build, add to, change, fix, or restyle any page, screen, form, component, or user flow — and whenever they ask to re-audit, re-check, or re-verify an existing page against the standards catalog (e.g. after the catalog gains new controls). Orchestrates the full loop — intent, diverge, plan (human gate), implement, verify — with the TFX-DS standards catalog enforced throughout. For copy-only edits the copy skill is sufficient; for questions about the catalog itself use standards; and to review, improve, or polish an existing page with no specific change named — or when the user just says they don't like it — use critique.
 ---
 
 # Design UI
 
-You are designing UI for the Teacher & School portfolio (Teacher Workspace, CaseSync,
-Glow, and TW surfaces). The normative source is the TFX Design Standard; brand essence
-is **Kind Utility** — useful first, kind at the surface. Standards compliance is not a
+You are designing UI for a product in your portfolio. The normative source is the DXD
+Design Standard (historical source: TFX-DS). The product's brand — its primary colours,
+typography, voice, and brand essence — resolves from context: the product's `DESIGN.md`,
+else its domain profile (`standards/domains/<domain>.yaml`), else the foundation default.
+The always-on test: does this help your users get their task done faster with less
+stress? If not, don't build it. *(Teachers & School binding: the portfolio is Teacher
+Workspace, CaseSync, Glow, and TW surfaces; brand essence is **Kind Utility** — useful
+first, kind at the surface, and the test names teachers — see
+`standards/domains/teachers-school.yaml`.)* Standards compliance is not a
 final check — it shapes every phase. Work through the phases in order; do not skip a
 gate even if the request seems simple.
 
@@ -39,15 +45,19 @@ conventions, the code wins and you flag the drift. Spec: the harness's
 protocol. For any waiver or applicability question read
 `../../../standards/README.md` — never answer from memory.
 
-**The stack** (deliberately boring, AI-legible): Base UI components, Radix Colors
-scales, shadcn/ui default tokens for spacing/radius/type. Plus Jakarta Sans (600) for
-display, Inter (400/500/600) for body/UI. Each product anchors primary actions and
-brand moments in its **own** primary (Teacher Workspace → Teacher & School Blue
-`#0064FF`; Glow → orange; CaseSync → indigo — see COL-1's detail file for the
-table). Build from these by default.
+**The stack.** The foundation demands token-shaped behaviour (TOK-1..3) but names no
+stack, typeface, or primary — resolve those from context: the product's `DESIGN.md`,
+else its domain profile (`standards/domains/<domain>.yaml`), else the foundation
+default. Each product anchors primary actions and brand moments in its **own** primary
+(COL-1). Build from the resolved system by default — deliberately boring and AI-legible
+beats invented. *(Teachers & School binding, from `standards/domains/teachers-school.yaml`:
+Base UI components, Radix Colors scales, shadcn/ui default tokens for spacing/radius/type;
+Plus Jakarta Sans (600) display, Inter (400/500/600) body/UI; per-product primaries —
+Teacher Workspace → T&S Blue `#0064FF`, Glow → orange, CaseSync → indigo, see COL-1's
+detail file for the table.)*
 
-**Judgment lens.** Where no control decides and Kind Utility alone is too coarse,
-weigh trade-offs against Apple's HIG design principles (Purpose, Agency,
+**Judgment lens.** Where no control decides and the product's brand essence alone is too
+coarse, weigh trade-offs against Apple's HIG design principles (Purpose, Agency,
 Responsibility, Familiarity, Flexibility, Simplicity, Craft, Delight —
 developer.apple.com/design/human-interface-guidelines/design-principles). A
 reference point like SGDS and GOV.UK, never a checkable standard: principles settle
@@ -55,8 +65,9 @@ trade-offs; they are not used to "check" work. The phase notes below name the on
 that recur in this portfolio.
 
 **Layout controls.** Layout has seven controls: LAY-1 (the product's declared
-column grid and gutter scale — N/A where no grid is declared in `.tfx/design.json`
-`layout_system`; L2), LAY-2 (reflow at 320 px — WCAG 2.2 SC 1.4.10, L1), LAY-3
+column grid and gutter scale — N/A where no grid is declared in `.dxd/design.json`
+`layout_system` (fall back to `.tfx/design.json` in repos that predate the rename);
+L2), LAY-2 (reflow at 320 px — WCAG 2.2 SC 1.4.10, L1), LAY-3
 (page-template fit, L2), LAY-4 (body-text measure ≤ 80ch, target ~66ch — L2),
 LAY-5 (density fits the task, L2), LAY-6 (edge / optical alignment, L2), and
 LAY-7 (one primary focal region; visual reading order matches the task's
@@ -88,7 +99,7 @@ re-audit), the evaluate step belongs to the `critique` skill — **invoke
 not propose changes before the current state has been captured and judged. The
 critique captures the live page, runs a structured layout read (against
 `../critique/layout-patterns.md`), grades it against the in-scope catalog
-controls and Kind Utility, and returns ranked suggestions whose "what
+controls and the product's brand essence, and returns ranked suggestions whose "what
 underperforms" list sets the scope of the polish; the procedure lives in
 `../critique/critique.md`. **Preserved is not waived** — a "preserve" call still
 has to pass its controls, it only means don't restyle a deliberate choice.
@@ -99,20 +110,20 @@ The page is the unit of evidence, but the design is the journey. When the surfac
 a flow — or a single page hosts a multi-step interaction — design the journey, not
 just each screen:
 
-- **Map it in Phase 1**: entry points (where does the teacher arrive from, and with
+- **Map it in Phase 1**: entry points (where does the user arrive from, and with
   what already known?), the done state, and every exit — back, cancel, abandon. A
   flow with only its happy path mapped is a demo, not a design.
 - **Edge cases are structure, not polish.** Decide in Phase 3, not during build:
   interruption (timeout, network loss mid-flow), partial completion and resume, the
-  teacher who left at step 2 and returns tomorrow, data that already exists
-  elsewhere. For each, the plan says what happens to the teacher's work — "your
+  user who left at step 2 and returns tomorrow, data that already exists
+  elsewhere. For each, the plan says what happens to the user's work — "your
   draft is saved" must be a designed behaviour before it can be honest copy.
 - **Interactions carry the flow.** Transitions preserve context — content and
   controls stay in predictable positions across steps (HIG: Flexibility); keyboard
   traversal works across the whole journey, not just within each screen (A11Y-2 at
   flow scope); focus lands somewhere sensible after every step change (A11Y-11
   applies at each transition, not only at async states).
-- **Escapability is part of the structure** (HIG: Agency): the teacher can leave at
+- **Escapability is part of the structure** (HIG: Agency): the user can leave at
   any step without losing work, and the route out is visible, not discovered.
 
 ## What actually runs today
@@ -132,17 +143,18 @@ A request like "apply the standards", "improve this", "polish it", or "make it
 better" names *no dimension of change* — and you cannot infer one, so do not try.
 "Apply the standards" in particular reads by default as a **compliance + anti-slop
 pass**: on a surface that is already decent, that can finish with the visuals looking
-almost unchanged. That is exactly what disappointed the Glow pilot — the builder
-wanted a brand-forward visual redesign, said "apply the standards", and got a run that
-tightened UX the surface had mostly got right already. The fix is not to guess bigger;
+almost unchanged. That is exactly what disappointed the Glow pilot (a Teachers & School
+product) — the builder wanted a brand-forward visual redesign, said "apply the
+standards", and got a run that tightened UX the surface had mostly got right already. The fix is not to guess bigger;
 it is to **ask**. When the request is open-ended, use a structured `AskUserQuestion`
 to pin down which **dimension(s)** are in scope:
 
 - **Visual & brand expression** — colour, type expression, imagery, the surface's
-  energy, and how strongly it carries the product's brand (Glow's warmth, TW's blue,
-  CaseSync's indigo). This is the dimension "apply the standards" silently drops.
+  energy, and how strongly it carries the product's brand (for Teachers & School:
+  Glow's warmth, TW's blue, CaseSync's indigo). This is the dimension "apply the
+  standards" silently drops.
 - **Layout & structure** — hierarchy, composition, page template, density.
-- **UX & flow** — the teacher's path, the steps, the states, the friction.
+- **UX & flow** — the user's path, the steps, the states, the friction.
 - **Copy** — headings, labels, microcopy, error states.
 - **Compliance & anti-slop only** — fix control violations, change nothing that is
   deliberate. This is the *narrowest* ask; confirm it is what the builder meant
@@ -164,21 +176,22 @@ Establish the rest, asking the user only what you cannot infer:
 > not a compliance-only pass when the builder asked for more. ("Critique the current
 > state first".)
 
-1. **Purpose**: what must the teacher accomplish on this page? One sentence. Apply
-   the one test: *does this help teachers work faster with less stress?* If not,
-   raise that before designing anything. Keep the scope focused (HIG: Purpose):
-   prioritise the few things this moment actually needs and make those truly good —
-   a page with a clear use beats one that does everything.
-2. **The teacher and the moment**: anchor in a specific teacher's real workflow, not
-   an abstract "user" — can you name the teacher and the moment this serves? ("Ms.
-   Lim, P5 Math, entering marks the week before reports are due.") Design for the
-   stressed week, not the average one.
-3. **Product and page type**: which product (TW / CaseSync / Glow / TW surface — this
-   sets tone calibration per `copy`), and what kind of surface: workspace
+1. **Purpose**: what must the user accomplish on this page? One sentence. Apply
+   the one test: *does this help your users get their task done faster with less
+   stress?* If not, raise that before designing anything. Keep the scope focused
+   (HIG: Purpose): prioritise the few things this moment actually needs and make
+   those truly good — a page with a clear use beats one that does everything.
+2. **The user and the moment**: anchor in a specific person's real workflow, not
+   an abstract "user" — can you name the person and the moment this serves? (For a
+   Teachers & School surface: "Ms. Lim, P5 Math, entering marks the week before
+   reports are due.") Design for the stressed week, not the average one.
+3. **Product and page type**: which product (for Teachers & School: TW / CaseSync /
+   Glow / TW surface — this sets tone calibration per `copy`), and what kind of surface: workspace
    view, form, flow step, dashboard, settings, empty state, onboarding. Page type
    selects controls via `applies_to`. **Audience**: who does this surface serve —
-   teachers (the default; assume it when unstated), students (ask which band:
-   primary, or secondary and up), or parents? Record it in the sprint contract;
+   the product's declared audience (its domain profile `audiences:` / `DESIGN.md`);
+   if undeclared, ask — teachers, students (ask which band: primary, or secondary and
+   up), or parents. Record it in the sprint contract;
    it scopes `audiences:`-scoped controls for the rest of the loop. If the product
    repo has a `DESIGN.md`, load it now — it calibrates colour/tone/motion for
    everything downstream. **Any
@@ -187,8 +200,8 @@ Establish the rest, asking the user only what you cannot infer:
    page — do not let the page/flow split scope them out.
 4. **Done-criteria**: write a short sprint contract — the 3–6 statements the evaluator
    will later grade against. State the **dimension(s) and ambition** chosen in "Clarify
-   the ask" as explicit criteria (e.g. "the surface visibly carries Glow's warmth", not
-   just "passes the standards") — otherwise the evaluator has no way to catch a run that
+   the ask" as explicit criteria (e.g. "the surface visibly carries the product's brand
+   energy", not just "passes the standards") — otherwise the evaluator has no way to catch a run that
    delivered compliance when the builder wanted a visual redesign. Include the
    `intent`-phase controls (CNT-2 naming applies here: name the feature in plain
    language now, before a placeholder name spreads).
@@ -223,11 +236,11 @@ a template; and a card is only for an interactive unit (SLP-11) — if an option
 static content in card chrome where spacing, type, and a divider would group it, that
 is a finding, not a layout. Two lenses bind here too: simplicity is not minimalism (HIG: Simplicity) —
 keep the important things close and let the rest fall away, never hide what the task
-needs; and keep the teacher free to move (HIG: Agency) — an option that locks people
+needs; and keep the user free to move (HIG: Agency) — an option that locks people
 into a guided flow or mode must make it easy to skip or escape.
 
 **Compose, don't fill.** Treat the first screen as a composition, not a container to
-pack: one clear focal point — the teacher's primary task and its single primary action
+pack: one clear focal point — the user's primary task and its single primary action
 (CMP-5) — with related content grouped by proximity and a shared region rather than
 boxed in cards (SLP-11), and everything else stepped down so hierarchy does the
 explaining (SLP-6). Each option's layout is graded at verify against LAY-3 (does it fit
@@ -262,7 +275,7 @@ Expand the chosen option into a plan:
 - **Flow map** (when the surface is a flow or hosts a multi-step interaction): entry
   points, done state, every exit, and the edge cases from "A flow is not a stack of
   pages" — interruption, partial completion, resume — each with what happens to the
-  teacher's work. A plan that covers the steps but not the journey between them is
+  user's work. A plan that covers the steps but not the journey between them is
   incomplete.
 - **Tradeoffs, named**: what this design sacrifices and why that's acceptable. A plan
   without a tradeoffs section is incomplete.
@@ -347,8 +360,9 @@ Build exactly the approved plan. Constraints, non-negotiable:
   flag, not a default.)
 - Compose only manifest components (`status: "stable"` from `.tfx/component-manifest.json`
   if the product has one; CMP-1); semantic shadcn tokens only — no raw
-  colour, off-scale spacing, or off-scale radii (TOK-1..3); Plus Jakarta Sans /
-  Inter only, on-scale sizes (TYP-1..3).
+  colour, off-scale spacing, or off-scale radii (TOK-1..3); the product's resolved
+  typefaces only (TYP-1; Teachers & School: Plus Jakarta Sans / Inter), on-scale sizes
+  (TYP-2..3).
 - Functional colours come from the Radix scales (COL-2); **small functional-colour
   text (≤12px) on a tint uses step-12, not step-11** — step-11 on a tint dips below
   the 4.5:1 AA floor (A11Y-1).
@@ -368,7 +382,7 @@ Build exactly the approved plan. Constraints, non-negotiable:
   the Phase 3 plan alongside CMP-3's state enumeration.
 - Destructive actions: consequence + undo/confirm before execution (CMP-2, L0).
   Build forgiveness beyond CMP-2's minimum (HIG: Agency): recovering from the
-  unexpected should not cost the teacher time or work — preserve drafts, keep
+  unexpected should not cost the user time or work — preserve drafts, keep
   back-navigation safe, make reversal cheap.
 - Consistency is a feature (HIG: Familiarity, Flexibility): once an element's
   behaviour or appearance is established, reuse it across the surface, and keep
@@ -392,8 +406,8 @@ Build exactly the approved plan. Constraints, non-negotiable:
   must read as "nothing here yet" — never as still loading or as a permissions error —
   and no skeleton row, shimmer, or spinner may render alongside that heading.
 - **Cross-user content** (CMP-9): where content authored by one user renders to a
-  different user (a teacher's comment shown to a parent, a message shown to another
-  staff member), sanitise it at the render boundary — an allowlist sanitiser
+  different user (a comment authored by one user shown to another, a message shown to
+  another staff member), sanitise it at the render boundary — an allowlist sanitiser
   immediately before render. A "schema-constrained editor" claim at author time is not
   sufficient on its own; the guarantee must hold where the HTML actually reaches the
   other user's screen.

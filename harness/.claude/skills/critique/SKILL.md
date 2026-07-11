@@ -1,14 +1,17 @@
 ---
 name: critique
-description: Critique an existing Teacher & School product page — capture it, grade it against the standards catalog and layout patterns, and return scored, ranked improvement suggestions without changing anything; then, on the user's approval, execute the accepted suggestions through the design loop's implement and verify phases. Use when the user asks to review, critique, audit, improve, polish, or judge an existing page, asks what's wrong with it, what's off, or what they should improve, or says they don't like it — WITHOUT naming a specific change. NOT for a named change ('add a field', 'change the button') or a new page; those go to design. NOT for grading the loop's own output; that is the evaluator agent. NOT for copy-only improvements — wording, microcopy, tone, or naming with no structural or visual change; those go to copy.
+description: Critique an existing product page — capture it, grade it against the standards catalog and layout patterns, and return scored, ranked improvement suggestions without changing anything; then, on the user's approval, execute the accepted suggestions through the design loop's implement and verify phases. Use when the user asks to review, critique, audit, improve, polish, or judge an existing page, asks what's wrong with it, what's off, or what they should improve, or says they don't like it — WITHOUT naming a specific change. NOT for a named change ('add a field', 'change the button') or a new page; those go to design. NOT for grading the loop's own output; that is the evaluator agent. NOT for copy-only improvements — wording, microcopy, tone, or naming with no structural or visual change; those go to copy.
 ---
 
 # Critique an existing surface
 
 You evaluate a page that already exists, then — only once the user approves — polish it.
-The normative source is the TFX Design Standard; brand essence is **Kind Utility** —
-useful first, kind at the surface. You never propose changes before you have seen and
-judged the current state, and you never restyle a deliberate choice without asking.
+The normative source is the DXD Design Standard (historical source: TFX-DS); the
+product's brand essence resolves from its context — its `DESIGN.md`, else its domain
+profile (`standards/domains/<domain>.yaml`), else the foundation default. *(Teachers &
+School: Kind Utility — useful first, kind at the surface.)* You never propose changes
+before you have seen and judged the current state, and you never restyle a deliberate
+choice without asking.
 
 **Load first:** the control catalog at `standards/catalog.yaml`. It ships with this
 harness, not the product repo — resolve it relative to this SKILL.md, three levels up:
@@ -26,7 +29,7 @@ For any waiver or applicability question read `../../../standards/README.md`
    capture the live surface, do the structured layout read against `layout-patterns.md`
    (beside this file), write what works and should be preserved and what genuinely
    underperforms, then produce **up to five ranked suggestions**. Each suggestion carries
-   its score — impact on the teacher's task (the ranking) and cost (S/M) — and names the
+   its score — impact on the user's task (the ranking) and cost (S/M) — and names the
    control or layout pattern it serves. **Preserved is not waived:** a "preserve" call
    protects a deliberate choice from restyling, never its compliance from the checks —
    verify every preserved element against its controls (the L0 floor, A11Y-1 especially).

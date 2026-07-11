@@ -73,10 +73,11 @@ curated or `--all` set). It never reports an unbuilt or un-run control as "passe
 its output as "the built checks found nothing", not "the design is compliant". Per-control
 coverage and the always-manual gaps are in the sections below.
 
-**Design-context freshness.** When `.tfx/design.json` exists at the target repo root and
-058's generator (`scripts/generate-design-json.py`) is present, detect also runs the
-generator in `--check` mode; a stale `design.json` (generator exit 2) is surfaced as a
-finding (exit 2), never a crash.
+**Design-context freshness.** When `.dxd/design.json` exists at the target repo root
+(falling back to `.tfx/design.json` in repos that predate the rename) and 058's generator
+(`scripts/generate-design-json.py`) is present, detect also runs the generator in
+`--check` mode; a stale `design.json` (generator exit 2) is surfaced as a finding
+(exit 2), never a crash.
 
 **Self-test:** `python3 checks/detect.py --self-test` → `SELF-TEST OK (35 cases)` — profile
 selection, the 0/2/1 exit mapping (incl. curated excluding TYP-2 / `--all` including it),
@@ -119,7 +120,7 @@ this **replaces hand-maintained gap lists**, which drift as controls are added (
 
 **Arbitrary-value scanning (TOK-1):** In addition to style-context raw colours, the scanner checks the bracket contents of Tailwind arbitrary-value utilities (`bg-[…]`, `text-[…]`, `border-[…]`, etc.) for raw colour on **all** line types (not just style contexts). A raw hex, rgb/rgba, hsl, oklch, or standalone named colour (white, black, red, …) inside the brackets — excluding `var(--…)` references — emits `[TOK-1] raw colour '…' in arbitrary value`. For example, `hover:bg-[color-mix(in_oklab,var(--tw-blue)_88%,black)]` flags `black`.
 
-**L1 waiver behaviour:** TOK and COL are all L1; an inline `tfx-waive TOK-…` or `tfx-waive COL-…` comment does NOT suppress the violation. It downgrades the output line to `ERROR …:[line] [CTL-ID][waiver-claimed] … — verify approver in decision record` and still exits 1. The scanner never silences L1 violations; a human closes the decision-record loop.
+**L1 waiver behaviour:** TOK and COL are all L1; an inline `dxd-waive TOK-…` or `dxd-waive COL-…` comment (legacy `tfx-waive` markers remain valid) does NOT suppress the violation. It downgrades the output line to `ERROR …:[line] [CTL-ID][waiver-claimed] … — verify approver in decision record` and still exits 1. The scanner never silences L1 violations; a human closes the decision-record loop.
 
 **Peer-radius-consistency (TOK-3):** The scanner checks on-scale and concentric nesting per element, but cannot compare peer elements (cross-element). Peer-radius-consistency is **judgment-only** — the evaluator carries consistency against the product's Card/`--radius` anchor.
 
@@ -167,7 +168,7 @@ Pass `--repo-root <path>` to audit a consumer repo's `docs/decisions/` (the defa
 - ARIA state tracking — `aria-expanded`/`aria-pressed`/`aria-checked` updating to match visual state (A11Y-8 state half) — cannot be detected statically without cross-file variable mutation tracking. Deferred; manual pass required.
 - Focus styles provided by a shared stylesheet: if `outline-none` appears in JSX but the `:focus-visible` recovery lives in a separate CSS file, the FOCUS rule will flag it. Cross-file CSS resolution needs a browser or axe-core.
 
-**Waiver suppression:** A11Y-2 and A11Y-3 are L0 — never waivable. This script does not parse `tfx-waive` markers; every violation is a hard ERROR.
+**Waiver suppression:** A11Y-2 and A11Y-3 are L0 — never waivable. This script does not parse `dxd-waive`/`tfx-waive` markers; every violation is a hard ERROR.
 
 **Self-test:** `python3 checks/a11y-static.py --self-test` → `SELF-TEST OK (14 cases)`.
 
@@ -193,14 +194,14 @@ Pass `--repo-root <path>` to audit a consumer repo's `docs/decisions/` (the defa
 
 ## Waiver reconcile (built)
 
-`python3 checks/waiver-reconcile.py --src <path>... --records <dir>` — reconciles the two places a waiver can live so neither drifts from the other: inline `tfx-waive <CTL-ID> reason="..."` comments in source/CSS (the syntax `token-audit` defines, here generalised to **all** control prefixes), the "## Waivers granted" table rows in decision records (`docs/decisions/*.md`, skipping `TEMPLATE.md`), and the control's catalog tier. It reuses `audit-record.py`'s `parse_table_rows` / `column_index` / `split_sections` / `find_section` (imported by path, never rewritten). Accepts `--repo-root <path>` (records default to `<repo-root>/docs/decisions`) for consumer repos; the catalog tiers always come from the harness. Exit 0 on a clean reconcile (or NOTEs only); exit 1 on any ERROR.
+`python3 checks/waiver-reconcile.py --src <path>... --records <dir>` — reconciles the two places a waiver can live so neither drifts from the other: inline `dxd-waive <CTL-ID> reason="..."` comments in source/CSS (legacy `tfx-waive` markers remain valid) (the syntax `token-audit` defines, here generalised to **all** control prefixes), the "## Waivers granted" table rows in decision records (`docs/decisions/*.md`, skipping `TEMPLATE.md`), and the control's catalog tier. It reuses `audit-record.py`'s `parse_table_rows` / `column_index` / `split_sections` / `find_section` (imported by path, never rewritten). Accepts `--repo-root <path>` (records default to `<repo-root>/docs/decisions`) for consumer repos; the catalog tiers always come from the harness. Exit 0 on a clean reconcile (or NOTEs only); exit 1 on any ERROR.
 
 **ERROR (exit 1) vs NOTE (exit 0):**
 
-- **ERROR — inline tfx-waive on an L0 control** (any prefix): L0 is never waivable, so an inline waiver on `A11Y-1/2/3` or `CMP-2` is always a hard failure. This generalises the L0-never rule beyond the TOK/COL controls `token-audit` already guards.
-- **ERROR — orphan inline waiver:** an inline `tfx-waive <id>` (L1/L2) with no matching recorded waiver row for `<id>` in any scanned record — claimed in code, never approved in a record. Add it to a decision record with a named approver.
-- **ERROR — unknown control id:** a `tfx-waive` whose id is not in `standards/catalog.yaml`.
-- **NOTE — stale recorded waiver:** a recorded waiver row for `<id>` with no inline `tfx-waive <id>` in the scanned source — confirm it is still needed. A **NOTE, not an ERROR**, because the source set scanned may be partial: a recorded waiver looks "stale" only relative to the `--src` paths given, and a partial scan must never be turned into a false hard failure.
+- **ERROR — inline dxd-waive on an L0 control** (any prefix): L0 is never waivable, so an inline waiver on `A11Y-1/2/3` or `CMP-2` is always a hard failure. This generalises the L0-never rule beyond the TOK/COL controls `token-audit` already guards.
+- **ERROR — orphan inline waiver:** an inline `dxd-waive <id>` (L1/L2) with no matching recorded waiver row for `<id>` in any scanned record — claimed in code, never approved in a record. Add it to a decision record with a named approver.
+- **ERROR — unknown control id:** a `dxd-waive`/`tfx-waive` whose id is not in `standards/catalog.yaml`.
+- **NOTE — stale recorded waiver:** a recorded waiver row for `<id>` with no inline `dxd-waive <id>` in the scanned source — confirm it is still needed. A **NOTE, not an ERROR**, because the source set scanned may be partial: a recorded waiver looks "stale" only relative to the `--src` paths given, and a partial scan must never be turned into a false hard failure.
 
 A row counts as a recorded waiver only when column 0 holds a control id (`^[A-Z0-9]+-\d+$`); TEMPLATE-style empty / descriptive placeholder rows are ignored, so they raise no false stale NOTE.
 
@@ -324,7 +325,7 @@ ambiguities). Per the harness rule "never wire a failing check into the build,"
 wiring is deferred until the live tree is clean or the flagged values are reviewed and
 either fixed or waived. Until then, run both manually during the implement phase.
 
-Waiver handling: checks must respect inline `tfx-waive <CTL-ID> reason="..."`
+Waiver handling: checks must respect inline `dxd-waive <CTL-ID> reason="..."` (legacy `tfx-waive` markers remain valid)
 comments for L2 controls only — a waiver on an L0/L1 control is itself reported as a
 violation unless it appears in the decision record with a named approver (L1; L0 is
 never waivable).

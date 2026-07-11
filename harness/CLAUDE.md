@@ -1,7 +1,7 @@
 # Design Harness — project memory
 
-This repo is the **TFX design harness**: the control catalog plus Claude Code skills
-that make an agent follow the TFX Design Standard (TFX-DS) when designing or changing
+This repo is the **DXD design harness**: the control catalog plus Claude Code skills
+that make an agent follow the DXD Design Standard (normative source: TFX-DS) when designing or changing
 UI for the Teacher & School portfolio (Teacher Workspace, CaseSync, Glow, TW
 surfaces). These facts apply to every session, whether or not the full design loop is
 triggered.
@@ -12,13 +12,20 @@ triggered.
   tier. WCAG 2.2 AA is the self-imposed accessibility floor; SGDS, GOV.UK, and
   Apple's HIG design principles are reference points, not rules. Consult the catalog for any design or content change —
   "just a small change" is still in scope.
-- **Brand essence is Kind Utility** — useful first, kind at the surface. The one
-  test: does this help teachers work faster with less stress? If not, don't build it.
-- **The stack is fixed and boring on purpose**: Base UI components, Radix Colors,
-  shadcn/ui default tokens. Plus Jakarta Sans (600) display, Inter (400/500/600)
-  body. Each product's **own** primary for primary actions and brand moments (TW →
-  T&S Blue `#0064FF`; Glow → orange; CaseSync → indigo; COL-1).
-  Semantic tokens only — never raw colour/spacing/radius values (TOK-1..3).
+- **Every domain declares its brand essence** in its profile
+  (`standards/domains/<slug>.yaml`); the always-on test: does this help your users get
+  their task done faster with less stress? If not, don't build it. *(Teachers & School:
+  **Kind Utility** — useful first, kind at the surface; there the test names teachers —
+  see `standards/domains/teachers-school.yaml`.)*
+- **Semantic tokens only** — never raw colour/spacing/radius values (TOK-1..3).
+  The foundation demands token-shaped behaviour but does **not** name a stack,
+  typeface, or primary — declare those in your domain profile
+  (`standards/domains/<slug>.yaml`) or per-product `DESIGN.md`. Each product
+  anchors primary actions and brand moments in its **own** primary (COL-1).
+  T&S profile (`standards/domains/teachers-school.yaml`): Base UI + Radix Colors
+  + shadcn/ui default tokens; Plus Jakarta Sans (600) display, Inter
+  (400/500/600) body; per-product primaries (TW → T&S Blue `#0064FF`; Glow →
+  orange; CaseSync → indigo).
 <!-- tfx-sync:L0 source=catalog -->
 - **Non-negotiables (L0) that bind even outside the loop**: AA contrast (A11Y-1),
   keyboard reach + visible focus (A11Y-2), visible labels on every field (A11Y-3),
@@ -35,15 +42,15 @@ triggered.
   not every control has a script yet.** Never report an unbuilt or un-run check as
   "passed"; say "verified manually" or "unverified" and name what a human should
   re-check. Full statement and per-script coverage: `checks/README.md`.
-- Waiver syntax: `tfx-waive <CTL-ID> reason="..."` — L0 never, L1 needs a named human
-  approver, L2 needs a specific real reason.
+- Waiver syntax: `dxd-waive <CTL-ID> reason="..."` (legacy `tfx-waive` markers remain
+  valid) — L0 never, L1 needs a named human approver, L2 needs a specific real reason.
 - Singapore English spelling (British base): organise, colour, centre.
 
 ## Where things live
 
 | Task | Use |
 |---|---|
-| Orient, check the machine/repo, and route to the right skill | `start` skill (user-invoked: `/tfx:start`) |
+| Orient, check the machine/repo, and route to the right skill | `start` skill (user-invoked: `/dxd:start`) |
 | Create a page / form / flow, or make a named change to one | `design` skill (runs the loop) |
 | Review, improve, or polish an existing page (no specific change named) | `critique` skill (evaluate → gated fixes) |
 | Improve one named dimension of an existing page | a focused pass — `copy` · `polish` · `motion` · `flow` · `layout` (each captures → ranks → gates → verifies) |

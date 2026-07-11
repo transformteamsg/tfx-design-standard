@@ -94,9 +94,20 @@ const nav: NavGroup[] = [
     ],
   },
   {
+    label: "Domains",
+    href: "/domains",
+    items: [
+      { href: "/domains/teachers-school", title: "Teachers & School" },
+      { href: "/domains/students", title: "Students" },
+      { href: "/domains/parents", title: "Parents" },
+      { href: "/domains/platform", title: "Platform" },
+    ],
+  },
+  {
     label: "Harness",
     href: "/harness",
     items: [
+      { href: "/harness/get-started", title: "Get started" },
       { href: "/harness/loop", title: "The loop" },
       { href: "/harness/skills", title: "Skills" },
       { href: "/harness/tools", title: "Tools" },
@@ -106,12 +117,14 @@ const nav: NavGroup[] = [
   {
     label: "Governance",
     href: "/governance",
-    items: [{ href: "/governance", title: "How this evolves" }],
+    items: [
+      { href: "/governance", title: "How this evolves" },
+      { href: "/governance/changes", title: "Change log" },
+    ],
   },
 ];
 
-const groupLabel =
-  "px-1 py-1.5 text-[11px] font-semibold uppercase tracking-wider";
+const groupLabel = "px-1 py-1.5 text-[12px] font-semibold";
 
 export function AppSidebar() {
   const pathname = usePathname();

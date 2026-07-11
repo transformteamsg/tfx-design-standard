@@ -1,4 +1,5 @@
 import { MDXRemote } from "next-mdx-remote/rsc";
+import { mdxComponents } from "@/components/mdx";
 import { getDoc } from "@/lib/content";
 import { sectionTopics } from "@/lib/directory";
 import { sectionInk, TopicCard } from "@/components/thumbnails";
@@ -12,7 +13,7 @@ export function SectionIndex({ sectionKey }: { sectionKey: string }) {
   return (
     <div className="max-w-[760px]">
       {doc.answers && (
-        <p className="flex items-center gap-2 text-[12px] font-semibold uppercase tracking-widest text-muted-foreground">
+        <p className="flex items-center gap-2 text-[13px] font-semibold text-muted-foreground">
           <span
             className="h-2 w-2 rounded-full"
             style={{ background: sectionInk[sectionKey] ?? "var(--foreground)" }}
@@ -26,7 +27,7 @@ export function SectionIndex({ sectionKey }: { sectionKey: string }) {
       )}
       {doc.content.trim() && (
         <div className="prose mt-4 text-[16px]">
-          <MDXRemote source={doc.content} />
+          <MDXRemote source={doc.content} components={mdxComponents} />
         </div>
       )}
       {doc.illustration && <Illo subject={doc.illustration} />}

@@ -1,6 +1,6 @@
-# Design Harness (TFX)
+# Design Harness (DXD)
 
-The harness layer of the **TFX Design Standard**: it wraps an AI agent
+The harness layer of the **DXD Design Standard**: it wraps an AI agent
 (Claude Code) so that what it designs for the Teacher & School portfolio complies
 with the standard — not by asking nicely, but by structure: a control catalog it must
 satisfy, a loop with human gates, and checks that always run.
@@ -13,7 +13,7 @@ surviving the whole way to shipped UI.
 ```
 NORMATIVE LAYER                       HARNESS                              ENFORCEMENT
 standards/catalog.yaml                .claude/skills/                      checks/ + evaluator agent
-├─ TFX-DS standards tier              ├─ start (router; /tfx:start)        ├─ Deterministic: scripts, a11y scan,
+├─ TFX-DS standards tier              ├─ start (router; /dxd:start)        ├─ Deterministic: scripts, a11y scan,
 │   60 controls (latest ratchet 2026-07-08) ├─ setup (per-user tools + context)  │   DOM checks — non-skippable
 ├─ WCAG 2.2 AA (self-imposed floor)   ├─ design (the loop)                 ├─ Judgment: evaluator subagent
 └─ References: SGDS, GOV.UK           ├─ critique (evaluate + polish)      └─ Human gates: plan approval, L1 waivers
@@ -23,7 +23,7 @@ standards/catalog.yaml                .claude/skills/                      check
 ```
 
 Normative source: [TFX-DS v0.1 draft](https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb)
-(owner: Wondo Jeong). Harness lead: Reza Ilmi. The design stack is deliberately
+(owner: design lead). Harness lead: Reza Ilmi. The design stack is deliberately
 boring and AI-legible: Base UI + Radix Colors + shadcn/ui default tokens; Plus
 Jakarta Sans + Inter; Teacher & School Blue `#0064FF`.
 
@@ -33,7 +33,8 @@ Jakarta Sans + Inter; Teacher & School Blue `#0064FF`.
    with an `id`, `tier`, and `check` type. The litmus: if you can't check it, it's a
    principle or guideline — not a standard. Tiers map to enforcement: L0 blocks
    outright (trust/safety/a11y floor), L1 must pass verification, L2 is a strong
-   default waivable with inline rationale (`tfx-waive` protocol).
+   default waivable with inline rationale (`dxd-waive` protocol — legacy
+   `tfx-waive` markers remain valid).
 2. **Blueprint structure (Stripe Minions pattern).** The design loop alternates creative
    agent phases with deterministic checkpoints that always run. The agent cannot skip a
    checkpoint by judgment.
@@ -67,7 +68,7 @@ design-harness/
 │                            # pass/fail examples, verification detail (loaded on demand)
 ├── .claude/
 │   ├── skills/
-│   │   ├── start/            # user-invoked router: orient, context check, route (/tfx:start)
+│   │   ├── start/            # user-invoked router: orient, context check, route (/dxd:start)
 │   │   ├── setup/            # per-user tool setup + product context-layer init
 │   │   ├── design/           # orchestrates the loop: intent → diverge → plan →
 │   │   │                     # implement → verify (implement-craft.md: implement detail)
@@ -108,16 +109,19 @@ The harness ships as a Claude Code plugin. In your product repo (TW, CaseSync, G
 
 ```
 /plugin marketplace add transformteamsg/tfx-design-standard
-/plugin install tfx@tfx
+/plugin install dxd@dxd
 ```
 
-This installs the eleven skills (`start`, `setup`, `design`, `critique`, `standards`, `feedback`, and the five focused passes — `copy`, `polish`, `motion`, `flow`, `layout`), the `evaluator` subagent (which carries its own review procedure), and the control catalog (`standards/`) — the catalog ships with the plugin, not with your repo. Run `/tfx:start` for orientation and routing to the right one.
+(The GitHub repo has not yet been renamed to `dxd-design-standard` — see
+[docs/MIGRATION-DXD.md](docs/MIGRATION-DXD.md).)
 
-The design loop captures screenshots with the agent-browser CLI — to set it and the other per-user tools up, run `/tfx:start` (or invoke the `setup` skill directly) and follow the checklist (it lives in .claude/skills/setup/setup.md).
+This installs the eleven skills (`start`, `setup`, `design`, `critique`, `standards`, `feedback`, and the five focused passes — `copy`, `polish`, `motion`, `flow`, `layout`), the `evaluator` subagent (which carries its own review procedure), and the control catalog (`standards/`) — the catalog ships with the plugin, not with your repo. Run `/dxd:start` for orientation and routing to the right one.
+
+The design loop captures screenshots with the agent-browser CLI — to set it and the other per-user tools up, run `/dxd:start` (or invoke the `setup` skill directly) and follow the checklist (it lives in .claude/skills/setup/setup.md).
 
 To work on the harness itself, just open a Claude Code session in this repository: the skills load from `.claude/skills/` automatically; no install step.
 
-> **Updates**: run `/plugin marketplace update tfx` then `/reload-plugins` (or restart Claude Code). Updates are **manual** — third-party marketplaces do not auto-update by default. The catalog and skills are versioned together via `version` in `plugin.json` and recorded in [CHANGELOG.md](CHANGELOG.md); full steps and the auto-update setting are in [docs/UPDATING.md](docs/UPDATING.md).
+> **Updates**: run `/plugin marketplace update dxd` then `/reload-plugins` (or restart Claude Code). Updates are **manual** — third-party marketplaces do not auto-update by default. The catalog and skills are versioned together via `version` in `plugin.json` and recorded in [CHANGELOG.md](CHANGELOG.md); full steps and the auto-update setting are in [docs/UPDATING.md](docs/UPDATING.md).
 
 Adopting the harness in a product repo? Follow [docs/ONBOARDING.md](docs/ONBOARDING.md).
 

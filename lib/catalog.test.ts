@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { parse } from "yaml";
 import { describe, expect, it } from "vitest";
-import { getCatalog, getPublicCatalogYaml } from "./catalog";
+import { getCatalog, getPublicCatalogYaml, getScopeMeta } from "./catalog";
 
 /* Characterization tests for the deny-by-default projection in
    lib/catalog.ts. These mirror the module's private PUBLIC_META /
@@ -16,6 +16,7 @@ const PUBLIC_META_ALLOWLIST = [
   "categories",
   "products",
   "audiences",
+  "domains",
 ];
 const PUBLIC_FIELDS_ALLOWLIST = [
   "id",
@@ -30,6 +31,7 @@ const PUBLIC_FIELDS_ALLOWLIST = [
   "fails_when",
   "products",
   "audiences",
+  "domains",
   "enforced",
   "script",
   "status",
@@ -136,6 +138,16 @@ describe("getPublicCatalogYaml — control projection", () => {
       .map((c) => c.id)
       .sort();
     expect(proposedIds).toEqual(["CNT-5", "CNT-6", "CNT-7"]);
+  });
+});
+
+describe("getScopeMeta — domain registry", () => {
+  it("loads exactly the four portfolio domains from meta.domains", () => {
+    const { domains } = getScopeMeta();
+    expect(Object.keys(domains).sort()).toEqual(
+      ["parents", "platform", "students", "teachers-school"].sort(),
+    );
+    expect(domains["teachers-school"]).toBe("Teachers & School");
   });
 });
 

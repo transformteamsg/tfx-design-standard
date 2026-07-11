@@ -1,6 +1,6 @@
 ---
 name: layout
-description: Tighten the layout of an existing Teacher & School product page — structure, visual hierarchy (what draws the eye — emphasis, size, position, grouping), density, alignment, and grouping. Use for a scoped ask that names this dimension — "tighten the layout", "fix the hierarchy", "the visual hierarchy is weak", "the density is off", "these cards should be a list". Bare "hierarchy" and "visual hierarchy" are layout's. NOT for a whole-page review with no dimension named (that is critique); NOT for a named structural change or a brand-new page (that is design). Visual styling — spacing tokens, type, colour — goes to polish (including type/weight hierarchy), wording to copy, motion to motion.
+description: Tighten the layout of an existing product page — structure, visual hierarchy (what draws the eye — emphasis, size, position, grouping), density, alignment, and grouping. Use for a scoped ask that names this dimension — "tighten the layout", "fix the hierarchy", "the visual hierarchy is weak", "the density is off", "these cards should be a list". Bare "hierarchy" and "visual hierarchy" are layout's. NOT for a whole-page review with no dimension named (that is critique); NOT for a named structural change or a brand-new page (that is design). Visual styling — spacing tokens, type, colour — goes to polish (including type/weight hierarchy), wording to copy, motion to motion.
 ---
 
 # Tighten the layout of an existing surface
@@ -23,8 +23,9 @@ space only; token/type/colour craft is a `polish` matter and gets NOTED and rout
   unit; group static content with space and dividers).
 
 **Reference:** `../critique/layout-patterns.md` (the regions → squint-test → alignment →
-density → grouping read). When the product ships one, `.tfx/design.json` `layout_system`
-declares its column grid — where declared, LAY-1 makes the grid checkable; treat it
-as layout context otherwise.
+density → grouping read). When the product ships one, `.dxd/design.json` `layout_system`
+(fall back to `.tfx/design.json` in repos that predate the rename) declares its column
+grid — where declared, LAY-1 makes the grid checkable; treat it as layout context
+otherwise.
 
 **Procedure:** follow `../critique/pass.md` with the subset above.

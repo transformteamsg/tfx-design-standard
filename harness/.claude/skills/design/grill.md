@@ -56,9 +56,9 @@ into the plan.
 
 - **Intent drift** — does the plan still meet every Phase-1 done-criterion, and has it
   added anything the contract does not ask for? Name the drift.
-- **The stressed teacher, the worst day** — does it hold when the network drops
-  mid-action, the class picked is the wrong one, the draft is half-written? Say what
-  happens to the teacher's work in each case; "your draft is saved" is a behaviour to
+- **The stressed user, the worst day** — does it hold when the network drops
+  mid-action, the wrong item is picked, the draft is half-written? Say what
+  happens to the user's work in each case; "your draft is saved" is a behaviour to
   design, not a phrase to assume.
 - **The ducked decision** — what did the plan leave vague? An unenumerated async
   state, an announcement channel not chosen (A11Y-11), an edge case named but not

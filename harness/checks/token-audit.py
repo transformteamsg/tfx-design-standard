@@ -32,8 +32,9 @@ Token-definition blocks are exempt from all raw-value rules.  A block is:
 
 L1 waiver handling
 ──────────────────
-TOK and COL controls are all L1.  An inline `tfx-waive TOK-…` or `tfx-waive COL-…`
-comment does NOT suppress the violation; it downgrades the output line to:
+TOK and COL controls are all L1.  An inline `dxd-waive TOK-…` or `dxd-waive COL-…`
+comment (legacy `tfx-waive` markers remain valid too) does NOT suppress the
+violation; it downgrades the output line to:
   ERROR <file>:<line> [<CTL-ID>][waiver-claimed] <found> — verify approver in decision record
 and still exits 1.  Decision-record lookup is out of scope; humans close that loop.
 
@@ -117,7 +118,7 @@ VAR_RE = re.compile(r"var\s*\(--")
 NUM_VAL_RE = re.compile(r"([\d.]+)\s*(px|rem)\b")
 
 # ── Waiver marker ─────────────────────────────────────────────────────────────
-WAIVER_RE = re.compile(r"tfx-waive\s+(TOK-\d+|COL-\d+)", re.IGNORECASE)
+WAIVER_RE = re.compile(r"(?:dxd|tfx)-waive\s+(TOK-\d+|COL-\d+)", re.IGNORECASE)
 
 # ── Custom property declaration (token definition) ────────────────────────────
 CUSTOM_PROP_RE = re.compile(r"^\s*--[\w-]+\s*:")
@@ -293,7 +294,7 @@ class StyleContextTracker:
 
 
 def extract_waived_ctl(line):
-    """Return the control id from a tfx-waive marker, or None."""
+    """Return the control id from a dxd-waive (or legacy tfx-waive) marker, or None."""
     m = WAIVER_RE.search(line)
     if m:
         return m.group(1).upper()
@@ -731,8 +732,17 @@ def run_self_test():
 
     # ── Case 10: waiver-claimed marker appears and still exits 1 ───────────────
     assert_violations(
-        "waiver-claimed still errors",
+        "waiver-claimed still errors (legacy tfx-waive)",
         "/* tfx-waive TOK-1 reason=\"approved\" */ .foo { color: #ff0000; }",
+        ".css",
+        ["TOK-1"],
+        expect_waiver_claimed=True
+    )
+
+    # ── Case 10b: dxd-waive marker appears and still exits 1 ───────────────────
+    assert_violations(
+        "waiver-claimed still errors (dxd-waive)",
+        "/* dxd-waive TOK-1 reason=\"approved\" */ .foo { color: #ff0000; }",
         ".css",
         ["TOK-1"],
         expect_waiver_claimed=True

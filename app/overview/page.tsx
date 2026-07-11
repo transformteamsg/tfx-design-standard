@@ -15,6 +15,7 @@ const tiles = [
   { key: "guidelines", href: "/guidelines", art: "guidelines/voice-tone" },
   { key: "foundations", href: "/foundations", art: "foundations/colour" },
   { key: "products", href: "/products", art: "products/teacher-workspace" },
+  { key: "domains", href: "/domains", art: "domains/teachers-school" },
   { key: "harness", href: "/harness", art: "harness/loop" },
 ];
 
@@ -23,7 +24,7 @@ export default function Overview() {
   const governance = getDoc("governance", "governance");
   return (
     <div className="max-w-[760px]">
-      <p className="text-[12px] font-semibold uppercase tracking-widest text-tw-blue">
+      <p className="text-[13px] font-semibold text-tw-blue">
         TransformX · Teacher &amp; School portfolio
       </p>
       <h1 className="mt-3 font-display text-[32px] font-semibold leading-[1.05] tracking-tight">

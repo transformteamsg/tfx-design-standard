@@ -7,6 +7,7 @@
   "applies_to": ["page", "component", "flow", "content"],
   "products": ["tw", "casesync", "glow"],
   "audiences": ["teachers", "students-primary", "students-secondary", "parents"],
+  "domains": ["teachers-school", "students", "parents", "platform"],
   "enforced": ["script", "partial", "manual", "evaluator"],
   "status": ["proposed"],
   "id_prefixes": ["A11Y", "TOK", "TYP", "COL", "CMP", "CNT", "MOT", "IDN", "SLP", "LAY"]

@@ -11,6 +11,7 @@ export type Control = {
   fails_when?: string[];
   products?: string[];
   audiences?: string[];
+  domains?: string[];
   enforced?: "script" | "partial" | "manual" | "evaluator";
   script?: string | string[];
   status?: "proposed";
@@ -39,6 +40,7 @@ const PUBLIC_FIELDS = [
   "fails_when",
   "products",
   "audiences",
+  "domains",
   "enforced",
   "script",
   "status",
@@ -68,6 +70,7 @@ export function getCatalog(): Control[] {
       fails_when: c.fails_when,
       products: c.products,
       audiences: c.audiences,
+      domains: c.domains,
       enforced: c.enforced,
       script: c.script,
       status: c.status,
@@ -80,11 +83,13 @@ export function getCatalog(): Control[] {
 export function getScopeMeta(): {
   products: Record<string, string>;
   audiences: Record<string, string>;
+  domains: Record<string, string>;
 } {
   const { meta } = readCatalog();
   return {
     products: (meta.products as Record<string, string>) ?? {},
     audiences: (meta.audiences as Record<string, string>) ?? {},
+    domains: (meta.domains as Record<string, string>) ?? {},
   };
 }
 
@@ -96,6 +101,7 @@ const PUBLIC_META = [
   "categories",
   "products",
   "audiences",
+  "domains",
 ] as const;
 
 export function getPublicCatalogYaml(): string {

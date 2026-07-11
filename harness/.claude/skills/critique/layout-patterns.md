@@ -1,16 +1,16 @@
 # Layout patterns (guidance, not controls)
 
 This file is a judgment aid, like `implement-craft.md` — it distils what a good
-layout looks like for Teacher & School products so the critique step (see
+layout looks like for product surfaces in your portfolio so the critique step (see
 `critique.md`) can suggest improvements, not just flag violations. **Where a
 pattern here conflicts with a catalog control, the control wins.**
 
-Teacher & School products are the **product register**: dense, calm,
+These are the **product register**: dense, calm,
 task-first professional tools — not marketing pages. The patterns below are
 written for that register, not for a brand or marketing surface, which would
 read looser and more spacious by design.
 
-1. **One focal point.** The eye lands on the teacher's primary task first;
+1. **One focal point.** The eye lands on the user's primary task first;
    everything else steps down in size, weight, or position. If two regions
    compete for attention, demote one — don't let both fight for the same
    visual weight (ties to CMP-5, one primary action; SLP-6, type-scale
@@ -37,7 +37,8 @@ read looser and more spacious by design.
    of shared vertical lines. Count the distinct left edges at 1280 — more
    than about four usually means the composition is drifting (LAY-6). Grid
    coherence is checkable where the product declares a grid (LAY-1, via
-   `.tfx/design.json` `layout_system`); N/A otherwise.
+   `.dxd/design.json` `layout_system` — fall back to `.tfx/design.json` in repos that
+   predate the rename); N/A otherwise.
 8. **Restraint is the taste.** When in doubt, remove: decoration that doesn't
    encode hierarchy or state is a cost, not a bonus. This is the impeccable
    principle — restraint as the core of taste — and also SLP-1..11's positive

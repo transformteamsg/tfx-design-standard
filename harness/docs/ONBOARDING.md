@@ -1,9 +1,16 @@
-# Adopting the TFX design harness — product team guide
+# Adopting the DXD design harness — product team guide
 
 **Audience:** an engineer or designer on Teacher Workspace, CaseSync, or Glow making
 their repo "harness-ready".
 
 **Time:** approximately one hour plus team decisions (mainly items 5 and 6 below).
+
+**Two onboarding paths, one story.** This doc is about **your repo and your team** — the
+stack, the manifest, where records live, who approves L1 waivers. Your **machine and your
+product's brand context** are the setup wizard's job: run `/dxd:setup` → "onboard my
+product" and it interviews you for your brand basics and writes your `DESIGN.md` for you
+(item 2a below points there). Do the repo-and-team items here; let the wizard do the
+machine-and-brand items.
 
 This guide walks through the six harness-ready checklist items in order. Work through them
 once per product repo, not once per page. After setup, every design session runs the
@@ -17,14 +24,18 @@ Follow the two commands in the [README Install section](../README.md#install):
 
 ```
 /plugin marketplace add transformteamsg/tfx-design-standard
-/plugin install tfx@tfx
+/plugin install dxd@dxd
 ```
+
+(The GitHub repo has not yet been renamed to `dxd-design-standard` — see
+[MIGRATION-DXD.md](MIGRATION-DXD.md). If you have an existing `tfx@tfx` install,
+that same doc covers the uninstall/reinstall steps.)
 
 This installs the eleven skills (`start`, `setup`, `design`, `critique`,
 `standards`, `copy`, `polish`, `motion`, `flow`, `layout`, `feedback`), the `evaluator`
 subagent (which carries its own review procedure), and the control catalog
 (`standards/`) — the catalog ships with the
-plugin, not with your repo. `/tfx:start` is the front door: it orients you and routes to
+plugin, not with your repo. `/dxd:start` is the front door: it orients you and routes to
 the right skill.
 
 If you are working on the harness itself (not a product repo), open a Claude Code
@@ -32,7 +43,7 @@ session in this repository directly: the skills load from `.claude/skills/`
 automatically and no install step is needed.
 
 **Per-user tools.** The plugin install is per-repo; the capture and
-filing tools are per-person. Each teammate runs `/tfx:start` (or invokes the `setup`
+filing tools are per-person. Each teammate runs `/dxd:start` (or invokes the `setup`
 skill directly), which follows the checklist (`.claude/skills/setup/setup.md` in this
 repo): the agent-browser CLI + skill for screenshots, an authenticated `gh` for
 harness feedback, Python with PyYAML for the check scripts.
@@ -83,22 +94,17 @@ must be consistent across TW, CaseSync, and Glow.
 **What it means:** The catalog is portfolio-wide and product-agnostic on purpose. A
 `DESIGN.md` at your repo root records the few *visual parameters* that make your product
 itself — its primary colour, tone weighting, motion conventions, and column grid — and its
-generated twin `.tfx/design.json` lets the check scripts and the design loop read them.
+generated twin `.dxd/design.json` lets the check scripts and the design loop read them.
 This is the one item that is **optional** and not counted among the six: a repo with no
 `DESIGN.md` gets the portfolio defaults everywhere, which is a valid, complete state — it
 is never graded as a failure. Add one only if your product's parameters actually differ.
 
-**The concrete step:**
-
-1. Copy the annotated template from the harness: `docs/templates/DESIGN.md` →
-   `your-repo/DESIGN.md`.
-2. Fill in only the parameters that *differ* from the portfolio default; delete every
-   section that matches it. Parameters only — never restate a catalog rule (that recreates
-   the drift `docs/SYNC.md` exists to prevent).
-3. Generate the machine twin and commit **both** files:
-   `python3 <harness>/scripts/generate-design-json.py .`
-4. Regenerate whenever you edit `DESIGN.md` (the twin is generated only, never
-   hand-edited); CI can gate freshness with `--check`.
+**The concrete step:** run the setup wizard — `/dxd:setup` → "onboard my product". It
+interviews you in plain language for your brand basics (name, domain, primary colour,
+typefaces, and a few optional extras), writes `DESIGN.md` for you, and generates the
+`.dxd/design.json` twin — no file editing, no YAML. Every question you skip falls back to
+the standard's default. Re-run it any time to add or change a parameter; the wizard
+regenerates the twin (never hand-edit it; CI can gate freshness with `--check`).
 
 Full spec — the sections, the parameters-only rule, and the "code overrides stale docs"
 loading rule: `docs/DESIGN-CONTEXT.md`.
@@ -117,7 +123,7 @@ has no loop structure, no catalog filters, and no evaluator procedure to follow.
 loaded. Open a Claude Code session in your product repo and ask: "design a test page."
 The `design` loop must trigger and ask intent questions — purpose, the teacher
 and moment, page type, done-criteria. If it does not, run `/plugin list` and confirm
-`tfx` is enabled. If the plugin appears but the skill does not trigger,
+`dxd` is enabled. If the plugin appears but the skill does not trigger,
 check that the session is open in the product repo root, not in a subdirectory.
 
 ---
@@ -162,9 +168,9 @@ it needs to know where to point humans for approval and audit.
 
 L1 waivers live in the decision records until a central waiver registry exists. When
 you grant a waiver, record it in the `## Waivers granted` table of the decision record
-with a named approver, a specific reason, and the `tfx-waive` inline marker in the
-code. L0 controls are never waivable. A waiver without a named human approver is not a
-valid L1 waiver.
+with a named approver, a specific reason, and the `dxd-waive` inline marker (legacy
+`tfx-waive` markers remain valid) in the code. L0 controls are never waivable. A
+waiver without a named human approver is not a valid L1 waiver.
 
 ---
 
@@ -253,3 +259,5 @@ Do not wait for CONTRIBUTING.md (plan 006) before proposing — the decision rec
 the right place until a formal contribution process exists. The worked example at
 `docs/decisions/student-notes-empty-state.md` demonstrates this: two proposed controls
 (CMP-4 and EVD-1) are recorded there, pending design-lead approval.
+
+Adopting the harness as a new domain? See [PILOT-EDUPASS.md](PILOT-EDUPASS.md) for the pilot playbook that validates this path end to end.

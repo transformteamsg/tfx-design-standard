@@ -30,13 +30,17 @@
     "label": "Products",
     "slugs": ["teacher-workspace", "casesync", "glow"]
   },
+  "domains": {
+    "label": "Domains",
+    "slugs": ["teachers-school", "students", "parents", "platform"]
+  },
   "harness": {
     "label": "Harness",
-    "slugs": ["loop", "skills", "tools", "on-ramp"]
+    "slugs": ["get-started", "loop", "skills", "tools", "on-ramp"]
   },
   "governance": {
     "label": "Governance",
-    "slugs": ["governance"],
+    "slugs": ["governance", "changes"],
     "root": true
   }
 }

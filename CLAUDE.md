@@ -1,6 +1,6 @@
 # tfx-design-standard
 
-The TFX Design Standard website (TransformX, Teacher & School portfolio). Next.js 15 App Router + Tailwind v4 + MDX content + YAML control catalog. Package manager: pnpm.
+The DXD Design Standard website (TransformX, Teacher & School portfolio). Next.js 15 App Router + Tailwind v4 + MDX content + YAML control catalog. Package manager: pnpm.
 
 This site must pass its own standard. Before changing UI, read [harness/standards/catalog.yaml](harness/standards/catalog.yaml) (the single source of truth — the site reads it directly) — especially the SLP (anti-slop) controls.
 

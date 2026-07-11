@@ -1,13 +1,15 @@
 ---
 name: copy
-description: Improve, write, or review the copy on a Teacher & School product surface — TFX voice & tone, naming, error-message anatomy, and anti-AI-writing rules (SLP-9), applied at generation time. Use for any copy-only edit — writing or reviewing user-facing text (page, form, notification, empty state, error state), tightening the wording on a page ("improve/polish the copy on the marks page"), or any longer prose (site content, marketing copy, documentation, decision records). Sufficient on its own for copy-only work; the design loop pulls it in at its implement phase. NOT for a whole-page review with no dimension named — that is critique; NOT for a named structural or visual change — that is design.
+description: Improve, write, or review the copy on a product surface — the product's voice & tone (resolved from its context), naming, error-message anatomy, and anti-AI-writing rules (SLP-9), applied at generation time. Use for any copy-only edit — writing or reviewing user-facing text (page, form, notification, empty state, error state), tightening the wording on a page ("improve/polish the copy on the marks page"), or any longer prose (site content, marketing copy, documentation, decision records). Sufficient on its own for copy-only work; the design loop pulls it in at its implement phase. NOT for a whole-page review with no dimension named — that is critique; NOT for a named structural or visual change — that is design.
 ---
 
-# Copy for Teacher & School products
+# Copy for product surfaces
 
-The TFX-DS voice & tone (§4.1) and naming (§4.2) guidelines, applied at generation
+The voice & tone (§4.1) and naming (§4.2) guidelines, applied at generation
 time. The intent: copy arrives already on-voice, so no builder — least of all
-non-native English speakers — carries the UX-writing burden personally. Catalog
+non-native English speakers — carries the UX-writing burden personally. The product's
+voice resolves from context (see "Resolving voice" below); the catalog controls bind
+every product regardless. Catalog
 controls CNT-1 (error anatomy), CNT-2 (naming), and CNT-3 (voice mechanics) bind this
 skill.
 
@@ -26,12 +28,19 @@ labelled illustrative), CNT-5 (device-agnostic action verbs), CNT-6 (low-informa
 words), CNT-7 (lead with purpose), SLP-9, and IDN-3 (IDN-4 on CaseSync surfaces)**. The rest of
 this file is that pass's reference: it is what "on-voice" means.
 
-## Who you're writing for
+## Resolving voice
 
-Teachers across Singapore — navigating dozens of platforms, relearning seasonal
-workflows, already tired, already behind. Brand essence is **Kind Utility**: useful
-first, kind at the surface. Every sentence either helps them work faster with less
-stress, or it goes.
+Resolve the product's voice & tone from context, in order:
+
+1. the product's `DESIGN.md` (`tone` / `voice` fields), else
+2. its domain profile `voice` (`standards/domains/<domain>.yaml`), else
+3. the foundation default — plain, direct, second person; every sentence earns its
+   place or goes.
+
+The catalog controls below (CNT-1..7, SLP-9) and the Voice/Tone tables bind every
+product regardless of the resolved register — the resolution only sets the brand
+character on top of them. For the **Teachers & School** binding — who you're writing
+for, Kind Utility, and the per-product tone table — see the bottom of this file.
 
 ## Voice (constant)
 
@@ -59,7 +68,7 @@ stress, or it goes.
 - Second person ("you"); the product is "we" sparingly.
 - Active voice: "Save the plan", not "The plan should be saved".
 - Sentences ≤ 25 words. One idea per sentence.
-- **Lead with purpose, not mechanism.** Open copy with what it does for the teacher and
+- **Lead with purpose, not mechanism.** Open copy with what it does for the user and
   when to reach for it; the mechanism (the tool, token, library, or data structure)
   comes after, or in the body. This binds hardest on **descriptive prose** — page
   titles, descriptions, section intros, empty states, feature blurbs — where it is easy
@@ -74,10 +83,10 @@ stress, or it goes.
   "please"), and droppable articles/conjunctions. The canonical lists live in
   `cnt-6.md` (same resolved path as slp-9.md below). SLP-9 handles the AI-tell
   vocabulary and structures; CNT-6 is the no-op words in any copy, whoever wrote it.
-- Avoid ed-tech jargon unless it's universal among teachers.
+- Avoid domain jargon unless it's universal among your users.
 - Name the action, not the input device (CNT-5): "choose", "select", "view", never
   "click", "tap", "swipe", or "press". Link text names its destination — "View the
-  report", never "click here" or "read more". Teachers reach these products on
+  report", never "click here" or "read more". Users reach these products on
   laptops, tablets, phones, and screen readers; device-agnostic verbs are correct
   for all of them at once.
 - No marketing buzzwords (SLP-9): <!-- tfx-sync:slp9-buzzwords --> streamline, empower, supercharge, effortless,
@@ -94,8 +103,8 @@ what "good" is; this is the working order that gets you there. It is a method �
 of these passes is itself a control, and none fails a check. Draft first, then edit
 in passes:
 
-1. **Draft.** Write what you want to say to the teacher. Don't polish yet.
-2. **Purposeful.** Keep only words that serve the teacher's goal or the product's.
+1. **Draft.** Write what you want to say to the user. Don't polish yet.
+2. **Purposeful.** Keep only words that serve the user's goal or the product's.
    Lead with the most important idea (CNT-7, lead with purpose).
 3. **Concise.** Front-load the point; cut filler and empty openers (SLP-9). One idea
    per sentence, well under the 25-word ceiling (CNT-3).
@@ -119,8 +128,8 @@ canonical word lists and the full Flag / Do-not-flag calibration live in
 the harness dev repo and when installed as the `tfx` plugin; do not expect
 `standards/` in the project cwd) — that file wins if this summary drifts.
 
-- **Copula avoidance.** "Glow serves as the encouragement layer" → "Glow is the
-  encouragement layer". Say "is" when you mean is.
+- **Copula avoidance.** "The dashboard serves as the daily hub" → "The dashboard is
+  the daily hub". Say "is" when you mean is.
 - **Negative parallelism.** "It's not just a gradebook, it's a teaching companion" →
   say what it is, once. One earned "X, not Y" per screen is fine; a pattern of them
   is the tell.
@@ -148,7 +157,7 @@ required).
 
 ## Errors (CNT-1)
 
-State, in order: what happened, what it means for the teacher, what to do next.
+State, in order: what happened, what it means for the user, what to do next.
 
 - Never a raw error code as the primary message; codes may appear as secondary
   support detail ("…quote ref 4031").
@@ -160,18 +169,26 @@ State, in order: what happened, what it means for the teacher, what to do next.
 
 A name that requires explanation has already failed.
 
-- **Do**: plain language teachers already use · name by function, not metaphor ·
-  specific and descriptive · test names with real teachers.
+- **Do**: plain language your users already use · name by function, not metaphor ·
+  specific and descriptive · test names with real users.
 - **Don't**: portmanteaus ("SyncFlow", "InsightHub") · technical jargon or acronyms ·
   cleverness over clarity · internal codenames in UI.
 - Good: "Class Planner", "Student Notes". Bad: "SyncFlow", "InsightHub".
 
-## Per-product tone calibration (§6)
+## Teachers & School voice & tone (the teachers-school binding)
 
-Same character everywhere; calibrate weight, never switch systems. This table is the
-register IDN-3 checks (normative table in `standards/controls/idn-3.md`); the
-CaseSync row is hardened by IDN-4 (L1, CaseSync-scoped: no celebration/gamification
-around case data):
+Resolved from `standards/domains/teachers-school.yaml` when the product's domain is
+`teachers-school`.
+
+**Who you're writing for.** Teachers across Singapore — navigating dozens of platforms,
+relearning seasonal workflows, already tired, already behind. Brand essence is **Kind
+Utility**: useful first, kind at the surface. Every sentence either helps them work
+faster with less stress, or it goes.
+
+**Per-product tone calibration (§6).** Same character everywhere; calibrate weight,
+never switch systems. This table is the register IDN-3 checks (normative table in
+`standards/controls/idn-3.md`); the CaseSync row is hardened by IDN-4 (L1,
+CaseSync-scoped: no celebration/gamification around case data):
 
 - **Teacher Workspace** — calm daily command centre: neutral, steady, quietly confident.
 - **CaseSync** — higher gravity: more reserved, restrained celebration, privacy-forward
@@ -182,5 +199,5 @@ around case data):
 ## What to do on conflict
 
 Mandated programme names and legally vetted text win over style rules — record a
-waiver (`tfx-waive CNT-2 reason="..."` inline, or in the decision record for
-non-markup content) rather than rewording.
+waiver (`dxd-waive CNT-2 reason="..."` inline — legacy `tfx-waive` markers remain
+valid — or in the decision record for non-markup content) rather than rewording.

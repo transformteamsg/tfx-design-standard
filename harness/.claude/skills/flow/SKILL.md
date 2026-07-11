@@ -1,12 +1,12 @@
 ---
 name: flow
-description: Improve the flow of an existing Teacher & School multi-step task or interaction — step traversal, async states, escapability, and draft safety. Use for a scoped ask that names this dimension — "improve this flow", "this multi-step form loses my draft", "smooth the journey between steps on <page>", "there's no way out of this wizard" — with no structural rebuild named. NOT for a whole-page review with no dimension named (that is critique); NOT for a named structural change or a brand-new flow (that is design). Layout goes to layout, wording to copy.
+description: Improve the flow of an existing multi-step task or interaction — step traversal, async states, escapability, and draft safety. Use for a scoped ask that names this dimension — "improve this flow", "this multi-step form loses my draft", "smooth the journey between steps on <page>", "there's no way out of this wizard" — with no structural rebuild named. NOT for a whole-page review with no dimension named (that is critique); NOT for a named structural change or a brand-new flow (that is design). Layout goes to layout, wording to copy.
 ---
 
 # Improve the flow on an existing surface
 
 A focused pass on the **flow** dimension: the journey across steps, not each screen in
-isolation. You judge how the teacher moves through the task — entry, transitions, exits,
+isolation. You judge how the user moves through the task — entry, transitions, exits,
 interruption, and resume — and leave visual and copy craft to their own passes (NOTED
 and routed).
 
@@ -25,7 +25,7 @@ and routed).
 
 **Reference:** the "A flow is not a stack of pages" section of `../design/SKILL.md` —
 entry points, the done state, every exit (back/cancel/abandon), and what happens to the
-teacher's work on interruption, partial completion, and resume. Escapability is
+user's work on interruption, partial completion, and resume. Escapability is
 structure, not polish.
 
 **Procedure:** follow `../critique/pass.md` with the subset above.

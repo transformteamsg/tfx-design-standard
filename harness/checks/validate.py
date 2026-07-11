@@ -13,6 +13,9 @@ Validates standards/catalog.yaml for internal consistency:
   8. tfx-sync parity: [L0-SYNC], [SLP9-SYNC], and [COUNT-SYNC] (every "<N> controls"
      claim in README.md or docs/index.html must equal the catalog's actual
      control count).
+  9. Domain profiles: standards/domains/*.yaml (excluding _-prefixed) carry the
+     required keys, a domain matching the filename and meta.domains registry, a
+     valid status, and products/audiences values known to the catalog meta.
 Exit 0 and print "OK: <n> controls valid" on success.
 Exit 1 and print "ERROR <location>: <message>" lines on failure.
 """
@@ -61,6 +64,7 @@ def load_schema_bits(repo_root):
         "allowed_waivers": set(tier_waiver.values()),
         "allowed_products": set(schema["products"]),
         "allowed_audiences": set(schema["audiences"]),
+        "allowed_domains": set(schema["domains"]),
         "allowed_enforced": set(schema["enforced"]),
         "allowed_status": set(schema["status"]),
         "control_id_re": re.compile(rf"^({prefixes})-\d+$"),
@@ -125,10 +129,11 @@ def validate_control(control, idx, schema_bits):
             if bad:
                 err(loc, f"invalid applies_to values {bad} — allowed: {sorted(allowed_applies_to)}")
 
-    # 2c. Optional scope fields — products / audiences. Absent = global;
+    # 2c. Optional scope fields — products / audiences / domains. Absent = global;
     # an empty list is an error (omit the field for global instead).
     for scope_field, allowed_key in (("products", "allowed_products"),
-                                     ("audiences", "allowed_audiences")):
+                                     ("audiences", "allowed_audiences"),
+                                     ("domains", "allowed_domains")):
         value = control.get(scope_field)
         if value is None:
             continue
@@ -378,6 +383,84 @@ def count_parity_errors(repo_root, catalog_count, relpaths=COUNT_SYNC_PATHS):
     return errors
 
 
+DOMAIN_PROFILE_REQUIRED = ("domain", "name", "status")
+DOMAIN_PROFILE_STATUSES = {"settled", "proposed"}
+
+
+def domain_profile_errors(repo_root, meta):
+    """
+    Validate every standards/domains/*.yaml profile (excluding `_`-prefixed
+    files, e.g. _template.yaml) against the catalog meta:
+      - required keys present (domain, name, status);
+      - `domain` matches the filename stem AND is a key of meta.domains;
+      - `status` ∈ {settled, proposed};
+      - any `products` / `audiences` values exist in meta.products / meta.audiences.
+    A missing domains/ directory is not an error (nothing to check).
+    Pure except for reading the profile files. Returns a list of error strings.
+    """
+    errors = []
+    domains_dir = os.path.join(repo_root, "standards", "domains")
+    if not os.path.isdir(domains_dir):
+        return errors
+
+    registry = set((meta or {}).get("domains") or {})
+    known_products = set((meta or {}).get("products") or {})
+    known_audiences = set((meta or {}).get("audiences") or {})
+
+    for fname in sorted(f for f in os.listdir(domains_dir) if f.endswith(".yaml")):
+        if fname.startswith("_"):
+            continue
+        floc = f"standards/domains/{fname}"
+        stem = fname[: -len(".yaml")]
+        with open(os.path.join(domains_dir, fname)) as fh:
+            try:
+                profile = yaml.safe_load(fh)
+            except yaml.YAMLError as exc:
+                errors.append(f"ERROR {floc}: YAML parse error: {exc}")
+                continue
+        if not isinstance(profile, dict):
+            errors.append(f"ERROR {floc}: profile is not a YAML mapping")
+            continue
+
+        for key in DOMAIN_PROFILE_REQUIRED:
+            if key not in profile:
+                errors.append(f"ERROR {floc}: missing required field '{key}'")
+
+        domain = profile.get("domain")
+        if domain is not None:
+            if domain != stem:
+                errors.append(
+                    f"ERROR {floc}: domain '{domain}' does not match filename "
+                    f"(expected '{stem}')")
+            if registry and domain not in registry:
+                errors.append(
+                    f"ERROR {floc}: domain '{domain}' is not in meta.domains "
+                    f"registry {sorted(registry)}")
+
+        status = profile.get("status")
+        if status is not None and status not in DOMAIN_PROFILE_STATUSES:
+            errors.append(
+                f"ERROR {floc}: invalid status '{status}' — allowed: "
+                f"{sorted(DOMAIN_PROFILE_STATUSES)}")
+
+        for field, known in (("products", known_products),
+                             ("audiences", known_audiences)):
+            value = profile.get(field)
+            if value is None:
+                continue
+            if not isinstance(value, list):
+                errors.append(f"ERROR {floc}: '{field}' must be a list, got "
+                              f"{type(value).__name__}")
+                continue
+            bad = [v for v in value if v not in known]
+            if bad:
+                errors.append(
+                    f"ERROR {floc}: unknown {field} values {bad} — allowed: "
+                    f"{sorted(known)}")
+
+    return errors
+
+
 def collect_errors(repo_root, _return_count=False):
     """
     Run all of Steps 1–7 against `repo_root` and return a list of error
@@ -614,6 +697,9 @@ def collect_errors(repo_root, _return_count=False):
     errors.extend(slp9_parity_errors(repo_root))
     errors.extend(count_parity_errors(repo_root, len(catalog_by_id)))
 
+    # ── Step 9: Domain profile validation ────────────────────────────────────
+    errors.extend(domain_profile_errors(repo_root, catalog_data.get("meta") or {}))
+
     return result(len(catalog_by_id))
 
 
@@ -830,6 +916,17 @@ def run_self_test():
     assert_control_error("audiences not a list",
                          dict(valid_control, audiences="teachers"),
                          "'audiences' must be a list")
+    # Domain-scoped control with a valid registry value → passes.
+    assert_control_clean("domain-scoped control valid",
+                         dict(valid_control, domains=["students"]))
+    # Unknown domain value → error.
+    assert_control_error("unknown domain value",
+                         dict(valid_control, domains=["bogus"]),
+                         "invalid domains values ['bogus']")
+    # Empty domains list → error telling the author to omit the field.
+    assert_control_error("empty domains list",
+                         dict(valid_control, domains=[]),
+                         "omit the field for global")
 
     # ── Enforcement field (enforced / script) cases ─────────────────────────
     # A real script path so the pure validate_control cases don't need disk
@@ -917,6 +1014,74 @@ def run_self_test():
                      count_parity_errors(count_tmp, 48), "[COUNT-SYNC]")
     finally:
         shutil.rmtree(count_tmp, ignore_errors=True)
+
+    # ── Domain profile cases (domain_profile_errors) ────────────────────────
+    domains_tmp = tempfile.mkdtemp(prefix="validate-selftest-domains-")
+    try:
+        dom_dir = os.path.join(domains_tmp, "standards", "domains")
+        os.makedirs(dom_dir)
+        meta = {
+            "domains": {"teachers-school": "Teachers & School", "students": "Students"},
+            "products": {"tw": "Teacher Workspace", "glow": "Glow"},
+            "audiences": {"teachers": "Teachers"},
+        }
+
+        def write_profile(name, text):
+            with open(os.path.join(dom_dir, name), "w") as fh:
+                fh.write(text)
+
+        # Valid settled profile with known products/audiences → no error.
+        write_profile("teachers-school.yaml",
+                      "domain: teachers-school\nname: Teachers & School\n"
+                      "status: settled\nproducts: [tw, glow]\naudiences: [teachers]\n")
+        assert_clean("domain profile valid",
+                     domain_profile_errors(domains_tmp, meta))
+
+        # `_`-prefixed template is skipped even if it is not a valid profile.
+        write_profile("_template.yaml", "domain: \"\"\nname: \"\"\nstatus: proposed\n")
+        assert_clean("domain profile template skipped",
+                     domain_profile_errors(domains_tmp, meta))
+
+        # Bad status → error.
+        write_profile("students.yaml",
+                      "domain: students\nname: Students\nstatus: draft\n")
+        assert_error("domain profile bad status",
+                     domain_profile_errors(domains_tmp, meta),
+                     "invalid status 'draft'")
+        os.remove(os.path.join(dom_dir, "students.yaml"))
+
+        # domain not matching filename → error.
+        write_profile("students.yaml",
+                      "domain: pupils\nname: Students\nstatus: proposed\n")
+        assert_error("domain profile filename mismatch",
+                     domain_profile_errors(domains_tmp, meta),
+                     "does not match filename")
+        os.remove(os.path.join(dom_dir, "students.yaml"))
+
+        # domain not in registry → error.
+        write_profile("bogus.yaml",
+                      "domain: bogus\nname: Bogus\nstatus: proposed\n")
+        assert_error("domain profile unknown domain",
+                     domain_profile_errors(domains_tmp, meta),
+                     "not in meta.domains registry")
+        os.remove(os.path.join(dom_dir, "bogus.yaml"))
+
+        # unknown product value → error.
+        write_profile("students.yaml",
+                      "domain: students\nname: Students\nstatus: proposed\n"
+                      "products: [tw, nope]\n")
+        assert_error("domain profile unknown product",
+                     domain_profile_errors(domains_tmp, meta),
+                     "unknown products values ['nope']")
+        os.remove(os.path.join(dom_dir, "students.yaml"))
+
+        # missing required field → error.
+        write_profile("students.yaml", "domain: students\nname: Students\n")
+        assert_error("domain profile missing status",
+                     domain_profile_errors(domains_tmp, meta),
+                     "missing required field 'status'")
+    finally:
+        shutil.rmtree(domains_tmp, ignore_errors=True)
 
     # ── Filesystem integration case for collect_errors ───────────────────────
 

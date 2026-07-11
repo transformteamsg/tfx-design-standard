@@ -161,6 +161,9 @@ cases:
   - prompt: "Install prettier and set up ESLint in this repo"
     expect: none
 
+  - prompt: "Onboard our product to the standard"  # plan-004
+    expect: setup
+
   # ── feedback: harness feedback, including mid-turn signals ──────────
   - prompt: "The plan gate keeps interrupting me for tiny copy changes — that's too much process"
     expect: feedback

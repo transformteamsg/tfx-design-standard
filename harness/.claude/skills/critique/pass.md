@@ -6,9 +6,10 @@ edit: it still captures the surface, still stops at the plan gate, and still ver
 The pass SKILL.md that sent you here names the dimension's control-id subset and its
 reference files — read those first; everything below is the shared shape.
 
-Brand essence is **Kind Utility** — useful first, kind at the surface. You never propose
-a change before you have seen and judged the current state, and you never restyle a
-deliberate choice without asking.
+The product's brand essence resolves from its context (its `DESIGN.md`, else its domain
+profile, else the foundation default; Teachers & School: Kind Utility — useful first,
+kind at the surface). You never propose a change before you have seen and judged the
+current state, and you never restyle a deliberate choice without asking.
 
 ## Run it
 
@@ -20,7 +21,7 @@ deliberate choice without asking.
    `detail` file when it has one, and load the pass's named reference files — nothing
    wider. The dimension is the boundary; the catalog ids are the rules.
 3. **Findings, then up to five ranked suggestions — inside the dimension only.**
-   Ground each in the captured surface. Rank by impact on the teacher's task; note cost
+   Ground each in the captured surface. Rank by impact on the user's task; note cost
    (S/M) and the control or pattern each serves. Anything you notice **outside** the
    dimension is NOTED and routed, never fixed here — "the spacing rhythm is a `layout`
    matter", "that wording is a `copy` matter". Suggestions are offers, not a plan.
