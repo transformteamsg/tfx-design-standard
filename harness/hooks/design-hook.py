@@ -43,8 +43,9 @@ HOOK_DIR = os.path.dirname(os.path.abspath(__file__))
 HARNESS_ROOT = os.path.dirname(HOOK_DIR)
 DETECT = os.path.join(HARNESS_ROOT, "checks", "detect.py")
 
-# The file types the design controls apply to (matches detect.py's target set).
-UI_EXTENSIONS = {".tsx", ".jsx", ".css", ".html", ".vue", ".svelte"}
+# The file types the wrapped checkers scan (their TARGET_EXTENSIONS), minus
+# .md/.mdx: content files are the content-lint pass's concern, not the hook's.
+UI_EXTENSIONS = {".tsx", ".jsx", ".js", ".ts", ".css", ".html", ".vue", ".svelte"}
 
 # A single detector run on one file is fast; a hang is a failure, not a silent pass.
 DETECT_TIMEOUT = 120
@@ -332,9 +333,20 @@ def run_self_test():
         return clean_detect(_p)
 
     _store, g, s = make_env()
-    m = process_event({"tool_input": {"file_path": "notes.md"}}, tracking_detect, g, s, lines_one)
+    m = process_event({"tool_input": {"file_path": "app/util.py"}}, tracking_detect, g, s, lines_one)
     check("non-UI file → silent", m is None)
     check("non-UI file → detector not run", called["n"] == 0)
+
+    # 1b. .ts file → detector IS invoked (parity with the checkers' TARGET_EXTENSIONS).
+    called_ts = {"n": 0}
+
+    def tracking_detect_ts(_p):
+        called_ts["n"] += 1
+        return clean_detect(_p)
+
+    _store, g, s = make_env()
+    m = process_event({"tool_input": {"file_path": "app/tokens.ts"}}, tracking_detect_ts, g, s, lines_one)
+    check(".ts file → detector invoked", called_ts["n"] == 1)
 
     # 2. Clean UI file → silent, exit 0 semantics.
     _store, g, s = make_env()
@@ -404,6 +416,8 @@ def run_self_test():
     check("extract_paths tolerates missing input", extract_paths({}) == [])
     check("is_ui_file true for .tsx/.css/.svelte",
           is_ui_file("a.tsx") and is_ui_file("b.css") and is_ui_file("c.svelte"))
+    check("is_ui_file true for .ts/.js",
+          is_ui_file("a.ts") and is_ui_file("b.js"))
     check("is_ui_file false for .py/.md/.json",
           not is_ui_file("a.py") and not is_ui_file("b.md") and not is_ui_file("c.json"))
 
