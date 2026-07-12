@@ -60,7 +60,7 @@ export function Rise({ index, reduced, show, children, className }: RevealProps)
 export type FlowStep = {
   label: string;
   note?: string;
-  gate?: boolean; // the human gate: filled primary, tagged
+  gate?: boolean; // the human gate: outlined emphasis, tagged
   detail?: ReactNode; // extra content under the row (e.g. the wizard's questions)
 };
 
@@ -76,36 +76,26 @@ export function Flow({ steps, caption }: { steps: FlowStep[]; caption?: ReactNod
             <div
               className={
                 s.gate
-                  ? "flex items-center gap-3 rounded-lg bg-primary px-3 py-2.5 text-primary-foreground"
+                  ? "flex items-center gap-3 rounded-lg border border-(--tw-blue) bg-surface px-3 py-2.5"
                   : "flex items-center gap-3 rounded-lg border border-border bg-surface px-3 py-2.5"
               }
             >
               <span
                 aria-hidden
-                className={
-                  s.gate
-                    ? "grid h-6 w-6 shrink-0 place-items-center rounded-full bg-primary-foreground text-[11px] font-semibold text-primary"
-                    : "grid h-6 w-6 shrink-0 place-items-center rounded-full bg-foreground text-[11px] font-semibold text-surface"
-                }
+                className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-foreground text-[11px] font-semibold text-surface"
               >
                 {i + 1}
               </span>
               <span className="min-w-0">
                 <span className="block text-[14px] font-medium leading-snug">{s.label}</span>
                 {s.note && (
-                  <span
-                    className={
-                      s.gate
-                        ? "block text-[12px] leading-snug text-primary-foreground/85"
-                        : "block text-[12px] leading-snug text-muted-foreground"
-                    }
-                  >
+                  <span className="block text-[12px] leading-snug text-muted-foreground">
                     {s.note}
                   </span>
                 )}
               </span>
               {s.gate && (
-                <span className="ml-auto shrink-0 rounded-full border border-primary-foreground/40 px-2 py-0.5 text-[11px] font-semibold">
+                <span className="ml-auto shrink-0 rounded-full border border-(--tw-blue) px-2 py-0.5 text-[11px] font-semibold text-tw-blue">
                   human gate
                 </span>
               )}
