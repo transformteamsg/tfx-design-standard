@@ -5,6 +5,7 @@ import { DesignLoop } from "@/components/diagrams/loop";
 import { AdoptionJourney } from "@/components/diagrams/adoption-journey";
 import { Ladder } from "@/components/diagrams/ladder";
 import { Ratchet } from "@/components/diagrams/ratchet";
+import { MotionScale } from "@/components/diagrams/motion-scale";
 
 export function textOf(node: ReactNode): string {
   if (typeof node === "string" || typeof node === "number") return String(node);
@@ -31,4 +32,5 @@ export const mdxComponents = {
   AdoptionJourney,
   Ladder,
   Ratchet,
+  MotionScale,
 };

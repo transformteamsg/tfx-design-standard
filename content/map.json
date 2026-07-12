@@ -24,7 +24,7 @@
   },
   "foundations": {
     "label": "Foundations",
-    "slugs": ["colour", "typography", "spacing-radius", "iconography"]
+    "slugs": ["colour", "typography", "spacing-radius", "iconography", "motion"]
   },
   "products": {
     "label": "Products",
