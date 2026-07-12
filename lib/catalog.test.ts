@@ -128,16 +128,16 @@ describe("getPublicCatalogYaml — control projection", () => {
     }
   });
 
-  it("status: proposed survives projection for exactly the three stamped proposals (plan 011)", () => {
+  it("status: proposed survives projection for exactly the five stamped proposals (plan 011)", () => {
     const yaml = getPublicCatalogYaml();
-    expect(yaml.match(/status: proposed/g)?.length).toBe(3);
+    expect(yaml.match(/status: proposed/g)?.length).toBe(5);
 
     const projected = parse(yaml) as { controls: Record<string, unknown>[] };
     const proposedIds = projected.controls
       .filter((c) => c.status === "proposed")
       .map((c) => c.id)
       .sort();
-    expect(proposedIds).toEqual(["CNT-5", "CNT-6", "CNT-7"]);
+    expect(proposedIds).toEqual(["CNT-5", "CNT-6", "CNT-7", "MOT-2", "MOT-3"]);
   });
 });
 

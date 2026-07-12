@@ -1,4 +1,4 @@
-# TFX Design Standard — control catalog (single source of truth)
+# DXD Design Standard — control catalog (single source of truth)
 # Normative source: TFX Design Standard (TFX-DS) v0.1 seed catalog.
 # Consumers: the design harness (agent enforcement — this repo's skills/checks)
 # and the TFX-DS website (human presentation — renders and serves this file raw).
@@ -707,6 +707,49 @@ controls:
       - animations over 300ms on task flows
       - transition-all
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
+  # MOT-2: ratchet PROPOSAL 2026-07-12 — motion tokens, from the site's own
+  # motion-layer build-out (landing reveal, diagram animations). Boundary with
+  # MOT-1: MOT-1 bounds where motion may run and how long; MOT-2 bounds where
+  # the values come from. Pending design-lead approval.
+  - id: MOT-2
+    source: TFX-DS
+    title: Motion values come from the declared motion token set — durations and easings are never hardcoded in component code
+    tier: L2
+    status: proposed
+    check: deterministic
+    phase: [implement, verify]
+    applies_to: [component, page]
+    verify: "Grep transition/animation values in component code: every duration and easing resolves to a motion token (--motion-*/--ease-* or their declared code mirror); no raw ms or cubic-bezier literals outside the token definitions"
+    waiver: rationale
+    fails_when:
+      - a raw duration (350ms, 0.4s) or cubic-bezier literal in component code where the token set exists
+      - a surface that animates but declares no motion token set
+      - the narrative tier (--motion-story) used on interface or task UI
+    enforced: manual
+    refs: [https://github.com/transformteamsg/tfx-design-standard]
+
+  # MOT-3: ratchet PROPOSAL 2026-07-12 — static information parity, written for
+  # the animated-diagram build-out. Boundary: A11Y-5 demands a reduced-motion
+  # variant exists; MOT-3 demands that variant lose no information. MOT-1
+  # bounds duration and placement; MOT-3 bounds meaning. Pending design-lead
+  # approval.
+  - id: MOT-3
+    source: TFX-DS
+    title: Motion may emphasise meaning but never carry it alone — an animated surface communicates the same information with animations off
+    tier: L2
+    status: proposed
+    check: judgment
+    phase: [plan, implement, verify]
+    applies_to: [page, component]
+    verify: "With prefers-reduced-motion set, every diagram and animated surface still communicates its full meaning: states, order, gates, and relationships remain legible statically"
+    waiver: rationale
+    fails_when:
+      - a diagram whose meaning (order, causality, state) exists only in the animation
+      - a reduced-motion variant that drops information instead of motion
+      - motion that implies a state change that is not happening
+    detail: controls/mot-3.md
+    refs: [https://github.com/transformteamsg/tfx-design-standard]
 
   - id: IDN-1
     source: TFX-DS

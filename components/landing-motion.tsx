@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  cubicBezier,
   motion,
   useInView,
   useReducedMotion,
@@ -9,13 +8,14 @@ import {
   useTransform,
 } from "motion/react";
 import { useRef, type ReactNode } from "react";
+import { DUR, EASE_OUT } from "@/lib/motion";
 
 /* Landing-only motion. Ported from marketing-teacher-workspace's
    reveal-on-scroll: fade + lift, fires once, honours prefers-reduced-motion.
    Standard easing, no bounce (SLP-8); decorative motion stays off doc pages
-   (MOT-1 — the landing page is the one marketing surface). */
-
-const EASE = cubicBezier(0.4, 0, 0.2, 1);
+   (MOT-1 — the landing page is the one marketing surface). The reveal runs
+   at --motion-story (600ms): the documented narrative tier for the landing,
+   not an undocumented exception (MOT-2). */
 
 const IN_VIEW_OPTIONS = {
   once: true,
@@ -45,7 +45,7 @@ export function Reveal({
       className={className}
       initial={reduced ? false : { opacity: 0, y: 24 }}
       animate={shouldAnimate || reduced ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
-      transition={reduced ? { duration: 0 } : { duration: 0.6, ease: EASE, delay: delay / 1000 }}
+      transition={reduced ? { duration: 0 } : { duration: DUR.story, ease: EASE_OUT, delay: delay / 1000 }}
     >
       {children}
     </motion.div>

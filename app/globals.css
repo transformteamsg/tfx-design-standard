@@ -61,6 +61,19 @@
 
   --radius: 0.5rem;
 
+  /* ── Motion — the only durations and easings site code may use (MOT-2, proposed).
+     Duration follows the size of the change; easing follows its direction
+     (enter/exit → out, on-screen movement → in-out, hover tint → plain ease).
+     Interface motion stays ≤300ms (MOT-1); --motion-story is for narrative
+     surfaces only — explanatory diagrams and the landing reveal — never task UI.
+     A11Y-5: every consumer provides a reduced-motion variant. ── */
+  --motion-fast: 120ms;
+  --motion-base: 200ms;
+  --motion-slow: 300ms;
+  --motion-story: 600ms;
+  --ease-out: cubic-bezier(0.215, 0.61, 0.355, 1);
+  --ease-in-out: cubic-bezier(0.645, 0.045, 0.355, 1);
+
   /* ── shadcn/ui compatibility tokens — mapped onto the brand tokens above so
      shadcn components (Base UI) render on-brand and stay TOK-1 compliant: every
      value resolves to a token defined here, never a raw value in a component. ── */
