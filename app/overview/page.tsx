@@ -14,8 +14,8 @@ const tiles = [
   { key: "standards", href: "/standards", art: "standards/catalog" },
   { key: "guidelines", href: "/guidelines", art: "guidelines/voice-tone" },
   { key: "foundations", href: "/foundations", art: "foundations/colour" },
-  { key: "products", href: "/products", art: "products/teacher-workspace" },
   { key: "domains", href: "/domains", art: "domains/teachers-school" },
+  { key: "products", href: "/products", art: "products/teacher-workspace" },
   { key: "harness", href: "/harness", art: "harness/loop" },
 ];
 
@@ -25,16 +25,16 @@ export default function Overview() {
   return (
     <div className="max-w-[760px]">
       <p className="text-[13px] font-semibold text-tw-blue">
-        TransformX · Teacher &amp; School portfolio
+        Digital Products &amp; Excellence Division
       </p>
       <h1 className="mt-3 font-display text-[32px] font-semibold leading-[1.05] tracking-tight">
-        Kind Utility,<br />held to a standard.
+        One foundation.<br />Four domain expressions.
       </h1>
       <p className="mt-5 text-[18px] leading-[1.6] text-muted-foreground">
-        How TransformX designs for Singapore&apos;s teachers — utility-first at the core,
-        human-first at the surface. Principles that settle arguments, standards a machine can
-        check, and a harness so every builder ships at the bar, with or without a designer
-        on the team.
+        How the Digital Products &amp; Excellence Division designs its products: one shared
+        foundation, and a brand profile each domain declares on top. Principles that settle
+        arguments, standards a machine can check, and a harness so every builder in every DXD
+        product team ships at the bar, with or without a designer in the room.
       </p>
 
       {home?.illustration && <Illo subject={home.illustration} />}
@@ -43,8 +43,8 @@ export default function Overview() {
         className="mt-6 rounded-lg border border-border p-4 text-[16px]"
         style={{ background: "color-mix(in oklab, var(--tw-blue) 5%, var(--surface))" }}
       >
-        <strong>The one test:</strong> does this help teachers work faster with less stress?
-        If not — we don&apos;t build it.
+        <strong>The one test:</strong> does this help your users get their task done faster,
+        with less stress? If not, we don&apos;t build it.
       </div>
 
       {/* SLP-5 (L2) rationale: the tile grid IS the navigation — six distinct
@@ -82,6 +82,13 @@ export default function Overview() {
             }}
           />
         )}
+        <p className="mt-7 text-[14px] text-muted-foreground">
+          Deciding whether to adopt? The measures live in{" "}
+          <Link href="/governance" className="text-tw-blue underline underline-offset-2">
+            how this evolves
+          </Link>
+          .
+        </p>
         <p className="mt-7 text-[14px] text-muted-foreground">
           New here?{" "}
           <Link href="/how-to-read" className="text-tw-blue underline underline-offset-2">

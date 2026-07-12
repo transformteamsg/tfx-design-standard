@@ -9,7 +9,7 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 export const metadata: Metadata = {
   title: { default: "DXD Design Standard", template: "%s — DXD Design Standard" },
   description:
-    "How TransformX designs the Teacher & School portfolio: principles, checkable standards, guidelines, foundations, and the AI design harness. For human builders and AI agents.",
+    "The design standard for GovTech's Digital Products & Excellence Division: one foundation, four domain expressions, checkable standards, and an AI design harness. For human builders and AI agents.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

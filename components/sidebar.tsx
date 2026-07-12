@@ -36,6 +36,7 @@ const nav: NavGroup[] = [
     label: "Start",
     items: [
       { href: "/overview", title: "Overview" },
+      { href: "/harness/get-started", title: "Get started" },
       { href: "/how-to-read", title: "How to read this" },
       { href: "/for-agents", title: "For agents" },
     ],
@@ -86,15 +87,6 @@ const nav: NavGroup[] = [
     ],
   },
   {
-    label: "Products",
-    href: "/products",
-    items: [
-      { href: "/products/teacher-workspace", title: "Teacher Workspace" },
-      { href: "/products/casesync", title: "CaseSync" },
-      { href: "/products/glow", title: "Glow" },
-    ],
-  },
-  {
     label: "Domains",
     href: "/domains",
     items: [
@@ -105,10 +97,18 @@ const nav: NavGroup[] = [
     ],
   },
   {
+    label: "Products",
+    href: "/products",
+    items: [
+      { href: "/products/teacher-workspace", title: "Teacher Workspace" },
+      { href: "/products/casesync", title: "CaseSync" },
+      { href: "/products/glow", title: "Glow" },
+    ],
+  },
+  {
     label: "Harness",
     href: "/harness",
     items: [
-      { href: "/harness/get-started", title: "Get started" },
       { href: "/harness/loop", title: "The loop" },
       { href: "/harness/skills", title: "Skills" },
       { href: "/harness/tools", title: "Tools" },

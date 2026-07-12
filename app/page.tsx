@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { getDoc } from "@/lib/content";
-import { Illo } from "@/components/illo";
-import { Parallax, Reveal } from "@/components/landing-motion";
+import { Reveal } from "@/components/landing-motion";
 import { Readers, type Reader } from "@/components/readers";
 
 export const metadata = {
@@ -9,22 +8,15 @@ export const metadata = {
 };
 
 type WhyItem = { title: string; text: string };
-type TeamMember = { name: string; role: string; focus: string };
-
-function initials(name: string) {
-  return name
-    .split(" ")
-    .slice(0, 2)
-    .map((w) => w[0])
-    .join("")
-    .toUpperCase();
-}
+type Owner = { role: string; who: string };
+type Role = { key: string; title: string; first: string; href: string; link: string };
 
 export default function Landing() {
   const doc = getDoc("sections", "landing");
   if (!doc) return null;
   const why = (doc.data.why ?? []) as WhyItem[];
-  const team = (doc.data.team ?? []) as TeamMember[];
+  const owners = (doc.data.owners ?? []) as Owner[];
+  const roles = (doc.data.roles ?? []) as Role[];
   const readers = (doc.data.readers ?? []) as Reader[];
   const cta = (doc.data.cta as string) ?? "See the DXD Design Standard";
 
@@ -32,7 +24,7 @@ export default function Landing() {
     <div className="mx-auto max-w-[880px]">
       <section className="pt-10 sm:pt-16">
         <p className="text-[13px] font-semibold text-tw-blue">
-          TransformX · Teacher &amp; School portfolio
+          Digital Products &amp; Excellence Division
         </p>
         <h1 className="mt-4 max-w-[16ch] font-display text-[48px] font-semibold leading-[1.04] tracking-tight sm:text-[72px]">
           {doc.title}
@@ -46,6 +38,12 @@ export default function Landing() {
             className="rounded-lg bg-tw-blue px-5 py-3 text-[16px] font-semibold text-white transition-colors duration-150 hover:bg-tw-blue-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue)"
           >
             {cta}
+          </Link>
+          <Link
+            href="/harness/get-started"
+            className="rounded-lg border border-border bg-surface px-5 py-3 text-[16px] font-semibold text-foreground transition-colors duration-150 hover:border-(--border-strong) hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue)"
+          >
+            Adopt it — get started
           </Link>
           <Link
             href="/for-agents"
@@ -62,11 +60,7 @@ export default function Landing() {
         </div>
       </section>
 
-      {doc.illustration && (
-        <Parallax drift={14}>
-          <Illo subject={doc.illustration} />
-        </Parallax>
-      )}
+      {/* Hero visual: the live loop diagram lands here (plan 022). */}
 
       {readers.length > 0 && (
         <Readers
@@ -105,36 +99,65 @@ export default function Landing() {
         </div>
       </section>
 
+      <section className="mt-16">
+        <Reveal>
+          <h2 className="font-display text-[24px] font-semibold tracking-tight">
+            What adopting means for your team
+          </h2>
+        </Reveal>
+        <div className="mt-2">
+          {roles.map((role, i) => (
+            <Reveal
+              key={role.key}
+              delay={i * 80}
+              className="border-b border-border last:border-b-0"
+            >
+              <div className="grid gap-2 py-7 sm:grid-cols-[200px_1fr] sm:gap-6">
+                <h3 className="font-display text-[18px] font-semibold">{role.title}</h3>
+                <div>
+                  <p className="max-w-[62ch] text-[16px] leading-[1.6] text-muted-foreground">
+                    {role.first}
+                  </p>
+                  <Link
+                    href={role.href}
+                    className="mt-3 inline-block text-[14px] font-medium text-tw-blue underline underline-offset-2 hover:text-foreground"
+                  >
+                    {role.link} &rarr;
+                  </Link>
+                </div>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </section>
+
       <section className="mt-14 rounded-xl bg-tw-blue px-8 py-10 text-white sm:px-12">
         <p className="text-[13px] font-semibold text-white">
           The one test
         </p>
-        <p className="mt-3 max-w-[24ch] font-display text-[24px] font-semibold leading-snug sm:text-[32px]">
-          Does this help teachers work faster with less stress?
+        <p className="mt-3 max-w-[28ch] font-display text-[24px] font-semibold leading-snug sm:text-[32px]">
+          Does this help your users get their task done faster, with less stress?
         </p>
         <p className="mt-3 text-[16px] text-white">If not, we don&apos;t build it.</p>
+        <p className="mt-2 text-[14px] text-white/80">
+          Each domain names its own test — Teachers &amp; School asks it about teachers.
+        </p>
       </section>
 
       <section className="mt-16">
         <h2 className="font-display text-[24px] font-semibold tracking-tight">
-          The designers behind it
+          Who owns this
         </h2>
-        <p className="mt-2 max-w-[60ch] text-[16px] text-muted-foreground">
-          The TransformX product design team writes, argues over, and maintains this standard.
-        </p>
-        <div className="mt-8 grid gap-x-6 gap-y-8 sm:grid-cols-3">
-          {team.map((m, i) => (
-            <div key={`${m.name}-${i}`}>
-              <span
-                className="grid h-14 w-14 place-items-center rounded-full text-[16px] font-semibold text-tw-blue"
-                style={{ background: "color-mix(in oklab, var(--tw-blue) 10%, var(--surface))" }}
-                aria-hidden="true"
-              >
-                {initials(m.name)}
-              </span>
-              <p className="mt-3 text-[16px] font-semibold">{m.name}</p>
-              <p className="mt-0.5 text-[14px] text-muted-foreground">{m.role}</p>
-              <p className="mt-1 text-[12px] text-muted-foreground">{m.focus}</p>
+        <div className="mt-2">
+          {owners.map((owner) => (
+            <div
+              key={owner.role}
+              className="grid gap-1 border-b border-border py-6 last:border-b-0 sm:grid-cols-[200px_1fr] sm:gap-6"
+            >
+              <p className="text-[16px] font-semibold">{owner.role}</p>
+              <p className="max-w-[62ch] text-[14px] leading-[1.6] text-muted-foreground">
+                {owner.who}
+              </p>
             </div>
           ))}
         </div>

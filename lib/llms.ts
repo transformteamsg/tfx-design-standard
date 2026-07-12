@@ -8,25 +8,27 @@ import { getDoc } from "@/lib/content";
    in those per-page `.md` twins (append `.md` to any path), not a separate dump. */
 export function llmsIndex(): string {
   const lines: string[] = [];
-  lines.push("# TFX Design Standard");
+  lines.push("# DXD Design Standard");
   lines.push("");
   lines.push(
-    "> Make the quality bar independent of staffing. Brand essence: Kind Utility —",
+    "> Make the quality bar independent of staffing. One foundation, four domain",
   );
   lines.push(
-    "> useful first, kind at the surface. The one test: does this help teachers work",
+    "> expressions: Teachers & School, Students, Parents, and Platform. The always-on",
   );
   lines.push(
-    "> faster with less stress? Every page below is also available as Markdown by",
+    "> test: does this help your users get their task done faster with less stress?",
   );
-  lines.push("> appending `.md` to its path.");
+  lines.push(
+    "> Every page below is also available as Markdown by appending `.md` to its path.",
+  );
   lines.push("");
 
   // About: the essential lines from the old /llms.txt header (no context lost).
   lines.push("## About");
   lines.push("");
   lines.push(
-    "- TransformX, Teacher & School portfolio, GovTech Singapore (v0.1 draft).",
+    "- DXD (Digital Products & Excellence Division), GovTech Singapore (v0.1 draft). Born in TransformX's Teacher & School portfolio; TFX survives as that domain's profile.",
   );
   lines.push(
     "- Litmus for standards: if you can't check it, it's a principle or guideline, not a standard.",
@@ -34,18 +36,25 @@ export function llmsIndex(): string {
   lines.push(
     "- Tiers: L0 non-negotiable (no waiver) · L1 mandatory (documented waiver) · L2 recommended (inline rationale).",
   );
-  lines.push('- Waiver syntax: `tfx-waive <ID> reason="<specific reason>"`.');
   lines.push(
-    "- Stack: Base UI components + Radix Colors + shadcn/ui default tokens. Fonts: Plus Jakarta Sans (display), Inter (body).",
+    '- Waiver syntax: `dxd-waive <ID> reason="<specific reason>"` (legacy `tfx-waive` markers remain valid).',
+  );
+  lines.push(
+    "- Stack is a domain-profile fact, not a foundation rule. Teachers & School declares: Base UI + Radix Colours + shadcn/ui tokens; Plus Jakarta Sans (display), Inter (body).",
+  );
+  lines.push(
+    "- Brand essence is declared per domain — Teachers & School: Kind Utility (useful first, kind at the surface).",
   );
   lines.push("");
 
   // Start here: the singleton entry points.
   lines.push("## Start here");
   lines.push("");
+  lines.push("- [Get started](/harness/get-started.md)");
   lines.push("- [Overview](/overview.md)");
   lines.push("- [How to read this standard](/how-to-read.md)");
   lines.push("- [For agents](/for-agents.md)");
+  lines.push("- [Domains](/domains.md)");
   lines.push("");
 
   const item = (label: string, href: string, desc?: string) =>
