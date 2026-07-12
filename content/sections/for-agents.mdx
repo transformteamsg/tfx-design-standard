@@ -22,6 +22,21 @@ Two machine surfaces, depending on how much you need:
 - [/llms.txt](/llms.txt) is the curated index — it lists every page and links each `.md` twin. Start here. Any page is also available as Markdown: append `.md` to its path (e.g. `/standards/catalog.md`).
 - [/standards/catalog.yaml](/standards/catalog.yaml) is the control source. Point your tool at it when you only need the controls.
 
-Tiers are binding: L0 cannot be waived, L1 needs `tfx-waive <ID> reason="..."` in code, L2 deviations need an inline rationale.
+Tiers are binding: L0 cannot be waived, L1 needs `dxd-waive <ID> reason="..."` in code, L2 deviations need an inline rationale. Legacy `tfx-waive` markers remain valid.
 
 One thing the catalog is not: a skill. Skills apply the standard inside a session; the catalog *is* the standard. When they disagree, the catalog wins, and the skill gets fixed.
+
+## Wire it into CI
+
+Two layers, depending on how deep you integrate:
+
+- **Consume the contract.** Point your tooling at
+  [/standards/catalog.yaml](/standards/catalog.yaml) and grade what you build
+  against each control's `verify` and `fails_when`.
+- **Run the checks.** The harness repo carries the deterministic checkers the
+  catalog references (schema validation, token audit, static accessibility)
+  and this site's own CI runs them on every push — install the plugin from the
+  [get started](/harness/get-started) page and your repo gets the same checks
+  in the design loop. Not every control has a script; the catalog's `enforced`
+  field says which are machine-checked today, and nothing unscripted is ever
+  reported as "passed".
