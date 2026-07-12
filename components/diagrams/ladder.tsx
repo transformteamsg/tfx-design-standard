@@ -1,6 +1,6 @@
 "use client";
 
-/* The six-layer ladder from "How to read this": each layer answers one
+/* The seven-layer ladder from "How to read this": each layer answers one
    question and carries a different authority. Every row links to its section;
    Standards — the only machine-enforced layer — is marked. */
 
@@ -8,18 +8,19 @@ import Link from "next/link";
 import { FlowRow, useFlowReveal } from "./flow";
 
 const layers = [
-  { href: "/principles", label: "Principles", answers: "why", note: "decide, don't check" },
+  { href: "/principles", label: "Principles", answers: "why", note: "used to decide, not to check" },
   {
     href: "/standards",
     label: "Standards",
     answers: "must",
-    note: "verified by checks",
+    note: "required; L0 blocks, L1 needs a documented waiver",
     enforced: true,
   },
-  { href: "/guidelines", label: "Guidelines", answers: "should", note: "judgement applies" },
-  { href: "/foundations", label: "Foundations", answers: "with what", note: "build from these" },
-  { href: "/products", label: "Products", answers: "where", note: "calibrated per product" },
-  { href: "/harness", label: "Harness", answers: "how, fast", note: "use it, improve it" },
+  { href: "/guidelines", label: "Guidelines", answers: "should", note: "judgement applies; deviation needs a reason" },
+  { href: "/foundations", label: "Foundations", answers: "with what", note: "build from these by default" },
+  { href: "/domains", label: "Domains", answers: "who for", note: "brand per domain; adds, never overrides" },
+  { href: "/products", label: "Products", answers: "where", note: "one character, calibrated per product" },
+  { href: "/harness", label: "Harness", answers: "how, fast", note: "use the skills and tools; improve them" },
 ];
 
 export function Ladder() {
