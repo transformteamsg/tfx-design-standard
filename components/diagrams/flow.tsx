@@ -3,13 +3,16 @@
 /* Shared vertical-flow primitive for the explanatory diagrams. HTML, not SVG:
    text renders at true UI sizes, colours come straight from tokens (TOK-1),
    and connectors are plain elements that cannot mis-render. Motion is one
-   short staggered reveal per row (240ms, ease-out — within MOT-1) that fires
-   once on scroll; prefers-reduced-motion shows everything immediately. */
+   short staggered reveal per row (--motion-base, ease-out — within MOT-1)
+   that fires once on scroll; prefers-reduced-motion shows everything
+   immediately. Values come from the motion token mirror (MOT-2). */
 
-import { cubicBezier, motion, useInView, useReducedMotion } from "motion/react";
+import { motion, useInView, useReducedMotion } from "motion/react";
 import { useRef, type ReactNode } from "react";
+import { DUR, EASE_OUT, STAGGER } from "@/lib/motion";
 
-export const FLOW_EASE = cubicBezier(0.22, 1, 0.36, 1);
+/* Kept as an alias so existing importers still compile. */
+export const FLOW_EASE = EASE_OUT;
 
 export function useFlowReveal<T extends Element = HTMLOListElement>() {
   const ref = useRef<T | null>(null);
@@ -33,7 +36,7 @@ function revealMotion({ index, reduced, show }: Pick<RevealProps, "index" | "red
     animate: show ? { opacity: 1, y: 0 } : { opacity: 0, y: 8 },
     transition: reduced
       ? { duration: 0 }
-      : { duration: 0.24, ease: FLOW_EASE, delay: (index * 70) / 1000 },
+      : { duration: DUR.base, ease: EASE_OUT, delay: index * STAGGER },
   };
 }
 
