@@ -100,6 +100,18 @@
   --sidebar-accent-foreground: var(--foreground);
   --sidebar-border: var(--border);
   --sidebar-ring: var(--ring);
+
+  /* ── Anti-specimen tokens — used ONLY by components/compare.tsx to draw the
+     "before" (default-AI) panel of the standards demo. Never use these in
+     product UI: they exist to be pointed at (SLP-1/SLP-2 exhibits). ── */
+  --demo-slop-grad-a: #7c3aed;
+  /* fuchsia-700, darkened from fuchsia-600 so 13px text on the gradient and
+     the gradient-clipped title both clear 4.5:1 (A11Y-1 holds even here). */
+  --demo-slop-grad-b: #a21caf;
+  --demo-slop-surface: #f5f3ff;
+  --demo-slop-ink: #4c1d95;
+  --demo-slop-border: color-mix(in oklab, var(--demo-slop-grad-a) 25%, var(--surface));
+  --demo-slop-glow: color-mix(in oklab, var(--demo-slop-grad-a) 35%, transparent);
 }
 
 @theme inline {
