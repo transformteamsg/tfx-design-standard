@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getDoc } from "@/lib/content";
 import { Reveal } from "@/components/landing-motion";
 import { Readers, type Reader } from "@/components/readers";
+import { OrbitLoop } from "@/components/diagrams/orbit-loop";
 
 export const metadata = {
   alternates: { types: { "text/markdown": "/index.md" } },
@@ -60,7 +61,15 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Hero visual: the live loop diagram lands here (plan 022). */}
+      <Reveal className="mt-14">
+        <OrbitLoop />
+        <p className="mt-3 text-[13px] text-muted-foreground">
+          The design loop, live — two human gates, intent without loss.{" "}
+          <Link href="/harness/loop" className="text-tw-blue underline underline-offset-2">
+            How the loop works
+          </Link>
+        </p>
+      </Reveal>
 
       {readers.length > 0 && (
         <Readers
