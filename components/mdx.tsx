@@ -1,7 +1,7 @@
 import { isValidElement, type ReactNode } from "react";
 import { slugify } from "@/lib/toc";
 import { FoundationProfile } from "@/components/diagrams/foundation-profile";
-import { DesignLoop } from "@/components/diagrams/loop";
+import { OrbitLoop } from "@/components/diagrams/orbit-loop";
 import { AdoptionJourney } from "@/components/diagrams/adoption-journey";
 import { Ladder } from "@/components/diagrams/ladder";
 import { Ratchet } from "@/components/diagrams/ratchet";
@@ -28,7 +28,7 @@ export const mdxComponents = {
   h2: heading("h2"),
   h3: heading("h3"),
   FoundationProfile,
-  DesignLoop,
+  OrbitLoop,
   AdoptionJourney,
   Ladder,
   Ratchet,
