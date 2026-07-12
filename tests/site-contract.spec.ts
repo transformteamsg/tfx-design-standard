@@ -69,9 +69,9 @@ for (const width of mobileWidths) {
     await page.setViewportSize({ width, height: 900 });
     await open(page, "/standards/catalog");
 
-    await expectMinimumTarget(page.getByRole("button", { name: "L0", exact: true }), 44);
+    await expectMinimumTarget(page.getByRole("button", { name: /^L0\b/ }), 44);
     await expectMinimumTarget(
-      page.getByRole("button", { name: "deterministic", exact: true }),
+      page.getByRole("button", { name: /^deterministic\b/ }),
       44
     );
     await expectMinimumTarget(page.getByTitle("Copy control ID").first(), 44);
@@ -88,9 +88,9 @@ test("desktop audited targets are at least 24px", async ({ page }) => {
     primaryNavigation.getByRole("link", { name: "For agents", exact: true }),
     24
   );
-  await expectMinimumTarget(page.getByRole("button", { name: "L0", exact: true }), 24);
+  await expectMinimumTarget(page.getByRole("button", { name: /^L0\b/ }), 24);
   await expectMinimumTarget(
-    page.getByRole("button", { name: "deterministic", exact: true }),
+    page.getByRole("button", { name: /^deterministic\b/ }),
     24
   );
   await expectMinimumTarget(page.getByTitle("Copy control ID").first(), 24);
