@@ -76,8 +76,12 @@ const SPOTS: LabelSpot[] = [
 const ORBIT_S = 36;
 const DWELL_PLAN_S = 1.6;
 const DWELL_VERIFY_S = 1.2;
-const PLAN_DEG = 120;
-const VERIFY_DEG = 240;
+/* The dot dwells just short of each gate node — waiting to be let through,
+   not parked on top of the numeral. 11° clears the gate ring (7.6°) with a
+   visible sliver of track between them. */
+const GATE_WAIT_DEG = 11;
+const PLAN_DEG = 120 - GATE_WAIT_DEG;
+const VERIFY_DEG = 240 - GATE_WAIT_DEG;
 const START_TRANSFORM = `rotate(${PLAN_DEG} ${C} ${C})`;
 
 const TRAVEL_S = ORBIT_S - DWELL_PLAN_S - DWELL_VERIFY_S;
@@ -189,6 +193,14 @@ export function OrbitLoop({ variant = "full" }: { variant?: "full" | "inline" })
       <svg viewBox={`0 0 ${VIEW} ${VIEW}`} className="block h-auto w-full" aria-hidden="true">
         {/* the track */}
         <circle cx={C} cy={C} r={R} className="fill-none stroke-border" strokeWidth={1.5} />
+
+        {/* the travelling dot — pure emphasis, absent under reduced motion.
+            Painted beneath the nodes so it slides behind each station. */}
+        {!reduced && (
+          <g ref={dotRef} transform={START_TRANSFORM}>
+            <circle cx={C} cy={C - R} r={4} className="fill-tw-blue" />
+          </g>
+        )}
 
         {/* centre wordmark */}
         <text
@@ -312,12 +324,6 @@ export function OrbitLoop({ variant = "full" }: { variant?: "full" | "inline" })
           );
         })}
 
-        {/* the travelling dot — pure emphasis, absent under reduced motion */}
-        {!reduced && (
-          <g ref={dotRef} transform={START_TRANSFORM}>
-            <circle cx={C} cy={C - R} r={4} className="fill-tw-blue" />
-          </g>
-        )}
       </svg>
 
       {/* interactive layer: real buttons over the drawn nodes */}
