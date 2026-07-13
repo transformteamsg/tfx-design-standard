@@ -10,7 +10,7 @@
   --background: #fafafa;
   --surface: #ffffff;
   --foreground: #18181b;
-  --muted-foreground: #71717a;
+  --muted-foreground: #67676f; /* darkened from zinc-500 #71717a to clear WCAG AA 4.5:1 on the --muted #f4f4f5 fill, not just the page bg (A11Y-1, L0) */
   --border: #e4e4e7;
   --ring: #0064ff;
 

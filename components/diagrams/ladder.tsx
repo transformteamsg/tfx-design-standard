@@ -63,7 +63,7 @@ export function Ladder() {
           </FlowRow>
         ))}
       </ul>
-      <figcaption className="mt-3 max-w-[52ch] text-[13px] leading-[1.6] text-muted-foreground">
+      <figcaption className="mt-3 max-w-[52ch] text-[12px] leading-[1.6] text-muted-foreground">
         The litmus test: if you can&apos;t check it, it&apos;s a principle or a guideline, not a
         standard.
       </figcaption>

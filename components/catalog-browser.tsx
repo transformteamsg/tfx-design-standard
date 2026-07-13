@@ -259,7 +259,7 @@ export function CatalogBrowser({
             if (inCategory.length === 0) return null;
             return (
               <div key={cat}>
-                <h3 className="text-[13px] font-semibold text-muted-foreground">
+                <h3 className="text-[12px] font-semibold text-muted-foreground">
                   {cat} ({inCategory.length})
                 </h3>
                 <div className="mt-2 flex flex-col gap-3">{inCategory.map(renderCard)}</div>

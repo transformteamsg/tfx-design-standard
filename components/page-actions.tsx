@@ -13,7 +13,7 @@ import { Check, Copy, FileText } from "lucide-react";
 
 const control =
   "inline-flex items-center gap-1.5 rounded-md border border-border bg-surface " +
-  "px-2.5 py-1.5 text-[13px] font-medium text-muted-foreground transition-colors " +
+  "px-2.5 py-1.5 text-[12px] font-medium text-muted-foreground transition-colors " +
   "hover:border-border-strong hover:text-foreground focus-visible:outline-2 " +
   "focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue) max-sm:min-h-11";
 

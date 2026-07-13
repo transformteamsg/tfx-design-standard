@@ -24,7 +24,7 @@ export default function Landing() {
   return (
     <div className="mx-auto max-w-[880px]">
       <section className="pt-10 sm:pt-16">
-        <p className="text-[13px] font-semibold text-tw-blue">
+        <p className="text-[12px] font-semibold text-tw-blue">
           Digital Products &amp; Excellence Division
         </p>
         <h1 className="mt-4 max-w-[16ch] font-display text-[48px] font-semibold leading-[1.04] tracking-tight sm:text-[72px]">
@@ -63,7 +63,7 @@ export default function Landing() {
 
       <Reveal className="mt-14">
         <OrbitLoop />
-        <p className="mt-3 text-[13px] text-muted-foreground">
+        <p className="mt-3 text-[12px] text-muted-foreground">
           The design loop, live — two human gates, intent without loss.{" "}
           <Link href="/harness/loop" className="text-tw-blue underline underline-offset-2">
             How the loop works
@@ -141,7 +141,7 @@ export default function Landing() {
       </section>
 
       <section className="mt-14 rounded-xl bg-tw-blue px-8 py-10 text-white sm:px-12">
-        <p className="text-[13px] font-semibold text-white">
+        <p className="text-[12px] font-semibold text-white">
           The one test
         </p>
         <p className="mt-3 max-w-[28ch] font-display text-[24px] font-semibold leading-snug sm:text-[32px]">

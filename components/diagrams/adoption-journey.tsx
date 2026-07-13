@@ -32,11 +32,11 @@ function WizardQuestions({ className }: { className?: string }) {
   return (
     <ul className={className}>
       {questions.map((q) => (
-        <li key={q} className="text-[11.5px] leading-snug text-muted-foreground">
+        <li key={q} className="text-[12px] leading-snug text-muted-foreground">
           {q}
         </li>
       ))}
-      <li className="text-[11.5px] italic leading-snug text-muted-foreground">
+      <li className="text-[12px] italic leading-snug text-muted-foreground">
         skip any non-essential question for the default
       </li>
     </ul>
@@ -89,8 +89,8 @@ export function AdoptionJourney() {
               >
                 {i + 1}
               </span>
-              <span className="mt-1.5 block text-[12.5px] font-medium leading-snug">{m.label}</span>
-              <span className="mt-0.5 block text-[11.5px] leading-snug text-muted-foreground">
+              <span className="mt-1.5 block text-[12px] font-medium leading-snug">{m.label}</span>
+              <span className="mt-0.5 block text-[12px] leading-snug text-muted-foreground">
                 {m.note}
               </span>
               {m.wizard && (
@@ -118,8 +118,8 @@ export function AdoptionJourney() {
               {i + 1}
             </span>
             <span className="min-w-0">
-              <span className="block text-[12.5px] font-medium leading-snug">{m.label}</span>
-              <span className="mt-0.5 block text-[11.5px] leading-snug text-muted-foreground">
+              <span className="block text-[12px] font-medium leading-snug">{m.label}</span>
+              <span className="mt-0.5 block text-[12px] leading-snug text-muted-foreground">
                 {m.note}
               </span>
               {m.wizard && <WizardQuestions className="mt-1 list-none space-y-0.5 p-0" />}
@@ -128,7 +128,7 @@ export function AdoptionJourney() {
         ))}
       </ol>
 
-      <figcaption className="mt-3 max-w-[52ch] text-[13px] leading-[1.6] text-muted-foreground">
+      <figcaption className="mt-3 max-w-[52ch] text-[12px] leading-[1.6] text-muted-foreground">
         The wizard asks these in order and writes your product&apos;s <code>DESIGN.md</code> for
         you. Answer only what you know; skip the rest.
       </figcaption>

@@ -13,7 +13,7 @@ export default function Page() {
           See what the catalog catches
         </h2>
         <p className="mt-2 max-w-[62ch] text-[16px] leading-[1.6] text-muted-foreground">
-          Sixty-two controls read as one demo. Drag the handle.
+          Seventy controls read as one demo. Drag the handle.
         </p>
         <SlopCompare />
       </section>

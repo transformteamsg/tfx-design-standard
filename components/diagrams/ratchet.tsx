@@ -3,9 +3,10 @@
 /* The ratchet: the catalog only tightens. A horizontal rack of five
    asymmetric teeth — sloped leading edge, vertical trailing edge, the shape
    that physically permits one direction — with a pawl resting against the
-   newest tooth. Once in view, the fifth tooth slides in under the pawl (which
-   clicks up and drops behind it), then tries to slide back and stops dead
-   against the pawl's edge. One clean blocked move, no overshoot (SLP-8).
+   newest tooth. Once in view, the fifth tooth slides in from the right, clicks
+   just past its seat as the pawl drops behind it, then settles back against the
+   pawl's edge and stops dead. The settle uses token easing — no bounce, no
+   spring (SLP-8); the small pre-seat overshoot is a positional click, not bounce.
    The animation ends on exactly the geometry reduced motion renders at once:
    five teeth, pawl seated. Order, the gate, and the rule all live statically
    in the numbered stations and caption below (MOT-3). Colours are tokens only
@@ -119,8 +120,8 @@ export function Ratchet() {
               {i + 1}
             </span>
             <span className="min-w-0">
-              <span className="block text-[12.5px] font-medium leading-snug">{s.label}</span>
-              <span className="mt-0.5 block text-[11.5px] leading-snug text-muted-foreground">
+              <span className="block text-[12px] font-medium leading-snug">{s.label}</span>
+              <span className="mt-0.5 block text-[12px] leading-snug text-muted-foreground">
                 {s.note}
               </span>
               {s.gate && (
@@ -133,7 +134,7 @@ export function Ratchet() {
         ))}
       </ol>
 
-      <figcaption className="mt-3 max-w-[52ch] text-[13px] leading-[1.6] text-muted-foreground">
+      <figcaption className="mt-3 max-w-[52ch] text-[12px] leading-[1.6] text-muted-foreground">
         The catalog only tightens. A control is never weakened or removed by a domain; recurring
         waivers mean fix the standard or fix the system.
       </figcaption>

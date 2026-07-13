@@ -64,7 +64,7 @@ export function FoundationProfile() {
       <div ref={ref}>
         <Rise index={0} reduced={reduced} show={show}>
           <div className="rounded-lg border border-border bg-muted px-4 py-3 text-center">
-            <p className="m-0 font-display text-[15px] font-semibold text-foreground">
+            <p className="m-0 font-display text-[16px] font-semibold text-foreground">
               The foundation
             </p>
             <p className="m-0 text-[12px] text-muted-foreground">
@@ -133,7 +133,7 @@ export function FoundationProfile() {
           </div>
         </Rise>
       </div>
-      <figcaption className="mt-3 max-w-[52ch] text-[13px] leading-[1.6] text-muted-foreground">
+      <figcaption className="mt-3 max-w-[52ch] text-[12px] leading-[1.6] text-muted-foreground">
         One foundation, four domains. Your product adopts through whichever domain is its own,
         then declares only what makes it its own.
       </figcaption>

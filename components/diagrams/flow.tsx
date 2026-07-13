@@ -104,7 +104,7 @@ export function Flow({ steps, caption }: { steps: FlowStep[]; caption?: ReactNod
         ))}
       </ol>
       {caption && (
-        <figcaption className="mt-3 max-w-[52ch] text-[13px] leading-[1.6] text-muted-foreground">
+        <figcaption className="mt-3 max-w-[52ch] text-[12px] leading-[1.6] text-muted-foreground">
           {caption}
         </figcaption>
       )}

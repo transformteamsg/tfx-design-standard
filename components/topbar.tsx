@@ -25,7 +25,7 @@ export function TopBar() {
             <span className="font-display text-[16px] font-semibold tracking-tight">
               DXD Design Standard
             </span>
-            <span className="rounded-full border border-border px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
+            <span className="rounded-full border border-border px-2 py-0.5 text-[11px] font-medium text-muted-foreground max-[400px]:hidden">
               v0.1 draft
             </span>
           </Link>

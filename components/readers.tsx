@@ -70,7 +70,7 @@ export function Readers({
       style={{ "--ink": "var(--tw-blue)" } as CSSProperties}
     >
       <Reveal>
-        <p className="text-[13px] font-semibold text-tw-blue">
+        <p className="text-[12px] font-semibold text-tw-blue">
           Human · Human + machine · Machine
         </p>
         <h2 className="mt-3 max-w-[20ch] font-display text-[24px] font-semibold leading-[1.1] tracking-tight sm:text-[32px]">
@@ -93,7 +93,7 @@ export function Readers({
                 <InkIcon artKey={`landing/${reader.key}`} size={76} />
               </Parallax>
               <div>
-                <p className="text-[13px] font-semibold text-muted-foreground">
+                <p className="text-[12px] font-semibold text-muted-foreground">
                   {reader.kicker}
                 </p>
                 <h3 className="mt-2 font-display text-[20px] font-semibold tracking-tight">

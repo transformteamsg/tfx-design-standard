@@ -28,7 +28,7 @@ export function MotionScale() {
         <div className="flex flex-col gap-3">
           {ROWS.map((row) => (
             <div key={row.token} className="flex items-center gap-3">
-              <span className="w-32 shrink-0 text-[13px] font-medium text-foreground">
+              <span className="w-32 shrink-0 text-[12px] font-medium text-foreground">
                 {row.token}
               </span>
               <span className="w-12 shrink-0 text-right text-[12px] tabular-nums text-muted-foreground">
@@ -64,7 +64,7 @@ export function MotionScale() {
           </button>
         )}
       </div>
-      <figcaption className="mt-3 max-w-[52ch] text-[13px] leading-[1.6] text-muted-foreground">
+      <figcaption className="mt-3 max-w-[52ch] text-[12px] leading-[1.6] text-muted-foreground">
         The four durations, raced: every knob leaves together on --ease-out and
         covers the same distance — only the time differs.
       </figcaption>

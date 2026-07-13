@@ -14,6 +14,11 @@
      named constants below, its easings are the token curves).
    - A11Y-2/4: real 44px buttons with the house focus ring; A11Y-5: reduced
      motion drops the dot and makes every transition instant.
+   - TYP-2/TYP-3 + A11Y-1: the ring's text (wordmark, numerals, labels, notes,
+     gate chips) is real-px HTML positioned over the SVG, NOT SVG <text>. SVG
+     text scales with the 480 viewBox, so on a ≤320px ring (mobile, or the
+     inline variant) it would render at ~7-9px — below the 11px floor. Fixed-px
+     HTML text stays on-scale and legible at every width; only shapes scale.
    - TOK-1: every colour is a token. */
 
 import {
@@ -200,20 +205,8 @@ export function OrbitLoop({ variant = "full" }: { variant?: "full" | "inline" })
           </g>
         )}
 
-        {/* centre wordmark */}
-        <text
-          x={C}
-          y={234}
-          textAnchor="middle"
-          className="fill-foreground font-display text-[20px] font-semibold"
-        >
-          the loop
-        </text>
-        <text x={C} y={258} textAnchor="middle" className="fill-muted-foreground text-[12.5px]">
-          intent without loss
-        </text>
-
-        {/* phase nodes */}
+        {/* phase node circles — the numerals render in the HTML button layer
+            (real-px), never as scaling SVG text (see the header note). */}
         {LOOP_PHASES.map((p, i) => {
           const { x, y } = POS[i];
           const isSelected = i === selected;
@@ -243,88 +236,86 @@ export function OrbitLoop({ variant = "full" }: { variant?: "full" | "inline" })
                       : "fill-surface stroke-border-strong") + colorTransition
                 }
               />
-              <text
-                x={x}
-                y={y}
-                textAnchor="middle"
-                dominantBaseline="central"
-                className={
-                  (isSelected ? "fill-surface" : "fill-foreground") +
-                  " text-[12.5px] font-semibold" +
-                  colorTransition
-                }
-              >
-                {p.n}
-              </text>
             </g>
           );
         })}
+      </svg>
 
-        {/* labels, notes, gate chips */}
+      {/* Text overlay — real-px HTML positioned by the same viewBox coordinates
+          as percentages. Fixed size at every width (TYP-2 floor, TYP-3 on-scale,
+          A11Y-1); only the SVG shapes scale. */}
+      <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+        {/* centre wordmark + tagline */}
+        <span
+          className="absolute -translate-x-1/2 -translate-y-1/2 font-display text-[20px] font-semibold leading-none text-foreground"
+          style={{ left: "50%", top: `${(234 / VIEW) * 100}%` }}
+        >
+          the loop
+        </span>
+        <span
+          className="absolute -translate-x-1/2 -translate-y-1/2 text-[12px] text-muted-foreground"
+          style={{ left: "50%", top: `${(258 / VIEW) * 100}%` }}
+        >
+          intent without loss
+        </span>
+
+        {/* per-node label, gate chip, note */}
         {LOOP_PHASES.map((p, i) => {
           const s = SPOTS[i];
           const isSelected = i === selected;
-          const chipX = s.anchor === "end" ? s.x - (s.chipW ?? 0) : s.x;
+          /* One flow block per node, anchored at the label's viewBox spot;
+             label / chip / note stack with real line spacing so fixed-px text
+             never overlaps (the viewBox label→note gap is only ~15 units —
+             fine for scaling SVG text, too tight for fixed HTML). */
+          const align =
+            s.anchor === "middle"
+              ? "-translate-x-1/2 items-center text-center"
+              : s.anchor === "end"
+                ? "-translate-x-full items-end text-right"
+                : "items-start text-left";
+          /* Anchor the block relative to its node: top nodes grow upward, bottom
+             nodes grow downward, so a block never crosses its own circle. */
+          const above = s.labelY < POS[i].y;
+          const vStyle = above
+            ? { bottom: `${((VIEW - (POS[i].y - NODE_R - 7)) / VIEW) * 100}%` }
+            : { top: `${((POS[i].y + NODE_R + 7) / VIEW) * 100}%` };
           return (
-            <g key={p.id}>
-              <text
-                x={s.x}
-                y={s.labelY}
-                textAnchor={s.anchor}
+            <div
+              key={p.id}
+              className={"absolute flex max-w-[44%] flex-col gap-0.5 " + align}
+              style={{ left: `${(s.x / VIEW) * 100}%`, ...vStyle }}
+            >
+              <span
                 className={
+                  "text-[12px] leading-tight" +
                   (isSelected
-                    ? "fill-foreground font-semibold"
-                    : "fill-muted-foreground font-medium") +
-                  " text-[13px]" +
+                    ? " font-semibold text-foreground"
+                    : " font-medium text-muted-foreground") +
                   colorTransition
                 }
               >
                 {p.label}
-              </text>
-              {p.gate && s.chipY && s.chipW && (
-                <>
-                  <rect
-                    x={chipX}
-                    y={s.chipY - 9}
-                    width={s.chipW}
-                    height={18}
-                    rx={9}
-                    strokeWidth={1}
-                    className={
-                      p.gate === "plan"
-                        ? "fill-tw-blue stroke-tw-blue"
-                        : "fill-surface stroke-tw-blue"
-                    }
-                  />
-                  <text
-                    x={chipX + s.chipW / 2}
-                    y={s.chipY}
-                    textAnchor="middle"
-                    dominantBaseline="central"
-                    className={
-                      (p.gate === "plan" ? "fill-surface" : "fill-tw-blue") +
-                      " text-[11px] font-semibold"
-                    }
-                  >
-                    {p.gateLabel}
-                  </text>
-                </>
+              </span>
+              {p.gate && (
+                <span
+                  className={
+                    "inline-flex items-center whitespace-nowrap rounded-full px-2 py-0.5 text-[11px] font-semibold " +
+                    (p.gate === "plan"
+                      ? "bg-tw-blue text-primary-foreground"
+                      : "border border-tw-blue text-tw-blue")
+                  }
+                >
+                  {p.gateLabel}
+                </span>
               )}
-              <text
-                x={s.x}
-                y={s.noteY}
-                textAnchor={s.anchor}
-                className="fill-muted-foreground text-[11.5px]"
-              >
-                {p.note}
-              </text>
-            </g>
+              <span className="text-[11px] leading-tight text-muted-foreground">{p.note}</span>
+            </div>
           );
         })}
+      </div>
 
-      </svg>
-
-      {/* interactive layer: real buttons over the drawn nodes */}
+      {/* interactive layer: real 44px buttons over the drawn nodes, carrying
+          the visible numeral (real-px) and the accessible name */}
       <div
         role="tablist"
         aria-label="Design loop phases"
@@ -335,35 +326,48 @@ export function OrbitLoop({ variant = "full" }: { variant?: "full" | "inline" })
           if (!e.currentTarget.contains(e.relatedTarget as Node)) setFocusWithin(false);
         }}
       >
-        {LOOP_PHASES.map((p, i) => (
-          <button
-            key={p.id}
-            ref={(el) => {
-              tabRefs.current[i] = el;
-            }}
-            type="button"
-            role="tab"
-            id={tabId(p.id)}
-            aria-selected={i === selected}
-            aria-controls={panelId}
-            tabIndex={i === selected ? 0 : -1}
-            onClick={() => setSelected(i)}
-            onFocus={() => setSelected(i)}
-            onPointerDown={() => setPointerDown(true)}
-            onMouseEnter={() => setHovered(i)}
-            onMouseLeave={() => setHovered(null)}
-            className="pointer-events-auto absolute h-11 w-11 -translate-x-1/2 -translate-y-1/2 cursor-pointer rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue)"
-            style={{
-              left: `${(POS[i].x / VIEW) * 100}%`,
-              top: `${(POS[i].y / VIEW) * 100}%`,
-            }}
-          >
-            <span className="sr-only">
-              {p.n}. {p.label}
-              {p.gateLabel ? `, ${p.gateLabel}` : ""}
-            </span>
-          </button>
-        ))}
+        {LOOP_PHASES.map((p, i) => {
+          const isSelected = i === selected;
+          return (
+            <button
+              key={p.id}
+              ref={(el) => {
+                tabRefs.current[i] = el;
+              }}
+              type="button"
+              role="tab"
+              id={tabId(p.id)}
+              aria-selected={isSelected}
+              aria-controls={panelId}
+              tabIndex={isSelected ? 0 : -1}
+              onClick={() => setSelected(i)}
+              onFocus={() => setSelected(i)}
+              onPointerDown={() => setPointerDown(true)}
+              onMouseEnter={() => setHovered(i)}
+              onMouseLeave={() => setHovered(null)}
+              className="pointer-events-auto absolute grid h-11 w-11 -translate-x-1/2 -translate-y-1/2 cursor-pointer place-items-center rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue)"
+              style={{
+                left: `${(POS[i].x / VIEW) * 100}%`,
+                top: `${(POS[i].y / VIEW) * 100}%`,
+              }}
+            >
+              <span
+                aria-hidden="true"
+                className={
+                  "text-[12px] font-semibold" +
+                  (isSelected ? " text-surface" : " text-foreground") +
+                  colorTransition
+                }
+              >
+                {p.n}
+              </span>
+              <span className="sr-only">
+                {p.n}. {p.label}
+                {p.gateLabel ? `, ${p.gateLabel}` : ""}
+              </span>
+            </button>
+          );
+        })}
       </div>
     </div>
   );
@@ -386,10 +390,10 @@ export function OrbitLoop({ variant = "full" }: { variant?: "full" | "inline" })
         transition={reduced ? { duration: 0 } : { duration: DUR.base, ease: EASE_OUT }}
       >
         <p className="flex flex-wrap items-baseline gap-x-2.5 gap-y-1.5">
-          <span className="font-display text-[15px] font-semibold tabular-nums text-tw-blue">
+          <span className="font-display text-[16px] font-semibold tabular-nums text-tw-blue">
             0{phase.n}
           </span>
-          <span className="font-display text-[17px] font-semibold text-foreground">
+          <span className="font-display text-[18px] font-semibold text-foreground">
             {phase.label}
           </span>
           {phase.gate && (
@@ -405,7 +409,7 @@ export function OrbitLoop({ variant = "full" }: { variant?: "full" | "inline" })
           )}
         </p>
         <p className="mt-2.5 text-[14px] leading-[1.65] text-(--prose-body)">{phase.detail}</p>
-        <p className="mt-3 text-[13px] leading-[1.6] text-muted-foreground">
+        <p className="mt-3 text-[12px] leading-[1.6] text-muted-foreground">
           <span className="font-semibold text-foreground">You: </span>
           {phase.you}
         </p>
@@ -425,7 +429,7 @@ export function OrbitLoop({ variant = "full" }: { variant?: "full" | "inline" })
         {ring}
         {panel}
       </div>
-      <figcaption className="mt-3 max-w-[52ch] text-[13px] leading-[1.6] text-muted-foreground">
+      <figcaption className="mt-3 max-w-[52ch] text-[12px] leading-[1.6] text-muted-foreground">
         Select a phase to read what happens there.
         {!reduced && " The dot pauses at the two gates — where the loop waits for you."}
       </figcaption>
