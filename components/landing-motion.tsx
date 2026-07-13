@@ -3,12 +3,11 @@
 import {
   motion,
   useInView,
-  useReducedMotion,
   useScroll,
   useTransform,
 } from "motion/react";
 import { useRef, type ReactNode } from "react";
-import { DUR, EASE_OUT } from "@/lib/motion";
+import { DUR, EASE_OUT, useReducedMotionSafe } from "@/lib/motion";
 
 /* Landing-only motion. Ported from marketing-teacher-workspace's
    reveal-on-scroll: fade + lift, fires once, honours prefers-reduced-motion.
@@ -33,8 +32,7 @@ export function Reveal({
   className?: string;
 }) {
   const ref = useRef<HTMLDivElement | null>(null);
-  // === true: hydration null must not skip the animation
-  const reduced = useReducedMotion() === true;
+  const reduced = useReducedMotionSafe();
   const inView = useInView(ref, IN_VIEW_OPTIONS);
 
   const shouldAnimate = !reduced && inView;
@@ -65,7 +63,7 @@ export function Parallax({
   className?: string;
 }) {
   const ref = useRef<HTMLDivElement | null>(null);
-  const reduced = useReducedMotion() === true;
+  const reduced = useReducedMotionSafe();
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start end", "end start"],
