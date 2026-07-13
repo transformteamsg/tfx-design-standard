@@ -80,6 +80,103 @@ one shared extension constant across checkers/hook/detect (7-8 copies today);
 COUNT-SYNC coverage for `public/` pages; the new CNT-6 true-positive in
 `harness/docs/catalog-changes/cmp-4-empty-state-clarity.md:36`.
 
+## Presentation sprint plan set (016–023, added 2026-07-12)
+
+Written by the improve skill against commit `7fbc703` (branch
+`standards/glow-pilot-fixes`, which already contains the full DXD program +
+review fixes), the night before the division presentation. Directed scope from
+the operator: (1) improve standards + harness content, (2) division-scale IA,
+(3) intentional motion-rich visualisations that beat impeccable.style.
+Grounded in four audits (content ×41 files, visual/motion inventory, IA
+persona walks, external motion/slider research) run 2026-07-12. Operator was
+non-interactive; the directed brief served as the finding selection.
+
+| Plan | Title | Priority | Effort | Executor model | Depends on | Status |
+|------|-------|----------|--------|----------------|------------|--------|
+| 016 | Motion foundation: tokens, primitives, MOT-2/3 ⚑, /foundations/motion | P1 | M | Opus | — | DONE — branch `advisor/016-motion-foundation` @ `cd6c589` (one STOP round: catalog.test.ts proposed-pin was out of scope — plan refreshed, Step 4c added; reviewed: validators 62/62, guard 31 docs, tests 28, catalog entries verbatim, /foundations/motion screenshots verified; NOTE: :root --ease-out now overrides Tailwind's theme default sitewide — MOT-2's intent, accepted) |
+| 017 | OrbitLoop: the loop drawn as a loop; loop page rewrite | P1 | L | Fable | 016 | DONE — branch `advisor/017-orbit-loop` (reviewed: 33 tests, DesignLoop grep 0, live-DOM APG-tabs verification, dot-pauses-at-gates choreography, reduced-motion drops the dot only; 1280/360 screenshots verified collision-free; deviations accepted: HTML tabs over aria-hidden SVG, chips stacked, dot queues 11° before gates) |
+| 018 | SlopCompare: before/after drag demo on /standards | P1 | M–L | Fable | 016 | DONE — branch `advisor/018-slop-compare` @ `06d7564` (reviewed: scope 3 files, 7 waivers, quarantine grep clean, AA-adjusted grad-b, native-range a11y verified with live keyboard pass; executor corrected plan's CMP-1→CMP-5 against the real catalog; survived a mid-run session-limit interruption cleanly) |
+| 019 | Division narrative: landing, overview, llms.txt identity, nav, ladder | P1 | L | Opus | — | DONE — branch `advisor/019-division-narrative` @ `9dded41` (scope exact 10 files; greps/guard re-run by reviewer; landing screenshots verified at 360/1280; executor resolved a plan self-contradiction in favour of the Step-4 origin line — correct; SLP-9 + CNT-3 self-lint clean) |
+| 020 | Diagram language v2: ratchet rack, journey path, tree draw-in, honest gates | P2 | M–L | Opus | 016 | DONE — branch `advisor/020-diagram-language` @ `1493c59` (reviewed: 4 files, zero mdx changes, bg-primary gone from all in-scope diagrams — ladder.tsx's is out-of-scope + interactive, legitimate; pawl-beat verified by transform telemetry; screenshots verified; discarded own broken pre-cutoff draft — correct call) |
+| 021 | Content sweep: waiver syntax, CI section, inherit-signals, principle de-brand | P2 | M | Sonnet | — | DONE — branch `advisor/021-content-sweep` @ `0647da2` (reviewed: scope exact, greps + guard re-run by reviewer, content-lint 10→10; E8.2 skipped — `illustration:` key never existed in tools.mdx, audit misattribution; E6 isolated in `d691388` for design-lead re-confirmation) |
+| 022 | Stitch: OrbitLoop as landing hero; count + cross-link seams | P1 | S | Sonnet | 016–021, 023 | DONE — branch `advisor/022-hero-stitch` @ `ebfd4d4`, merged into the integration branch @ `57b02a4` (reviewed: 2 files/11 lines, hero verified at 360/1280 + reduced motion; count line already true — untouched; keyboard trace to phase tabs confirmed) |
+| 023 | Catalog browsability: search, facet counts, category grouping | P2 | S–M | Sonnet | — | DONE — branch `advisor/023-catalog-browsability` @ `0e99217` (reviewed: 12-case pure-predicate tests read and genuine, full gates run in worktree, grouped/search/360 screenshots verified; card JSX relocated to `renderCard` byte-identical — documented deviation, accepted) |
+
+| 024 | Evaluator fix round: 2× L0 contrast, A11Y-4 mobile targets, CNT-3 splits, reduced-motion hydration | P1 | S–M | Opus | 016–023 integrated | DONE — branch `advisor/024-evaluator-fixes` @ `5bd262c` (all six items + a desktop A11Y-4 addendum the executor caught; merged @ `d647355`; independent re-evaluation: APPROVE with fresh measurements) |
+
+**Execution outcome (2026-07-13).** All nine plans executed by dispatched
+agents in isolated worktrees (cut manually from the intended bases — NOT
+isolation:worktree, which cuts from origin/main), each reviewed like a PR
+against its plan. The verified integration is branch
+**`advisor/presentation-sprint` @ `d647355`** — merging it into
+`standards/glow-pilot-fixes` lands the whole sprint. Final gates on that
+commit: typecheck/lint clean, 45 vitest tests, 216-page build with zero
+`[doc-page]` fallbacks, `check-standards.mjs` + `validate.py` at 62 controls /
+31 docs, token-audit + a11y-static clean, and a fresh independent evaluator
+APPROVE (measurements inline in plan 024). Nothing is merged to any user
+branch — merging is the operator's decision.
+
+Model rationale: Fable on the two presentation-centrepiece interactive
+visuals (017 orbit + gate choreography with APG tabs semantics; 018 the
+persuasive double-sided demo — design judgment is the deliverable); Opus where
+copy/system judgment leads (016 catalog ratchet + token design, 019 the
+division's front door, 020 three visual concepts); Sonnet for enumerated,
+grep-gated work (021, 022, 023).
+
+### Independent evaluator pass (2026-07-13, on `57b02a4`)
+
+Verdict **REVISE** — contract goals met; blocked on: landing one-test
+attribution `text-white/80` = 3.67:1 (A11Y-1 L0), ladder enforced-pill `/85` =
+3.97:1 (A11Y-1 L0), sub-44px mobile targets (MotionScale Play + shell chrome —
+A11Y-4 L1); advisories: CNT-3 long sentences on loop.mdx/overview, reduced-
+motion hydration mismatch on animated SVGs. Fix round = plan 024. Everything
+else passed, incl. keyboard-complete demos, MOT-3 information parity, L0-clean
+anti-specimen with all six waivers, SLP-8/9 and TOK-1 clean.
+
+**Residuals flagged to the design lead (not fixed this sprint):**
+- TYP-3 off-scale sizes (13/12.5/13.5/11.5/15/17px) across diagrams/landing/
+  compare — an established site-wide pattern; snap-to-scale or register a
+  documented exception.
+- Illustration slots on /standards and /overview show the raw Midjourney
+  prompt incl. `--sref` — CNT-4-labelled but unpolished on flagship surfaces.
+- SLP-8 boundary question: the ratchet's positional overshoot-and-settle
+  (standard easing, narrative diagram) graded pass — confirm whether narrative
+  positional overshoot should be explicitly sanctioned in the control.
+- MOT-2/MOT-3 remain ⚑ proposed pending design-lead approval; E6's "Design for
+  One Person" principle generalisation awaits re-confirmation (plan 021 NOTES).
+- /harness/loop "outer loop" paragraph is dense for first-time division
+  readers — deliberate deep-dive voice; consider a readability pass later.
+
+### Dependency notes (016–023)
+
+- 016 first — 017/018/020 consume `lib/motion.ts` + the CSS motion tokens;
+  their worktrees cut from 016's tip.
+- 019, 021, 023 are independent of 016 (base = `7fbc703`); 019 must preserve
+  016's one sidebar line at merge; 016×019 sidebar/mdx conflicts are
+  adjacent-line and resolved at integration.
+- 022 runs LAST on the integrated tree (needs 017's component + 019's slot).
+- File-ownership matrix keeps the eight plans conflict-free except two known
+  one-line seams (components/sidebar.tsx, components/mdx.tsx), resolved at
+  integration.
+
+### Findings considered and rejected (2026-07-12 audits)
+
+- **Nav group labels carrying authority words** ("Standards · must"): rejected —
+  ladder + section tiles already carry answers; nav stays clean.
+- **Replacing Illo placeholders with hand-coded art**: rejected — the
+  illustration guideline is strict (Midjourney + brand SREF only); the landing
+  hero instead gets the live OrbitLoop (022); inner-page slots stay honest.
+- **Domain-stub "awaiting declarations" repetition**: kept — it is the
+  onboarding template working as scaffolding (R10).
+- **"vocabulary AI agents already know" motif** on two foundation pages: kept —
+  motif, not drift.
+- **Editing harness/standards/controls/*.md prose**: rejected for this sprint —
+  enforcement-coupled (evaluator loads them); risk the night before demo.
+- **Moving /products/* under /domains/**: re-rejected (URL breakage; standing
+  decision from 2026-07-10).
+- **for-agents.mdx "Skills don't define the bar, they carry it"**: kept — the
+  contrast IS the rule (SLP-9 exemption).
+
 ## Dependency notes
 
 - **001 first** so every later artifact is born DXD-named. Plans 002–007 are written
