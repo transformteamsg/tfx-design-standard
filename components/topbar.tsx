@@ -31,8 +31,8 @@ export function TopBar() {
           </Link>
         </div>
         <nav aria-label="Primary" className="flex items-center gap-5 text-[14px] font-medium text-muted-foreground">
-          <Link href="/domains" className="inline-flex items-center hover:text-foreground max-sm:min-h-11">Domains</Link>
-          <Link href="/for-agents" className="inline-flex items-center hover:text-foreground max-sm:min-h-11">For agents</Link>
+          <Link href="/domains" className="inline-flex min-h-6 items-center py-0.5 hover:text-foreground max-sm:min-h-11">Domains</Link>
+          <Link href="/for-agents" className="inline-flex min-h-6 items-center py-0.5 hover:text-foreground max-sm:min-h-11">For agents</Link>
         </nav>
       </div>
     </header>
