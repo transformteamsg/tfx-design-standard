@@ -15,7 +15,7 @@ export function TopBar() {
           {showNavToggle && (
             <SidebarTrigger
               aria-label="Open navigation"
-              className="-ml-1.5 lg:hidden"
+              className="-ml-1.5 lg:hidden max-sm:size-11"
             />
           )}
           <Link href="/" className="flex items-center gap-2.5">
@@ -31,8 +31,8 @@ export function TopBar() {
           </Link>
         </div>
         <nav aria-label="Primary" className="flex items-center gap-5 text-[14px] font-medium text-muted-foreground">
-          <Link href="/domains" className="hover:text-foreground">Domains</Link>
-          <Link href="/for-agents" className="hover:text-foreground">For agents</Link>
+          <Link href="/domains" className="inline-flex items-center hover:text-foreground max-sm:min-h-11">Domains</Link>
+          <Link href="/for-agents" className="inline-flex items-center hover:text-foreground max-sm:min-h-11">For agents</Link>
         </nav>
       </div>
     </header>

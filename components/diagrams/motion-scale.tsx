@@ -58,7 +58,7 @@ export function MotionScale() {
           <button
             type="button"
             onClick={() => setRunId((n) => n + 1)}
-            className="mt-4 rounded-full border border-border px-3 py-1 text-[12px] font-medium transition-colors duration-(--motion-fast) hover:border-border-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue)"
+            className="mt-4 inline-flex items-center justify-center rounded-full border border-border px-3 py-1 text-[12px] font-medium transition-colors duration-(--motion-fast) hover:border-border-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue) max-sm:min-h-11"
           >
             Play
           </button>
