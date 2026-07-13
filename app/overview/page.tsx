@@ -32,9 +32,10 @@ export default function Overview() {
       </h1>
       <p className="mt-5 text-[18px] leading-[1.6] text-muted-foreground">
         How the Digital Products &amp; Excellence Division designs its products: one shared
-        foundation, and a brand profile each domain declares on top. Principles that settle
-        arguments, standards a machine can check, and a harness so every builder in every DXD
-        product team ships at the bar, with or without a designer in the room.
+        foundation, and a brand profile each domain declares on top. Principles settle
+        arguments, and standards give a machine something to check. A harness then helps every
+        builder in every DXD product team ship at the bar, with or without a designer in the
+        room.
       </p>
 
       {home?.illustration && <Illo subject={home.illustration} />}

@@ -7,17 +7,16 @@
    that fires once on scroll; prefers-reduced-motion shows everything
    immediately. Values come from the motion token mirror (MOT-2). */
 
-import { motion, useInView, useReducedMotion } from "motion/react";
+import { motion, useInView } from "motion/react";
 import { useRef, type ReactNode } from "react";
-import { DUR, EASE_OUT, STAGGER } from "@/lib/motion";
+import { DUR, EASE_OUT, STAGGER, useReducedMotionSafe } from "@/lib/motion";
 
 /* Kept as an alias so existing importers still compile. */
 export const FLOW_EASE = EASE_OUT;
 
 export function useFlowReveal<T extends Element = HTMLOListElement>() {
   const ref = useRef<T | null>(null);
-  // === true: hydration null must not skip the animation
-  const reduced = useReducedMotion() === true;
+  const reduced = useReducedMotionSafe();
   const inView = useInView(ref, { once: true, margin: "0px 0px -10% 0px", amount: 0.2 });
   return { ref, reduced, show: reduced || inView };
 }

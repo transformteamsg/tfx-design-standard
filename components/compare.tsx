@@ -19,9 +19,9 @@
 
 import Link from "next/link";
 import { useEffect, useId, useRef, type CSSProperties } from "react";
-import { animate, useInView, useReducedMotion } from "motion/react";
+import { animate, useInView } from "motion/react";
 import { ChevronsLeftRight, Cloud, Sparkles, Zap } from "lucide-react";
-import { DUR, EASE_OUT } from "@/lib/motion";
+import { DUR, EASE_OUT, useReducedMotionSafe } from "@/lib/motion";
 
 const SLOP_GRADIENT =
   "linear-gradient(135deg, var(--demo-slop-grad-a), var(--demo-slop-grad-b))";
@@ -169,8 +169,7 @@ function AfterPanel() {
 
 export function SlopCompare() {
   const id = useId();
-  // === true: hydration null must not skip the intro cue (repo pattern)
-  const reduced = useReducedMotion() === true;
+  const reduced = useReducedMotionSafe();
   const frameRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const rafRef = useRef(0);

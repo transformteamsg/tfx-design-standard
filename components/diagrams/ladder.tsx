@@ -43,7 +43,7 @@ export function Ladder() {
                 <span
                   className={
                     l.enforced
-                      ? "text-[12px] italic text-primary-foreground/85"
+                      ? "text-[12px] italic text-primary-foreground"
                       : "text-[12px] italic text-muted-foreground"
                   }
                 >

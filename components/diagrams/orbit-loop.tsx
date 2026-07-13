@@ -22,10 +22,9 @@ import {
   useInView,
   useMotionValue,
   useMotionValueEvent,
-  useReducedMotion,
 } from "motion/react";
 import { useEffect, useId, useRef, useState } from "react";
-import { DUR, EASE_IN_OUT, EASE_OUT } from "@/lib/motion";
+import { DUR, EASE_IN_OUT, EASE_OUT, useReducedMotionSafe } from "@/lib/motion";
 import { LOOP_PHASES } from "./loop-data";
 
 /* ── Geometry: ring r=170 centred in a 480 viewBox, phase 1 at 12 o'clock,
@@ -96,8 +95,7 @@ const TIMES = [
 const EASES = ["linear", EASE_IN_OUT, "linear", EASE_IN_OUT] as const;
 
 export function OrbitLoop({ variant = "full" }: { variant?: "full" | "inline" }) {
-  // === true: hydration null must not skip the animation
-  const reduced = useReducedMotion() === true;
+  const reduced = useReducedMotionSafe();
   const uid = useId();
   const [selected, setSelected] = useState(0);
   const [hovered, setHovered] = useState<number | null>(null);

@@ -6,9 +6,9 @@
    Reduced motion renders the knobs settled at the track end with the values
    fully legible — nothing is missing, only still (MOT-3, A11Y-5). */
 
-import { motion, useReducedMotion } from "motion/react";
+import { motion } from "motion/react";
 import { useState } from "react";
-import { DUR, EASE_OUT } from "@/lib/motion";
+import { DUR, EASE_OUT, useReducedMotionSafe } from "@/lib/motion";
 
 const ROWS = [
   { token: "--motion-fast", ms: "120ms", duration: DUR.fast },
@@ -18,8 +18,7 @@ const ROWS = [
 ] as const;
 
 export function MotionScale() {
-  // === true: hydration null must not skip the animation
-  const reduced = useReducedMotion() === true;
+  const reduced = useReducedMotionSafe();
   const [runId, setRunId] = useState(0);
   const played = runId > 0;
 
@@ -59,7 +58,7 @@ export function MotionScale() {
           <button
             type="button"
             onClick={() => setRunId((n) => n + 1)}
-            className="mt-4 rounded-full border border-border px-3 py-1 text-[12px] font-medium transition-colors duration-(--motion-fast) hover:border-border-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue)"
+            className="mt-4 inline-flex items-center justify-center rounded-full border border-border px-3 py-1 text-[12px] font-medium transition-colors duration-(--motion-fast) hover:border-border-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue) max-sm:min-h-11"
           >
             Play
           </button>
