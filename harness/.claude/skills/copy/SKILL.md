@@ -25,8 +25,10 @@ capture the surface, judge only the wording, propose ranked fixes, gate, and ver
 follow `../critique/pass.md` with this skill's dimension subset: **CNT-1, CNT-2, CNT-3,
 CNT-4 (domain fidelity — content modeling a real-world artifact is faithful to it or
 labelled illustrative), CNT-5 (device-agnostic action verbs), CNT-6 (low-informational-value
-words), CNT-7 (lead with purpose), SLP-9, and IDN-3 (IDN-4 on CaseSync surfaces)**. The rest of
-this file is that pass's reference: it is what "on-voice" means.
+words), CNT-7 (lead with purpose), CNT-14 (voice quality + tone-fit — the copy sounds
+Clear/Thoughtful/Approachable and its tone matches the surface context), SLP-9, and IDN-3
+(IDN-4 on CaseSync surfaces)**. The rest of this file is that pass's reference: it is what
+"on-voice" means.
 
 ## Resolving voice
 

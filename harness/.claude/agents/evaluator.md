@@ -163,6 +163,17 @@ Confirm either a named domain reviewer's recorded sign-off before user testing, 
 explicit illustrative/placeholder label in-product and in the decision record; a
 surface with neither is a finding.
 
+**Voice quality + tone-fit (CNT-14, L2, judgment — controls/cnt-14.md).** Read the copy
+against the voice attributes (Clear / Thoughtful / Approachable) and the tone-by-context
+table in `content/guidelines/voice-tone-proposed.mdx`: name the surface's context
+(success, error, onboarding, destructive, empty state, permission) and judge whether the
+tone fits — affirming/brief success, calm/helpful error, sober/precise destructive,
+inviting empty state. This is the *gestalt* only: a mechanical miss belongs to its own
+control (CNT-3 person/voice/length, CNT-6 filler, CNT-8 nominalisations, CNT-12 case,
+SLP-9 AI tells) — do not double-flag it here. Boundary with CMP-2: CMP-2 owns the
+destructive-action *behaviour* (consequences + undo/confirm); CNT-14 owns only whether
+the *wording* is sober vs dramatic.
+
 **4. Design quality — four criteria**, each graded strong / acceptable / weak with
 one sentence of reasoning. These draw on Apple's HIG design principles as a
 reference lens (a judgment aid, not a checkable standard):

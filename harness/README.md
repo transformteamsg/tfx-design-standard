@@ -14,7 +14,7 @@ surviving the whole way to shipped UI.
 NORMATIVE LAYER                       HARNESS                              ENFORCEMENT
 standards/catalog.yaml                .claude/skills/                      checks/ + evaluator agent
 ├─ TFX-DS standards tier              ├─ start (router; /dxd:start)        ├─ Deterministic: scripts, a11y scan,
-│   62 controls (latest ratchet 2026-07-12) ├─ setup (per-user tools + context)  │   DOM checks — non-skippable
+│   70 controls (latest ratchet 2026-07-13) ├─ setup (per-user tools + context)  │   DOM checks — non-skippable
 ├─ WCAG 2.2 AA (self-imposed floor)   ├─ design (the loop)                 ├─ Judgment: evaluator subagent
 └─ References: SGDS, GOV.UK           ├─ critique (evaluate + polish)      └─ Human gates: plan approval, L1 waivers
                                       ├─ standards (catalog use)
@@ -62,7 +62,7 @@ design-harness/
 ├── CONTRIBUTING.md          # ratchet flow: how a new control gets proposed and merged
 ├── standards/
 │   ├── README.md            # control catalog format spec + authoring guide
-│   ├── catalog.yaml         # TFX-DS catalog: 62 controls (always loaded)
+│   ├── catalog.yaml         # TFX-DS catalog: 70 controls (always loaded)
 │   ├── schema.json          # machine-checkable schema validate.py validates against
 │   └── controls/            # one file per control: YAML frontmatter + rationale,
 │                            # pass/fail examples, verification detail (loaded on demand)
@@ -142,7 +142,7 @@ Aligned to TFX-DS v0.1 (June 2026). Catalog: the 22-control TFX-DS seed, plus 6
 ratchet additions (GovTech a11y checklist, 2026-06-11), the 10 anti-slop controls
 (SLP-1..10) adopted from the TFX-DS site seed catalog in the 2026-06-11
 consolidation, and later ratchet additions (LAY-2/3/4/5/6, TYP-5, SLP-11, CMP-5,
-CMP-6, LAY-1/7, IDN-2/3/4, CMP-4, CNT-4, CMP-8, CMP-9) — 62 controls, one file, consumed by both the harness (enforcement) and the
+CMP-6, LAY-1/7, IDN-2/3/4, CMP-4, CNT-4, CMP-8, CMP-9, MOT-2, MOT-3, CNT-8, CNT-9, CNT-10, CNT-11, CNT-12, CNT-13, CNT-14, TYP-6) — 70 controls, one file, consumed by both the harness (enforcement) and the
 TFX-DS website (presentation).
 
 - **V0 — now**: this standard as catalog source; skills installed; loop runnable in a

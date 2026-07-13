@@ -348,6 +348,28 @@ controls:
     detail: controls/typ-5.md
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
 
+  # TYP-6: ratchet PROPOSAL 2026-07-09 — comfortable measure (line length), from the
+  # "Check readability" step of the writing guide. Fills the measure gap in the TYP
+  # family: TYP covers typeface, size floors, scale, all-caps, and tabular figures —
+  # nothing holds running prose to a comfortable characters-per-line. Hybrid: a static
+  # scan can flag full-viewport prose blocks with no max-width cap (planned type-scan
+  # subcheck); the evaluator judges which blocks are running prose versus headings,
+  # tables, and data grids, which are out of scope.
+  - id: TYP-6
+    source: TFX-DS
+    title: "Running body text is held to a comfortable measure — roughly 45-75 characters per line (target 40-60), via a max-width in ch, not full-viewport paragraphs"
+    tier: L2
+    check: hybrid
+    phase: [implement, verify]
+    applies_to: [page, component]
+    verify: "Running-prose blocks carry a max-width measure cap (Tailwind `max-w-prose` / `max-w-[65ch]`); evaluator judges which blocks are running prose versus headings, tables, and data grids; checks/type-scan measure subcheck (planned)"
+    waiver: rationale
+    fails_when:
+      - a paragraph that spans the full viewport width with no measure cap
+      - body copy running well past ~75ch per line
+    detail: controls/typ-6.md
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
   # ── Colour ────────────────────────────────────────────────────────────
   # COL-1 re-tagged deterministic → hybrid 2026-07-01 — ratchet, design-lead
   # approved (Glow pilot audit HF: the mechanical half — colour resolves to a
@@ -691,6 +713,178 @@ controls:
     fails_when:
       - a title, description, or intro that opens with the mechanism (the tool, token, or library) instead of what it does for the teacher
     detail: controls/cnt-7.md
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
+  # CNT-8: ratchet PROPOSAL 2026-07-09 — nominalised verbs buried under "to be"
+  # constructions; distinct from CNT-3's general active-voice clause because this
+  # failure mode requires recognising the noun ending and its underlying verb. CNT-3
+  # catches passive voice; CNT-8 catches the specific pattern of burying an action
+  # in a noun.
+  - id: CNT-8
+    source: TFX-DS
+    title: Copy replaces nominalised verbs and "to be" constructions with plain action verbs
+    tier: L2
+    check: judgment
+    phase: [implement, verify]
+    applies_to: [content]
+    verify: "Evaluator checks prose for noun endings (-ance, -ment, -sion, -tion, -ure, etc.) paired with a 'to be' verb and flags each; quotes the noun phrase and gives the plain-verb rewrite"
+    waiver: rationale
+    fails_when:
+      - a "to be" verb carries a nominalised action ("is a requirement", "are in maintenance", "was in transmission")
+      - an action is buried in a noun when the verb is available ("give a recommendation" → "recommend")
+    detail: controls/cnt-8.md
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
+  # CNT-9: ratchet PROPOSAL 2026-07-09 — clarity mechanics bundled from the
+  # "Edit to be clear" step of the writing guide. Five clauses share one failure
+  # mode: copy that requires more than one read to parse. Word-list clause is
+  # partially automatable; remaining four clauses are judgment.
+  # CNT-9 extended (clause 6) ratchet PROPOSAL 2026-07-10 — the "explain acronyms /
+  # technical terms" slice of §7's plain-language bullet, previously unowned for body
+  # copy. Boundary with CNT-2: CNT-2 catches jargon/unexplained acronyms in *names*
+  # (nav, page titles); clause 6 catches an acronym or technical term in *body prose*
+  # with no reachable definition. The definition need not be inline — a tooltip, help
+  # text, or glossary satisfies it. Judgment clause; no script half.
+  - id: CNT-9
+    source: TFX-DS
+    title: Copy is clear — one idea per sentence, simple present tense, no double negatives, no noun stacks, short words, acronyms and technical terms have a reachable definition
+    tier: L2
+    check: hybrid
+    phase: [implement, verify]
+    applies_to: [content]
+    verify: "Lint copy for long-word substitutions (word-list clause); evaluator judges the remaining clauses, including whether each acronym or technical term has a reachable definition (inline, tooltip, help text, or glossary — checked on the rendered surface, not just the copy string)"
+    waiver: rationale
+    enforced: partial
+    script: checks/content-lint.py
+    fails_when:
+      - a sentence carries two or more ideas
+      - past-perfect or passive constructions where simple present fits
+      - a double negative when a positive form exists
+      - three or more nouns stacked where a verb or adjective would do
+      - a long word from the substitution table used when the plain form exists
+      - an acronym or unfamiliar technical term with no reachable definition anywhere — no inline expansion, tooltip, help text, or glossary (established teacher terms excepted)
+    detail: controls/cnt-9.md
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
+  # CNT-10: ratchet PROPOSAL 2026-07-09 — internal term consistency, split from the
+  # "Check consistency" step of the writing guide. Distinct from CNT-2: CNT-2 grades
+  # whether a single feature/page name is plain language (no portmanteaus/codenames);
+  # CNT-10 grades whether ONE term is used for the same thing everywhere it appears in
+  # the interface. A product can pass CNT-2 (every name is plain) and still fail CNT-10
+  # (the same action is called "Edit" on one screen and "Amend" on another). The whole
+  # interface is in scope — the surface list in the entry is illustrative, not a
+  # closed enumeration. L1 because term drift within a product actively confuses.
+  - id: CNT-10
+    source: TFX-DS
+    title: One term per thing within a product — the same action, object, or state keeps a single name everywhere it appears in the interface
+    tier: L1
+    check: judgment
+    phase: [implement, verify]
+    applies_to: [content]
+    verify: "Evaluator reviews the product's surfaces for term drift — the same action, object, or state named two ways anywhere it appears (nav, buttons, labels, filters, dialogs, messages, tooltips, empty states, help text). The listed surfaces are examples, not the scope; the whole interface is in scope."
+    waiver: documented
+    fails_when:
+      - the same action named two or more ways anywhere in the product ("Edit" on one screen, "Amend" on another, "Modify" in a dialog)
+      - term drift for the same thing between any two surfaces — a button and its confirmation, a nav item and its page title, a filter and its help text
+    detail: controls/cnt-10.md
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
+  # CNT-11: ratchet PROPOSAL 2026-07-09 — external term consistency, the second half of
+  # the "Check consistency" step. Distinct from CNT-2 and CNT-10: CNT-2 grades a single
+  # name's plain-language quality; CNT-10 grades one-term-per-thing WITHIN a product;
+  # CNT-11 grades whether a common UI term matches the established word teachers already
+  # meet ACROSS other products and the web ("Search", not "Find"). L2 because matching
+  # the outside convention is a strong default with legitimate product-specific
+  # exceptions, unlike internal drift.
+  - id: CNT-11
+    source: TFX-DS
+    title: UI terms match the established word teachers already meet across other products — "Search" not "Find", "Settings" not "Preferences"
+    tier: L2
+    check: judgment
+    phase: [implement, verify]
+    applies_to: [content]
+    verify: "Evaluator checks common UI terms against the convention teachers see across the web and other products; an invented or unfamiliar synonym for a standard term is a finding"
+    waiver: rationale
+    fails_when:
+      - an invented or unfamiliar synonym for a standard UI term ("Find" for a search field, "Preferences" for settings)
+      - a coined product term where an established web convention already exists
+    detail: controls/cnt-11.md
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
+  # CNT-12: ratchet PROPOSAL 2026-07-09 — sentence case, from the "Check readability"
+  # step of the writing guide. Distinct from TYP-4: TYP-4 bans ALL-CAPS text; CNT-12
+  # catches Title Case, which passes TYP-4 (no uppercase transform) yet still breaks
+  # sentence case ("Submit Your Marks"). CNT-12 makes the grammar-mechanics "sentence
+  # case everywhere" rule enforceable. Hybrid: a Title-Case heading/label heuristic in
+  # content-lint is the deterministic half (planned); proper-noun and branded-term
+  # exemptions are judgment. Ships judgment-first; script half follows.
+  - id: CNT-12
+    source: TFX-DS
+    title: Copy uses sentence case — capitalise the first word and proper or branded nouns only
+    tier: L2
+    check: hybrid
+    phase: [implement, verify]
+    applies_to: [content]
+    verify: "Lint headings/labels/buttons for Title-Case patterns (planned content-lint heuristic); evaluator judges sentence-case compliance and the proper-noun / branded-term exemptions"
+    waiver: rationale
+    enforced: partial
+    script: checks/content-lint.py
+    fails_when:
+      - Title Case in a heading, label, or button ("Submit Your Marks", "View Class Details")
+      - a non-proper mid-sentence word capitalised for emphasis
+    detail: controls/cnt-12.md
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
+  # CNT-13: ratchet PROPOSAL 2026-07-10 — spelling/proofreading, from the "Check for
+  # grammar and spelling" step (§10) of the writing guide, the only step with no owning
+  # control. Owns spelling and proofreading only; the grammar half is already covered by
+  # CNT-3 (voice/length), CNT-8 (nominalisations), CNT-9 (clarity), CNT-12 (case). Disjoint
+  # from those and from SLP-9/CNT-6 word lists — one token never fires two controls. Hybrid:
+  # a curated US→UK spelling map + common-misspelling list in content-lint is the
+  # deterministic half; typos, homophones, and doubled words are the evaluator's.
+  - id: CNT-13
+    source: TFX-DS
+    title: Copy is free of spelling and proofreading errors and uses Singapore English spelling (British base)
+    tier: L2
+    check: hybrid
+    phase: [implement, verify]
+    applies_to: [content]
+    verify: "Lint flags a curated US→UK spelling map and a common-misspelling list read from cnt-13.md; evaluator proofreads for the typos, homophones, and doubled words no word list can catch"
+    waiver: rationale
+    enforced: partial
+    script: checks/content-lint.py
+    fails_when:
+      - a misspelling or typo in user-facing copy ("recieve", "seperate", "teh")
+      - US spelling where British is house style ("color", "organize", "center")
+      - a doubled word or copy-paste artifact left in shipped text ("the the", "TODO")
+    detail: controls/cnt-13.md
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
+  # CNT-14: ratchet PROPOSAL 2026-07-10 — holistic voice quality + tone-fit, the one
+  # slice of the voice & tone guideline (content/guidelines/voice-tone-proposed.mdx)
+  # no existing control owns. Judgment-only: no static signal decides "sounds
+  # thoughtful" or "tone fits this surface". Disjoint from the mechanical voice
+  # controls (CNT-3 person/voice/length, CNT-6 filler, CNT-8 nominalisations, CNT-12
+  # case, SLP-9 AI tells) — those catch specific tokens/patterns; CNT-14 grades the
+  # gestalt a string can fail while passing every mechanical control. Boundary with
+  # CMP-2: CMP-2 governs destructive-action behaviour (consequences + undo/confirm);
+  # CNT-14 governs whether the wording is sober vs dramatic. Pending design-lead
+  # approval; re-audit set = every shipped surface carrying user-facing copy.
+  - id: CNT-14
+    source: TFX-DS
+    title: Copy embodies the TFX voice (Clear, Thoughtful, Approachable) and its tone fits the surface context
+    tier: L2
+    check: judgment
+    phase: [implement, verify]
+    applies_to: [content]
+    verify: "Evaluator reads the copy against the voice attributes and the tone-by-context table in voice-tone-proposed.mdx: does it sound Clear/Thoughtful/Approachable (not cold, robotic, patronising, alarmist, or sappy), and does the tone match the surface (affirming success, calm error, sober destructive, inviting empty state)?"
+    waiver: rationale
+    fails_when:
+      - an error message that is alarmist or dramatic rather than calm and helpful
+      - a success message that gushes instead of acknowledging briefly
+      - an empty state or onboarding step that is patronising or careless
+      - a destructive confirmation written with drama instead of sober, plain consequences
+    detail: controls/cnt-14.md
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
 
   # ── Motion & identity ─────────────────────────────────────────────────
