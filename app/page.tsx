@@ -148,7 +148,7 @@ export default function Landing() {
           Does this help your users get their task done faster, with less stress?
         </p>
         <p className="mt-3 text-[16px] text-white">If not, we don&apos;t build it.</p>
-        <p className="mt-2 text-[14px] text-white/80">
+        <p className="mt-2 text-[14px] text-white">
           Each domain names its own test — Teachers &amp; School asks it about teachers.
         </p>
       </section>
