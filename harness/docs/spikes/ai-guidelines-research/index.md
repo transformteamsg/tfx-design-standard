@@ -166,7 +166,7 @@ Tone in AI error messages should be workmanlike - no apology language, no cheerf
 **CaseSync** carries higher gravity because records feed assessments and may affect student placement.
 R3 (teacher stays the author) and R5 (consequential actions gated) are especially important here - a teacher submitting an AI-generated case note without reviewing it is a foreseeable failure mode.
 Summaries should surface sources every time (R2 + AID-1 at higher visibility).
-The confirmation gate (AID-3) should show more consequence detail than the minimum: "This will update the student's reading level record" is better than "Confirm."
+The confirmation gate (CNV-2 in the decision record) should show more consequence detail than the minimum: "This will update the student's reading level record" is better than "Confirm."
 Privacy-forward framing: avoid any copy that implies the model has "learned" from a student's data.
 
 **Glow** is lighter and more experimental.
@@ -177,4 +177,4 @@ Lower-stakes outputs may use a lighter marking treatment than CaseSync, but the 
 ---
 
 *End of spike index.*
-*Next steps: propose AID-1, AID-2, AID-3, CNV-1 as formal catalog entries via the ratchet (standards skill); assign token treatment for AI marking to the next design token sprint.*
+*Next steps: proposals filed in docs/decisions/ai-design-guidelines.md as CNV-1, CNV-2, AID-1, AID-2 (see supersession note in section 3); assign token treatment for AI marking to the next design token sprint.*
