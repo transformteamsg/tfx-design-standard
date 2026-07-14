@@ -8,6 +8,13 @@ import { Breadcrumb } from "@/components/breadcrumb";
 import { PageActions } from "@/components/page-actions";
 import { ToolCard, type Tool } from "@/components/tool-card";
 import { heading } from "@/components/mdx";
+import {
+  DemoStreaming,
+  DemoSources,
+  DemoConfirmation,
+  DemoPromptInput,
+  DemoAiLabel,
+} from "@/components/ai-demos";
 
 /* Sections whose docs live at /{section}/{slug} and get a breadcrumb back to
    the section root. Single-doc sections (governance) and start pages don't. */
@@ -34,7 +41,15 @@ export async function DocPage({ doc, children }: { doc: Doc; children?: ReactNod
   try {
     const { content } = await compileMDX({
       source: doc.content,
-      components: { h2: heading("h2"), h3: heading("h3") },
+      components: {
+        h2: heading("h2"),
+        h3: heading("h3"),
+        DemoStreaming,
+        DemoSources,
+        DemoConfirmation,
+        DemoPromptInput,
+        DemoAiLabel,
+      },
       options: { mdxOptions: { remarkPlugins: [remarkGfm] } },
     });
     rendered = content;
