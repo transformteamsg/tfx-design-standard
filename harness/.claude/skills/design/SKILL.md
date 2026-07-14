@@ -7,15 +7,17 @@ description: Design or change a product UI in a DXD portfolio — a new page, sc
 
 You are designing UI for a product in your portfolio. The normative source is the DXD
 Design Standard (historical source: TFX-DS). The product's brand — its primary colours,
-typography, voice, and brand essence — resolves from context: the product's `DESIGN.md`,
-else its domain profile (`standards/domains/<domain>.yaml`), else the foundation default.
-The always-on test: does this help your users get their task done faster with less
-stress? If not, don't build it. *(Teachers & School binding: the portfolio is Teacher
-Workspace, CaseSync, Glow, and TW surfaces; brand essence is **Kind Utility** — useful
-first, kind at the surface, and the test names teachers — see
-`standards/domains/teachers-school.yaml`.)* Standards compliance is not a
-final check — it shapes every phase. Work through the phases in order; do not skip a
-gate even if the request seems simple.
+typography, voice, and brand essence — resolves from product context over one selected
+domain profile (`standards/domains/<domain>.yaml`). Resolve the domain first, load only
+that profile, then merge product values over it. A missing concrete fact stays
+unresolved: universal foundation behaviour still applies, but never borrow a different
+domain's values or claim a parameterised control passed. The sole v0.x compatibility
+shim is a repo with neither `DESIGN.md` nor generated context: through v0.x, treat that
+legacy repo as `teachers-school`; remove the shim at 1.0. An explicit non-T&S domain
+never uses it. The always-on test: does this help your users get their task done faster
+with less stress? If not, don't build it. Standards compliance is not a final check —
+it shapes every phase. Work through the phases in order; do not skip a gate even if the
+request seems simple.
 
 The harness's one promise: **intent without loss**. What the builder means is written
 down as a contract in Phase 1; every later phase is graded against that contract;
@@ -35,8 +37,9 @@ the plugin while the harness's CLAUDE.md does not.)
 catalog ships with this harness, not with the product repo — resolve it relative to
 this SKILL.md file, three levels up: `<this-skill-dir>/../../../standards/catalog.yaml`
 (the same path works in the harness dev repo and when installed as the
-`tfx` plugin; do not expect `standards/` in the project cwd). Filter
-controls by `phase` and scope (`products`/`audiences` — absent = global) as you
+`dxd` plugin; do not expect `standards/` in the project cwd). Filter
+controls by `phase`, `applies_to`, and intersecting scope
+(`products`/`audiences`/`domains` — absent = global) as you
 go; read a control's `detail` file (same `standards/`
 directory) before applying it. Also read the product's `DESIGN.md` (repo root)
 if present — per-product parameters only; on conflict with implemented code
@@ -46,15 +49,10 @@ protocol. For any waiver or applicability question read
 `../../../standards/README.md` — never answer from memory.
 
 **The stack.** The foundation demands token-shaped behaviour (TOK-1..3) but names no
-stack, typeface, or primary — resolve those from context: the product's `DESIGN.md`,
-else its domain profile (`standards/domains/<domain>.yaml`), else the foundation
-default. Each product anchors primary actions and brand moments in its **own** primary
-(COL-1). Build from the resolved system by default — deliberately boring and AI-legible
-beats invented. *(Teachers & School binding, from `standards/domains/teachers-school.yaml`:
-Base UI components, Radix Colors scales, shadcn/ui default tokens for spacing/radius/type;
-Plus Jakarta Sans (600) display, Inter (400/500/600) body/UI; per-product primaries —
-Teacher Workspace → T&S Blue `#0064FF`, Glow → orange, CaseSync → indigo, see COL-1's
-detail file for the table.)*
+stack, typeface, primary, or scale. Resolve those concrete facts from product context
+over the one selected domain profile using the rules above. Each product anchors
+primary actions and brand moments in its own primary (COL-1). Build from the resolved
+system; when a required fact is unresolved, ask or call it out instead of inventing one.
 
 **Judgment lens.** Where no control decides and the product's brand essence alone is too
 coarse, weigh trade-offs against Apple's HIG design principles (Purpose, Agency,
@@ -143,15 +141,14 @@ A request like "apply the standards", "improve this", "polish it", or "make it
 better" names *no dimension of change* — and you cannot infer one, so do not try.
 "Apply the standards" in particular reads by default as a **compliance + anti-slop
 pass**: on a surface that is already decent, that can finish with the visuals looking
-almost unchanged. That is exactly what disappointed the Glow pilot (a Teachers & School
-product) — the builder wanted a brand-forward visual redesign, said "apply the
+almost unchanged. A prior pilot exposed this: the builder wanted a brand-forward
+visual redesign, said "apply the
 standards", and got a run that tightened UX the surface had mostly got right already. The fix is not to guess bigger;
 it is to **ask**. When the request is open-ended, use a structured `AskUserQuestion`
 to pin down which **dimension(s)** are in scope:
 
 - **Visual & brand expression** — colour, type expression, imagery, the surface's
-  energy, and how strongly it carries the product's brand (for Teachers & School:
-  Glow's warmth, TW's blue, CaseSync's indigo). This is the dimension "apply the
+  energy, and how strongly it carries the product's declared brand. This is the dimension "apply the
   standards" silently drops.
 - **Layout & structure** — hierarchy, composition, page template, density.
 - **UX & flow** — the user's path, the steps, the states, the friction.
@@ -182,11 +179,10 @@ Establish the rest, asking the user only what you cannot infer:
    (HIG: Purpose): prioritise the few things this moment actually needs and make
    those truly good — a page with a clear use beats one that does everything.
 2. **The user and the moment**: anchor in a specific person's real workflow, not
-   an abstract "user" — can you name the person and the moment this serves? (For a
-   Teachers & School surface: "Ms. Lim, P5 Math, entering marks the week before
-   reports are due.") Design for the stressed week, not the average one.
-3. **Product and page type**: which product (for Teachers & School: TW / CaseSync /
-   Glow / TW surface — this sets tone calibration per `copy`), and what kind of surface: workspace
+   an abstract "user" — can you name the person and the moment this serves? Design
+   for the stressed moment, not an abstract average one.
+3. **Product and page type**: which declared product (this sets tone calibration per
+   `copy`), and what kind of surface: workspace
    view, form, flow step, dashboard, settings, empty state, onboarding. Page type
    selects controls via `applies_to`. **Audience**: who does this surface serve —
    the product's declared audience (its domain profile `audiences:` / `DESIGN.md`);
@@ -258,7 +254,7 @@ Expand the chosen option into a plan:
 
 - Page/step structure and the component for each region.
 - Tokens/patterns used; any **missing component** surfaced explicitly with options
-  (extend an existing Base UI component / request from the design system — never
+  (extend an existing declared component / request from the design system — never
   improvise a one-off without a CMP-1 waiver).
 - **Interaction plan**: name the 2–3 specific motions the chosen option uses — one
   entrance, one state transition, one hover/reveal — described concretely (what moves,
@@ -359,13 +355,13 @@ Build exactly the approved plan. Constraints, non-negotiable:
   are **not** SLP-1 "rainbow slop" — preserve them; neutralising them is a restyle to
   flag, not a default.)
 - Compose only manifest components (`status: "stable"` from `.tfx/component-manifest.json`
-  if the product has one; CMP-1); semantic shadcn tokens only — no raw
+  if the product has one; CMP-1); active semantic tokens only — no raw
   colour, off-scale spacing, or off-scale radii (TOK-1..3); the product's resolved
-  typefaces only (TYP-1; Teachers & School: Plus Jakarta Sans / Inter), on-scale sizes
+  typefaces only (TYP-1), on-scale sizes
   (TYP-2..3).
-- Functional colours come from the Radix scales (COL-2); **small functional-colour
-  text (≤12px) on a tint uses step-12, not step-11** — step-11 on a tint dips below
-  the 4.5:1 AA floor (A11Y-1).
+- Functional colours use the active profile's declared semantic roles (COL-2);
+  small functional-colour text (≤12px) on a tint must clear the 4.5:1 AA floor
+  (A11Y-1) against the resolved tokens.
 - Visible label on every field (A11Y-3); keyboard reach + focus states (A11Y-2);
   AA contrast (A11Y-1); targets ≥ 24px, 44px on mobile (A11Y-4); respect reduced
   motion (A11Y-5).

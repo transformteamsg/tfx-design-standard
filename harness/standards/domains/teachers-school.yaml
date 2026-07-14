@@ -18,14 +18,24 @@ colour:
 
 typography:
   # Normative source: TYP-1.
-  display: "Plus Jakarta Sans (600)"
-  body: "Inter (400/500/600)"
+  display: "Plus Jakarta Sans"
+  body: "Inter"
+  allowed_families: ["Plus Jakarta Sans", "Inter"]
+  display_weights: [600]
+  body_weights: [400, 500, 600]
+  # Formerly documented globally as the TFX type scale; this value belongs here.
+  scale_px: [120, 96, 72, 48, 32, 24, 20, 18, 16, 14, 12, 11]
   wordmarks:
     glow: "Inria Sans (--font-logo) — wordmark/logo lockup only (TYP-1)"
 
-# Foundation controls demand semantic tokens only (TOK-1..3) but never name a
-# stack; the T&S stack is declared here.
-stack: "Base UI components + Radix Colors + shadcn/ui default tokens"
+# Foundation controls demand semantic tokens and declared scales (TOK-1..3) but
+# never name a stack; the T&S stack is declared here.
+stack:
+  components: "Base UI components"
+  colour_system: "Radix Colors"
+  token_convention: "shadcn/ui default tokens"
+  spacing_px: [0, 1, 2, 4, 6, 8, 10, 12, 14, 16, 20, 24, 28, 32, 36, 40, 44, 48, 56, 64, 80, 96, 112, 128]
+  radius_px: [0, 2, 4, 6, 8, 12, 16, 24, 9999]
 
 illustration:
   direction: ""                  # awaiting declaration

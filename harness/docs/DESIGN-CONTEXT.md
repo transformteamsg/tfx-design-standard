@@ -16,8 +16,12 @@ This layer gives each product repo one place for "what makes this product this p
   `scripts/generate-design-json.py`, so checks and hooks can read the same parameters the
   agent reads. Never hand-edited.
 
-Both are **optional**. A repo with neither gets portfolio defaults everywhere; that is a
-valid, complete state — never grade a missing context file as a failure.
+Both are optional for existing installs. Through v0.x, a repo with neither
+`DESIGN.md` nor generated context uses the `teachers-school` profile as a
+time-bounded compatibility shim; remove that shim at 1.0. This is the only concrete
+fallback. Once a repo declares a domain, consumers load only that domain profile and
+never borrow T&S values. Missing concrete facts stay unresolved while universal
+foundation controls continue to apply.
 
 **Legacy path.** `.dxd/design.json` is the canonical path as of the DXD rename
 (plan 001); the generator writes only here now. Readers (the design skill, `evaluator`,
@@ -27,17 +31,19 @@ where the generator writes.
 
 ## The one rule: parameters, never catalog-rule restatements
 
-`DESIGN.md` carries only what *differs* from the portfolio default or *specialises* a
-catalog rule for this product — the values, not the rules. It must never restate a catalog
+`DESIGN.md` carries only what overrides or completes its selected domain profile —
+the values, not the rules. It must never restate a catalog
 control (that recreates exactly the drift `docs/SYNC.md` exists to prevent). Say the
 parameter and cite its normative source:
 
-- Good: `Primary: --tw-blue #0064FF` (a value) with "Normative source: COL-1".
+- Good: `Primary: --product-primary #2455A4` (an illustrative value) with
+  "Normative source: COL-1".
 - Bad: "Primary actions use the product's own primary brand colour" — that is COL-1's rule
   restated; it will drift from the catalog and mislead.
 
-Omit any section that does not differ from the portfolio default. An absent section means
-"portfolio default applies", not "unspecified".
+Omit a section when the selected domain profile already supplies it. If neither layer
+declares a concrete fact, that fact is unresolved: the agent asks or records a NOTE; it
+does not invent a value or inherit another domain's profile.
 
 ## `DESIGN.md` — sections (all optional)
 
@@ -55,13 +61,13 @@ normative source in each section you keep.
 | `Layout system` | `layout_system` | the declared column grid (see below) | LAY-1 proposal (`docs/catalog-changes/lay-1-grid.md`) |
 | `Components` | `components` | product-specific component notes (e.g. AvatarFallback default) | CMP-1, CMP-7 |
 
-**Resolution order.** A parameter resolves **product `DESIGN.md` > domain
-profile (`standards/domains/<slug>.yaml`) > foundation default.** `Domain`
-names which domain profile supplies the middle layer; a product need only
+**Resolution order.** A parameter resolves **product `DESIGN.md` > selected domain
+profile (`standards/domains/<slug>.yaml`) > unresolved concrete fact.** `Domain`
+is resolved first and names the only profile consumers load; a product need only
 restate `Typography`/`Stack`/`Colour` in its `DESIGN.md` where it *differs* from
-its domain's declared values. Omit a section and its domain profile (then the
-foundation default) applies — an absent section still means "inherit", never
-"unspecified".
+its domain's declared values. Omit a section to inherit that selected profile. An
+explicit non-T&S domain never falls back to T&S. Universal behavioural conventions
+remain the foundation when a concrete value is unresolved.
 
 **Layout system** absorbs the `.tfx/layout-system.json` proposed in
 `docs/catalog-changes/lay-1-grid.md` (plan 053): its object (`columns`, `gutter`,
@@ -80,11 +86,24 @@ Generated only, never hand-edited. Shape:
 {
   "generated_from": "DESIGN.md",
   "generated_at": "2026-07-03T00:00:00Z",
-  "colour": { "primary": "--tw-blue #0064FF" },
+  "domain": "platform",
+  "colour": { "primary": "--product-primary #2455A4" },
+  "typography": {
+    "display": "Example Display",
+    "body": "Example Sans",
+    "scale_px": [48, 32, 24, 18, 15, 12]
+  },
+  "stack": {
+    "components": "Example UI",
+    "spacing_px": [0, 3, 6, 12, 18, 24, 36],
+    "radius_px": [0, 5, 10, 9999]
+  },
   "layout_system": { "columns": 12, "gutter": "space-4" },
-  "tone": "Follows content §6. Teacher Workspace: neutral, steady, quietly confident."
+  "tone": "Follows the active domain's voice guidance."
 }
 ```
+
+These are contract-sample values, not settled Platform brand facts.
 
 - `generated_from` is always `"DESIGN.md"`; `generated_at` is an ISO-8601 UTC timestamp.
 - One top-level key per `DESIGN.md` section present (omitted sections produce no key).
@@ -103,7 +122,7 @@ Generated only, never hand-edited. Shape:
    never reach the json.
 3. In the remaining body, a bulleted line of the form `- key: value` becomes a structured
    field. `value` is coerced: an integer literal → int, a `[…]` JSON array → list, else the
-   string verbatim (so `space-4`, `#0064FF`, and `1280px` survive intact). Field keys keep
+   string verbatim (so `space-4`, `#2455A4`, and `1280px` survive intact). Field keys keep
    their written casing (so `maxContentWidth` matches the LAY-1 schema).
 4. A section with **no** field lines becomes its prose (non-comment, non-blank lines joined),
    verbatim. A section that is empty after comment-stripping produces no key.
@@ -115,7 +134,11 @@ bullets) for narrative notes.
 
 - Read `DESIGN.md` at **intent** (once the product is identified) and implement against its
   parameters for the rest of the loop — it calibrates colour/tone/motion/layout downstream.
-- **Absent file → portfolio defaults apply.** Do not grade missing context as a failure.
+- **No `DESIGN.md` and no generated context → v0.x compatibility only.** Resolve the
+  `teachers-school` profile through v0.x; remove this compatibility shim at 1.0. Do
+  not grade the missing files themselves as a failure.
+- **Declared domain → only that profile.** Merge product values over it. Never load
+  T&S values for an explicit non-T&S domain; call missing facts unresolved.
 - **Code overrides stale docs.** When `DESIGN.md` disagrees with the product's *implemented*
   conventions, the code wins: follow the implemented convention and tell the user that
   `DESIGN.md` has drifted (so a human can reconcile it). `DESIGN.md` is a pointer to intent,
@@ -136,4 +159,5 @@ The unified detector consumes this: `checks/detect.py` (plan 059) runs the gener
 `--check` mode whenever a `.dxd/design.json` exists at the target repo root (falling back
 to `.tfx/design.json` in repos that predate the rename), so a stale twin surfaces as a
 detector finding (exit 2), never a crash. A repo with neither path skips the check
-entirely — a missing context layer is a valid, complete state, never graded as a failure.
+entirely. The profile resolver then applies the documented v0.x compatibility shim;
+this is not a concrete foundation default.

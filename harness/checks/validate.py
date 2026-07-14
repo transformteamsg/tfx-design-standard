@@ -15,7 +15,8 @@ Validates standards/catalog.yaml for internal consistency:
      control count).
   9. Domain profiles: standards/domains/*.yaml (excluding _-prefixed) carry the
      required keys, a domain matching the filename and meta.domains registry, a
-     valid status, and products/audiences values known to the catalog meta.
+     valid status, products/audiences values known to the catalog meta, and valid
+     structured typography/stack values when present.
 Exit 0 and print "OK: <n> controls valid" on success.
 Exit 1 and print "ERROR <location>: <message>" lines on failure.
 """
@@ -388,6 +389,128 @@ DOMAIN_PROFILE_REQUIRED = ("domain", "name", "status")
 DOMAIN_PROFILE_STATUSES = {"settled", "proposed"}
 
 
+def _profile_non_empty_string(errors, floc, section, data, field):
+    """Validate an optional named profile value when present."""
+    if field not in data:
+        return
+    value = data[field]
+    if not isinstance(value, str) or not value.strip():
+        errors.append(
+            f"ERROR {floc}: '{section}.{field}' must be a non-empty string")
+
+
+def _profile_number_scale(errors, floc, section, data, field):
+    """Validate an optional non-empty, unique list of non-negative numbers."""
+    if field not in data:
+        return
+    value = data[field]
+    label = f"{section}.{field}"
+    if not isinstance(value, list):
+        errors.append(
+            f"ERROR {floc}: '{label}' must be a list, got {type(value).__name__}")
+        return
+    if not value:
+        errors.append(f"ERROR {floc}: '{label}' must be a non-empty list")
+        return
+    invalid = [
+        v for v in value
+        if isinstance(v, bool) or not isinstance(v, (int, float)) or v < 0
+    ]
+    if invalid:
+        errors.append(
+            f"ERROR {floc}: '{label}' values must be non-negative numbers; "
+            f"invalid: {invalid}")
+    elif len(value) != len(set(value)):
+        errors.append(f"ERROR {floc}: '{label}' values must be unique")
+
+
+def _profile_weights(errors, floc, data, field):
+    """Validate an optional non-empty, unique list of positive integer weights."""
+    if field not in data:
+        return
+    value = data[field]
+    label = f"typography.{field}"
+    if not isinstance(value, list):
+        errors.append(
+            f"ERROR {floc}: '{label}' must be a list, got {type(value).__name__}")
+        return
+    if not value:
+        errors.append(f"ERROR {floc}: '{label}' must be a non-empty list")
+        return
+    invalid = [
+        v for v in value
+        if isinstance(v, bool) or not isinstance(v, int) or v <= 0
+    ]
+    if invalid:
+        errors.append(
+            f"ERROR {floc}: '{label}' values must be positive integers; "
+            f"invalid: {invalid}")
+    elif len(value) != len(set(value)):
+        errors.append(f"ERROR {floc}: '{label}' values must be unique")
+
+
+def _structured_profile_errors(profile, floc):
+    """Validate optional machine-readable profile sections without requiring them."""
+    errors = []
+    typography = profile.get("typography")
+    if typography is not None:
+        if not isinstance(typography, dict):
+            errors.append(
+                f"ERROR {floc}: 'typography' must be a mapping, got "
+                f"{type(typography).__name__}")
+        else:
+            for field in ("display", "body"):
+                _profile_non_empty_string(
+                    errors, floc, "typography", typography, field)
+            families = typography.get("allowed_families")
+            if families is not None:
+                if not isinstance(families, list):
+                    errors.append(
+                        f"ERROR {floc}: 'typography.allowed_families' must be a "
+                        f"list, got {type(families).__name__}")
+                elif not families:
+                    errors.append(
+                        "ERROR " + floc + ": 'typography.allowed_families' must "
+                        "be a non-empty list")
+                elif not all(isinstance(v, str) and v.strip() for v in families):
+                    errors.append(
+                        "ERROR " + floc + ": 'typography.allowed_families' values "
+                        "must be non-empty strings")
+                elif len(families) != len(set(families)):
+                    errors.append(
+                        "ERROR " + floc + ": 'typography.allowed_families' values "
+                        "must be unique")
+            wordmarks = typography.get("wordmarks")
+            if wordmarks is not None:
+                if not isinstance(wordmarks, dict):
+                    errors.append(
+                        f"ERROR {floc}: 'typography.wordmarks' must be a mapping, "
+                        f"got {type(wordmarks).__name__}")
+                elif not all(
+                    isinstance(v, str) and v.strip() for v in wordmarks.values()
+                ):
+                    errors.append(
+                        f"ERROR {floc}: 'typography.wordmarks' values must be "
+                        "non-empty strings")
+            _profile_weights(errors, floc, typography, "display_weights")
+            _profile_weights(errors, floc, typography, "body_weights")
+            _profile_number_scale(
+                errors, floc, "typography", typography, "scale_px")
+
+    stack = profile.get("stack")
+    if stack is not None:
+        if not isinstance(stack, dict):
+            errors.append(
+                f"ERROR {floc}: 'stack' must be a mapping, got "
+                f"{type(stack).__name__}")
+        else:
+            for field in ("components", "colour_system", "token_convention"):
+                _profile_non_empty_string(errors, floc, "stack", stack, field)
+            _profile_number_scale(errors, floc, "stack", stack, "spacing_px")
+            _profile_number_scale(errors, floc, "stack", stack, "radius_px")
+    return errors
+
+
 def domain_profile_errors(repo_root, meta):
     """
     Validate every standards/domains/*.yaml profile (excluding `_`-prefixed
@@ -395,7 +518,8 @@ def domain_profile_errors(repo_root, meta):
       - required keys present (domain, name, status);
       - `domain` matches the filename stem AND is a key of meta.domains;
       - `status` ∈ {settled, proposed};
-      - any `products` / `audiences` values exist in meta.products / meta.audiences.
+      - any `products` / `audiences` values exist in meta.products / meta.audiences;
+      - structured typography/stack fields have valid shapes when present.
     A missing domains/ directory is not an error (nothing to check).
     Pure except for reading the profile files. Returns a list of error strings.
     """
@@ -458,6 +582,8 @@ def domain_profile_errors(repo_root, meta):
                 errors.append(
                     f"ERROR {floc}: unknown {field} values {bad} — allowed: "
                     f"{sorted(known)}")
+
+        errors.extend(_structured_profile_errors(profile, floc))
 
     return errors
 
@@ -1041,10 +1167,20 @@ def run_self_test():
             with open(os.path.join(dom_dir, name), "w") as fh:
                 fh.write(text)
 
-        # Valid settled profile with known products/audiences → no error.
+        # Valid settled profile with known products/audiences and structured
+        # machine-readable values → no error.
         write_profile("teachers-school.yaml",
                       "domain: teachers-school\nname: Teachers & School\n"
-                      "status: settled\nproducts: [tw, glow]\naudiences: [teachers]\n")
+                      "status: settled\nproducts: [tw, glow]\naudiences: [teachers]\n"
+                      "typography:\n  display: Display Sans\n  body: Body Sans\n"
+                      "  allowed_families: [Display Sans, Body Sans]\n"
+                      "  display_weights: [600]\n  body_weights: [400, 500]\n"
+                      "  scale_px: [48, 24, 15]\n"
+                      "  wordmarks: {sample: Wordmark Sans}\n"
+                      "stack:\n  components: Example UI\n"
+                      "  colour_system: Semantic colours\n"
+                      "  token_convention: Product tokens\n"
+                      "  spacing_px: [0, 6, 12]\n  radius_px: [0, 5, 10]\n")
         assert_clean("domain profile valid",
                      domain_profile_errors(domains_tmp, meta))
 
@@ -1091,6 +1227,26 @@ def run_self_test():
         assert_error("domain profile missing status",
                      domain_profile_errors(domains_tmp, meta),
                      "missing required field 'status'")
+        os.remove(os.path.join(dom_dir, "students.yaml"))
+
+        # Structured values reject wrong types, empty scales, and duplicates.
+        write_profile("students.yaml",
+                      "domain: students\nname: Students\nstatus: proposed\n"
+                      "typography:\n  display: 42\n"
+                      "  display_weights: [600, medium]\n  scale_px: []\n"
+                      "stack:\n  components: ''\n  spacing_px: [0, 6, 6]\n"
+                      "  radius_px: not-a-list\n")
+        structured = domain_profile_errors(domains_tmp, meta)
+        assert_error("domain profile structured name type", structured,
+                     "typography.display' must be a non-empty string")
+        assert_error("domain profile structured weight type", structured,
+                     "values must be positive integers")
+        assert_error("domain profile structured empty scale", structured,
+                     "typography.scale_px' must be a non-empty list")
+        assert_error("domain profile structured duplicate scale", structured,
+                     "stack.spacing_px' values must be unique")
+        assert_error("domain profile structured wrong scale type", structured,
+                     "stack.radius_px' must be a list")
     finally:
         shutil.rmtree(domains_tmp, ignore_errors=True)
 

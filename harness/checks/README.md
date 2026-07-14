@@ -88,11 +88,11 @@ their behaviour is proven by their own `--self-test`s and a real-corpus run over
 
 ## Validator (built)
 
-`python3 checks/validate.py` — validates `standards/catalog.yaml` against the schema in `standards/README.md`: field presence and allowed values, tier→waiver pairing, `detail:` file existence, detail-frontmatter ↔ catalog consistency, and that every control ID referenced in skills/docs exists in the catalog. Exit 0 on pass, exit 1 with `ERROR` lines on failure. This is the repo's verification baseline — run it before committing any `standards/` change.
+`python3 checks/validate.py` — validates `standards/catalog.yaml` against the schema in `standards/README.md`: field presence and allowed values, tier→waiver pairing, `detail:` file existence, detail-frontmatter ↔ catalog consistency, domain-profile structured typography/stack values, and that every control ID referenced in skills/docs exists in the catalog. Exit 0 on pass, exit 1 with `ERROR` lines on failure. This is the repo's verification baseline — run it before committing any `standards/` change.
 
 The validator also enforces two **fragment-parity** sub-checks via `<!-- tfx-sync:… -->` markers: `[L0-SYNC]` (the inline "Non-negotiables (L0)" lists in `CLAUDE.md` and `design/SKILL.md` must equal the catalog's `tier: L0` set) and `[SLP9-SYNC]` (the `copy` buzzword summary must be a subset of the canonical list in `standards/controls/slp-9.md`). See [docs/SYNC.md](../docs/SYNC.md). A third check, `[COUNT-SYNC]`, needs no markers: every "`<N> controls`" claim in `README.md` **and `docs/index.html`** must equal the catalog's actual control count, so an added or removed control fails the build until the prose is updated.
 
-**Self-test:** `python3 checks/validate.py --self-test` → `SELF-TEST OK (45 cases)`.
+**Self-test:** `python3 checks/validate.py --self-test` → `SELF-TEST OK (64 cases)`.
 
 **Enforcement coverage (`enforced:` / `script:`).** Two OPTIONAL per-control catalog
 fields make the built/unbuilt boundary machine-readable instead of living in prose
@@ -107,12 +107,46 @@ live table (id · tier · check · enforced[defaulted] · script) and a summary 
 this **replaces hand-maintained gap lists**, which drift as controls are added (see
 `standards/README.md` §Enforcement).
 
+## Profile context resolver (built)
+
+`profile_context.py` is the shared resolver used by `type-scan.py` and
+`token-audit.py`. It finds the target repo from the explicit scan paths, reads
+`.dxd/design.json` (legacy `.tfx/design.json` fallback), loads only the declared
+domain profile, and merges product `colour` / `typography` / `stack` values over it.
+Typed helpers return font families, type scale, spacing scale, and radius scale with
+`product` / `profile` / `compatibility fallback` / `unresolved` provenance.
+
+An explicit non-T&S domain never loads T&S values. A missing profile fact produces
+one checker NOTE and skips only that profile-specific judgment. Through v0.x, the
+sole compatibility case is a repo with neither `DESIGN.md` nor generated context;
+that repo resolves the `teachers-school` profile. Remove the shim at 1.0.
+
+**Self-test:** `python3 checks/profile_context.py --self-test` →
+`SELF-TEST OK (23 cases)`.
+
+## Profile adoption verification matrix
+
+Run these together whenever profile resolution or a parameterised scanner changes:
+
+| Contract | Command | Success |
+|---|---|---|
+| Resolver isolation/provenance | `python3 checks/profile_context.py --self-test` | `SELF-TEST OK` |
+| Typography parameters | `python3 checks/type-scan.py --self-test` | `SELF-TEST OK` |
+| Token-scale parameters | `python3 checks/token-audit.py --self-test` | `SELF-TEST OK` |
+| Structured profile schema | `python3 checks/validate.py --self-test && python3 checks/validate.py` | self-test passes; live catalog reports 60 controls |
+| Platform/EduPass AE1 | `python3 evals/platform-adoption-contract.py` | exactly `PASS platform adoption contract` |
+
+The Platform fixture values are contract samples only, not settled Platform brand
+facts. The contract proves passing values are graded against the product declaration,
+failing T&S-only/off-scale values report TYP-1/TYP-3/TOK-2/TOK-3, provenance never
+uses the compatibility fallback, and global consumers contain no concrete T&S markers.
+
 
 ## Token audit (built)
 
 `python3 checks/token-audit.py <path>...` — scans `.css`, `.html`, `.jsx`, `.tsx`, `.js`, `.ts`, `.vue`, and `.svelte` files for raw colour values, off-scale spacing, and off-scale border-radius that should be replaced with design tokens. Accepts files or directories (recursive). Exit 0 silent on pass; exit 1 with `ERROR` lines on failure.
 
-**Coverage:** TOK-1 (raw hex/rgb/hsl/oklch/named-colour in style contexts, plus raw colour inside Tailwind arbitrary-value utilities e.g. `bg-[…]` — see below), TOK-2 (off-scale spacing — shadcn default scale), TOK-3 (off-scale border-radius), COL-2 (Tailwind palette utility classes bypassing the semantic layer; COL-1 partial — palette bypass only, product-primary resolution is judgment). Suggests the nearest scale value or token pattern on every violation.
+**Coverage:** TOK-1 (raw hex/rgb/hsl/oklch/named-colour in style contexts, plus raw colour inside Tailwind arbitrary-value utilities e.g. `bg-[…]` — see below), TOK-2 (spacing outside resolved `stack.spacing_px`), TOK-3 (radius outside resolved `stack.radius_px`), COL-2 (Tailwind palette utility classes bypassing the semantic layer; COL-1 partial — palette bypass only, product-primary resolution is judgment). Suggests the nearest resolved scale value or token pattern on every violation. If a declared profile omits a scale, one NOTE names the unresolved control and only that on-scale judgment is skipped; TOK-1 remains active.
 
 **Token-definition exemption:** raw values inside a `:root { --*: … }` custom-property block or a `/* tfx-tokens */` … `/* /tfx-tokens */` region are exempt — tokens must be defined somewhere.
 
@@ -122,9 +156,9 @@ this **replaces hand-maintained gap lists**, which drift as controls are added (
 
 **L1 waiver behaviour:** TOK and COL are all L1; an inline `dxd-waive TOK-…` or `dxd-waive COL-…` comment (legacy `tfx-waive` markers remain valid) does NOT suppress the violation. It downgrades the output line to `ERROR …:[line] [CTL-ID][waiver-claimed] … — verify approver in decision record` and still exits 1. The scanner never silences L1 violations; a human closes the decision-record loop.
 
-**Peer-radius-consistency (TOK-3):** The scanner checks on-scale and concentric nesting per element, but cannot compare peer elements (cross-element). Peer-radius-consistency is **judgment-only** — the evaluator carries consistency against the product's Card/`--radius` anchor.
+**Peer-radius-consistency (TOK-3):** The scanner checks each statically visible raw radius against the resolved scale. It cannot infer concentric nesting or compare peer elements across the rendered tree; those clauses remain evaluator-judged against the product's Card/base-radius anchor.
 
-**Self-test:** `python3 checks/token-audit.py --self-test` → `SELF-TEST OK (23 cases)`.
+**Self-test:** `python3 checks/token-audit.py --self-test` → `SELF-TEST OK (27 cases)`.
 
 ## Audit record (built)
 
@@ -258,23 +292,24 @@ This closes the loop `token-audit.py` leaves open ("a human closes the decision-
 
 **Rules:**
 
-- **TYP-1 fonts (L1):** a CSS `font-family:` or Tailwind `font-[…]` arbitrary value naming a typeface other than Plus Jakarta Sans or Inter; the named Tailwind family utilities `font-mono` / `font-serif` (which resolve to a third default typeface stack — but **never** the weight utilities `font-semibold` / `font-bold` / …, which are not a typeface choice); and a non-approved generic — `monospace` / `serif` / `ui-monospace` / `ui-serif` — used as the **primary** CSS `font-family`. Allowed: the token names `font-display` / `font-body` / `font-sans` / `--font-display` / `--font-body`, the sans fallbacks `sans-serif` / `system-ui` / `ui-sans-serif`, and any utility a project sanctions by adding it to `ALLOWED_FONT_TOKENS`.
+- **TYP-1 fonts (L1):** a CSS `font-family:` or Tailwind `font-[…]` arbitrary value naming a typeface outside the resolved profile families; the named Tailwind family utilities `font-mono` / `font-serif` (but never weight utilities); and a non-approved generic used as the primary family. Semantic font tokens and generic sans fallbacks remain allowed. Registered wordmark families resolve from the active profile; their lockup-only scope remains an evaluator check.
 - **TYP-2 size floor (L1):** a `font-size:` or `text-[Npx]` with `N < 14`. The suggest text carries the 11/14 ambiguity (labels may go to 11px; body floor is 14px) since label-vs-body context needs rendered layout.
 - **TYP-2 line-height (L1):** an explicit unitless / em `line-height:` or `leading-[N]` clearly outside the 1.5–1.6 body band (judged with a generous 1.4–1.7 tolerance). px / % line-heights are NOT judged — the ratio needs the font size.
-- **TYP-3 on-scale (L1):** a `text-[Npx]` or `font-size:Npx` whose whole-px `N` is not on the **TFX type scale `{120,96,72,48,32,24,20,18,16,14,12,11}`**. The scale is read at runtime from TYP-3's catalog `verify` field (`Sizes in {…}; checks/type-scan`) so it cannot drift; the same set is the embedded fallback if the catalog can't be read.
+- **TYP-3 on-scale (L1):** a `text-[Npx]` or `font-size:Npx` whose whole-px `N` is not on the resolved `typography.scale_px`. There is no embedded concrete fallback.
 - **TYP-4 all-caps (L2):** a `text-transform: uppercase` declaration or an `uppercase` Tailwind utility (matched as a class token — inside a class/className attr or a class-list-shaped string). Text is never set in all-caps, at any length — short labels included (HF-20). The English word "uppercase" in body text, and genuine acronyms (literal capitals, not a transform), are not flagged.
 
-**TYP-3 scope decision:** TYP-3 **is** implemented (the preferred path) — the allowed scale is sourced live from the catalog `verify` field, not invented.
+If an explicit profile omits families or type scale, the scanner emits one combined
+NOTE and skips only TYP-1 and/or TYP-3. Universal TYP-2/TYP-4 checks continue.
 
 **Static-subset caveat — what this script does NOT verify:**
 
-- Font *weights* (TYP-1's "PJS 600 / Inter 400/500/600" half) — weight is rarely co-located with the family and "approved weight" needs the family resolved; deferred to the manual pass.
+- Font weights (TYP-1's declared-weight half) — weight is rarely co-located with the family and needs the family resolved; deferred to the manual pass.
 - The 11px-vs-14px floor *decision* (TYP-2) — whether an element is a label (11px floor) or body (14px floor) needs rendered context; 11–13px is flagged with the ambiguity noted, not asserted as a definite body violation.
 - Line-heights given in px or % (TYP-2) — the ratio needs the font size, rarely on the same line.
 - All-caps set via camelCase inline style (TYP-4) — `style={{textTransform:'uppercase'}}` in JSX is not matched; only the CSS `text-transform: uppercase` form and the Tailwind `uppercase` utility are.
 - Fonts / sizes set in a separate stylesheet the line-local rule can't see, or composed from variables / class-name interpolation — out of static reach.
 
-**Self-test:** `python3 checks/type-scan.py --self-test` → `SELF-TEST OK (42 cases)`.
+**Self-test:** `python3 checks/type-scan.py --self-test` → `SELF-TEST OK (46 cases)`.
 
 ## Component manifest (built)
 
@@ -302,7 +337,7 @@ Planned for V1 (remaining):
 | `skip-link` | A11Y-10 | Skip-to-main first focusable, or main/nav landmarks present |
 | `announce` | A11Y-11 (deterministic half) | Each async state surface has live-region role XOR focus-target wiring |
 | ~~`token-audit`~~ | ~~TOK-1..3, COL-1..2~~ | ✅ built |
-| ~~`type-scan`~~ | ~~TYP-1..4~~ | ✅ built (static subset) — `type-scan` covers TYP-1 (font families), TYP-2 (size floor + unitless line-height), TYP-3 (on-scale, scale sourced from the catalog), TYP-4 (no all-caps, acronyms exempt); font *weights*, the label-vs-body floor decision, and px/% line-heights still need rendered context |
+| ~~`type-scan`~~ | ~~TYP-1..4~~ | ✅ built (static subset) — `type-scan` covers TYP-1 (resolved profile families), TYP-2 (size floor + unitless line-height), TYP-3 (resolved profile scale), TYP-4 (no all-caps, acronyms exempt); font *weights*, the label-vs-body floor decision, and px/% line-heights still need rendered context |
 | `destructive` | CMP-2 (deterministic half) | Enumerate destructive actions; assert consequence surface + undo/confirm exists |
 | `async-states` | CMP-3 (deterministic half) | Enumerate async actions; assert loading/success/error states exist and are reachable |
 | ~~`content-lint`~~ | ~~CNT-1, CNT-3, CNT-5, CNT-6, SLP-9 (deterministic half)~~ | ✅ built (static subset) — `content-lint` covers CNT-1 (raw codes), CNT-3 (sentence length), CNT-5 (device verbs, from `cnt-5.md`), CNT-6 (sentence-initial empty openers + safe filler subset, from `cnt-6.md`), and the SLP-9 lint lists (read live from `standards/controls/slp-9.md`) + em-dash chains; the SLP-9 structural-tell evaluator half, CNT-7 (lead-with-purpose, split from CNT-3), and the CNT-5/CNT-6 judgment halves stay evaluator |

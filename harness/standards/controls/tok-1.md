@@ -1,7 +1,7 @@
 ---
 id: TOK-1
 source: TFX-DS
-title: UI code contains no raw colour values — semantic (shadcn) tokens only
+title: UI code contains no raw colour values — active semantic colour tokens only
 tier: L1
 check: deterministic
 phase: [implement, verify]
@@ -16,18 +16,17 @@ refs:
 
 ## Requirement
 
-Reference colour only through semantic shadcn tokens. No raw hex, rgb, hsl, or named
-colours in UI code. Functional colours (success/warning/danger/info) resolve to Radix
-Colors scales (COL-2); brand moments resolve to Teacher & School Blue or its ramp
-(COL-1) — through tokens, not literals.
+Reference colour only through the active product/domain semantic tokens. No raw hex,
+rgb, hsl, or named colours in UI code. Functional colours resolve through declared
+success/warning/danger/info roles (COL-2); brand moments resolve through the active
+product's primary role (COL-1) — always through tokens, never literals.
 
 ## Rationale
 
-This is the control that stops inter-session drift — the "new blue" problem, where
-each generation invents a slightly different value and inconsistency compounds
-silently. The stack is deliberately boring and AI-legible (Base UI + Radix +
-shadcn defaults): every deviation we don't make is consistency we get for free, and a
-vocabulary agents already know.
+This control stops inter-session drift: each generation must reuse the product's
+declared semantic vocabulary instead of inventing a slightly different value. The
+concrete token convention belongs to the active profile; the behavioural requirement
+is shared by every domain.
 
 ## Passes when
 
@@ -37,16 +36,15 @@ vocabulary agents already know.
 
 ## Fails when
 
-- A literal like `#0064FF`, `rgb(37, 99, 235)`, or `slate-ish` custom values appear in
-  component code — even when the value happens to equal a token.
+- A hex, rgb, hsl, oklch, or named-colour literal appears in component code — even
+  when the value happens to equal a token.
 - Tailwind palette utilities bypass the semantic layer (`bg-blue-600` instead of the
   mapped semantic class/variable).
-- Functional states use ad-hoc greens/reds instead of Radix scale tokens.
+- Functional states use ad-hoc colours instead of the declared semantic roles.
 
 ## How to verify
 
-`checks/token-audit` (planned): scan changed files for raw colour patterns; exit 1
-with file/line and the nearest token suggestion. Until then, grep changed files
-manually and label the result "verified manually". Waiver: `documented` — named
-approver in the decision record (e.g. a marketing surface intentionally outside the
-product token set).
+Run `checks/token-audit.py <path>…`; it scans changed files for raw colour patterns
+and exits 1 with file/line evidence. The scan proves token use, not whether a token
+has the correct semantic role; verify that role under COL-1/COL-2. Waiver:
+`documented` — named approver in the decision record.

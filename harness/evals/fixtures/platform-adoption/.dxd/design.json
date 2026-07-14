@@ -1,0 +1,19 @@
+{
+  "generated_from": "DESIGN.md",
+  "generated_at": "2026-07-14T00:00:00Z",
+  "domain": "platform",
+  "colour": {
+    "primary": "--edupass-primary"
+  },
+  "typography": {
+    "display": "Atkinson Hyperlegible",
+    "body": "Source Sans 3",
+    "scale_px": [48, 32, 24, 18, 15, 12]
+  },
+  "stack": {
+    "components": "EduPass UI",
+    "colour_system": "EduPass semantic tokens",
+    "spacing_px": [0, 3, 6, 12, 18, 24, 36],
+    "radius_px": [0, 5, 10, 9999]
+  }
+}

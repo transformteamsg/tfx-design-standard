@@ -9,8 +9,8 @@ Detection rules (line-local only)
 ──────────────────────────────────
 Rule        Control   What is caught
 FONT        TYP-1     A CSS `font-family:` or a Tailwind `font-[…]` arbitrary
-            (L1)      value naming a typeface other than Plus Jakarta Sans or
-                      Inter. The token names font-display / font-body /
+            (L1)      value naming a typeface outside the active product/domain
+                      profile. The token names font-display / font-body /
                       font-sans / --font-display / --font-body are allowed.
 SIZEFLOOR   TYP-2     A `font-size:` or Tailwind `text-[Npx]` with N < 14
             (L1)      (body floor). Labels may go to 11px, so 11–13px is flagged
@@ -24,9 +24,7 @@ LINEHEIGHT  TYP-2     An explicit numeric `line-height:` or Tailwind
                       rule, or on a heading element, are excluded (headings run
                       tighter by design; see controls/typ-2.md).
 ONSCALE     TYP-3     A `text-[Npx]` or `font-size:Npx` whose N is not on the
-            (L1)      TFX type scale {120,96,72,48,32,24,20,18,16,14,12,11}.
-                      The scale is sourced from TYP-3's catalog `verify` field
-                      (see TYPE_SCALE below) so it cannot drift.
+            (L1)      active product/domain profile's declared type scale.
 ALLCAPS     TYP-4     A `text-transform: uppercase` declaration or an `uppercase`
             (L2)      Tailwind class (in a class/className attr or a class-list
                       string). Text is never set in all-caps, at any length;
@@ -35,7 +33,7 @@ ALLCAPS     TYP-4     A `text-transform: uppercase` declaration or an `uppercase
 
 What this script does NOT verify
 ─────────────────────────────────
-- Font WEIGHTS (TYP-1's "PJS 600 / Inter 400/500/600 only" half): a weight is
+- Font WEIGHTS (TYP-1's declared-weight half): a weight is
   rarely co-located with the family on one line and "approved weight" needs the
   family resolved. Weight enforcement is deferred to the manual pass.
 - The 11px-vs-14px floor decision (TYP-2): whether a given element is a "label"
@@ -70,57 +68,16 @@ import os
 import re
 import sys
 
+from profile_context import ProfileContext, resolve_profile_context
+
 # ── Target extensions ──────────────────────────────────────────────────────────
 TARGET_EXTENSIONS = {".css", ".html", ".jsx", ".tsx", ".js", ".ts", ".vue", ".svelte"}
 
-# ── TYP-3 type scale ──────────────────────────────────────────────────────────
-# Sourced from TYP-3's catalog `verify` field:
-#   "Sizes in {120,96,72,48,32,24,20,18,16,14,12,11}; checks/type-scan"
-# Read at runtime from standards/catalog.yaml when available (so it cannot drift
-# from the catalog), with this set as the embedded fallback if the catalog can't
-# be read/parsed.
-TYPE_SCALE_FALLBACK = {120, 96, 72, 48, 32, 24, 20, 18, 16, 14, 12, 11}
-
-CATALOG_PATH = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-    "standards", "catalog.yaml",
-)
-
-
-def load_type_scale(path=CATALOG_PATH):
-    """
-    Read the allowed type-scale set from TYP-3's `verify` field in catalog.yaml:
-    `Sizes in {120,96,72,48,32,24,20,18,16,14,12,11}; …`. Returns (set, note);
-    `note` is non-None if the embedded fallback was used.
-    """
-    try:
-        with open(path, encoding="utf-8") as fh:
-            text = fh.read()
-    except OSError:
-        return TYPE_SCALE_FALLBACK, (
-            f"NOTE type-scan: could not read {path}; using embedded TYP-3 scale"
-        )
-    # Find TYP-3's verify line and pull the {…} set out of it.
-    idx = text.find("id: TYP-3")
-    section = text[idx:] if idx != -1 else text
-    m = re.search(r"verify:\s*\"[^\"]*Sizes in\s*\{([0-9,\s]+)\}", section)
-    if not m:
-        return TYPE_SCALE_FALLBACK, (
-            f"NOTE type-scan: could not parse TYP-3 scale from {path}; using embedded set"
-        )
-    scale = {int(n) for n in re.findall(r"\d+", m.group(1))}
-    if not scale:
-        return TYPE_SCALE_FALLBACK, (
-            f"NOTE type-scan: TYP-3 scale parsed empty from {path}; using embedded set"
-        )
-    return scale, None
-
-
 # ── FONT (TYP-1) ──────────────────────────────────────────────────────────────
-# Allowed family tokens (case-insensitive). The product fonts plus the token
-# names that resolve to them.
-ALLOWED_FONT_TOKENS = (
-    "plus jakarta sans", "inter", "font-display", "font-body", "font-sans",
+# Semantic family tokens (case-insensitive). Concrete family names come only
+# from profile_context.
+SEMANTIC_FONT_TOKENS = (
+    "font-display", "font-body", "font-sans",
     "--font-display", "--font-body", "var(--font-display)", "var(--font-body)",
     "inherit", "initial", "unset",
 )
@@ -131,9 +88,8 @@ GENERIC_FAMILY_KEYWORDS = (
     "blinkmacsystemfont", "segoe ui", "roboto", "helvetica", "arial",
 )
 # Generics that, used as the PRIMARY family, deliberately pick a non-approved
-# typeface (mono/serif). The sans fallbacks (sans-serif, system-ui,
-# ui-sans-serif) are the standard fallback for the approved Inter/PJS and stay
-# allowed; these do not.
+# typeface (mono/serif). Sans fallbacks such as sans-serif and system-ui remain
+# allowed after a resolved profile family; these do not.
 NON_APPROVED_PRIMARY_GENERICS = {"monospace", "serif", "ui-monospace", "ui-serif"}
 CSS_FONT_FAMILY_RE = re.compile(r"font-family\s*:\s*([^;{}]+)", re.IGNORECASE)
 TW_FONT_ARBITRARY_RE = re.compile(r"\bfont-\[([^\]]+)\]")
@@ -143,9 +99,11 @@ TW_FONT_ARBITRARY_RE = re.compile(r"\bfont-\[([^\]]+)\]")
 TW_FONT_NAMED_FAMILY_RE = re.compile(r"\bfont-(serif|mono)\b")
 
 
-def _check_font_rule(scan_line):
+def _check_font_rule(scan_line, allowed_families):
     """TYP-1: returns a list of (found, suggest) for disallowed typefaces."""
     hits = []
+    allowed = tuple(f.casefold() for f in (allowed_families or ()))
+    allowed_label = ", ".join(allowed_families or ()) or "the resolved font tokens"
 
     def judge(family_value, source):
         val = family_value.strip().strip("'\"").lower()
@@ -157,14 +115,14 @@ def _check_font_rule(scan_line):
         if val in NON_APPROVED_PRIMARY_GENERICS:
             hits.append((
                 f'font-family "{family_value.strip()}" ({source})',
-                "use Plus Jakarta Sans (display) or Inter (body) via the font tokens",
+                f"use a resolved profile family ({allowed_label}) via semantic font tokens",
             ))
             return
         # Generic keyword only → not a typeface choice; allow.
         if val in GENERIC_FAMILY_KEYWORDS:
             return
-        # Allowed product font / token (substring match on the first family).
-        for ok in ALLOWED_FONT_TOKENS:
+        # Allowed profile family / semantic token (substring match on the first family).
+        for ok in allowed + SEMANTIC_FONT_TOKENS:
             if ok in val:
                 return
         # Dynamic / interpolated value — unresolvable, caller NOTEs it.
@@ -172,7 +130,7 @@ def _check_font_rule(scan_line):
             return
         hits.append((
             f'font-family "{family_value.strip()}" ({source})',
-            "use Plus Jakarta Sans (display) or Inter (body) via the font tokens",
+            f"use a resolved profile family ({allowed_label}) via semantic font tokens",
         ))
 
     for m in CSS_FONT_FAMILY_RE.finditer(scan_line):
@@ -184,13 +142,13 @@ def _check_font_rule(scan_line):
         judge(inner.split(",")[0], "Tailwind font-[…]")
     for m in TW_FONT_NAMED_FAMILY_RE.finditer(scan_line):
         util = "font-" + m.group(1)
-        if util in ALLOWED_FONT_TOKENS:   # a project may sanction one (see plan 045)
+        if util in SEMANTIC_FONT_TOKENS:   # a project may sanction one (see plan 045)
             continue
         hits.append((
             f"Tailwind {util} utility (resolves to the default {m.group(1)} stack, "
-            f"not Plus Jakarta Sans or Inter)",
+            "not a resolved profile family)",
             f"use font-display/font-body, or define a --{util[5:]} token mapped to an "
-            f"approved face and add '{util}' to ALLOWED_FONT_TOKENS",
+            "approved profile face",
         ))
     return hits
 
@@ -226,11 +184,12 @@ def _check_size_rules(scan_line, type_scale):
                     f"font size {n_int}px below the 14px body floor ({source})",
                     "body >= 14px; only short labels may go to 11px",
                 ))
-        # TYP-3: off the published scale (only judge whole-px sizes).
-        if px == int(px) and int(px) not in type_scale:
+        # TYP-3: off the resolved scale (only judge whole-px sizes). An
+        # unresolved scale is skipped honestly by the caller's one NOTE.
+        if type_scale is not None and px == int(px) and int(px) not in type_scale:
             hits.append((
                 "TYP-3",
-                f"font size {int(px)}px not on the TFX type scale ({source})",
+                f"font size {int(px)}px not on the resolved type scale ({source})",
                 f"use a scale size: {sorted(type_scale, reverse=True)}",
             ))
     return hits
@@ -383,10 +342,10 @@ def _ends_in_block_comment(line, in_comment):
     return in_comment
 
 
-def check_file(filepath, type_scale=None, rules=None):
+def check_file(filepath, context=None, rules=None):
     """
     Scan a single file. Returns a list of ERROR / NOTE strings.
-    `type_scale` is the allowed-size set; built from the catalog if omitted.
+    `context` is a resolved ProfileContext; resolved from `filepath` if omitted.
     `rules` (additive, optional): a set/iterable of control ids to keep
     (e.g. {"TYP-1"}). When None, every rule runs (unchanged default). When
     given, only findings whose control id is in the set are emitted — the
@@ -399,8 +358,12 @@ def check_file(filepath, type_scale=None, rules=None):
     if ext not in TARGET_EXTENSIONS:
         return results
 
-    if type_scale is None:
-        type_scale, _note = load_type_scale()
+    if context is None:
+        context = resolve_profile_context([filepath])
+    font_value = context.allowed_font_families()
+    scale_value = context.type_scale()
+    allowed_families = font_value.value
+    type_scale = set(scale_value.value) if scale_value.resolved else None
 
     try:
         with open(filepath, encoding="utf-8", errors="replace") as fh:
@@ -423,18 +386,17 @@ def check_file(filepath, type_scale=None, rules=None):
                 f"ERROR {rel}:{lineno} [{ctl_id}] {found} — suggest: {suggest}"
             )
 
-        def note(msg):
-            results.append(f"NOTE {rel}:{lineno} {msg}")
-
         scan_line = _strip_block_comments(line, in_block_comment)
         in_block_comment = _ends_in_block_comment(line, in_block_comment)
         scan_line = re.sub(r"<!--.*?-->", "", scan_line)
         if ext in (".js", ".ts", ".jsx", ".tsx"):
             scan_line = re.sub(r"//.*$", "", scan_line)
 
-        # TYP-1 fonts
-        for found, suggest in _check_font_rule(scan_line):
-            emit("TYP-1", found, suggest)
+        # TYP-1 fonts. If the profile has no declared family, skip this
+        # parameterised judgment; scan_paths emits one honest NOTE.
+        if allowed_families is not None:
+            for found, suggest in _check_font_rule(scan_line, allowed_families):
+                emit("TYP-1", found, suggest)
 
         # TYP-2 size floor + TYP-3 on-scale
         for ctl, found, suggest in _check_size_rules(scan_line, type_scale):
@@ -463,17 +425,36 @@ def check_file(filepath, type_scale=None, rules=None):
     return results
 
 
-def scan_paths(paths, rules=None):
-    """Walk paths, collect ERROR/NOTE lines. Prints scale-fallback NOTE once.
+def _unresolved_profile_note(context, rules=None):
+    """Return one NOTE for unresolved parameterised controls, or None."""
+    active = set(rules) if rules is not None else VALID_RULES
+    unresolved = []
+    if "TYP-1" in active and not context.allowed_font_families().resolved:
+        unresolved.append("TYP-1 font families")
+    if "TYP-3" in active and not context.type_scale().resolved:
+        unresolved.append("TYP-3 type scale")
+    if not unresolved:
+        return None
+    domain = context.domain or "undeclared domain"
+    detail = f" ({'; '.join(context.notes)})" if context.notes else ""
+    return (
+        f"NOTE type-scan: {', '.join(unresolved)} unresolved for {domain}; "
+        f"skipping only those profile-specific judgments{detail}"
+    )
+
+
+def scan_paths(paths, rules=None, context=None):
+    """Walk paths and collect ERROR/NOTE lines. Resolve profile context once.
     `rules` (additive, optional) restricts emitted findings to those control
     ids — passed straight through to check_file."""
-    type_scale, scale_note = load_type_scale()
-    if scale_note:
-        print(scale_note)
+    context = context or resolve_profile_context(paths)
     all_results = []
+    unresolved_note = _unresolved_profile_note(context, rules)
+    if unresolved_note:
+        all_results.append(unresolved_note)
     for p in paths:
         if os.path.isfile(p):
-            all_results.extend(check_file(p, type_scale, rules))
+            all_results.extend(check_file(p, context, rules))
         elif os.path.isdir(p):
             for root, dirs, files in os.walk(p):
                 dirs[:] = [d for d in dirs if not d.startswith(".")]
@@ -481,7 +462,7 @@ def scan_paths(paths, rules=None):
                     ext = os.path.splitext(fname)[1].lower()
                     if ext in TARGET_EXTENSIONS:
                         all_results.extend(
-                            check_file(os.path.join(root, fname), type_scale, rules)
+                            check_file(os.path.join(root, fname), context, rules)
                         )
         else:
             print(f"ERROR type-scan: path not found: {p}")
@@ -494,24 +475,61 @@ def scan_paths(paths, rules=None):
 def run_self_test():
     import tempfile
 
-    type_scale, _note = load_type_scale()
-
     failures = []
     case_count = 0
 
-    def run(content, ext):
+    t_and_s_context = ProfileContext(
+        repo_root="fixture",
+        domain="teachers-school",
+        context_path=None,
+        profile_path="fixture/teachers-school.yaml",
+        compatibility_fallback=True,
+        profile_values={
+            "typography": {
+                "allowed_families": ["Plus Jakarta Sans", "Inter"],
+                "scale_px": [120, 96, 72, 48, 32, 24, 20, 18, 16, 14, 12, 11],
+            }
+        },
+        product_values={},
+    )
+    platform_context = ProfileContext(
+        repo_root="fixture",
+        domain="platform",
+        context_path="fixture/.dxd/design.json",
+        profile_path="fixture/platform.yaml",
+        compatibility_fallback=False,
+        profile_values={},
+        product_values={
+            "typography": {
+                "display": "Atkinson Hyperlegible",
+                "body": "Source Sans 3",
+                "scale_px": [48, 32, 24, 18, 15, 12],
+            }
+        },
+    )
+    unresolved_context = ProfileContext(
+        repo_root="fixture",
+        domain="platform",
+        context_path="fixture/.dxd/design.json",
+        profile_path="fixture/platform.yaml",
+        compatibility_fallback=False,
+        profile_values={},
+        product_values={},
+    )
+
+    def run(content, ext, context=t_and_s_context):
         with tempfile.NamedTemporaryFile(suffix=ext, mode="w", delete=False, encoding="utf-8") as tf:
             tf.write(content)
             tf.flush()
-            res = check_file(tf.name, type_scale)
+            res = check_file(tf.name, context)
         os.unlink(tf.name)
         return res
 
-    def check_file_from_string(content, ext, rules):
+    def check_file_from_string(content, ext, rules, context=t_and_s_context):
         with tempfile.NamedTemporaryFile(suffix=ext, mode="w", delete=False, encoding="utf-8") as tf:
             tf.write(content)
             tf.flush()
-            res = check_file(tf.name, type_scale, rules)
+            res = check_file(tf.name, context, rules)
         os.unlink(tf.name)
         return res
 
@@ -577,6 +595,49 @@ def run_self_test():
     # "FONT: CSS Inter clean" above.)
     assert_violations("FONT: CSS monospace primary",
                       ".code { font-family: monospace; }", ".css", ["TYP-1"])
+
+    # ── Profile-parameterised TYP-1 / TYP-3 ──────────────────────────────────
+    case_count += 1
+    platform_clean = run(
+        ".screen { font-family: 'Atkinson Hyperlegible', sans-serif; font-size: 15px; }",
+        ".css", platform_context,
+    )
+    if any(line.startswith("ERROR") for line in platform_clean):
+        failures.append(
+            f"FAIL PROFILE: Platform declared family/15px should pass — got {platform_clean}")
+
+    case_count += 1
+    platform_off_scale = run(
+        ".screen { font-family: 'Source Sans 3', sans-serif; font-size: 17px; }",
+        ".css", platform_context,
+    )
+    if not any("[TYP-3]" in line for line in platform_off_scale):
+        failures.append(
+            f"FAIL PROFILE: Platform undeclared 17px should fail TYP-3 — got {platform_off_scale}")
+
+    case_count += 1
+    leaked_family = run(
+        ".screen { font-family: 'Plus Jakarta Sans', sans-serif; }",
+        ".css", platform_context,
+    )
+    if not any("[TYP-1]" in line for line in leaked_family):
+        failures.append(
+            f"FAIL PROFILE: T&S family in Platform should fail TYP-1 — got {leaked_family}")
+
+    case_count += 1
+    with tempfile.NamedTemporaryFile(suffix=".css", mode="w", delete=False,
+                                     encoding="utf-8") as tf:
+        tf.write(".screen { font-family: Anything; font-size: 17px; line-height: 1.5; }")
+        tf.flush()
+        unresolved = scan_paths([tf.name], context=unresolved_context)
+    os.unlink(tf.name)
+    notes = [line for line in unresolved if line.startswith("NOTE")]
+    if len(notes) != 1 or "TYP-1 font families" not in notes[0] or "TYP-3 type scale" not in notes[0]:
+        failures.append(
+            f"FAIL PROFILE: unresolved profile should emit one combined NOTE — got {unresolved}")
+    if any("[TYP-1]" in line or "[TYP-3]" in line for line in unresolved):
+        failures.append(
+            f"FAIL PROFILE: unresolved profile borrowed a concrete judgment — got {unresolved}")
 
     # ── TYP-2 line-height ─────────────────────────────────────────────────────
     assert_violations("LINEHEIGHT: 1.2 too tight",

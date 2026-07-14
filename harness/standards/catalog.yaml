@@ -1,7 +1,7 @@
-# TFX Design Standard — control catalog (single source of truth)
+# DXD Design Standard — control catalog (single source of truth)
 # Normative source: TFX Design Standard (TFX-DS) v0.1 seed catalog.
 # Consumers: the design harness (agent enforcement — this repo's skills/checks)
-# and the TFX-DS website (human presentation — renders and serves this file raw).
+# and the DXD website (human presentation — renders and serves this file raw).
 # Format: standards/README.md. Detail files: standards/controls/<id>.md
 # Scope: optional per-control products:/audiences: fields — absent = global (all). See standards/README.md §Scope.
 # WCAG 2.2 AA is the self-imposed accessibility floor (kept because it's right,
@@ -209,10 +209,10 @@ controls:
     detail: controls/a11y-11.md
     refs: [https://a11y.tech.gov.sg/checklist/]
 
-  # ── Tokens & theming (Base UI + Radix Colors + shadcn defaults) ───────
+  # ── Tokens & theming ─────────────────────────────────────────────────
   - id: TOK-1
     source: TFX-DS
-    title: UI code contains no raw colour values — semantic (shadcn) tokens only
+    title: UI code contains no raw colour values — active semantic colour tokens only
     tier: L1
     check: deterministic
     phase: [implement, verify]
@@ -228,12 +228,12 @@ controls:
 
   - id: TOK-2
     source: TFX-DS
-    title: All spacing values come from the shadcn default token scale
+    title: All spacing values come from the resolved product/domain spacing scale
     tier: L1
     check: deterministic
     phase: [implement, verify]
     applies_to: [page, component]
-    verify: "No off-scale margin/padding/gap values; checks/token-audit"
+    verify: "No margin/padding/gap values outside the resolved product/domain spacing_px scale; checks/token-audit"
     waiver: documented
     fails_when:
       - arbitrary pixel values for margin/padding/gap
@@ -243,12 +243,12 @@ controls:
 
   - id: TOK-3
     source: TFX-DS
-    title: Corner radii come from the shadcn default radius scale
+    title: Corner radii come from the resolved product/domain radius scale and stay consistent across peers
     tier: L1
     check: deterministic
     phase: [implement, verify]
     applies_to: [component]
-    verify: "No off-scale border-radius values; checks/token-audit"
+    verify: "No values outside the resolved product/domain radius_px scale; evaluator checks concentric nesting and peer consistency; checks/token-audit"
     waiver: documented
     fails_when:
       - ad-hoc radius values
@@ -267,15 +267,15 @@ controls:
   # table.) See docs/catalog-changes/glow-pilot-col1-typ1-tok3.md
   - id: TYP-1
     source: TFX-DS
-    title: Display text is Plus Jakarta Sans (600); body/UI text is Inter (400/500/600); no other typefaces
+    title: UI typefaces and weights match the resolved product/domain profile; registered wordmark faces stay within their lockups
     tier: L1
     check: deterministic
     phase: [implement, verify]
     applies_to: [page, component]
-    verify: "Font-family scan; only Plus Jakarta Sans + Inter at approved weights, plus each product's registered brand-wordmark typeface used solely for its wordmark/logo lockup (see controls/typ-1.md); checks/type-scan"
+    verify: "Font-family scan against the resolved profile's allowed_families and declared weights; registered wordmark faces are confined to their wordmark/logo lockups (see controls/typ-1.md); checks/type-scan"
     waiver: documented
     fails_when:
-      - any third typeface in product UI, except a product's registered brand-wordmark typeface confined to its wordmark/logo lockup (see controls/typ-1.md)
+      - a UI typeface or weight outside the resolved profile, except a registered wordmark face confined to its wordmark/logo lockup (see controls/typ-1.md)
     detail: controls/typ-1.md
     enforced: partial
     script: checks/type-scan.py
@@ -300,12 +300,12 @@ controls:
 
   - id: TYP-3
     source: TFX-DS
-    title: Type sizes come from the TFX type scale; no off-scale sizes
+    title: Type sizes come from the resolved product/domain type scale; no off-scale sizes
     tier: L1
     check: deterministic
     phase: [implement, verify]
     applies_to: [page, component]
-    verify: "Sizes in {120,96,72,48,32,24,20,18,16,14,12,11}; checks/type-scan"
+    verify: "Sizes resolve to the active profile's typography.scale_px; checks/type-scan"
     waiver: documented
     fails_when:
       - font sizes not on the published scale
@@ -377,17 +377,17 @@ controls:
   # text uses step-12 on a tint; HF-9). See docs/catalog-changes/contrast-functional-chips-step-12.md
   - id: COL-2
     source: TFX-DS
-    title: Functional colours (success/warning/danger) come from the shared Radix Colors scales, never ad-hoc; small functional-colour text (≤12px chips/labels) uses the scale's step-12 on a tinted background so it clears AA (A11Y-1)
+    title: Functional colours use declared semantic roles, never ad-hoc values; small functional-colour text on a tint clears the 4.5:1 AA floor (A11Y-1)
     tier: L1
     check: deterministic
     phase: [implement, verify]
     applies_to: [page, component]
-    verify: "Success/warning/danger/info colours resolve to Radix scale tokens, and small functional-colour text on a tint resolves to step-12 (step-11 on a step-3 tint lands ~4.25:1 and fails AA); contrast computed by checks/contrast / verified manually until wired"
+    verify: "Success/warning/danger/info colours resolve to the active semantic tokens; small functional-colour text (≤12px) on a tint computes to at least 4.5:1 via checks/contrast or is verified manually"
     waiver: documented
     fails_when:
-      - custom green/red/amber values
+      - custom functional-colour values outside the declared semantic roles
       - red used decoratively
-      - small functional-colour text (≤12px) on a tint uses step-11 (or lower) and falls below 4.5:1
+      - small functional-colour text (≤12px) on a tint falls below 4.5:1
     detail: controls/col-2.md
     enforced: partial
     script: [checks/token-audit.py, checks/contrast.py]
@@ -396,7 +396,7 @@ controls:
   # ── Components & patterns ─────────────────────────────────────────────
   - id: CMP-1
     source: TFX-DS
-    title: Where a Base UI-based component exists for the need, it is used; one-offs require a waiver
+    title: Where the product's declared component foundation has a component for the need, it is used; one-offs require a waiver
     tier: L1
     check: hybrid
     phase: [plan, implement, verify]

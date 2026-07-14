@@ -1,0 +1,15 @@
+:root {
+  --edupass-primary: oklch(0.52 0.16 250);
+  --edupass-surface: oklch(0.98 0.01 250);
+}
+
+.platform-card {
+  color: var(--edupass-primary);
+  background: var(--edupass-surface);
+  font-family: "Atkinson Hyperlegible", sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+  padding: 18px;
+  gap: 12px;
+  border-radius: 10px;
+}

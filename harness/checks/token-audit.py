@@ -15,12 +15,10 @@ TOK-1/COL     TOK-1       Raw hex #rrggbb / #rgb / #rrggbbaa in style contexts
               COL-1/2     Tailwind palette utility classes that bypass the semantic layer
                             e.g. bg-red-500, text-blue-600, border-gray-200
 TOK-2                     margin/padding/gap/top/left/right/bottom with raw px/rem values
-                            not in the shadcn default spacing scale
-                            Scale: {0,1,2,4,6,8,10,12,14,16,20,24,28,32,36,40,44,48,
-                                    56,64,80,96,112,128} px (rem equivalents at 16px base)
+                            not in the active product/domain spacing scale
                             Passes: var(--…), auto, 0, percentages, viewport units
 TOK-3                     border-radius with raw px/rem values not in
-                            {0,2,4,6,8,12,16,24,9999} px
+                            the active product/domain radius scale
 
 Exemptions
 ──────────
@@ -49,20 +47,10 @@ import os
 import re
 import sys
 
+from profile_context import ProfileContext, resolve_profile_context
+
 # ── Target extensions ──────────────────────────────────────────────────────────
 TARGET_EXTENSIONS = {".css", ".html", ".jsx", ".tsx", ".js", ".ts", ".vue", ".svelte"}
-
-# ── Spacing scale (shadcn default, px) ────────────────────────────────────────
-SPACING_SCALE_PX = {
-    0, 1, 2, 4, 6, 8, 10, 12, 14, 16, 20, 24, 28, 32, 36, 40, 44, 48,
-    56, 64, 80, 96, 112, 128
-}
-# rem equivalents (16px base, rounded to 4 decimal places for float comparison)
-SPACING_SCALE_REM = {round(px / 16, 4) for px in SPACING_SCALE_PX}
-
-# ── Radius scale (shadcn default, px) ─────────────────────────────────────────
-RADIUS_SCALE_PX = {0, 2, 4, 6, 8, 12, 16, 24, 9999}
-RADIUS_SCALE_REM = {round(px / 16, 4) for px in RADIUS_SCALE_PX}
 
 # ── Named colours that are suspicious as CSS values ───────────────────────────
 NAMED_COLOUR_RE = re.compile(
@@ -175,40 +163,17 @@ def load_allow_file(path):
     return names
 
 
-def nearest_spacing(value_px):
-    """Return the nearest value in SPACING_SCALE_PX."""
-    return min(SPACING_SCALE_PX, key=lambda s: abs(s - value_px))
+def _is_on_scale(value_px, scale):
+    return any(abs(float(step) - value_px) < 1e-6 for step in scale)
 
 
-def nearest_radius(value_px):
-    """Return the nearest value in RADIUS_SCALE_PX."""
-    return min(RADIUS_SCALE_PX, key=lambda r: abs(r - value_px))
+def _nearest(value_px, scale):
+    return min(scale, key=lambda step: abs(float(step) - value_px))
 
 
-def is_on_spacing_scale(num_str, unit):
-    """Return True if the numeric value is on the spacing scale."""
-    try:
-        val = float(num_str)
-    except ValueError:
-        return True  # can't parse → don't flag
-    if unit == "px":
-        return round(val) in SPACING_SCALE_PX
-    elif unit == "rem":
-        return round(val, 4) in SPACING_SCALE_REM
-    return True
-
-
-def is_on_radius_scale(num_str, unit):
-    """Return True if the numeric value is on the radius scale."""
-    try:
-        val = float(num_str)
-    except ValueError:
-        return True
-    if unit == "px":
-        return round(val) in RADIUS_SCALE_PX
-    elif unit == "rem":
-        return round(val, 4) in RADIUS_SCALE_REM
-    return True
+def _format_number(value):
+    value = float(value)
+    return str(int(value)) if value.is_integer() else f"{value:g}"
 
 
 def parse_passes(value_fragment):
@@ -355,7 +320,7 @@ def _ends_in_block_comment(line, in_comment):
     return in_comment
 
 
-def check_file(filepath, theme_names=None):
+def check_file(filepath, theme_names=None, context=None):
     """
     Scan a single file and return a list of error strings.
     Each string is formatted: ERROR <file>:<line> [CTL-ID] <found> — suggest: <...>
@@ -366,6 +331,12 @@ def check_file(filepath, theme_names=None):
     """
     if theme_names is None:
         theme_names = set()
+    if context is None:
+        context = resolve_profile_context([filepath])
+    spacing_value = context.spacing_scale()
+    radius_value = context.radius_scale()
+    spacing_scale = spacing_value.value
+    radius_scale = radius_value.value
     errors = []
     ext = os.path.splitext(filepath)[1].lower()
     if ext not in TARGET_EXTENSIONS:
@@ -496,7 +467,7 @@ def check_file(filepath, theme_names=None):
                      "define it as a token and reference var(--…)")
 
         # ── TOK-2 : spacing checks (style contexts only) ──────────────────────
-        if effective_style:
+        if effective_style and spacing_scale is not None:
             for prop_m in SPACING_PROP_RE.finditer(scan_line):
                 # Extract the value portion after the colon
                 value_start = prop_m.end()
@@ -527,22 +498,27 @@ def check_file(filepath, theme_names=None):
                     except ValueError:
                         continue
                     if unit == "px":
-                        val_px = round(val_f)
+                        val_px = val_f
                         if val_px == 0:
                             continue
-                        if val_px not in SPACING_SCALE_PX:
-                            suggest_px = nearest_spacing(val_px)
-                            emit("TOK-2", f"off-scale spacing {part}", f"{suggest_px}px or var(--space-…)")
+                        if not _is_on_scale(val_px, spacing_scale):
+                            suggest_px = _nearest(val_px, spacing_scale)
+                            emit(
+                                "TOK-2", f"off-scale spacing {part}",
+                                f"{_format_number(suggest_px)}px or var(--space-…)")
                     elif unit == "rem":
-                        val_px_equiv = round(val_f * 16)
+                        val_px_equiv = val_f * 16
                         if val_px_equiv == 0:
                             continue
-                        if val_px_equiv not in SPACING_SCALE_PX:
-                            suggest_px = nearest_spacing(val_px_equiv)
-                            emit("TOK-2", f"off-scale spacing {part}", f"{suggest_px}px ({round(suggest_px/16,4)}rem) or var(--space-…)")
+                        if not _is_on_scale(val_px_equiv, spacing_scale):
+                            suggest_px = _nearest(val_px_equiv, spacing_scale)
+                            emit(
+                                "TOK-2", f"off-scale spacing {part}",
+                                f"{_format_number(suggest_px)}px "
+                                f"({_format_number(float(suggest_px) / 16)}rem) or var(--space-…)")
 
         # ── TOK-3 : border-radius checks (style contexts only) ────────────────
-        if effective_style:
+        if effective_style and radius_scale is not None:
             for prop_m in RADIUS_PROP_RE.finditer(scan_line):
                 value_start = prop_m.end()
                 rest = scan_line[value_start:]
@@ -570,31 +546,56 @@ def check_file(filepath, theme_names=None):
                     except ValueError:
                         continue
                     if unit == "px":
-                        val_px = round(val_f)
+                        val_px = val_f
                         if val_px == 0:
                             continue
-                        if val_px not in RADIUS_SCALE_PX:
-                            suggest_px = nearest_radius(val_px)
-                            emit("TOK-3", f"off-scale radius {part}", f"{suggest_px}px or var(--radius-…)")
+                        if not _is_on_scale(val_px, radius_scale):
+                            suggest_px = _nearest(val_px, radius_scale)
+                            emit(
+                                "TOK-3", f"off-scale radius {part}",
+                                f"{_format_number(suggest_px)}px or var(--radius-…)")
                     elif unit == "rem":
-                        val_px_equiv = round(val_f * 16)
+                        val_px_equiv = val_f * 16
                         if val_px_equiv == 0:
                             continue
-                        if val_px_equiv not in RADIUS_SCALE_PX:
-                            suggest_px = nearest_radius(val_px_equiv)
-                            emit("TOK-3", f"off-scale radius {part}", f"{suggest_px}px ({round(suggest_px/16,4)}rem) or var(--radius-…)")
+                        if not _is_on_scale(val_px_equiv, radius_scale):
+                            suggest_px = _nearest(val_px_equiv, radius_scale)
+                            emit(
+                                "TOK-3", f"off-scale radius {part}",
+                                f"{_format_number(suggest_px)}px "
+                                f"({_format_number(float(suggest_px) / 16)}rem) or var(--radius-…)")
 
     return errors
 
 
-def scan_paths(paths, theme_names=None):
+def _unresolved_profile_note(context):
+    unresolved = []
+    if not context.spacing_scale().resolved:
+        unresolved.append("TOK-2 spacing scale")
+    if not context.radius_scale().resolved:
+        unresolved.append("TOK-3 radius scale")
+    if not unresolved:
+        return None
+    domain = context.domain or "undeclared domain"
+    detail = f" ({'; '.join(context.notes)})" if context.notes else ""
+    return (
+        f"NOTE token-audit: {', '.join(unresolved)} unresolved for {domain}; "
+        f"skipping only those profile-specific judgments{detail}"
+    )
+
+
+def scan_paths(paths, theme_names=None, context=None):
     """Walk the given paths (files or directories) and collect all violations."""
     if theme_names is None:
         theme_names = set()
+    context = context or resolve_profile_context(paths)
     all_errors = []
+    unresolved_note = _unresolved_profile_note(context)
+    if unresolved_note:
+        all_errors.append(unresolved_note)
     for p in paths:
         if os.path.isfile(p):
-            all_errors.extend(check_file(p, theme_names))
+            all_errors.extend(check_file(p, theme_names, context))
         elif os.path.isdir(p):
             for root, dirs, files in os.walk(p):
                 # Skip hidden directories
@@ -602,7 +603,9 @@ def scan_paths(paths, theme_names=None):
                 for fname in sorted(files):
                     ext = os.path.splitext(fname)[1].lower()
                     if ext in TARGET_EXTENSIONS:
-                        all_errors.extend(check_file(os.path.join(root, fname), theme_names))
+                        all_errors.extend(
+                            check_file(os.path.join(root, fname), theme_names, context)
+                        )
         else:
             print(f"ERROR token-audit: path not found: {p}")
             all_errors.append(f"ERROR token-audit: path not found: {p}")
@@ -621,13 +624,54 @@ def run_self_test():
     failures = []
     case_count = 0
 
+    t_and_s_context = ProfileContext(
+        repo_root="fixture",
+        domain="teachers-school",
+        context_path=None,
+        profile_path="fixture/teachers-school.yaml",
+        compatibility_fallback=True,
+        profile_values={
+            "stack": {
+                "spacing_px": [
+                    0, 1, 2, 4, 6, 8, 10, 12, 14, 16, 20, 24, 28, 32,
+                    36, 40, 44, 48, 56, 64, 80, 96, 112, 128,
+                ],
+                "radius_px": [0, 2, 4, 6, 8, 12, 16, 24, 9999],
+            }
+        },
+        product_values={},
+    )
+    platform_context = ProfileContext(
+        repo_root="fixture",
+        domain="platform",
+        context_path="fixture/.dxd/design.json",
+        profile_path="fixture/platform.yaml",
+        compatibility_fallback=False,
+        profile_values={},
+        product_values={
+            "stack": {
+                "spacing_px": [0, 3, 6, 12, 18, 24, 36],
+                "radius_px": [0, 5, 10, 9999],
+            }
+        },
+    )
+    unresolved_context = ProfileContext(
+        repo_root="fixture",
+        domain="platform",
+        context_path="fixture/.dxd/design.json",
+        profile_path="fixture/platform.yaml",
+        compatibility_fallback=False,
+        profile_values={},
+        product_values={},
+    )
+
     def assert_violations(name, content, ext, expected_ctl_ids, expect_waiver_claimed=False):
         nonlocal case_count
         case_count += 1
         with tempfile.NamedTemporaryFile(suffix=ext, mode="w", delete=False, encoding="utf-8") as tf:
             tf.write(content)
             tf.flush()
-            errs = check_file(tf.name)
+            errs = check_file(tf.name, context=t_and_s_context)
         os.unlink(tf.name)
 
         found_ctls = []
@@ -656,7 +700,7 @@ def run_self_test():
         with tempfile.NamedTemporaryFile(suffix=ext, mode="w", delete=False, encoding="utf-8") as tf:
             tf.write(content)
             tf.flush()
-            errs = check_file(tf.name)
+            errs = check_file(tf.name, context=t_and_s_context)
         os.unlink(tf.name)
         if errs:
             failures.append(f"FAIL {name}: expected no violations — got: {errs}")
@@ -813,7 +857,8 @@ def run_self_test():
     with tempfile.NamedTemporaryFile(suffix=".tsx", mode="w", delete=False, encoding="utf-8") as tf:
         tf.write('<p className="text-amber-11">hello</p>')
         tf.flush()
-        errs = check_file(tf.name, theme_names={"amber-11"})
+        errs = check_file(
+            tf.name, theme_names={"amber-11"}, context=t_and_s_context)
     os.unlink(tf.name)
     if errs:
         failures.append(f"FAIL theme-defined name passes: expected no COL-2 — got: {errs}")
@@ -823,7 +868,8 @@ def run_self_test():
     with tempfile.NamedTemporaryFile(suffix=".tsx", mode="w", delete=False, encoding="utf-8") as tf:
         tf.write('<p className="text-amber-11">hello</p>')
         tf.flush()
-        errs = check_file(tf.name, theme_names=set())  # empty allowlist
+        errs = check_file(
+            tf.name, theme_names=set(), context=t_and_s_context)  # empty allowlist
     os.unlink(tf.name)
     col2s = [e for e in errs if "[COL-2]" in e]
     if not col2s:
@@ -834,7 +880,7 @@ def run_self_test():
     with tempfile.NamedTemporaryFile(suffix=".tsx", mode="w", delete=False, encoding="utf-8") as tf:
         tf.write('<p className="text-amber-3">hello</p>')
         tf.flush()
-        errs = check_file(tf.name, theme_names=set())
+        errs = check_file(tf.name, theme_names=set(), context=t_and_s_context)
     os.unlink(tf.name)
     col2s = [e for e in errs if "[COL-2]" in e]
     if not col2s:
@@ -845,7 +891,7 @@ def run_self_test():
     with tempfile.NamedTemporaryFile(suffix=".tsx", mode="w", delete=False, encoding="utf-8") as tf:
         tf.write('className="hover:bg-[color-mix(in_oklab,var(--tw-blue)_88%,black)]"')
         tf.flush()
-        errs = check_file(tf.name, theme_names=set())
+        errs = check_file(tf.name, theme_names=set(), context=t_and_s_context)
     os.unlink(tf.name)
     tok1s = [e for e in errs if "[TOK-1]" in e]
     if not tok1s:
@@ -856,10 +902,51 @@ def run_self_test():
     with tempfile.NamedTemporaryFile(suffix=".tsx", mode="w", delete=False, encoding="utf-8") as tf:
         tf.write('className="bg-[var(--surface)]"')
         tf.flush()
-        errs = check_file(tf.name, theme_names=set())
+        errs = check_file(tf.name, theme_names=set(), context=t_and_s_context)
     os.unlink(tf.name)
     if errs:
         failures.append(f"FAIL var() in arbitrary value: expected clean — got: {errs}")
+
+    # ── Profile-parameterised TOK-2 / TOK-3 ──────────────────────────────────
+    case_count += 1
+    with tempfile.NamedTemporaryFile(suffix=".css", mode="w", delete=False,
+                                     encoding="utf-8") as tf:
+        tf.write(".screen { padding: 18px; border-radius: 10px; }")
+        tf.flush()
+        errs = check_file(tf.name, context=platform_context)
+    os.unlink(tf.name)
+    if errs:
+        failures.append(
+            f"FAIL Platform declared spacing/radius should pass — got: {errs}")
+
+    case_count += 1
+    with tempfile.NamedTemporaryFile(suffix=".css", mode="w", delete=False,
+                                     encoding="utf-8") as tf:
+        tf.write(".screen { padding: 17px; border-radius: 11px; }")
+        tf.flush()
+        errs = check_file(tf.name, context=platform_context)
+    os.unlink(tf.name)
+    if not any("[TOK-2]" in e for e in errs) or not any("[TOK-3]" in e for e in errs):
+        failures.append(
+            f"FAIL Platform undeclared spacing/radius should fail TOK-2/3 — got: {errs}")
+
+    case_count += 1
+    with tempfile.NamedTemporaryFile(suffix=".css", mode="w", delete=False,
+                                     encoding="utf-8") as tf:
+        tf.write(".screen { color: #123456; padding: 17px; border-radius: 11px; }")
+        tf.flush()
+        errs = scan_paths([tf.name], context=unresolved_context)
+    os.unlink(tf.name)
+    notes = [line for line in errs if line.startswith("NOTE")]
+    if len(notes) != 1 or "TOK-2 spacing scale" not in notes[0] or "TOK-3 radius scale" not in notes[0]:
+        failures.append(
+            f"FAIL unresolved profile should emit one combined NOTE — got: {errs}")
+    if not any("[TOK-1]" in line for line in errs):
+        failures.append(
+            f"FAIL unresolved profile must retain universal TOK-1 — got: {errs}")
+    if any("[TOK-2]" in line or "[TOK-3]" in line for line in errs):
+        failures.append(
+            f"FAIL unresolved profile borrowed scale judgments — got: {errs}")
 
     # ── Report ─────────────────────────────────────────────────────────────────
     if failures:
@@ -905,14 +992,10 @@ def main():
     css_paths = [p for p in filtered_args if os.path.splitext(p)[1].lower() == ".css"]
     theme_names = collect_theme_color_names(css_paths, extra_allow)
 
-    errors = scan_paths(filtered_args, theme_names)
-
-    if errors:
-        for e in errors:
-            print(e)
-        sys.exit(1)
-    else:
-        sys.exit(0)
+    results = scan_paths(filtered_args, theme_names)
+    for result in results:
+        print(result)
+    sys.exit(1 if any(result.startswith("ERROR") for result in results) else 0)
 
 
 if __name__ == "__main__":

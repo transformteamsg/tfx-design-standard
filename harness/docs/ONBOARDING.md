@@ -1,7 +1,7 @@
 # Adopting the DXD design harness — product team guide
 
-**Audience:** an engineer or designer on Teacher Workspace, CaseSync, or Glow making
-their repo "harness-ready".
+**Audience:** an engineer or designer in any DXD domain making their product repo
+"harness-ready".
 
 **Time:** approximately one hour plus team decisions (mainly items 5 and 6 below).
 
@@ -52,21 +52,22 @@ harness feedback, Python with PyYAML for the check scripts.
 
 ## 1. The stack
 
-**What it means:** Harness-ready item 1 requires your product to run the fixed stack:
-Base UI components, Radix Colors, shadcn/ui default tokens, Plus Jakarta Sans (600)
-for display, and Inter (400/500/600) for body and UI. No parallel component library
-alongside these.
+**What it means:** Harness-ready item 1 requires your product to declare one component
+foundation, semantic colour/token system, UI families and weights, type scale, spacing
+scale, and radius scale. The foundation controls require this stack-shaped behaviour;
+the concrete values live in your selected domain profile or product context.
 
-**The concrete step:** Check your product's `package.json` and component imports. The
-stack must be your only component foundation. If you have a parallel library (MUI,
-Ant Design, Chakra, or similar) running alongside Base UI and shadcn, stop here and
-raise it with the design lead before installing the harness. The catalog controls
-(CMP-1, TOK-1–3, TYP-1–3) assume the fixed stack throughout; a mixed stack produces
-ambiguous verdicts in every verify phase.
+**The concrete step:** Declare the domain in `DESIGN.md`, then check the selected
+profile and your product's `package.json` / component imports. Product values may
+override profile values. Any parallel library or token convention must be explicitly
+declared; an undeclared mixed stack produces ambiguous CMP-1, TOK-1–3, and TYP-1–3
+verdicts. If the selected proposed profile omits a value, supply the product value or
+ask the domain lead — do not copy another domain's stack.
 
-**Status today:** Teacher Workspace is the reference implementation. CaseSync and
-Glow should align their stacks before installation; no harness support is planned for
-divergent stacks.
+**Status today:** The Teachers & School profile is the first complete expression.
+Other proposed profiles may remain honest stubs until their domain leads settle them;
+product declarations can exercise the contract without pretending those samples are
+domain facts.
 
 ---
 
@@ -84,8 +85,8 @@ v0 limitation, not a misconfiguration or a skipped control. The worked example a
 `docs/decisions/student-notes-empty-state.md` demonstrates what an "asserted, no
 manifest" waiver looks like in practice.
 
-**Do not create a manifest format yourself** before plans/008 defines it — the format
-must be consistent across TW, CaseSync, and Glow.
+**Do not create a parallel manifest format yourself** — the format must stay
+consistent across domains.
 
 ---
 
@@ -95,15 +96,17 @@ must be consistent across TW, CaseSync, and Glow.
 `DESIGN.md` at your repo root records the few *visual parameters* that make your product
 itself — its primary colour, tone weighting, motion conventions, and column grid — and its
 generated twin `.dxd/design.json` lets the check scripts and the design loop read them.
-This is the one item that is **optional** and not counted among the six: a repo with no
-`DESIGN.md` gets the portfolio defaults everywhere, which is a valid, complete state — it
-is never graded as a failure. Add one only if your product's parameters actually differ.
+This is the one item that is **optional** and not counted among the six for legacy
+v0.x installs. A repo with neither `DESIGN.md` nor generated context uses the
+`teachers-school` compatibility profile through v0.x only; remove that shim at 1.0.
+New domains should declare their domain so consumers select the right profile.
 
 **The concrete step:** run the setup wizard — `/dxd:setup` → "onboard my product". It
 interviews you in plain language for your brand basics (name, domain, primary colour,
 typefaces, and a few optional extras), writes `DESIGN.md` for you, and generates the
-`.dxd/design.json` twin — no file editing, no YAML. Every question you skip falls back to
-the standard's default. Re-run it any time to add or change a parameter; the wizard
+`.dxd/design.json` twin — no file editing, no YAML. A skipped question inherits the
+selected domain profile; if that profile also omits the fact, it remains unresolved
+and is called out rather than invented. Re-run the wizard any time to add or change a parameter; it
 regenerates the twin (never hand-edit it; CI can gate freshness with `--check`).
 
 Full spec — the sections, the parameters-only rule, and the "code overrides stale docs"
@@ -113,7 +116,7 @@ loading rule: `docs/DESIGN-CONTEXT.md`.
 
 ## 3. Skills installed
 
-**What it means:** The TFX skills (`start`, `setup`, `design`, `critique`,
+**What it means:** The DXD skills (`start`, `setup`, `design`, `critique`,
 `standards`, `copy`, `polish`, `motion`, `flow`, `layout`, `feedback`) and the
 `evaluator` subagent must be
 active in the product repo's Claude session for the harness to work. Without them, the agent
@@ -121,8 +124,8 @@ has no loop structure, no catalog filters, and no evaluator procedure to follow.
 
 **The concrete step:** After running the install commands in item 0, verify the skills
 loaded. Open a Claude Code session in your product repo and ask: "design a test page."
-The `design` loop must trigger and ask intent questions — purpose, the teacher
-and moment, page type, done-criteria. If it does not, run `/plugin list` and confirm
+The `design` loop must trigger and ask intent questions — purpose, the user and
+moment, page type, done-criteria. If it does not, run `/plugin list` and confirm
 `dxd` is enabled. If the plugin appears but the skill does not trigger,
 check that the session is open in the product repo root, not in a subdirectory.
 
@@ -202,7 +205,7 @@ designer is not co-located.
 Once the six items above are satisfied, run the `design` loop on your first real
 page. Here is what the six phases feel like in practice:
 
-1. **Intent** — the agent asks four questions (purpose, the teacher and moment, page
+1. **Intent** — the agent asks four questions (purpose, the user and moment, page
    type, done-criteria) and locks in a sprint contract. Resist the urge to rush past
    this phase; the contract is what the verify phase grades against.
 2. **Diverge** — 2–3 structural variants are presented, composed from your manifest
