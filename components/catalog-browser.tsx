@@ -55,7 +55,7 @@ export function CatalogBrowser({
       onClick={onClick}
       aria-pressed={active}
       className={clsx(
-        "rounded-full border px-3 py-1 text-[12px] font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue)",
+        "inline-flex min-h-11 min-w-11 items-center justify-center rounded-full border px-3 py-1 text-[12px] font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue) sm:min-h-6 sm:min-w-0",
         active
           ? "border-foreground bg-foreground text-white"
           : "border-border bg-surface text-muted-foreground hover:text-foreground"
@@ -73,7 +73,7 @@ export function CatalogBrowser({
             {t}
           </Chip>
         ))}
-        <span className="mx-1 text-border">|</span>
+        <span aria-hidden className="mx-1 hidden text-border sm:inline">|</span>
         {categories.map((c) => (
           <Chip
             key={c}
@@ -83,13 +83,13 @@ export function CatalogBrowser({
             {c}
           </Chip>
         ))}
-        <span className="mx-1 text-border">|</span>
+        <span aria-hidden className="mx-1 hidden text-border sm:inline">|</span>
         {["deterministic", "judgment", "hybrid"].map((k) => (
           <Chip key={k} active={check === k} onClick={() => setCheck(check === k ? null : k)}>
             {k}
           </Chip>
         ))}
-        <span className="mx-1 text-border">|</span>
+        <span aria-hidden className="mx-1 hidden text-border sm:inline">|</span>
         {Object.entries(productNames).map(([key, name]) => (
           <Chip
             key={key}
@@ -99,7 +99,7 @@ export function CatalogBrowser({
             {name}
           </Chip>
         ))}
-        <span className="mx-1 text-border">|</span>
+        <span aria-hidden className="mx-1 hidden text-border sm:inline">|</span>
         {Object.entries(audienceNames).map(([key, name]) => (
           <Chip
             key={key}
@@ -126,7 +126,7 @@ export function CatalogBrowser({
               <button
                 onClick={() => copy(c.id)}
                 title="Copy control ID"
-                className="rounded-md border border-border bg-accent px-2 py-0.5 text-[12px] font-semibold hover:border-border-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue)"
+                className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-md border border-border bg-accent px-2 py-0.5 text-[12px] font-semibold hover:border-border-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue) sm:min-h-6 sm:min-w-0"
               >
                 {copied === c.id ? "copied ✓" : c.id}
               </button>
@@ -157,7 +157,7 @@ export function CatalogBrowser({
               )}
               <a
                 href={`/standards/catalog/${c.id.toLowerCase()}`}
-                className="ml-auto text-[12px] text-tw-blue underline underline-offset-2"
+                className="ml-auto inline-flex min-h-11 items-center text-[12px] text-tw-blue underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue) sm:min-h-6"
               >
                 Details →
               </a>

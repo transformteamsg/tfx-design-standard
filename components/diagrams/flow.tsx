@@ -2,21 +2,15 @@
 
 /* Shared vertical-flow primitive for the explanatory diagrams. HTML, not SVG:
    text renders at true UI sizes, colours come straight from tokens (TOK-1),
-   and connectors are plain elements that cannot mis-render. Motion is one
-   short staggered reveal per row (240ms, ease-out — within MOT-1) that fires
-   once on scroll; prefers-reduced-motion shows everything immediately. */
+   and connectors are plain elements that cannot mis-render. Content is
+   server-visible and remains static so reduced-motion preferences
+   cannot produce a different first client render. */
 
-import { cubicBezier, motion, useInView, useReducedMotion } from "motion/react";
 import { useRef, type ReactNode } from "react";
-
-export const FLOW_EASE = cubicBezier(0.22, 1, 0.36, 1);
 
 export function useFlowReveal<T extends Element = HTMLOListElement>() {
   const ref = useRef<T | null>(null);
-  // === true: hydration null must not skip the animation
-  const reduced = useReducedMotion() === true;
-  const inView = useInView(ref, { once: true, margin: "0px 0px -10% 0px", amount: 0.2 });
-  return { ref, reduced, show: reduced || inView };
+  return { ref, reduced: true, show: true };
 }
 
 type RevealProps = {
@@ -27,31 +21,13 @@ type RevealProps = {
   className?: string;
 };
 
-function revealMotion({ index, reduced, show }: Pick<RevealProps, "index" | "reduced" | "show">) {
-  return {
-    initial: reduced ? (false as const) : { opacity: 0, y: 8 },
-    animate: show ? { opacity: 1, y: 0 } : { opacity: 0, y: 8 },
-    transition: reduced
-      ? { duration: 0 }
-      : { duration: 0.24, ease: FLOW_EASE, delay: (index * 70) / 1000 },
-  };
-}
-
-export function FlowRow({ index, reduced, show, children, className }: RevealProps) {
-  return (
-    <motion.li className={className} {...revealMotion({ index, reduced, show })}>
-      {children}
-    </motion.li>
-  );
+export function FlowRow({ children, className }: RevealProps) {
+  return <li className={className}>{children}</li>;
 }
 
 /* Same reveal for non-list layouts (e.g. the foundation tree). */
-export function Rise({ index, reduced, show, children, className }: RevealProps) {
-  return (
-    <motion.div className={className} {...revealMotion({ index, reduced, show })}>
-      {children}
-    </motion.div>
-  );
+export function Rise({ children, className }: RevealProps) {
+  return <div className={className}>{children}</div>;
 }
 
 export type FlowStep = {

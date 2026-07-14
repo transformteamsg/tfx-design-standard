@@ -55,3 +55,12 @@ jobs:
           python3 harness/checks/validate.py
           python3 harness/checks/token-audit.py app components lib
           python3 harness/checks/a11y-static.py app components
+
+      - name: Install Playwright Chromium
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Build production site
+        run: pnpm build
+
+      - name: Rendered accessibility contract
+        run: pnpm test:e2e

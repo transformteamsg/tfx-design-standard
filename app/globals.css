@@ -188,9 +188,9 @@ h1, h2, h3, h4 { font-family: "Plus Jakarta Sans Variable", system-ui, sans-seri
   .prose table { width: 100%; border-collapse: collapse; font-size: 14px; margin: 16px 0 20px; }
   .prose th { text-align: left; font-weight: 600; padding: 8px 12px; border-bottom: 2px solid var(--border); }
   .prose td { padding: 8px 12px; border-bottom: 1px solid var(--border); vertical-align: top; color: var(--prose-body); }
-  .prose code { background: var(--muted); border: 1px solid var(--border); border-radius: 4px; padding: 1px 4px; font-size: 0.875em; }
+  .prose code { background: var(--muted); border: 1px solid var(--border); border-radius: 4px; padding: 1px 4px; font-size: 0.875em; overflow-wrap: anywhere; word-break: break-word; }
   .prose pre { background: var(--foreground); color: var(--background); border-radius: 8px; padding: 14px 16px; overflow-x: auto; margin: 0 0 16px; }
-  .prose pre code { background: none; border: none; color: inherit; padding: 0; }
+  .prose pre code { background: none; border: none; color: inherit; padding: 0; overflow-wrap: normal; word-break: normal; white-space: inherit; }
   .prose blockquote { border-left: 3px solid var(--tw-blue); padding-left: 16px; color: var(--muted-foreground); margin: 0 0 14px; }
   .prose a { color: var(--tw-blue); text-decoration: underline; text-underline-offset: 2px; }
   .prose strong { color: var(--foreground); font-weight: 600; }
