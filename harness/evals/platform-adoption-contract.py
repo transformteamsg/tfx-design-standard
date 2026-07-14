@@ -23,9 +23,10 @@ GLOBAL_CONSUMER_FILES = [
     HARNESS_ROOT / ".claude" / "skills" / "standards" / "SKILL.md",
     HARNESS_ROOT / ".claude" / "agents" / "evaluator.md",
 ]
+INTER_MARKER = re.compile(r"(?<![\w-])Inter(?![\w-])", re.IGNORECASE)
 COMMON_MARKERS = (
     ("Plus Jakarta Sans", re.compile(r"Plus Jakarta Sans", re.IGNORECASE)),
-    ("Inter", re.compile(r"(?<![\w-])Inter(?![\w-])")),
+    ("Inter", INTER_MARKER),
     ("Base UI", re.compile(r"Base UI", re.IGNORECASE)),
     ("Radix Colors", re.compile(r"Radix Colors", re.IGNORECASE)),
     ("shadcn", re.compile(r"shadcn", re.IGNORECASE)),
@@ -114,6 +115,9 @@ def leaked_markers(path, markers, failures):
 
 def main():
     failures = []
+
+    if not INTER_MARKER.search("inter") or INTER_MARKER.search("inter-session"):
+        failures.append("standalone Inter marker lost case or hyphen boundaries")
 
     for script in ("type-scan.py", "token-audit.py"):
         result = run_checker(script, PASS_FILES)

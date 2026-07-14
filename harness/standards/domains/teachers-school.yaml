@@ -10,7 +10,8 @@ products: [tw, casesync, glow]   # catalog meta.products
 audiences: [teachers]            # catalog meta.audiences
 
 colour:
-  # Per-product primary — normative source: COL-1 (per-product primary table).
+  # This profile is the authoritative concrete declaration of per-product primaries;
+  # COL-1 owns the behaviour.
   primaries:
     tw: "--tw-blue #0064FF"                      # Teacher & School Blue
     casesync: "--casesync Radix indigo-9 #3E63DD"  # proposed — awaiting design-lead settle (COL-1)
