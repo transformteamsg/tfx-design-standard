@@ -53,8 +53,8 @@ dropped or silently passed.
   repo-relative path or basename; `*` spans `/`.
 - `ignoreValues` — fed to `token-audit`'s `--allow` mechanism (licence a sanctioned
   colour name / raw value); it feeds that allowlist, it does not replace it.
-- `ignoreRules` — drops whole control ids from the run (post-parse; an operational,
-  control-less finding is never dropped).
+- `ignoreRules` — drops configured L1/L2 control ids from the run (post-parse; L0 and
+  operational, control-less findings are never dropped).
 
 `--no-config` bypasses the file entirely. An invalid or wrong-shaped `.tfx/config.json` is
 a misconfiguration → exit 1. `--tokens <css>` overrides the contrast token map (default:
@@ -63,10 +63,10 @@ auto-discover `app/globals.css` under the repo root).
 **Config ignores complement tier waivers — they never replace them.** A waiver is a
 per-instance control exception with a named approver (the tier-waiver system); a config
 ignore is scan-noise control — a legacy folder detect should not walk, or a raw value the
-team has sanctioned. Neither silences an L0: `ignoreRules` on an L0 only hides it from the
-detector's own report; the L0 rule and its L0-never waiver policy are unchanged in the
-underlying scripts and the catalog. Use a waiver to *except* a control instance; use a
-config ignore to *quiet scan noise*.
+team has sanctioned. Neither silences an L0: an L0 ID in `ignoreRules` is ignored, so its
+findings remain visible and the detector remains non-zero. L1/L2 IDs may still be filtered
+as scan noise. Use a waiver to *except* a control instance; use a config ignore to *quiet
+scan noise*.
 
 **Honest enforcement still binds.** `detect.py` runs only the checks that are built (the
 curated or `--all` set). It never reports an unbuilt or un-run control as "passed" — read
@@ -78,7 +78,7 @@ coverage and the always-manual gaps are in the sections below.
 generator in `--check` mode; a stale `design.json` (generator exit 2) is surfaced as a
 finding (exit 2), never a crash.
 
-**Self-test:** `python3 checks/detect.py --self-test` → `SELF-TEST OK (35 cases)` — profile
+**Self-test:** `python3 checks/detect.py --self-test` → `SELF-TEST OK (43 cases)` — profile
 selection, the 0/2/1 exit mapping (incl. curated excluding TYP-2 / `--all` including it),
 each ignore type, invalid-config → exit 1, `ERROR`-line parsing, and the JSON shape. The
 wrapped scripts are not invoked in the self-test (it exercises detect's own pure logic);

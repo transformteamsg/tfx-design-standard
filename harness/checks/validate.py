@@ -262,15 +262,16 @@ def tokenize_buzzwords(span):
 
 def l0_parity_errors(repo_root, catalog_by_id, xref_re):
     """
-    [L0-SYNC] Each inline 'Non-negotiables (L0)' list (CLAUDE.md and the
-    design skill's SKILL.md) must equal the catalog's tier:L0 set. Missing
-    markers are an error. Set comparison, so prose/order around the IDs is free.
+    [L0-SYNC] Each marked L0 consumer must equal the catalog's tier:L0 set.
+    Missing markers are an error. Set comparison, so prose/order around the IDs
+    is free.
     """
     errors = []
     source = {cid for cid, c in catalog_by_id.items() if c.get("tier") == "L0"}
     consumers = [
         os.path.join(repo_root, "CLAUDE.md"),
         os.path.join(repo_root, ".claude", "skills", "design", "SKILL.md"),
+        os.path.join(repo_root, "checks", "detect.py"),
     ]
     for fpath in consumers:
         if not os.path.isfile(fpath):
@@ -773,6 +774,16 @@ def run_self_test():
     assert_error("L0 missing markers",
                  l0_errs_for_span(extract_sync_block("no markers here", "L0")),
                  "missing tfx-sync:L0 markers")
+
+    # The detector is an executable L0 consumer. A malformed fixture must be
+    # reported; this fails if its path is silently skipped by l0_parity_errors.
+    with tempfile.TemporaryDirectory() as td:
+        os.makedirs(os.path.join(td, "checks"))
+        with open(os.path.join(td, "checks", "detect.py"), "w") as fh:
+            fh.write("# no L0 marker")
+        assert_error("L0 detector consumer is not skipped",
+                     l0_parity_errors(td, {cid: {"tier": "L0"} for cid in L0_SOURCE}, xref_re),
+                     "checks/detect.py [L0-SYNC]: missing tfx-sync:L0 markers")
 
     # Buzzword parity — drive tokenize_buzzwords + the subset/required-core rules.
     BUZZ_SOURCE = tokenize_buzzwords(
