@@ -74,6 +74,10 @@ PRUNE_DIRS = {"node_modules", "dist", "build", "out", "coverage", "vendor", "__p
 SCAN_EXTENSIONS = {".css", ".html", ".jsx", ".tsx", ".js", ".ts", ".vue",
                    ".svelte", ".md", ".mdx"}
 
+# <!-- tfx-sync:L0 source=catalog -->
+L0_CONTROL_IDS = frozenset({"A11Y-1", "A11Y-2", "A11Y-3", "CMP-2"})
+# <!-- /tfx-sync:L0 -->
+
 # ERROR-line convention (checks/README.md):
 #   ERROR <file>:<line> [<CTL>] <message>
 #   ERROR <file>:<line> [<CTL>][waiver-claimed] <message>   (token-audit)
@@ -275,12 +279,15 @@ def parse_findings(check_name, error_lines):
     return out
 
 
+def effective_ignore_rules(ignore_rules):
+    """Return configured rules that may be ignored; catalog L0 controls never may."""
+    return set(ignore_rules) - L0_CONTROL_IDS
+
+
 def apply_ignore_rules(findings, ignore_rules):
-    """Drop findings whose control id is in ignoreRules. Control-less (operational)
+    """Drop non-L0 findings named in ignoreRules. Control-less (operational)
     findings are never dropped — an operational error is not a rule."""
-    if not ignore_rules:
-        return list(findings)
-    ig = set(ignore_rules)
+    ig = effective_ignore_rules(ignore_rules)
     return [f for f in findings if f["control"] not in ig]
 
 
@@ -396,7 +403,7 @@ def build_json_report(findings, results, crashed, profile, exit_code):
 
 
 def print_text_report(findings, results, crashed, ignore_rules):
-    ig = set(ignore_rules)
+    ig = effective_ignore_rules(ignore_rules)
     for r in results:
         if r["kind"] == "skipped":
             print(f"── {r['name']}: skipped ({r['reason']}) ──")
@@ -501,6 +508,8 @@ def main():
 # ── Self-test (pure — no real check subprocesses) ────────────────────────────────
 
 def run_self_test():
+    import contextlib
+    import io
     import tempfile
 
     failures = []
@@ -571,14 +580,36 @@ def run_self_test():
     check("NOTE-only stdout on exit 0 is clean",
           classify_run(0, "NOTE  contrast: could not resolve … — verify manually\n", "")[0] == "clean")
 
-    # 9. ignoreRules drops matching control, keeps others + operational.
+    # 9. ignoreRules drops L1/L2 findings only; L0 and operational findings remain.
     fs = [{"check": "a", "control": "A11Y-2", "file": "x", "line": 1, "message": "m"},
-          {"check": "a", "control": "TOK-1", "file": "y", "line": 2, "message": "m"},
+          {"check": "a", "control": "CMP-2", "file": "y", "line": 2, "message": "m"},
+          {"check": "a", "control": "TYP-2", "file": "z", "line": 3, "message": "m"},
           {"check": "a", "control": None, "file": None, "line": None, "message": "op"}]
-    kept = apply_ignore_rules(fs, ["A11Y-2"])
-    check("ignoreRules drops A11Y-2", not any(f["control"] == "A11Y-2" for f in kept))
-    check("ignoreRules keeps TOK-1", any(f["control"] == "TOK-1" for f in kept))
+    ignored = ["TYP-2", "A11Y-2", "CMP-2"]
+    kept = apply_ignore_rules(fs, ignored)
+    check("ignoreRules drops L1 TYP-2", not any(f["control"] == "TYP-2" for f in kept))
+    check("ignoreRules keeps L0 A11Y-2", any(f["control"] == "A11Y-2" for f in kept))
+    check("ignoreRules keeps L0 CMP-2", any(f["control"] == "CMP-2" for f in kept))
     check("ignoreRules never drops operational", any(f["control"] is None for f in kept))
+    check("effective ignores exclude every L0 control",
+          not (effective_ignore_rules(list(L0_CONTROL_IDS) + ["TYP-2"]) & L0_CONTROL_IDS))
+
+    text_results = [{
+        "name": "a11y-static",
+        "kind": "findings",
+        "error_lines": [
+            "ERROR app/x.tsx:1 [A11Y-2] focus state missing",
+            "ERROR app/x.tsx:2 [TYP-2] text size too small",
+        ],
+        "note_lines": [],
+        "findings": kept,
+    }]
+    text_output = io.StringIO()
+    with contextlib.redirect_stdout(text_output):
+        print_text_report(kept, text_results, [], ["A11Y-2", "TYP-2"])
+    rendered = text_output.getvalue()
+    check("text report keeps ignored L0 A11Y-2 and hides L1 TYP-2",
+          "[A11Y-2]" in rendered and "[TYP-2]" not in rendered)
 
     # 10. ignoreFiles glob filtering.
     with tempfile.TemporaryDirectory() as td:
