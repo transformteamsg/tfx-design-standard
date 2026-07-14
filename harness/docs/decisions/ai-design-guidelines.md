@@ -21,11 +21,11 @@
 
 Two separate pages: a general AI design page covering the routing table and always-apply rules, and a conversation-specific page covering the controls that only apply when a conversation surface is warranted. The routing table on the AI design page links the two pages.
 
-This mirrors the existing pattern on the site where a high-level principle page (e.g. voice and tone) and a mechanics page (grammar and mechanics) serve different reader intents. A reader doing feature routing wants the table. A reader designing a chat surface wants the conversation-specific controls.
+The site already pairs a high-level principle page with a mechanics page for different reader intents. A reader doing feature routing wants the table. A reader designing a chat surface wants the conversation-specific controls.
 
 ## Rejected options
 
-- **Single merged page** — putting routing, rules, and conversation controls on one page produces a page long enough to require heavy progressive disclosure. Rejected: guideline pages on this site are deliberately short; length is a signal of scope creep, not thoroughness.
+- **Single merged page** — routing, rules, and conversation controls on one page produces a page requiring heavy progressive disclosure. Rejected: guideline pages on this site are deliberately short; length signals scope creep, not thoroughness.
 - **No conversation-specific page; embed in AI design** — conversation controls are a subset of a subset. Merging them hides their specificity and implies they apply to all AI features. Rejected: misleading scope.
 
 ## Tradeoffs, named

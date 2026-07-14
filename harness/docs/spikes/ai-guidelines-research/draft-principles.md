@@ -24,7 +24,7 @@ AI can draft, suggest, and summarise. The teacher decides what is true, what is 
 
 ## 09 — Show your seams
 
-Teachers trust tools that are honest about what they are. Every AI feature introduces itself accurately — what it does, what it cannot do, and where its output came from. Concealing limitations creates the frustration that follows when the feature fails.
+Teachers trust tools that are honest about what they are. Every AI feature introduces itself accurately: what it does, what it cannot do, and where its output came from. Hidden limitations become the frustration teachers hit when the feature falls short.
 
 | Prioritise | Deprioritise |
 | --- | --- |
