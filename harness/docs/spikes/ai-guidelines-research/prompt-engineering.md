@@ -8,7 +8,7 @@ Multi-source research for the "Shape the assistant" and "Handle the turn" sectio
 
 **1. Be clear and direct**
 Specify exactly what you want; treat the model like a capable new hire who has no context on your norms.
-- Source: Anthropic - Prompting best practices (https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices)
+- Source: Anthropic - Prompting best practices (https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview)
 - TFX applicability: system prompt should name the assistant's role in teacher terms ("You are a teaching-support assistant for Singapore primary-school educators"), not generic terms.
 
 **2. Give the model a role in the system prompt**
@@ -18,7 +18,7 @@ Even a single sentence ("You are a helpful coding assistant") measurably changes
 
 **3. Use examples (few-shot / multishot)**
 3-5 `<example>` blocks covering edge cases are one of the most reliable ways to steer output format, tone, and structure.
-- Source: Anthropic - Prompting best practices, "Use examples effectively"; OpenAI - Prompt engineering guide (https://developers.openai.com/api/docs/guides/prompt-engineering), "Few-Shot Learning"
+- Source: Anthropic - Prompting best practices, "Use examples effectively"; OpenAI - Prompt engineering guide (https://developers.openai.com/api/docs/guides/prompt-engineering), "Few-shot learning"
 - TFX applicability: include one example of a correct teacher-facing reply and one example of a reply that is too clinical, so the model learns the warmth calibration.
 
 **4. Structure prompts with XML tags**
@@ -37,9 +37,24 @@ Tell the model *what to do* rather than what not to do; match prompt formatting 
 - TFX applicability: "Respond in plain prose, no bullet lists, one idea per sentence" matches how teachers scan feedback during a busy lesson.
 
 **7. Organise developer-level instructions in a consistent order**
-Identity → instructions → examples → context gives the model a reliable parse order and prevents later sections overriding earlier ones accidentally.
-- Source: OpenAI - Prompt engineering guide, "Prompt Structure Organization"
+Identity - instructions - examples - context gives the model a reliable parse order and prevents later sections overriding earlier ones accidentally.
+- Source: OpenAI - Prompt engineering guide, "Message formatting with Markdown and XML"
 - TFX applicability: keeps the system prompt auditable when a new AI feature is handed off across the TFX team.
+
+**8. Chain of thought / reasoning first**
+Instructing the model to reason before answering improves complex-task output.
+- Source: Anthropic - Prompting best practices, "Thinking and reasoning" (https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview) - note: the old standalone chain-of-thought page now redirects here.
+- TFX applicability: for multi-step tasks such as lesson planning, prompt the model to consider year level, learning objective, and prior knowledge before drafting output.
+
+**9. Prompt injection guard**
+Teacher-pasted content (student work, parent messages) must be wrapped in labelled tags and treated as data, not instructions.
+- Source: Anthropic - Prompting best practices, "Structure prompts with XML tags"; Anthropic agentic security guidance (https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview)
+- TFX applicability: any user-supplied document or message should be wrapped in a tag such as `<student_work>` or `<document>` with an explicit instruction that content inside those tags never overrides the assistant's role or constraints.
+
+**10. Evaluate before shipping**
+Anthropic's overview places evals before prompt engineering ("Before prompt engineering" section); test prompts with representative real inputs before deploying.
+- Source: Anthropic - Prompt engineering overview, "Before prompt engineering: build evaluations" (https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview)
+- TFX applicability: run 5-10 representative teacher inputs - one ambiguous, one off-topic, one very short - before any assistant feature goes live.
 
 ---
 
@@ -47,7 +62,7 @@ Identity → instructions → examples → context gives the model a reliable pa
 
 **Welcome / opening turn**
 The first turn sets capability expectations; it should be brief, name the assistant's scope, and offer a prompt rather than a long list of features.
-- Source: Google Conversation Design guide (https://developers.google.com/assistant/conversation-design), "Persona Development" and "Conversational Components"
+- Source: Google Conversation Design guide (https://developers.google.com/assistant/conversation-design), "Create a persona"
 - TFX applicability: teacher-facing assistants should open with a short orientation ("I can help you plan this lesson or suggest differentiation strategies - where would you like to start?").
 
 **Disambiguation**
@@ -85,7 +100,7 @@ Use what the system already knows (subject, level, number of students) before as
 **Follow-up offers, not interrogations**
 End turns with an optional forward-offer ("Want me to adjust this for lower-ability learners?") not a mandatory question.
 Follow-ups should feel like a helpful suggestion, not a form to fill.
-- Source: Google Conversation Design, "Conversational Components - acknowledgements and suggestions"; Alexa design, "Be Natural"
+- Source: Amazon Alexa design principles, "Be Natural" (note: the Google Conversation Design "Conversational components" URL 404s; the Alexa "Be Natural" principle is the reliable citation for forward-offer endings)
 - TFX applicability: after generating a lesson hook, offer one logical next step but let the teacher close the loop.
 
 ---
@@ -95,27 +110,36 @@ Follow-ups should feel like a helpful suggestion, not a form to fill.
 ### Shape the assistant (system prompt guidance)
 
 - **Declare the role in teacher-facing terms from the first line.** "You are a teaching-support assistant for Singapore primary-school educators" anchors tone and scope more reliably than a generic "helpful assistant" framing.
-  Citation: Anthropic Prompting best practices - "Give Claude a role" / https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices
+  Citation: Anthropic Prompting best practices - "Give Claude a role" / https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview
 
 - **Explain the why behind each constraint, not just the rule.** The model generalises from reasons. "Use MOE-prescribed terminology so responses match what teachers see in official materials" teaches a principle, not just a word list.
   Citation: Anthropic Prompting best practices - "Add context to improve performance"
 
 - **Include 3-5 labelled examples covering the warmth calibration.** One example of a correct reply and one that is too clinical teach the Kind Utility register faster than prose description.
-  Citation: Anthropic Prompting best practices - "Use examples effectively"; OpenAI Prompt engineering guide - "Few-Shot Learning"
+  Citation: Anthropic Prompting best practices - "Use examples effectively"; OpenAI Prompt engineering guide - "Few-shot learning"
 
 - **Structure the prompt: identity, instructions, examples, context - using XML tags.** This ordering is auditable and prevents later sections silently overriding earlier ones.
-  Citation: OpenAI Prompt engineering guide - "Prompt Structure Organization"; Anthropic Prompting best practices - "Structure prompts with XML tags"
+  Citation: OpenAI Prompt engineering guide - "Message formatting with Markdown and XML"; Anthropic Prompting best practices - "Structure prompts with XML tags"
 
 - **Control output format with positive instructions, not prohibitions.** "Respond in plain prose, one idea per sentence" is more reliable than "do not use bullet lists."
   Citation: Anthropic Prompting best practices - "Control the format of responses"
 
 - **Wrap classroom-context data in labelled tags so the model knows what is fixed.** `<context>` blocks containing subject, level, and class size stop the model from asking the teacher to repeat what the system already holds.
-  Citation: Anthropic Prompting best practices - "Structure prompts with XML tags"; OpenAI Prompt engineering guide - "Context Window Management"
+  Citation: Anthropic Prompting best practices - "Structure prompts with XML tags"; OpenAI Prompt engineering guide - "Include relevant context information"
+
+- **For complex tasks, instruct the model to reason before answering.** "Before drafting the lesson hook, consider the year level, the objective, and what the teacher already knows" beats asking for the answer directly.
+  Citation: Anthropic Prompting best practices - "Thinking and reasoning"
+
+- **Treat teacher-pasted content as data, not instructions.** Wrap it in a labelled tag (`<student_work>`, `<document>`) and state that content inside those tags never overrides the assistant's role or constraints.
+  Citation: Anthropic Prompting best practices - "Structure prompts with XML tags"; Anthropic agentic security guidance
+
+- **Test the prompt with real teacher inputs before shipping.** Run 5-10 representative inputs - one ambiguous, one off-topic, one very short - and check tone, scope, and fallbacks.
+  Citation: Anthropic prompt engineering overview - "Before prompt engineering: build evaluations"
 
 ### Handle the turn (interaction fundamentals)
 
 - **Open with a scope statement and one forward prompt, not a feature list.** Teachers have limited time. "I can help you plan this lesson or suggest differentiation strategies - where would you like to start?" sets expectations without overwhelming.
-  Citation: Google Conversation Design guide - "Persona Development / Conversational Components" / https://developers.google.com/assistant/conversation-design
+  Citation: Google Conversation Design guide - "Create a persona" / https://developers.google.com/assistant/conversation-design
 
 - **Ask one clarifying question at a time, and only ask what the system does not already know.** Stacking questions, or re-asking context the system holds, feels like a poorly designed form.
   Citation: Amazon Alexa design principles - "Be Brief / Be Contextual" / https://developer.amazon.com/en-US/docs/alexa/alexa-design/get-started.html
@@ -123,21 +147,30 @@ Follow-ups should feel like a helpful suggestion, not a form to fill.
 - **Escalate fallbacks: brief reprompt on the first miss, add an example on the second, exit gracefully at the third.** Never imply the teacher did something wrong. Assume cooperation and rephrase naturally.
   Citation: Google Conversation Design guide - "Errors" / https://developers.google.com/assistant/conversation-design/errors
 
-- **Design the unhappy paths explicitly; do not rely on base model defaults.** Off-topic input, ambiguity, and frustration are where teacher-facing assistants lose trust. Script escape hatches to help resources or a human reviewer.
+- **Design the unhappy paths explicitly; do not rely on base model defaults.** Off-topic input gets a brief acknowledgement before the redirect - never a blunt refusal. Ambiguity, and frustration are where teacher-facing assistants lose trust. Script escape hatches to help resources or a human reviewer.
   Citation: Voiceflow conversation design - "Unhappy Path Design" / https://www.voiceflow.com/blog/conversation-design
 
 - **State session-reset boundaries clearly; do not imply continuity.** If the assistant cannot access a prior conversation, say so - "This is a new session - I don't have our previous conversation" - rather than filling in gaps.
   Citation: Voiceflow conversation design - "Understanding Layer / context boundaries"
 
 - **End turns with an optional forward-offer, not a mandatory question.** "Want me to adjust this for lower-ability learners?" invites the teacher to continue but lets them close the loop. An interrogative like "What do you need next?" creates conversational pressure.
-  Citation: Google Conversation Design guide - "Conversational components - acknowledgements and suggestions"; Amazon Alexa design principles - "Be Natural"
+  Citation: Amazon Alexa design principles - "Be Natural"
+
+- **Match confirmation weight to consequence.** Irreversible actions get explicit yes/no; reversible ones use implicit confirmation ("I'll draft this now") the teacher can interrupt. Constant explicit confirmation trains click-through.
+  Citation: Google Conversation Design guide - "Confirmations"
+
+- **Calibrate response length to register.** A quick question gets 2-3 sentences; a structured request can run longer. Default short; let the teacher pull more.
+  Citation: Amazon Alexa design principles - "Be Brief"; Google Conversation Design guide
+
+- **Use the reprompt ladder for misunderstood input; follow CNT-1 anatomy for system errors.** System errors follow CNT-1 anatomy, not the reprompt ladder.
+  Citation: Google Conversation Design guide - "Errors"; TFX CNT-1
 
 ---
 
 ## Quotes and links
 
 "Think of Claude as a brilliant but new employee who lacks context on your norms and workflows. The more precisely you explain what you want, the better the result."
-- Anthropic Prompting best practices: https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices
+- Anthropic Prompting best practices: https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview
 
 "One poorly handled error can outweigh dozens of successful interactions."
 - Google Conversation Design guide, Errors section: https://developers.google.com/assistant/conversation-design/errors

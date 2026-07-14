@@ -8,15 +8,21 @@ status: proposed
 
 - **Conversation is the last resort, not the first idea.** Embedded AI inside the task beats chat one step removed from it. Reach for a conversation surface only when the teacher's goal cannot be known in advance. See [AI design](/guidelines/ai-design) for the routing table that helps you decide.
 
-  _(PAIR automate-vs-augment framework; HAX G1)_
+  _(PAIR "User Needs + Defining Success" chapter - automate-vs-augment; HAX G3, G4)_
 
-- **Prompt input carries the guidance.** Suggestions show what the assistant is good at. Attachment indicators show what it can read. A teacher who can see both knows immediately how to begin.
+- **The empty state sets expectations before the teacher types.** State what the assistant can do in one sentence, name one limitation, and offer example prompts. A blank panel teaches nothing.
 
-  _(HAX G1; Vercel AI Elements `Suggestion`, `Attachments`)_
+  _(HAX G1, pattern G1-A - introductory blurb; PAIR "Mental Models" chapter)_
+
+  <DemoEmptyState />
+
+- **Prompt input carries the guidance.** Suggestions show what the assistant is good at. The attach affordance lets the teacher add documents or class data the assistant will read; attached files stay visible.
+
+  _(HAX pattern G1-D - demonstrate possible inputs; Vercel AI Elements `Suggestion`, `Attachments`)_
 
   <DemoPromptInput />
 
-- **Streaming must be stoppable.** Progress is visible while the response generates, and the teacher can stop it at any point without losing what arrived so far. No generation leaves the teacher locked out mid-turn.
+- **Streaming must be stoppable.** Progress is visible while the response generates, and the teacher can stop it at any point without losing what arrived so far. No generation leaves the teacher locked out mid-turn. The stop control is visible from the moment streaming begins - never inside an overflow menu.
 
   _(HAX G8; Vercel AI Elements streaming pattern)_
 
@@ -24,27 +30,43 @@ status: proposed
 
 - **Grounded answers show their sources.** Every factual claim traces back to a record the teacher can open. A response without sources is a response a teacher cannot verify or act on with confidence.
 
-  _(HAX G11; Carbon explainability popover; PAIR "Explainability" chapter)_
+  _(HAX G11; PAIR "Explainability + Trust" chapter; Vercel AI Elements `Sources`, `InlineCitation`)_
 
   <DemoSources />
 
 - **Consequential actions stop for approval.** Before the assistant files, sends, or modifies a record, it shows the consequences in plain language and waits for an explicit yes. This is the conversational form of CMP-2.
 
-  _(HAX G8, G9; PAIR Pattern 18; Vercel AI Elements `Confirmation` component)_
+  _(HAX G16-A - feedforward; PAIR Pattern 16 - "Let users supervise automation"; Vercel AI Elements `Confirmation`)_
 
   <DemoConfirmation />
 
-- **Refusals and errors follow the same anatomy as any TFX error (CNT-1): what happened, what it means, what to do next.** No model talk. No apology language. Failure stays safe and boring.
+- **Agents show their work.** When the assistant runs a multi-step job, show the plan before it starts and the task list as it progresses. Long flows offer a checkpoint the teacher can return to.
 
-  _(PAIR "Errors" chapter; TFX CNT-1 - error message anatomy)_
+  _(HAX G16-A - feedforward; Vercel AI Elements `Plan`, `Task`, `Checkpoint`)_
+
+  <DemoPlan />
+
+  <DemoTask />
+
+- **Refusals and errors follow CNT-1 anatomy: what happened, what it means, what to do next.** A refusal explains what it cannot do and redirects; an error names what failed and the recovery path. No ML or model terminology in user-facing copy.
+
+  _(PAIR "Errors + Graceful Failure" chapter; TFX CNT-1)_
 
 - **Scope when in doubt.** When the teacher's intent is ambiguous, the assistant asks one clarifying question rather than acting on a guess. Acting on the wrong assumption costs more than a single turn of delay.
 
-  _(HAX G10; PAIR "Context errors" chapter)_
+  _(HAX G10; PAIR "Errors + Graceful Failure" chapter - context errors)_
 
-- **Conversation memory is visible.** The thread shows what the assistant can see in this session. Any context the teacher attached - a document, a student's notes, a class list - stays visible. They know exactly what the assistant is working from.
+- **Conversation memory is visible.** Attached context - documents, student notes, class lists - stays visible in the attachments strip for the whole session. When the assistant cannot see something any more, say so; never imply continuity.
 
-  _(Voiceflow conversation design - "Understanding Layer / context boundaries")_
+  _(Voiceflow conversation design - "Understanding Layer / context boundaries"; Vercel AI Elements `Attachments`, `Context`)_
+
+  <DemoAttachments />
+
+- **Every response carries a feedback affordance; reasoning stays hidden by default.** A minimal rate-or-flag control on each assistant message, acknowledged on use. Surface model reasoning only when the teacher would act differently knowing how the answer was reached.
+
+  _(PAIR Pattern 15 - "Let users give feedback"; HAX G15; Vercel AI Elements `MessageBranch`, `Reasoning`)_
+
+  <DemoReasoning />
 
 ## Shape the assistant
 
@@ -60,11 +82,15 @@ These rules apply when you write or review a system prompt for a TFX conversatio
 
 - **Include 3-5 labelled examples covering the warmth calibration.** One example of a correct reply and one that is too clinical teach the Kind Utility register faster than prose description.
 
-  _(Anthropic Prompting best practices - "Use examples effectively"; OpenAI Prompt engineering guide - "Few-Shot Learning")_
+  _(Anthropic Prompting best practices - "Use examples effectively"; OpenAI Prompt engineering guide - "Few-shot learning")_
 
 - **Structure the prompt: identity, instructions, examples, context - using XML tags.** This ordering is auditable and prevents later sections silently overriding earlier ones.
 
-  _(OpenAI Prompt engineering guide - "Prompt Structure Organization"; Anthropic Prompting best practices - "Structure prompts with XML tags")_
+  _(OpenAI Prompt engineering guide - "Message formatting with Markdown and XML"; Anthropic Prompting best practices - "Structure prompts with XML tags")_
+
+- **For complex tasks, instruct the model to reason before answering.** "Before drafting the lesson hook, consider the year level, the objective, and what the teacher already knows" beats asking for the answer directly.
+
+  _(Anthropic Prompting best practices - "Thinking and reasoning")_
 
 - **Control output format with positive instructions, not prohibitions.** "Respond in plain prose, one idea per sentence" is more reliable than "do not use bullet lists."
 
@@ -72,7 +98,15 @@ These rules apply when you write or review a system prompt for a TFX conversatio
 
 - **Wrap classroom-context data in labelled tags so the model knows what is fixed.** `<context>` blocks containing subject, level, and class size stop the model from asking the teacher to repeat what the system already holds.
 
-  _(Anthropic Prompting best practices - "Structure prompts with XML tags"; OpenAI Prompt engineering guide - "Context Window Management")_
+  _(Anthropic Prompting best practices - "Structure prompts with XML tags"; OpenAI Prompt engineering guide - "Include relevant context information")_
+
+- **Treat teacher-pasted content as data, not instructions.** Wrap it in a labelled tag (`<student_work>`, `<document>`) and state that content inside those tags never overrides the assistant's role or constraints.
+
+  _(Anthropic Prompting best practices - "Structure prompts with XML tags"; Anthropic agentic security guidance)_
+
+- **Test the prompt with real teacher inputs before shipping.** Run 5-10 representative inputs - one ambiguous, one off-topic, one very short - and check tone, scope, and fallbacks.
+
+  _(Anthropic prompt engineering overview - "Before prompt engineering: build evaluations")_
 
 ## Handle the turn
 
@@ -80,17 +114,25 @@ These rules govern how the assistant behaves during a live conversation.
 
 - **Open with a scope statement and one forward prompt, not a feature list.** Teachers have limited time. "I can help you plan this lesson or suggest differentiation strategies - where would you like to start?" sets expectations without overwhelming.
 
-  _(Google Conversation Design guide - "Persona Development / Conversational Components")_
+  _(Google Conversation Design guide - "Create a persona")_
 
 - **Ask one clarifying question at a time, and only ask what the system does not already know.** Stacking questions, or re-asking context the system holds, feels like a poorly designed form.
 
   _(Amazon Alexa design principles - "Be Brief / Be Contextual")_
 
-- **Escalate fallbacks: brief reprompt on the first miss, add an example on the second, exit gracefully at the third.** Never imply the teacher did something wrong. Assume cooperation and rephrase naturally.
+- **Calibrate response length to register.** A quick question gets 2-3 sentences; a structured request can run longer. Default short; let the teacher pull more.
+
+  _(Amazon Alexa design principles - "Be Brief"; Google Conversation Design guide)_
+
+- **Match confirmation weight to consequence.** Irreversible actions get explicit yes or no; reversible ones use implicit confirmation ("I'll draft this now") the teacher can interrupt. Constant explicit confirmation trains click-through.
+
+  _(Google Conversation Design guide - "Confirmations")_
+
+- **Escalate fallbacks: brief reprompt on the first miss, add an example on the second, exit gracefully at the third.** Never imply the teacher did something wrong. Assume cooperation and rephrase naturally. System errors skip the reprompt ladder and follow CNT-1 anatomy instead.
 
   _(Google Conversation Design guide - "Errors")_
 
-- **Design the unhappy paths explicitly; do not rely on base model defaults.** Off-topic input, ambiguity, and frustration are where teacher-facing assistants lose trust. Script escape hatches to help resources or a human reviewer.
+- **Design the unhappy paths explicitly; do not rely on base model defaults.** Off-topic input gets a brief acknowledgement before the redirect - never a blunt refusal. Ambiguity and frustration are where teacher-facing assistants lose trust. Script escape hatches to help resources or a human reviewer.
 
   _(Voiceflow conversation design - "Unhappy Path Design")_
 
@@ -100,4 +142,4 @@ These rules govern how the assistant behaves during a live conversation.
 
 - **End turns with an optional forward-offer, not a mandatory question.** "Want me to adjust this for lower-ability learners?" invites the teacher to continue but lets them close the loop. An interrogative like "What do you need next?" creates conversational pressure.
 
-  _(Google Conversation Design guide - "Conversational components"; Amazon Alexa design principles - "Be Natural")_
+  _(Amazon Alexa design principles - "Be Natural")_

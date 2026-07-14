@@ -66,13 +66,15 @@ This applies especially to agents and Q&A features.
 **R5 - Consequential actions require explicit approval; everything else gets undo.**
 Any AI-triggered action that modifies, sends, or deletes records must show consequences in plain language and wait for an explicit approve/deny before executing.
 For lower-stakes outputs, undo is sufficient.
-(HAX G8, G9; PAIR Pattern 18: "Give control back to the user when automation fails"; existing TFX CMP-2: "destructive actions show consequences and offer undo/confirm.")
+(HAX G8, G9; PAIR Pattern 16: "Let users supervise automation - enable review and approval of automated decisions"; existing TFX CMP-2: "destructive actions show consequences and offer undo/confirm.")
 
 **R6 - Make failure safe and boring.**
 AI errors must not use ML or model terminology in user-facing copy.
 Error messages say what did not work and what the teacher can do next.
 The failure experience should not be worse than the non-AI fallback.
 (PAIR Errors chapter: "Make failure safe and boring"; HAX G12 context memory after error; TFX interaction guideline: "Lead with the teacher's next action in... errors.")
+
+R7 (confidence display, PAIR Pattern 11 + HAX G2) and R8 (feedback acknowledgement, PAIR Feedback + Control + HAX G15) added after the 2026-07-15 depth review.
 
 ---
 
@@ -136,7 +138,7 @@ Fails when: the confirmation copy uses technical or ML terminology.
 | PAIR: layered onboarding template | merged into R1 | Template language informs the rule; not a separate control |
 | PAIR: co-learning plan | cut | Implementation concern; not a design control |
 | PAIR: implicit vs explicit feedback | cut | Worth revisiting for feedback UI; not actionable now |
-| PAIR: feedback acknowledgement | cut | Good microcopy guidance; subsumed by R3 (teacher stays author) |
+| PAIR: feedback acknowledgement | kept as rule (2026-07-15 review) | acknowledgement at point of feedback is a distinct moment from edit/revert |
 | PAIR: make failure safe and boring | kept as R6 | Exact framing preserved |
 | PAIR: context errors (wrong intent assumption) | merged into R4 | Context errors are the main risk in Q&A and agent features |
 | PAIR: progressive disclosure of explanation | routed to table | Informs summarisation and Q&A rows; too specific to be a global rule |

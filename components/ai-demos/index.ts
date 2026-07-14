@@ -11,3 +11,4 @@ export { DemoAttachments } from "./demo-attachments";
 export { DemoReasoning } from "./demo-reasoning";
 export { DemoPromptInput } from "./demo-prompt-input";
 export { DemoAiLabel } from "./demo-ai-label";
+export { DemoEmptyState } from "./demo-empty-state";

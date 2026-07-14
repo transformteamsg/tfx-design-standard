@@ -246,3 +246,10 @@ The upstream component imports two lucide-react icons that are not present in th
 version pinned by base-nova. Fix: substitute with the nearest available lucide icons
 (or inline the SVG paths) — the exact substitutions are in the commit that installed
 this component.
+
+**`prompt-input` — `PromptInputButton` tooltip nests buttons (known issue, not patched):**
+Passing `tooltip` to `PromptInputButton` renders a Tooltip trigger `<button>` around the
+Button's own `<button>` — invalid HTML that breaks hydration. `CheckpointTrigger` shows
+the correct pattern (Base UI `TooltipTrigger render={<Button …/>}` merges into one
+element). Until upstream fixes it, do not pass `tooltip` to `PromptInputButton`; use
+`aria-label` plus visible text instead.

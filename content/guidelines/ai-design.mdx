@@ -17,9 +17,13 @@ Choose your surface from the task type first. The wrong surface creates busywork
 | Summarisation — distil a document or thread | Inline below or beside the source | `Message`, `Sources`, `InlineCitation` | Can the teacher trace every claim back to its source? |
 | Q&A over content — ask about a document or thread | Embedded panel or drawer beside the source | `Message`, `Sources`, `InlineCitation`, `Attachments` | Does it ask rather than guess when it is not confident? |
 | Agent that takes actions — files, sends, creates records | Inline workflow with an explicit confirmation gate; never silent | `Confirmation`, `Task`, `Plan`, `Checkpoint` | Is every consequential action shown in plain language before it runs? |
+| Classification output — label, flag, or score on a record | Inline with the field it annotates; never silent | `Message`, `Sources`, `InlineCitation` | Is the teacher meant to act on it or just know it? If act, add a confirmation path. |
+| Transcription — voice dictation into a field | Inline in the form; transcribed text immediately editable | `SpeechInput`, `Transcription` | Faithful transcription of the teacher's words, or reinterpretation? If reinterpreting, route to generated draft. |
 | Full conversation — open-ended chat | Last resort, not first idea — see rule below | `Conversation`, `Message`, `PromptInput`, `Reasoning` | Is this task genuinely open-ended, or does it have a known shape? |
 
-- **Use an embedded, task-specific control when the job is known. Use a conversation surface only when the task cannot be scoped in advance.** An assistant that takes actions routes to the agent row, even when it is framed as chat.
+- **Use an embedded, task-specific control when the job is known. Use a conversation surface only when the task cannot be scoped in advance.** An assistant that takes actions routes to the agent row, even when it is framed as chat. Before routing, ask whether AI belongs at all - if a rule, filter, or manual control gives the same result with less uncertainty, prefer it. The Q&A row covers a known, bounded document set; when the source set is open-ended, the conversation row applies.
+
+  _(PAIR "User Needs + Defining Success" chapter - "do not use AI just because you can")_
 
 ## Rules that always apply
 
@@ -27,27 +31,35 @@ Choose your surface from the task type first. The wrong surface creates busywork
 
   _(HAX G1-G2; PAIR "Mental Models" chapter)_
 
-- **Mark AI-generated content at the point where it appears.** Every surface that shows AI output carries a visible indicator co-located with that content — not only in a header or tooltip. The indicator stays present until the teacher edits the content; it never appears in a disabled state. See the demo below for the TFX pattern.
+- **Mark AI-generated content at the point where it appears.** Every surface that shows AI output carries a visible indicator co-located with that content — not only in a header or tooltip. The indicator stays present until the teacher edits the content; it never appears in a disabled state. See the demo below for the TFX pattern. Place the indicator at the smallest scope that covers the AI content - the field for single values, the form header only when the whole form is AI-generated.
 
-  _(Carbon AI label principle; HAX G11)_
+  _(Carbon AI label principle - placement scoping; HAX G11)_
 
 <DemoAiLabel />
 
 - **The teacher stays the author.** Every AI-generated draft, fill, or suggestion must be editable and revertable. When a teacher edits AI content, the AI marking is removed. When they revert, it returns. Outputs the teacher cannot edit — summaries, answers — carry one explicit feedback affordance instead.
 
-  _(Carbon revert-to-AI pattern; HAX G9, G15; PAIR "Feedback and control" chapter)_
+  _(Carbon revert-to-AI pattern; HAX G9, G15; PAIR "Feedback + Control" chapter)_
 
 - **Scope when uncertain; ask before acting on a wrong assumption.** When an AI feature is not confident about the teacher's intent or the right action, it narrows its scope or asks — it does not proceed on a guess. This applies especially to Q&A and agent features.
 
-  _(HAX G10; PAIR "Context errors" chapter)_
+  _(HAX G10; PAIR "Errors + Graceful Failure" chapter - context errors)_
 
 - **Consequential actions require explicit approval; everything else gets undo.** Any AI-triggered action that modifies, sends, or deletes records shows the consequence in plain language and waits for an approve or deny before it runs. For lower-stakes outputs, undo is enough. (CMP-2)
 
-  _(HAX G8, G9; PAIR Pattern 18; Vercel AI Elements `Confirmation` component)_
+  _(HAX G8, G9; PAIR Pattern 16 - "Let users supervise automation"; Vercel AI Elements `Confirmation` component)_
 
 - **Make failure safe and boring.** AI errors never use ML or model terminology in user-facing copy. Error messages say what did not work and what the teacher can do next. The failure experience must not be worse than the non-AI fallback.
 
   _(PAIR "Errors" chapter - "make failure safe and boring"; TFX CNT-1)_
+
+- **Show certainty in plain language, not percentages.** When output reliability varies and the teacher needs to weigh it, label it categorically - high, medium, or low confidence - or offer the top alternatives. Numeric percentages mis-calibrate readers without probability training; user-test before shipping them.
+
+  _(PAIR Pattern 11 - "Determine how to show model confidence, if at all"; HAX G2)_
+
+- **Acknowledge feedback at the point it is given.** When a teacher thumbs-down, flags, or corrects an AI output, confirm receipt in the same view. Never promise the model will improve; say only that the feedback was received.
+
+  _(PAIR "Feedback + Control" chapter; HAX G15)_
 
 ## Product calibration
 
@@ -56,7 +68,7 @@ Same rules everywhere; weight and tone adjust by product.
 | Product | Weight | Notes |
 | --- | --- | --- |
 | Teacher Workspace | Standard | Inline suggestion and generated draft are the most likely first features. Error tone: workmanlike — no apology, no cheerfulness, just the next step. |
-| CaseSync | Higher gravity | Records feed assessments and may affect student placement. The author and approval rules carry extra weight. Summaries surface sources every time. Confirmation gates show more consequence detail than the minimum — "This will update the student's reading level record", not "Confirm". Avoid any copy that implies the model has learned from a student's data. |
+| CaseSync | Higher gravity | Records feed assessments and may affect student placement. The authorship rule (teacher stays the author) and the approval rule (consequential actions) carry extra weight. Summaries surface sources every time. Confirmation gates show more consequence detail than the minimum — "This will update the student's reading level record", not "Confirm". Avoid any copy that implies the model has learned from a student's data. The explainability content behind the AI mark names the source data and output type specifically. For AI-generated grades or assessments, confirmation copy names the student, the assessed item, and the proposed value. |
 | Glow | Lighter | Inline suggestion fits goal-setting and reflection surfaces. Failure tone can be warmer. The AI marking must still be present — no lighter treatment waives the labelling requirement. |
 
 When the routing table lands on a full conversation, see [Conversation design](/guidelines/conversation-design).
