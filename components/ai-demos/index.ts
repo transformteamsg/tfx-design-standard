@@ -1,6 +1,13 @@
 export { DemoFrame } from "./demo-frame";
+export { DemoConversation } from "./demo-conversation";
 export { DemoStreaming } from "./demo-streaming";
 export { DemoSources } from "./demo-sources";
+export { DemoInlineCitation } from "./demo-inline-citation";
 export { DemoConfirmation } from "./demo-confirmation";
+export { DemoTask } from "./demo-task";
+export { DemoPlan } from "./demo-plan";
+export { DemoCheckpoint } from "./demo-checkpoint";
+export { DemoAttachments } from "./demo-attachments";
+export { DemoReasoning } from "./demo-reasoning";
 export { DemoPromptInput } from "./demo-prompt-input";
 export { DemoAiLabel } from "./demo-ai-label";

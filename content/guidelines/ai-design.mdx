@@ -4,6 +4,8 @@ description: The right AI surface does less work for the teacher, not more. Pick
 status: proposed
 ---
 
+> Reference: [Google PAIR Guidebook](https://pair.withgoogle.com/guidebook/), [Microsoft HAX Toolkit](https://www.microsoft.com/en-us/haxtoolkit/library/), [IBM Carbon for AI](https://carbondesignsystem.com/guidelines/carbon-for-ai/), [Vercel AI Elements](https://elements.ai-sdk.dev/). Rules below are distilled from the highest-agreement points across all four sources and adapted to TFX products and the Kind Utility brand.
+
 ## Start with what you're designing
 
 Choose your surface from the task type first. The wrong surface creates busywork — a teacher who already knows what they want should never have to compose a prompt to get it.
@@ -23,17 +25,29 @@ Choose your surface from the task type first. The wrong surface creates busywork
 
 - **Set expectations before the first interaction.** Introduce any AI feature with one sentence on what it does and at least one honest limitation — "it works best when…" or "it cannot…".
 
+  _(HAX G1-G2; PAIR Mental Models chapter - layered onboarding template)_
+
 - **Mark AI-generated content at the point where it appears.** Every surface that shows AI output carries a visible indicator co-located with that content — not only in a header or tooltip. The indicator stays present until the teacher edits the content; it never appears in a disabled state. See the demo below for the TFX pattern.
+
+  _(Carbon AI label principle; HAX G11; cross-industry labelling consensus)_
 
 <DemoAiLabel />
 
 - **The teacher stays the author.** Every AI-generated draft, fill, or suggestion must be editable and revertable. When a teacher edits AI content, the AI marking is removed. When they revert, it returns. Outputs the teacher cannot edit — summaries, answers — carry one explicit feedback affordance instead.
 
+  _(Carbon revert-to-AI pattern; HAX G9, G15; PAIR feedback and control chapter)_
+
 - **Scope when uncertain; ask before acting on a wrong assumption.** When an AI feature is not confident about the teacher's intent or the right action, it narrows its scope or asks — it does not proceed on a guess. This applies especially to Q&A and agent features.
+
+  _(HAX G10; PAIR context errors chapter)_
 
 - **Consequential actions require explicit approval; everything else gets undo.** Any AI-triggered action that modifies, sends, or deletes records shows the consequence in plain language and waits for an approve or deny before it runs. For lower-stakes outputs, undo is enough. (CMP-2)
 
+  _(HAX G8, G9; PAIR Pattern 18 - give control back when automation fails; Vercel AI Elements `Confirmation` component)_
+
 - **Make failure safe and unremarkable.** AI errors never use ML or model terminology in user-facing copy. Error messages say what did not work and what the teacher can do next. The failure experience must not be worse than the non-AI fallback.
+
+  _(PAIR Errors chapter - "make failure safe and boring"; HAX G12)_
 
 ## Product calibration
 
