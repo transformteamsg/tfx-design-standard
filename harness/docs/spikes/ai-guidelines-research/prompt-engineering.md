@@ -94,43 +94,43 @@ Follow-ups should feel like a helpful suggestion, not a form to fill.
 
 ### Shape the assistant (system prompt guidance)
 
-- **Declare the role in teacher-facing terms from the first line.** A sentence like "You are a teaching-support assistant for Singapore primary-school educators" anchors tone and scope more reliably than a generic "helpful assistant" framing.
+- **Declare the role in teacher-facing terms from the first line.** "You are a teaching-support assistant for Singapore primary-school educators" anchors tone and scope more reliably than a generic "helpful assistant" framing.
   Citation: Anthropic Prompting best practices - "Give Claude a role" / https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices
 
-- **Explain the *why* behind each constraint, not just the rule.** The model generalises from reasons; "use MOE-prescribed terminology so responses match what teachers see in official materials" teaches a principle, not just a word list.
+- **Explain the why behind each constraint, not just the rule.** The model generalises from reasons. "Use MOE-prescribed terminology so responses match what teachers see in official materials" teaches a principle, not just a word list.
   Citation: Anthropic Prompting best practices - "Add context to improve performance"
 
-- **Include 3-5 labelled examples covering the warmth calibration.** One example of a correct reply and one that is too clinical teach the model the "Kind Utility" register faster than any prose description.
+- **Include 3-5 labelled examples covering the warmth calibration.** One example of a correct reply and one that is too clinical teach the Kind Utility register faster than prose description.
   Citation: Anthropic Prompting best practices - "Use examples effectively"; OpenAI Prompt engineering guide - "Few-Shot Learning"
 
-- **Structure the prompt: identity → instructions → examples → context, using XML tags.** This ordering is auditable and prevents later sections silently overriding earlier ones - important when AI features are handed across team members.
-  Citation: OpenAI Prompt engineering guide - "Prompt Structure Organization"; Anthropic - "Structure prompts with XML tags"
+- **Structure the prompt: identity, instructions, examples, context - using XML tags.** This ordering is auditable and prevents later sections silently overriding earlier ones.
+  Citation: OpenAI Prompt engineering guide - "Prompt Structure Organization"; Anthropic Prompting best practices - "Structure prompts with XML tags"
 
 - **Control output format with positive instructions, not prohibitions.** "Respond in plain prose, one idea per sentence" is more reliable than "do not use bullet lists."
   Citation: Anthropic Prompting best practices - "Control the format of responses"
 
-- **Wrap classroom-context data in labelled tags so the model knows what is fixed.** `<context>` blocks containing subject, level, and class size prevent the model from asking the teacher to repeat information the system already holds.
-  Citation: Anthropic Prompting best practices - "Structure prompts with XML tags"; OpenAI - "Context Window Management"
+- **Wrap classroom-context data in labelled tags so the model knows what is fixed.** `<context>` blocks containing subject, level, and class size stop the model from asking the teacher to repeat what the system already holds.
+  Citation: Anthropic Prompting best practices - "Structure prompts with XML tags"; OpenAI Prompt engineering guide - "Context Window Management"
 
 ### Handle the turn (interaction fundamentals)
 
-- **Open with a brief scope statement and a single forward prompt, not a feature list.** Teachers have limited time; a welcome like "I can help you plan this lesson or suggest differentiation strategies - where would you like to start?" sets expectations without overwhelming.
+- **Open with a scope statement and one forward prompt, not a feature list.** Teachers have limited time. "I can help you plan this lesson or suggest differentiation strategies - where would you like to start?" sets expectations without overwhelming.
   Citation: Google Conversation Design guide - "Persona Development / Conversational Components" / https://developers.google.com/assistant/conversation-design
 
-- **Ask one clarifying question at a time, and only ask what the system does not already know.** Stacking questions or re-asking context the system holds feels like a poorly designed form, not a conversation.
+- **Ask one clarifying question at a time, and only ask what the system does not already know.** Stacking questions, or re-asking context the system holds, feels like a poorly designed form.
   Citation: Amazon Alexa design principles - "Be Brief / Be Contextual" / https://developer.amazon.com/en-US/docs/alexa/alexa-design/get-started.html
 
-- **Escalate fallbacks: brief reprompt on the first miss, add an example on the second, exit gracefully at the third.** Never imply the teacher did something wrong; assume cooperation and rephrase naturally.
+- **Escalate fallbacks: brief reprompt on the first miss, add an example on the second, exit gracefully at the third.** Never imply the teacher did something wrong. Assume cooperation and rephrase naturally.
   Citation: Google Conversation Design guide - "Errors" / https://developers.google.com/assistant/conversation-design/errors
 
-- **Design the unhappy paths explicitly; do not rely on base model defaults.** Ambiguity, frustration, and off-topic input are where teacher-facing assistants lose trust - script those paths deliberately with escape hatches to help resources or a human reviewer.
+- **Design the unhappy paths explicitly; do not rely on base model defaults.** Off-topic input, ambiguity, and frustration are where teacher-facing assistants lose trust. Script escape hatches to help resources or a human reviewer.
   Citation: Voiceflow conversation design - "Unhappy Path Design" / https://www.voiceflow.com/blog/conversation-design
 
-- **State session-reset boundaries clearly rather than implying continuity.** If the assistant cannot access a prior conversation, surface that ("This is a new session - I don't have our previous conversation") rather than attempting to fill in gaps.
+- **State session-reset boundaries clearly; do not imply continuity.** If the assistant cannot access a prior conversation, say so - "This is a new session - I don't have our previous conversation" - rather than filling in gaps.
   Citation: Voiceflow conversation design - "Understanding Layer / context boundaries"
 
-- **End turns with an optional forward-offer, not a mandatory question.** "Want me to adjust this for lower-ability learners?" invites the teacher to continue but lets them close the loop; an interrogative like "What do you need next?" creates conversational pressure.
-  Citation: Google Conversation Design guide - "Conversational components - acknowledgements and suggestions"; Amazon Alexa - "Be Natural"
+- **End turns with an optional forward-offer, not a mandatory question.** "Want me to adjust this for lower-ability learners?" invites the teacher to continue but lets them close the loop. An interrogative like "What do you need next?" creates conversational pressure.
+  Citation: Google Conversation Design guide - "Conversational components - acknowledgements and suggestions"; Amazon Alexa design principles - "Be Natural"
 
 ---
 

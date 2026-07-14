@@ -12,92 +12,92 @@ status: proposed
 
 - **Prompt input carries the guidance.** Suggestions show what the assistant is good at. Attachment indicators show what it can read. A teacher who can see both knows immediately how to begin.
 
-  _(HAX G3, G4 - time services and show contextually relevant information)_
+  _(HAX G3, G4)_
 
   <DemoPromptInput />
 
 - **Streaming must be stoppable.** Progress is visible while the response generates, and the teacher can stop it at any point without losing what arrived so far. No generation leaves the teacher locked out mid-turn.
 
-  _(HAX G8 - support efficient dismissal; Vercel AI Elements streaming pattern)_
+  _(HAX G8; Vercel AI Elements streaming pattern)_
 
   <DemoStreaming />
 
 - **Grounded answers show their sources.** Every factual claim traces back to a record the teacher can open. A response without sources is a response a teacher cannot verify or act on with confidence.
 
-  _(HAX G11; Carbon explainability popover; PAIR explainability chapter)_
+  _(HAX G11; Carbon explainability popover; PAIR "Explainability" chapter)_
 
   <DemoSources />
 
 - **Consequential actions stop for approval.** Before the assistant files, sends, or modifies a record, it shows the consequences in plain language and waits for an explicit yes. This is the conversational form of CMP-2.
 
-  _(HAX G8, G9; PAIR Pattern 18 - give control back when automation fails; Vercel AI Elements `Confirmation` component)_
+  _(HAX G8, G9; PAIR Pattern 18; Vercel AI Elements `Confirmation` component)_
 
   <DemoConfirmation />
 
 - **Refusals and errors follow the same anatomy as any TFX error (CNT-1): what happened, what it means, what to do next.** No model talk. No apology language. Failure stays safe and boring.
 
-  _(PAIR Errors chapter - "make failure safe and boring"; HAX G12)_
+  _(PAIR "Errors" chapter; HAX G12)_
 
 - **Scope when in doubt.** When the teacher's intent is ambiguous, the assistant asks one clarifying question rather than acting on a guess. Acting on the wrong assumption costs more than a single turn of delay.
 
-  _(HAX G10; PAIR context errors chapter)_
+  _(HAX G10; PAIR "Context errors" chapter)_
 
 - **Conversation memory is visible.** The thread shows what the assistant can see in this session. Any context the teacher attached - a document, a student's notes, a class list - stays visible. They know exactly what the assistant is working from.
 
-  _(Voiceflow conversation design - "Understanding Layer / context boundaries")_
+  _(Voiceflow conversation design - "Understanding Layer")_
 
 ## Shape the assistant
 
 These rules apply when you write or review the system prompt for a TFX conversation surface.
 
-- **Declare the role in teacher-facing terms from the first line.** A sentence like "You are a teaching-support assistant for Singapore primary-school educators" anchors tone and scope more reliably than a generic framing.
+- **Declare the role in teacher-facing terms from the first line.** "You are a teaching-support assistant for Singapore primary-school educators" anchors tone and scope more reliably than a generic framing.
 
   _(Anthropic Prompting best practices - "Give Claude a role")_
 
-- **Explain the why behind each constraint, not just the rule.** The model generalises from reasons - "use MOE-prescribed terminology so responses match what teachers see in official materials" teaches a principle, not just a word list.
+- **Explain the why behind each constraint, not just the rule.** The model generalises from reasons. "Use MOE-prescribed terminology so responses match what teachers see in official materials" teaches a principle, not just a word list.
 
   _(Anthropic Prompting best practices - "Add context to improve performance")_
 
-- **Include 3-5 labelled examples covering the warmth calibration.** One example of a correct reply and one that is too clinical teach the Kind Utility register faster than any prose description can.
+- **Include 3-5 labelled examples covering the warmth calibration.** One example of a correct reply and one that is too clinical teach the Kind Utility register faster than prose description.
 
   _(Anthropic Prompting best practices - "Use examples effectively"; OpenAI Prompt engineering guide - "Few-Shot Learning")_
 
-- **Structure the prompt: identity, instructions, examples, context - using XML tags.** This ordering is auditable and prevents later sections silently overriding earlier ones when AI features are handed across team members.
+- **Structure the prompt: identity, instructions, examples, context - using XML tags.** This ordering is auditable and prevents later sections silently overriding earlier ones.
 
-  _(OpenAI Prompt engineering guide - "Prompt Structure Organization"; Anthropic - "Structure prompts with XML tags")_
+  _(OpenAI Prompt engineering guide - "Prompt Structure Organization"; Anthropic Prompting best practices - "Structure prompts with XML tags")_
 
 - **Control output format with positive instructions, not prohibitions.** "Respond in plain prose, one idea per sentence" is more reliable than "do not use bullet lists."
 
   _(Anthropic Prompting best practices - "Control the format of responses")_
 
-- **Wrap classroom-context data in labelled tags so the model knows what is fixed.** `<context>` blocks containing subject, level, and class size prevent the model from asking the teacher to repeat information the system already holds.
+- **Wrap classroom-context data in labelled tags so the model knows what is fixed.** `<context>` blocks containing subject, level, and class size stop the model from asking the teacher to repeat what the system already holds.
 
-  _(Anthropic Prompting best practices - "Structure prompts with XML tags"; OpenAI - "Context Window Management")_
+  _(Anthropic Prompting best practices - "Structure prompts with XML tags"; OpenAI Prompt engineering guide - "Context Window Management")_
 
 ## Handle the turn
 
 These rules govern how the assistant behaves during a live conversation.
 
-- **Open with a brief scope statement and a single forward prompt, not a feature list.** Teachers have limited time - a welcome like "I can help you plan this lesson or suggest differentiation strategies - where would you like to start?" sets expectations without overwhelming.
+- **Open with a scope statement and one forward prompt, not a feature list.** Teachers have limited time. "I can help you plan this lesson or suggest differentiation strategies - where would you like to start?" sets expectations without overwhelming.
 
   _(Google Conversation Design guide - "Persona Development / Conversational Components")_
 
-- **Ask one clarifying question at a time, and only ask what the system does not already know.** Stacking questions or re-asking context the system holds feels like a poorly designed form, not a conversation.
+- **Ask one clarifying question at a time, and only ask what the system does not already know.** Stacking questions, or re-asking context the system holds, feels like a poorly designed form.
 
   _(Amazon Alexa design principles - "Be Brief / Be Contextual")_
 
-- **Escalate fallbacks: brief reprompt on the first miss, add an example on the second, exit gracefully at the third.** Never imply the teacher did something wrong - assume cooperation and rephrase naturally.
+- **Escalate fallbacks: brief reprompt on the first miss, add an example on the second, exit gracefully at the third.** Never imply the teacher did something wrong. Assume cooperation and rephrase naturally.
 
   _(Google Conversation Design guide - "Errors")_
 
-- **Design the unhappy paths explicitly; do not rely on base model defaults.** Ambiguity, frustration, and off-topic input are where teacher-facing assistants lose trust - script those paths with escape hatches to help resources or a human reviewer.
+- **Design the unhappy paths explicitly; do not rely on base model defaults.** Off-topic input, ambiguity, and frustration are where teacher-facing assistants lose trust. Script escape hatches to help resources or a human reviewer.
 
   _(Voiceflow conversation design - "Unhappy Path Design")_
 
-- **State session-reset boundaries clearly rather than implying continuity.** If the assistant cannot access a prior conversation, surface that ("This is a new session - I don't have our previous conversation") rather than attempting to fill in gaps.
+- **State session-reset boundaries clearly; do not imply continuity.** If the assistant cannot access a prior conversation, say so - "This is a new session - I don't have our previous conversation" - rather than filling in gaps.
 
-  _(Voiceflow conversation design - "Understanding Layer / context boundaries")_
+  _(Voiceflow conversation design - "Understanding Layer")_
 
-- **End turns with an optional forward-offer, not a mandatory question.** "Want me to adjust this for lower-ability learners?" invites the teacher to continue but lets them close the loop - an interrogative like "What do you need next?" creates conversational pressure.
+- **End turns with an optional forward-offer, not a mandatory question.** "Want me to adjust this for lower-ability learners?" invites the teacher to continue but lets them close the loop. An interrogative like "What do you need next?" creates conversational pressure.
 
-  _(Google Conversation Design guide - "Conversational components - acknowledgements and suggestions"; Amazon Alexa - "Be Natural")_
+  _(Google Conversation Design guide - "Conversational components"; Amazon Alexa design principles - "Be Natural")_
