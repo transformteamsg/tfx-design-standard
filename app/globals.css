@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@source "../node_modules/streamdown/dist/*.js";
 
 /* Class-based dark variant so shadcn's dark: utilities never activate from the
    OS colour-scheme preference — this site is light-only (no .dark layer). */
