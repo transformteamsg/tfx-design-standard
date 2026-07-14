@@ -333,6 +333,8 @@ def check_file(filepath, theme_names=None, context=None):
         theme_names = set()
     if context is None:
         context = resolve_profile_context([filepath])
+    if context.error:
+        return [f"ERROR token-audit: {context.error}"]
     spacing_value = context.spacing_scale()
     radius_value = context.radius_scale()
     spacing_scale = spacing_value.value
@@ -569,6 +571,8 @@ def check_file(filepath, theme_names=None, context=None):
 
 
 def _unresolved_profile_note(context):
+    if context.error:
+        return None
     unresolved = []
     if not context.spacing_scale().resolved:
         unresolved.append("TOK-2 spacing scale")
@@ -589,6 +593,8 @@ def scan_paths(paths, theme_names=None, context=None):
     if theme_names is None:
         theme_names = set()
     context = context or resolve_profile_context(paths)
+    if context.error:
+        return [f"ERROR token-audit: {context.error}"]
     all_errors = []
     unresolved_note = _unresolved_profile_note(context)
     if unresolved_note:
@@ -947,6 +953,25 @@ def run_self_test():
     if any("[TOK-2]" in line or "[TOK-3]" in line for line in errs):
         failures.append(
             f"FAIL unresolved profile borrowed scale judgments — got: {errs}")
+
+    case_count += 1
+    invalid_context = ProfileContext(
+        repo_root="",
+        domain=None,
+        context_path=None,
+        profile_path=None,
+        compatibility_fallback=False,
+        profile_values={},
+        product_values={},
+        error="scan paths span multiple repository roots",
+    )
+    mixed_results = scan_paths(["unused"], context=invalid_context)
+    if mixed_results != [
+        "ERROR token-audit: scan paths span multiple repository roots"
+    ]:
+        failures.append(
+            f"FAIL mixed-root context should fail safely — got: {mixed_results}"
+        )
 
     # ── Report ─────────────────────────────────────────────────────────────────
     if failures:

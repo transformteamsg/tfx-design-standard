@@ -352,8 +352,9 @@ controls:
   # COL-1 re-tagged deterministic → hybrid 2026-07-01 — ratchet, design-lead
   # approved (Glow pilot audit HF: the mechanical half — colour resolves to a
   # token — passes trivially; the real failure is a neutral variant sitting
-  # where the brand primary belongs, which is judgment. Glow primary confirmed
-  # #F76B15; foreground-pairing + same-hue-collision guidance added).
+  # where the brand primary belongs, which is judgment. The confirmed primary
+  # remains in the selected domain profile/history; foreground-pairing and
+  # same-hue-collision guidance remain global).
   # See docs/catalog-changes/glow-pilot-col1-typ1-tok3.md
   - id: COL-1
     source: TFX-DS
@@ -362,7 +363,7 @@ controls:
     check: hybrid
     phase: [implement, verify]
     applies_to: [page, component]
-    verify: "Deterministic half: primary-action and brand-moment colours resolve to the active product's primary token or its ramp (checks/token-audit). Judgment half: the evaluator confirms the view's single primary action is the product primary (dovetails CMP-5) and no other product's primary appears for emphasis; see controls/col-1.md for the per-product table and the foreground pairing"
+    verify: "Deterministic half: primary-action and brand-moment colours resolve to the active product/profile primary token or its ramp (checks/token-audit). Judgment half: the evaluator confirms the view's single primary action is the resolved product primary (dovetails CMP-5), its foreground pairing clears A11Y-1, and no other product's primary appears for emphasis; see controls/col-1.md"
     waiver: documented
     fails_when:
       - primary CTA in a colour that is not the product's primary

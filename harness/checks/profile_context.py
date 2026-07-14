@@ -8,11 +8,12 @@ and no generated context; that repository resolves the Teachers & School profile
 
 The resolver is deliberately shared by the typography and token scanners so an
 explicit non-T&S domain can never accidentally receive a checker-local T&S
-fallback. Values carry provenance: product, profile, compatibility fallback, or
-unresolved.
+fallback. Values carry provenance: product, profile, product + profile,
+compatibility fallback, or unresolved.
 """
 
 import json
+import math
 import os
 import re
 import sys
@@ -37,8 +38,13 @@ PROFILE_SECTIONS = ("colour", "typography", "stack")
 
 PRODUCT = "product"
 PROFILE = "profile"
+COMPOSITE = "product + profile"
 COMPATIBILITY = "compatibility fallback"
 UNRESOLVED = "unresolved"
+
+
+class ProfileContextError(ValueError):
+    """The requested scan paths cannot share one product/profile context."""
 
 
 @dataclass(frozen=True)
@@ -66,6 +72,7 @@ class ProfileContext:
     profile_values: Mapping[str, Any]
     product_values: Mapping[str, Any]
     notes: Tuple[str, ...] = ()
+    error: Optional[str] = None
 
     @property
     def merged_values(self):
@@ -92,7 +99,12 @@ class ProfileContext:
             return ResolvedValue(None, UNRESOLVED, source)
         values = []
         for item in raw:
-            if isinstance(item, bool) or not isinstance(item, (int, float)) or item < 0:
+            if (
+                isinstance(item, bool)
+                or not isinstance(item, (int, float))
+                or not math.isfinite(item)
+                or item < 0
+            ):
                 return ResolvedValue(None, UNRESOLVED, source)
             values.append(item)
         if len(values) != len(set(values)):
@@ -100,9 +112,27 @@ class ProfileContext:
         return ResolvedValue(tuple(values), provenance, source)
 
     def allowed_font_families(self):
-        """Return declared UI and registered wordmark families."""
+        """Return UI/wordmark families with accurate merged provenance."""
         product_typography = self._section(self.product_values, "typography")
         profile_typography = self._section(self.profile_values, "typography")
+        profile_provenance = (
+            COMPATIBILITY if self.compatibility_fallback else PROFILE
+        )
+
+        families = []
+        declarations = {}
+
+        def add_family(value, provenance, source):
+            name = _font_name(value)
+            if not name:
+                return
+            key = name.casefold()
+            if key not in declarations:
+                families.append(name)
+                declarations[key] = {"provenance": set(), "sources": []}
+            declarations[key]["provenance"].add(provenance)
+            if source and source not in declarations[key]["sources"]:
+                declarations[key]["sources"].append(source)
 
         # A product that names display/body fonts overrides a profile-level
         # allowed_families list even if it omits its own derived list.
@@ -112,42 +142,68 @@ class ProfileContext:
         )
         if "allowed_families" in product_typography:
             raw = product_typography.get("allowed_families")
-            provenance, source = PRODUCT, self.context_path
+            if isinstance(raw, list):
+                for value in raw:
+                    add_family(value, PRODUCT, self.context_path)
         elif product_names_fonts:
-            raw = [
-                product_typography.get("display", profile_typography.get("display")),
-                product_typography.get("body", profile_typography.get("body")),
-            ]
-            provenance, source = PRODUCT, self.context_path
+            for field in ("display", "body"):
+                if field in product_typography:
+                    add_family(
+                        product_typography.get(field), PRODUCT, self.context_path
+                    )
+                elif field in profile_typography:
+                    add_family(
+                        profile_typography.get(field),
+                        profile_provenance,
+                        self.profile_path,
+                    )
         elif "allowed_families" in profile_typography:
             raw = profile_typography.get("allowed_families")
-            provenance = COMPATIBILITY if self.compatibility_fallback else PROFILE
-            source = self.profile_path
+            if isinstance(raw, list):
+                for value in raw:
+                    add_family(value, profile_provenance, self.profile_path)
         else:
-            raw = [profile_typography.get("display"), profile_typography.get("body")]
-            provenance = COMPATIBILITY if self.compatibility_fallback else PROFILE
-            source = self.profile_path
-
-        families = []
-        if isinstance(raw, list):
-            for value in raw:
-                name = _font_name(value)
-                if name and name.casefold() not in {f.casefold() for f in families}:
-                    families.append(name)
+            for field in ("display", "body"):
+                add_family(
+                    profile_typography.get(field),
+                    profile_provenance,
+                    self.profile_path,
+                )
 
         # Registered wordmark faces are valid only in their lockup; the static
         # scanner can allow the family while the evaluator checks that scope.
-        wordmarks = dict(profile_typography.get("wordmarks") or {})
+        profile_wordmarks = profile_typography.get("wordmarks")
+        if not isinstance(profile_wordmarks, Mapping):
+            profile_wordmarks = {}
         product_wordmarks = product_typography.get("wordmarks")
-        if isinstance(product_wordmarks, Mapping):
-            wordmarks.update(product_wordmarks)
-        for value in wordmarks.values():
-            name = _font_name(value)
-            if name and name.casefold() not in {f.casefold() for f in families}:
-                families.append(name)
+        if not isinstance(product_wordmarks, Mapping):
+            product_wordmarks = {}
+        wordmark_keys = list(profile_wordmarks)
+        wordmark_keys.extend(
+            key for key in product_wordmarks if key not in profile_wordmarks
+        )
+        for key in wordmark_keys:
+            if key in product_wordmarks:
+                add_family(product_wordmarks[key], PRODUCT, self.context_path)
+            else:
+                add_family(
+                    profile_wordmarks[key], profile_provenance, self.profile_path
+                )
 
         if not families:
-            return ResolvedValue(None, UNRESOLVED, source)
+            return ResolvedValue(None, UNRESOLVED)
+
+        provenances = set()
+        sources = []
+        for declaration in declarations.values():
+            provenances.update(declaration["provenance"])
+            for source in declaration["sources"]:
+                if source not in sources:
+                    sources.append(source)
+        provenance = (
+            next(iter(provenances)) if len(provenances) == 1 else COMPOSITE
+        )
+        source = "; ".join(sources) if sources else None
         return ResolvedValue(tuple(families), provenance, source)
 
     def type_scale(self):
@@ -201,8 +257,15 @@ def _marker_root(start):
         current = parent
 
 
+def _is_within(path, root):
+    try:
+        return os.path.commonpath((path, root)) == root
+    except ValueError:
+        return False
+
+
 def find_repo_root(scan_paths, cwd=None):
-    """Find the target repository root from explicit file/directory scan paths."""
+    """Find one target root without collapsing unrelated scan paths together."""
     cwd = os.path.abspath(cwd or os.getcwd())
     paths = list(scan_paths or [])
     if not paths:
@@ -215,17 +278,27 @@ def find_repo_root(scan_paths, cwd=None):
         path = os.path.abspath(path)
         start = path if os.path.isdir(path) else os.path.dirname(path)
         starts.append(start)
-        root = _marker_root(start)
-        if root:
-            roots.append(root)
-    if roots and all(root == roots[0] for root in roots):
-        return roots[0]
+        roots.append(_marker_root(start))
 
-    try:
-        common = os.path.commonpath(starts)
-    except ValueError:
-        common = starts[0]
-    return _marker_root(common) or common
+    discovered = {root for root in roots if root}
+    if len(discovered) > 1:
+        raise ProfileContextError(
+            "scan paths span multiple repository roots; run one repository per invocation"
+        )
+    if len(discovered) == 1:
+        root = next(iter(discovered))
+        if all(_is_within(start, root) for start in starts):
+            return root
+        raise ProfileContextError(
+            "scan paths mix a repository root with paths outside it; "
+            "run one repository per invocation"
+        )
+
+    if len(starts) == 1 or len(set(starts)) == 1:
+        return starts[0]
+    raise ProfileContextError(
+        "scan paths have no shared repository marker; pass one repository per invocation"
+    )
 
 
 def _read_json(path, notes):
@@ -277,8 +350,22 @@ def _profile_sections(value, notes, source_label):
 
 def resolve_profile_context(scan_paths, harness_root=None, cwd=None):
     """Resolve the active product/domain context for a scanner invocation."""
-    repo_root = find_repo_root(scan_paths, cwd=cwd)
     harness_root = os.path.abspath(harness_root or HARNESS_ROOT)
+    try:
+        repo_root = find_repo_root(scan_paths, cwd=cwd)
+    except ProfileContextError as exc:
+        message = str(exc)
+        return ProfileContext(
+            repo_root="",
+            domain=None,
+            context_path=None,
+            profile_path=None,
+            compatibility_fallback=False,
+            profile_values={},
+            product_values={},
+            notes=(message,),
+            error=message,
+        )
     notes = []
     context_path = _context_file(repo_root)
     has_design_md = os.path.isfile(os.path.join(repo_root, "DESIGN.md"))
@@ -377,6 +464,7 @@ def run_self_test():
         check("legacy compatibility provenance",
               resolved.type_scale().provenance == COMPATIBILITY)
         check("legacy profile values", resolved.spacing_scale().value == (0, 4, 8, 16))
+        _, other_legacy_target = repo("legacy-other")
 
         # Explicit Platform product values win and never receive T&S values.
         platform, platform_target = repo("platform-product")
@@ -405,6 +493,107 @@ def run_self_test():
         check("product scale values", resolved.type_scale().value[-2:] == (15, 12))
         check("explicit Platform has no T&S family",
               "Plus Jakarta Sans" not in resolved.allowed_font_families().value)
+
+        # One scanner invocation may not combine unrelated product roots. The
+        # legacy path must not pull a T&S fallback into the explicit Platform root.
+        mixed = resolve_profile_context(
+            [legacy_target, platform_target], harness_root=harness
+        )
+        check("mixed roots rejected", mixed.error is not None, str(mixed))
+        check("mixed roots never compatibility", not mixed.compatibility_fallback)
+        check("mixed roots have no selected domain", mixed.domain is None)
+        check(
+            "mixed roots cannot expose fallback families",
+            not mixed.allowed_font_families().resolved,
+        )
+        markerless_mixed = resolve_profile_context(
+            [
+                os.path.relpath(legacy_target, td),
+                os.path.relpath(other_legacy_target, td),
+            ],
+            harness_root=harness,
+            cwd=td,
+        )
+        check("markerless mixed roots rejected", markerless_mixed.error is not None)
+        check(
+            "markerless mixed roots never compatibility",
+            not markerless_mixed.compatibility_fallback,
+        )
+        check(
+            "markerless mixed roots cannot expose fallback scale",
+            not markerless_mixed.type_scale().resolved,
+        )
+
+        # A partial product font/wordmark override is a composite result, not
+        # inaccurately labelled as wholly product- or profile-sourced.
+        partial = ProfileContext(
+            repo_root="fixture",
+            domain="platform",
+            context_path="fixture/.dxd/design.json",
+            profile_path="fixture/platform.yaml",
+            compatibility_fallback=False,
+            profile_values={
+                "typography": {
+                    "display": "Profile Display",
+                    "body": "Profile Body",
+                    "wordmarks": {
+                        "brand": "Old Brand Mark",
+                        "secondary": "Profile Mark",
+                    },
+                }
+            },
+            product_values={
+                "typography": {
+                    "display": "Product Display",
+                    "wordmarks": {"brand": "Product Mark"},
+                }
+            },
+        ).allowed_font_families()
+        check("partial font provenance composite", partial.provenance == COMPOSITE)
+        check(
+            "partial font values merged field by field",
+            partial.value == (
+                "Product Display",
+                "Profile Body",
+                "Product Mark",
+                "Profile Mark",
+            ),
+            str(partial),
+        )
+        check(
+            "partial wordmark override removes old value",
+            "Old Brand Mark" not in partial.value,
+        )
+        check(
+            "partial font sources name both layers",
+            partial.source == "fixture/.dxd/design.json; fixture/platform.yaml",
+            str(partial),
+        )
+
+        nonfinite = ProfileContext(
+            repo_root="fixture",
+            domain="platform",
+            context_path="fixture/.dxd/design.json",
+            profile_path="fixture/platform.yaml",
+            compatibility_fallback=False,
+            profile_values={},
+            product_values={
+                "typography": {"scale_px": [12, float("nan")]},
+                "stack": {
+                    "spacing_px": [0, float("inf")],
+                    "radius_px": [0, float("-inf")],
+                },
+            },
+        )
+        check("NaN type scale unresolved", not nonfinite.type_scale().resolved)
+        check(
+            "infinite spacing scale unresolved",
+            not nonfinite.spacing_scale().resolved,
+        )
+        check(
+            "infinite radius scale unresolved",
+            not nonfinite.radius_scale().resolved,
+        )
 
         # An explicit stub domain remains honestly unresolved.
         stub, stub_target = repo("platform-stub")

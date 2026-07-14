@@ -22,6 +22,7 @@ Exit 1 and print "ERROR <location>: <message>" lines on failure.
 """
 
 import json
+import math
 import os
 import re
 import sys
@@ -414,7 +415,12 @@ def _profile_number_scale(errors, floc, section, data, field):
         return
     invalid = [
         v for v in value
-        if isinstance(v, bool) or not isinstance(v, (int, float)) or v < 0
+        if (
+            isinstance(v, bool)
+            or not isinstance(v, (int, float))
+            or not math.isfinite(v)
+            or v < 0
+        )
     ]
     if invalid:
         errors.append(
@@ -1247,6 +1253,20 @@ def run_self_test():
                      "stack.spacing_px' values must be unique")
         assert_error("domain profile structured wrong scale type", structured,
                      "stack.radius_px' must be a list")
+
+        # YAML admits non-finite float spellings, but scales do not.
+        write_profile("students.yaml",
+                      "domain: students\nname: Students\nstatus: proposed\n"
+                      "typography:\n  scale_px: [12, .nan]\n"
+                      "stack:\n  spacing_px: [0, .inf]\n"
+                      "  radius_px: [0, -.inf]\n")
+        nonfinite = domain_profile_errors(domains_tmp, meta)
+        assert_error("domain profile NaN scale", nonfinite,
+                     "typography.scale_px' values must be non-negative numbers")
+        assert_error("domain profile infinite spacing", nonfinite,
+                     "stack.spacing_px' values must be non-negative numbers")
+        assert_error("domain profile infinite radius", nonfinite,
+                     "stack.radius_px' values must be non-negative numbers")
     finally:
         shutil.rmtree(domains_tmp, ignore_errors=True)
 

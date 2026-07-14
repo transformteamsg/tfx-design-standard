@@ -79,18 +79,16 @@ TARGET_EXTENSIONS = {".css", ".html", ".jsx", ".tsx", ".js", ".ts", ".vue", ".sv
 SEMANTIC_FONT_TOKENS = (
     "font-display", "font-body", "font-sans",
     "--font-display", "--font-body", "var(--font-display)", "var(--font-body)",
-    "inherit", "initial", "unset",
 )
-# Generic CSS family keywords that are not a "typeface" choice.
+# CSS-wide values inherit/reset the declaration and are not a new primary family.
+CSS_WIDE_FAMILY_VALUES = ("inherit", "initial", "unset", "revert", "revert-layer")
+# Generic/system family keywords may follow a declared face as fallbacks, but are
+# never an acceptable primary family by themselves.
 GENERIC_FAMILY_KEYWORDS = (
     "sans-serif", "serif", "monospace", "system-ui", "ui-sans-serif",
-    "ui-monospace", "ui-serif", "cursive", "fantasy", "-apple-system",
-    "blinkmacsystemfont", "segoe ui", "roboto", "helvetica", "arial",
+    "ui-monospace", "ui-serif", "ui-rounded", "cursive", "fantasy", "math",
+    "emoji", "fangsong", "-apple-system", "blinkmacsystemfont",
 )
-# Generics that, used as the PRIMARY family, deliberately pick a non-approved
-# typeface (mono/serif). Sans fallbacks such as sans-serif and system-ui remain
-# allowed after a resolved profile family; these do not.
-NON_APPROVED_PRIMARY_GENERICS = {"monospace", "serif", "ui-monospace", "ui-serif"}
 CSS_FONT_FAMILY_RE = re.compile(r"font-family\s*:\s*([^;{}]+)", re.IGNORECASE)
 TW_FONT_ARBITRARY_RE = re.compile(r"\bfont-\[([^\]]+)\]")
 # Named Tailwind family utilities. Only the built-in non-approved *family*
@@ -102,29 +100,29 @@ TW_FONT_NAMED_FAMILY_RE = re.compile(r"\bfont-(serif|mono)\b")
 def _check_font_rule(scan_line, allowed_families):
     """TYP-1: returns a list of (found, suggest) for disallowed typefaces."""
     hits = []
-    allowed = tuple(f.casefold() for f in (allowed_families or ()))
+    allowed = {f.casefold() for f in (allowed_families or ())}
+    semantic = {token.casefold() for token in SEMANTIC_FONT_TOKENS}
+    css_wide = {value.casefold() for value in CSS_WIDE_FAMILY_VALUES}
+    generics = {value.casefold() for value in GENERIC_FAMILY_KEYWORDS}
     allowed_label = ", ".join(allowed_families or ()) or "the resolved font tokens"
 
     def judge(family_value, source):
-        val = family_value.strip().strip("'\"").lower()
+        val = family_value.strip().strip("'\"").casefold()
         if not val:
             return
-        # Deliberately-non-approved generic as the PRIMARY family → flag.
-        # (_check_font_rule passes only the first family to judge() for CSS,
-        # so this fires only on the primary, not on a sans fallback.)
-        if val in NON_APPROVED_PRIMARY_GENERICS:
+        if val in css_wide:
+            return
+        # Only the first family reaches judge(), so every generic here is being
+        # used as the primary rather than as an allowed fallback.
+        if val in generics:
             hits.append((
                 f'font-family "{family_value.strip()}" ({source})',
                 f"use a resolved profile family ({allowed_label}) via semantic font tokens",
             ))
             return
-        # Generic keyword only → not a typeface choice; allow.
-        if val in GENERIC_FAMILY_KEYWORDS:
+        # Exact equality prevents impostors such as Interstate for Inter.
+        if val in allowed or val in semantic:
             return
-        # Allowed profile family / semantic token (substring match on the first family).
-        for ok in allowed + SEMANTIC_FONT_TOKENS:
-            if ok in val:
-                return
         # Dynamic / interpolated value — unresolvable, caller NOTEs it.
         if "var(" in val or "${" in val or "{" in val:
             return
@@ -342,10 +340,13 @@ def _ends_in_block_comment(line, in_comment):
     return in_comment
 
 
-def check_file(filepath, context=None, rules=None):
+def check_file(filepath, type_scale=None, rules=None, context=None):
     """
     Scan a single file. Returns a list of ERROR / NOTE strings.
-    `context` is a resolved ProfileContext; resolved from `filepath` if omitted.
+    `type_scale` preserves the pre-profile second-positional API. A
+    ProfileContext in that position is also accepted for d705378 compatibility;
+    new callers should pass `context=` explicitly. When `type_scale` is omitted,
+    the active context supplies it.
     `rules` (additive, optional): a set/iterable of control ids to keep
     (e.g. {"TYP-1"}). When None, every rule runs (unchanged default). When
     given, only findings whose control id is in the set are emitted — the
@@ -358,12 +359,23 @@ def check_file(filepath, context=None, rules=None):
     if ext not in TARGET_EXTENSIONS:
         return results
 
+    if isinstance(type_scale, ProfileContext):
+        if context is not None:
+            raise ValueError("ProfileContext supplied twice")
+        context = type_scale
+        type_scale = None
     if context is None:
         context = resolve_profile_context([filepath])
+    if context.error:
+        return [f"ERROR type-scan: {context.error}"]
     font_value = context.allowed_font_families()
     scale_value = context.type_scale()
     allowed_families = font_value.value
-    type_scale = set(scale_value.value) if scale_value.resolved else None
+    effective_type_scale = (
+        set(type_scale)
+        if type_scale is not None
+        else (set(scale_value.value) if scale_value.resolved else None)
+    )
 
     try:
         with open(filepath, encoding="utf-8", errors="replace") as fh:
@@ -399,7 +411,7 @@ def check_file(filepath, context=None, rules=None):
                 emit("TYP-1", found, suggest)
 
         # TYP-2 size floor + TYP-3 on-scale
-        for ctl, found, suggest in _check_size_rules(scan_line, type_scale):
+        for ctl, found, suggest in _check_size_rules(scan_line, effective_type_scale):
             emit(ctl, found, suggest)
 
         # TYP-2 line-height — body-scoped, so establish heading context first.
@@ -427,6 +439,8 @@ def check_file(filepath, context=None, rules=None):
 
 def _unresolved_profile_note(context, rules=None):
     """Return one NOTE for unresolved parameterised controls, or None."""
+    if context.error:
+        return None
     active = set(rules) if rules is not None else VALID_RULES
     unresolved = []
     if "TYP-1" in active and not context.allowed_font_families().resolved:
@@ -448,13 +462,15 @@ def scan_paths(paths, rules=None, context=None):
     `rules` (additive, optional) restricts emitted findings to those control
     ids — passed straight through to check_file."""
     context = context or resolve_profile_context(paths)
+    if context.error:
+        return [f"ERROR type-scan: {context.error}"]
     all_results = []
     unresolved_note = _unresolved_profile_note(context, rules)
     if unresolved_note:
         all_results.append(unresolved_note)
     for p in paths:
         if os.path.isfile(p):
-            all_results.extend(check_file(p, context, rules))
+            all_results.extend(check_file(p, rules=rules, context=context))
         elif os.path.isdir(p):
             for root, dirs, files in os.walk(p):
                 dirs[:] = [d for d in dirs if not d.startswith(".")]
@@ -462,7 +478,11 @@ def scan_paths(paths, rules=None, context=None):
                     ext = os.path.splitext(fname)[1].lower()
                     if ext in TARGET_EXTENSIONS:
                         all_results.extend(
-                            check_file(os.path.join(root, fname), context, rules)
+                            check_file(
+                                os.path.join(root, fname),
+                                rules=rules,
+                                context=context,
+                            )
                         )
         else:
             print(f"ERROR type-scan: path not found: {p}")
@@ -521,7 +541,7 @@ def run_self_test():
         with tempfile.NamedTemporaryFile(suffix=ext, mode="w", delete=False, encoding="utf-8") as tf:
             tf.write(content)
             tf.flush()
-            res = check_file(tf.name, context)
+            res = check_file(tf.name, context=context)
         os.unlink(tf.name)
         return res
 
@@ -529,7 +549,7 @@ def run_self_test():
         with tempfile.NamedTemporaryFile(suffix=ext, mode="w", delete=False, encoding="utf-8") as tf:
             tf.write(content)
             tf.flush()
-            res = check_file(tf.name, context, rules)
+            res = check_file(tf.name, rules=rules, context=context)
         os.unlink(tf.name)
         return res
 
@@ -595,6 +615,14 @@ def run_self_test():
     # "FONT: CSS Inter clean" above.)
     assert_violations("FONT: CSS monospace primary",
                       ".code { font-family: monospace; }", ".css", ["TYP-1"])
+    assert_violations("FONT: CSS sans-serif primary",
+                      ".body { font-family: sans-serif; }", ".css", ["TYP-1"])
+    assert_violations("FONT: CSS system-ui primary",
+                      ".body { font-family: system-ui; }", ".css", ["TYP-1"])
+    assert_violations("FONT: CSS ui-rounded primary",
+                      ".body { font-family: ui-rounded; }", ".css", ["TYP-1"])
+    assert_violations("FONT: substring impostor Interstate",
+                      ".body { font-family: Interstate, sans-serif; }", ".css", ["TYP-1"])
 
     # ── Profile-parameterised TYP-1 / TYP-3 ──────────────────────────────────
     case_count += 1
@@ -623,6 +651,50 @@ def run_self_test():
     if not any("[TYP-1]" in line for line in leaked_family):
         failures.append(
             f"FAIL PROFILE: T&S family in Platform should fail TYP-1 — got {leaked_family}")
+
+    case_count += 1
+    clone_family = run(
+        ".screen { font-family: 'Source Sans 3 Clone', sans-serif; }",
+        ".css", platform_context,
+    )
+    if not any("[TYP-1]" in line for line in clone_family):
+        failures.append(
+            "FAIL PROFILE: substring clone should fail exact Platform family "
+            f"matching — got {clone_family}"
+        )
+
+    # Preserve the pre-profile API: the second positional argument remains an
+    # explicit type scale and overrides the context's resolved scale.
+    case_count += 1
+    with tempfile.NamedTemporaryFile(suffix=".css", mode="w", delete=False,
+                                     encoding="utf-8") as tf:
+        tf.write(".screen { font-family: Inter, sans-serif; font-size: 15px; }")
+        tf.flush()
+        legacy_api = check_file(tf.name, {14, 15, 16}, context=t_and_s_context)
+    os.unlink(tf.name)
+    if legacy_api:
+        failures.append(
+            f"FAIL API: second-positional type_scale should retain 15px — got {legacy_api}"
+        )
+
+    case_count += 1
+    invalid_context = ProfileContext(
+        repo_root="",
+        domain=None,
+        context_path=None,
+        profile_path=None,
+        compatibility_fallback=False,
+        profile_values={},
+        product_values={},
+        error="scan paths span multiple repository roots",
+    )
+    mixed_results = scan_paths(["unused"], context=invalid_context)
+    if mixed_results != [
+        "ERROR type-scan: scan paths span multiple repository roots"
+    ]:
+        failures.append(
+            f"FAIL PROFILE: mixed-root context should fail safely — got {mixed_results}"
+        )
 
     case_count += 1
     with tempfile.NamedTemporaryFile(suffix=".css", mode="w", delete=False,

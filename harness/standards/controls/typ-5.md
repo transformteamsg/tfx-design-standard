@@ -25,7 +25,8 @@ figures stay fine for numbers that sit alone in running prose.
 
 ## Rationale
 
-Inter ships proportional numerals by default — a `1` is narrower than a `0`. In a
+Many UI typefaces ship proportional numerals by default — a `1` is narrower than a
+`0`. In a
 column of marks that means the ones place wanders left and right down the page, and a
 total that ticks from `9` to `10` shifts every character after it. Both read as
 sloppy and both cost the teacher a beat of re-scanning. These are number-dense

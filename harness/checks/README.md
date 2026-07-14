@@ -92,7 +92,7 @@ their behaviour is proven by their own `--self-test`s and a real-corpus run over
 
 The validator also enforces two **fragment-parity** sub-checks via `<!-- tfx-sync:… -->` markers: `[L0-SYNC]` (the inline "Non-negotiables (L0)" lists in `CLAUDE.md` and `design/SKILL.md` must equal the catalog's `tier: L0` set) and `[SLP9-SYNC]` (the `copy` buzzword summary must be a subset of the canonical list in `standards/controls/slp-9.md`). See [docs/SYNC.md](../docs/SYNC.md). A third check, `[COUNT-SYNC]`, needs no markers: every "`<N> controls`" claim in `README.md` **and `docs/index.html`** must equal the catalog's actual control count, so an added or removed control fails the build until the prose is updated.
 
-**Self-test:** `python3 checks/validate.py --self-test` → `SELF-TEST OK (64 cases)`.
+**Self-test:** `python3 checks/validate.py --self-test` → `SELF-TEST OK (67 cases)`.
 
 **Enforcement coverage (`enforced:` / `script:`).** Two OPTIONAL per-control catalog
 fields make the built/unbuilt boundary machine-readable instead of living in prose
@@ -114,7 +114,9 @@ this **replaces hand-maintained gap lists**, which drift as controls are added (
 `.dxd/design.json` (legacy `.tfx/design.json` fallback), loads only the declared
 domain profile, and merges product `colour` / `typography` / `stack` values over it.
 Typed helpers return font families, type scale, spacing scale, and radius scale with
-`product` / `profile` / `compatibility fallback` / `unresolved` provenance.
+`product` / `profile` / `product + profile` / `compatibility fallback` /
+`unresolved` provenance. Mixed scan roots are rejected as an operational error; the
+resolver never collapses unrelated roots to a common ancestor.
 
 An explicit non-T&S domain never loads T&S values. A missing profile fact produces
 one checker NOTE and skips only that profile-specific judgment. Through v0.x, the
@@ -122,7 +124,7 @@ sole compatibility case is a repo with neither `DESIGN.md` nor generated context
 that repo resolves the `teachers-school` profile. Remove the shim at 1.0.
 
 **Self-test:** `python3 checks/profile_context.py --self-test` →
-`SELF-TEST OK (23 cases)`.
+`SELF-TEST OK (37 cases)`.
 
 ## Profile adoption verification matrix
 
@@ -140,6 +142,8 @@ The Platform fixture values are contract samples only, not settled Platform bran
 facts. The contract proves passing values are graded against the product declaration,
 failing T&S-only/off-scale values report TYP-1/TYP-3/TOK-2/TOK-3, provenance never
 uses the compatibility fallback, and global consumers contain no concrete T&S markers.
+The leakage check derives every unscoped control detail path from the catalog rather
+than maintaining a hand-picked detail-file list.
 
 
 ## Token audit (built)
@@ -158,7 +162,7 @@ uses the compatibility fallback, and global consumers contain no concrete T&S ma
 
 **Peer-radius-consistency (TOK-3):** The scanner checks each statically visible raw radius against the resolved scale. It cannot infer concentric nesting or compare peer elements across the rendered tree; those clauses remain evaluator-judged against the product's Card/base-radius anchor.
 
-**Self-test:** `python3 checks/token-audit.py --self-test` → `SELF-TEST OK (27 cases)`.
+**Self-test:** `python3 checks/token-audit.py --self-test` → `SELF-TEST OK (28 cases)`.
 
 ## Audit record (built)
 
@@ -292,7 +296,7 @@ This closes the loop `token-audit.py` leaves open ("a human closes the decision-
 
 **Rules:**
 
-- **TYP-1 fonts (L1):** a CSS `font-family:` or Tailwind `font-[…]` arbitrary value naming a typeface outside the resolved profile families; the named Tailwind family utilities `font-mono` / `font-serif` (but never weight utilities); and a non-approved generic used as the primary family. Semantic font tokens and generic sans fallbacks remain allowed. Registered wordmark families resolve from the active profile; their lockup-only scope remains an evaluator check.
+- **TYP-1 fonts (L1):** a CSS `font-family:` or Tailwind `font-[…]` arbitrary value naming a typeface outside the resolved profile families; the named Tailwind family utilities `font-mono` / `font-serif` (but never weight utilities); and any generic/system family used as the primary family. Primary concrete families match declarations exactly, so substring impostors fail. Semantic font tokens remain allowed; generic families are allowed only after a declared primary as fallbacks. Registered wordmark families resolve from the active profile; their lockup-only scope remains an evaluator check.
 - **TYP-2 size floor (L1):** a `font-size:` or `text-[Npx]` with `N < 14`. The suggest text carries the 11/14 ambiguity (labels may go to 11px; body floor is 14px) since label-vs-body context needs rendered layout.
 - **TYP-2 line-height (L1):** an explicit unitless / em `line-height:` or `leading-[N]` clearly outside the 1.5–1.6 body band (judged with a generous 1.4–1.7 tolerance). px / % line-heights are NOT judged — the ratio needs the font size.
 - **TYP-3 on-scale (L1):** a `text-[Npx]` or `font-size:Npx` whose whole-px `N` is not on the resolved `typography.scale_px`. There is no embedded concrete fallback.
@@ -309,7 +313,7 @@ NOTE and skips only TYP-1 and/or TYP-3. Universal TYP-2/TYP-4 checks continue.
 - All-caps set via camelCase inline style (TYP-4) — `style={{textTransform:'uppercase'}}` in JSX is not matched; only the CSS `text-transform: uppercase` form and the Tailwind `uppercase` utility are.
 - Fonts / sizes set in a separate stylesheet the line-local rule can't see, or composed from variables / class-name interpolation — out of static reach.
 
-**Self-test:** `python3 checks/type-scan.py --self-test` → `SELF-TEST OK (46 cases)`.
+**Self-test:** `python3 checks/type-scan.py --self-test` → `SELF-TEST OK (53 cases)`.
 
 ## Component manifest (built)
 

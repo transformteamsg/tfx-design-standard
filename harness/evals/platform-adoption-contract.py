@@ -2,9 +2,12 @@
 """Executable AE1 contract for an explicit Platform product declaration."""
 
 import os
+import re
 import subprocess
 import sys
 from pathlib import Path
+
+import yaml
 
 
 HARNESS_ROOT = Path(__file__).resolve().parents[1]
@@ -14,25 +17,28 @@ FIXTURE_ROOT = Path(__file__).resolve().parent / "fixtures" / "platform-adoption
 PASS_FILES = [FIXTURE_ROOT / "pass.css", FIXTURE_ROOT / "pass.tsx"]
 FAIL_FILE = FIXTURE_ROOT / "fail.css"
 
-GLOBAL_FILES = [
+GLOBAL_CONSUMER_FILES = [
     HARNESS_ROOT / "standards" / "catalog.yaml",
-    HARNESS_ROOT / "standards" / "controls" / "tok-1.md",
-    HARNESS_ROOT / "standards" / "controls" / "tok-3.md",
-    HARNESS_ROOT / "standards" / "controls" / "typ-1.md",
-    HARNESS_ROOT / "standards" / "controls" / "col-2.md",
-    HARNESS_ROOT / "standards" / "controls" / "cmp-1.md",
     HARNESS_ROOT / ".claude" / "skills" / "design" / "SKILL.md",
     HARNESS_ROOT / ".claude" / "skills" / "standards" / "SKILL.md",
     HARNESS_ROOT / ".claude" / "agents" / "evaluator.md",
 ]
-T_AND_S_MARKERS = (
-    "Plus Jakarta Sans",
-    "Base UI",
-    "Radix Colors",
-    "shadcn",
-    "Teacher & School",
-    "TFX type scale",
-    "#0064FF",
+COMMON_MARKERS = (
+    ("Plus Jakarta Sans", re.compile(r"Plus Jakarta Sans", re.IGNORECASE)),
+    ("Inter", re.compile(r"(?<![\w-])Inter(?![\w-])")),
+    ("Base UI", re.compile(r"Base UI", re.IGNORECASE)),
+    ("Radix Colors", re.compile(r"Radix Colors", re.IGNORECASE)),
+    ("shadcn", re.compile(r"shadcn", re.IGNORECASE)),
+    ("Teacher & School", re.compile(r"Teacher & School", re.IGNORECASE)),
+    ("TFX type scale", re.compile(r"TFX type scale", re.IGNORECASE)),
+    ("#0064FF", re.compile(r"#0064FF", re.IGNORECASE)),
+)
+DETAIL_VALUE_MARKERS = (
+    ("--tw-blue", re.compile(r"--tw-blue", re.IGNORECASE)),
+    ("--casesync", re.compile(r"--casesync", re.IGNORECASE)),
+    ("--glow", re.compile(r"--glow", re.IGNORECASE)),
+    ("#3E63DD", re.compile(r"#3E63DD", re.IGNORECASE)),
+    ("#F76B15", re.compile(r"#F76B15", re.IGNORECASE)),
 )
 
 sys.path.insert(0, str(CHECKS_DIR))
@@ -65,6 +71,45 @@ def control_ids(output):
         if control:
             ids.add(control)
     return ids
+
+
+def global_control_detail_files(failures):
+    """Return every detail file for a control with no portfolio scope fields."""
+    catalog_path = HARNESS_ROOT / "standards" / "catalog.yaml"
+    try:
+        catalog = yaml.safe_load(catalog_path.read_text(encoding="utf-8"))
+    except (OSError, yaml.YAMLError) as exc:
+        failures.append(f"cannot load global control details from catalog: {exc}")
+        return []
+
+    controls = catalog.get("controls") if isinstance(catalog, dict) else None
+    if not isinstance(controls, list):
+        failures.append("catalog controls is not a list")
+        return []
+
+    paths = []
+    for control in controls:
+        if not isinstance(control, dict):
+            continue
+        if any(field in control for field in ("products", "audiences", "domains")):
+            continue
+        detail = control.get("detail")
+        if isinstance(detail, str) and detail:
+            paths.append(HARNESS_ROOT / "standards" / detail)
+    return sorted(set(paths))
+
+
+def leaked_markers(path, markers, failures):
+    try:
+        content = path.read_text(encoding="utf-8")
+    except OSError as exc:
+        failures.append(f"cannot read global file {path.relative_to(REPO_ROOT)}: {exc}")
+        return
+    for label, pattern in markers:
+        if pattern.search(content):
+            failures.append(
+                f"global file {path.relative_to(REPO_ROOT)} leaks {label!r}"
+            )
 
 
 def main():
@@ -116,19 +161,22 @@ def main():
     if "Plus Jakarta Sans" in families:
         failures.append("explicit Platform context received a T&S-only font family")
 
-    for path in GLOBAL_FILES:
-        text = path.read_text(encoding="utf-8")
-        for marker in T_AND_S_MARKERS:
-            if marker in text:
-                failures.append(f"global file {path.relative_to(REPO_ROOT)} leaks {marker!r}")
+    for path in GLOBAL_CONSUMER_FILES:
+        leaked_markers(path, COMMON_MARKERS + DETAIL_VALUE_MARKERS, failures)
+
+    detail_files = global_control_detail_files(failures)
+    if not detail_files:
+        failures.append("no global control detail files were discovered")
+    for path in detail_files:
+        leaked_markers(path, COMMON_MARKERS + DETAIL_VALUE_MARKERS, failures)
 
     t_and_s_profile = (
         HARNESS_ROOT / "standards" / "domains" / "teachers-school.yaml"
     ).read_text(encoding="utf-8")
-    for marker in T_AND_S_MARKERS:
-        if marker not in t_and_s_profile:
+    for label, pattern in COMMON_MARKERS + DETAIL_VALUE_MARKERS:
+        if not pattern.search(t_and_s_profile):
             failures.append(
-                f"T&S profile lost required moved value marker {marker!r}"
+                f"T&S profile lost required moved value marker {label!r}"
             )
 
     if failures:

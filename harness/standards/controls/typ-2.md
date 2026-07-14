@@ -16,15 +16,15 @@ refs:
 
 ## Requirement
 
-Set body copy at 14px or larger in Inter, UI labels at 11px or larger, and body
-line-height between 1.5 and 1.6. Sizes come from the TFX type scale (TYP-3); this
-control sets the floors.
+Set body copy at 14px or larger, UI labels at 11px or larger, and body line-height
+between 1.5 and 1.6. Typefaces resolve under TYP-1 and sizes also satisfy the active
+product/domain `typography.scale_px` under TYP-3; this control sets the universal
+readability floors.
 
 ## Rationale
 
-Readability is kindness. Teachers scan between classes — already tired, already
-behind. Type below these floors trades their legibility for layout convenience, which
-inverts Utility by Default.
+Readability is kindness. People often scan product UI while busy or under pressure.
+Type below these floors trades their legibility for layout convenience.
 
 ## Passes when
 
@@ -40,6 +40,6 @@ inverts Utility by Default.
 
 ## How to verify
 
-`checks/type-scan` (planned): walk computed styles for text nodes; report any below
-the floors with selector and computed size. Until the script exists, verify manually
-against rendered output and label it "verified manually".
+Run `checks/type-scan.py <path>…` for statically visible font sizes and unitless/em
+line-heights. Verify computed styles manually where values or body/label context are
+not statically resolvable.

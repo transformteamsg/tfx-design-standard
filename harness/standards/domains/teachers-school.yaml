@@ -20,7 +20,13 @@ typography:
   # Normative source: TYP-1.
   display: "Plus Jakarta Sans"
   body: "Inter"
-  allowed_families: ["Plus Jakarta Sans", "Inter"]
+  # Exact CSS family aliases used by the variable-font builds are declared too;
+  # scanners never infer them by substring.
+  allowed_families:
+    - "Plus Jakarta Sans"
+    - "Plus Jakarta Sans Variable"
+    - "Inter"
+    - "Inter Variable"
   display_weights: [600]
   body_weights: [400, 500, 600]
   # Formerly documented globally as the TFX type scale; this value belongs here.

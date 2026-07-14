@@ -110,8 +110,20 @@ scoped controls via the ratchet (a control carrying `domains: [<slug>]`), but
 **no domain may weaken, override, or globally waive a foundation control** — the
 L0/L1 floor binds every domain, and waivers stay per-instance (an inline
 `dxd-waive` at one deviation site, never a domain-wide exemption). A domain
-profile carries brand *parameters*, never catalog-rule restatements; an absent
-profile field means the foundation default applies. See `standards/domains/`.
+profile carries brand *parameters*, never catalog-rule restatements.
+
+Concrete parameters resolve in one canonical order, field by field:
+
+1. the product's `DESIGN.md` / generated `.dxd/design.json` value;
+2. the one selected `standards/domains/<domain>.yaml` profile value;
+3. unresolved — consumers ask, emit a NOTE, or defer only that parameterised
+   judgment; they never borrow another domain's value or claim it passed.
+
+The sole exception is an explicit, time-bounded v0.x compatibility shim: when a
+repository has **neither** `DESIGN.md` nor generated `.dxd/design.json` (or legacy
+`.tfx/design.json`), it resolves the `teachers-school` profile. A declared domain,
+including an incomplete proposed profile, never uses that fallback. Remove the shim
+at 1.0. See `standards/domains/`.
 
 ## Tiers → enforcement
 

@@ -26,10 +26,10 @@ and skip the *why*. Instructional copy and running body prose are governed by CN
 
 ## Rationale
 
-Teachers scan descriptive copy to decide whether a thing is for them. A description
-that opens with the mechanism ("shadcn/ui default token scales, unmodified") makes
-the reader do the translation from implementation to value; purpose-first copy does
-that work for them.
+People scan descriptive copy to decide whether a thing is for them. A description
+that opens with the mechanism ("the default token scale, unmodified") makes the
+reader do the translation from implementation to value; purpose-first copy does that
+work for them.
 
 Split out of CNT-3 on 2026-07-03, during the HDB writing-guide port: the purpose
 clause is pure judgment while CNT-3's other clauses (person, voice, sentence length)
@@ -50,7 +50,7 @@ purpose failure. One control, one verifiable failure mode.
 ## Fails when
 
 - A title, description, or intro opens with the mechanism (the tool, token, or
-  library) instead of what it does for the teacher: "shadcn/ui default token scales,
+  library) instead of what it does for the user: "the default token scale,
   unmodified" as a section's first line.
 - A page description that only names the page's parts, with no line about who it
   serves or when to reach for it.
