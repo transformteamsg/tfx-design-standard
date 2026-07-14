@@ -1,0 +1,50 @@
+---
+title: AI design
+description: The right AI surface does less work for the teacher, not more. Pick the control that fits the task before you open a design file.
+status: proposed
+---
+
+## Start with what you're designing
+
+Choose your surface from the task type first. The wrong surface creates busywork — a teacher who already knows what they want should never have to compose a prompt to get it.
+
+| What you're designing | Where it lives | Components to reach for | The call that matters |
+| --- | --- | --- | --- |
+| Inline suggestion — autocomplete, chip, next action | Embedded in the existing workflow; no separate panel | `Suggestion`, `PromptInput` | Does the suggestion interrupt the task or fit inside it? |
+| Generated draft — write or rewrite a field or section | Inline in the form or document; modal only for full-page replacement | `Message`, `MessageResponse`, `Shimmer` | Is the output editable, revertable, and clearly marked? |
+| Summarisation — distil a document or thread | Inline below or beside the source | `Message`, `Sources`, `InlineCitation` | Can the teacher trace every claim back to its source? |
+| Q&A over content — ask about a document or thread | Embedded panel or drawer beside the source | `Message`, `Sources`, `InlineCitation`, `Attachments` | Does it ask rather than guess when it is not confident? |
+| Agent that takes actions — files, sends, creates records | Inline workflow with an explicit confirmation gate; never silent | `Confirmation`, `Task`, `Plan`, `Checkpoint` | Is every consequential action shown in plain language before it runs? |
+| Full conversation — open-ended chat | Last resort, not first idea — see rule below | `Conversation`, `Message`, `PromptInput`, `Reasoning` | Is this task genuinely open-ended, or does it have a known shape? |
+
+- **Use an embedded, task-specific control when the job is known. Use a conversation surface only when the task cannot be scoped in advance.**
+
+## Rules that always apply
+
+Every AI feature in Teacher Workspace, CaseSync, and Glow follows all six rules below.
+
+- **Set expectations before the first interaction.** Introduce any AI feature with one sentence on what it does and at least one honest limitation — "it works best when…" or "it cannot…". Overinflated expectations are why teachers abandon features.
+
+- **Mark AI-generated content at the point where it appears.** Every surface that shows AI output carries a visible indicator co-located with that content — not only in a header or tooltip. The indicator stays present until the teacher edits the content; it never appears in a disabled state. See the demo below for the TFX pattern. (CMP-2 governs the revert affordance that pairs with this marking.)
+
+<DemoAiLabel />
+
+- **The teacher stays the author.** Every AI-generated draft, fill, or suggestion must be editable and revertable. When a teacher edits AI content, the AI marking is removed. When they revert, it returns. Authorship is never ambiguous.
+
+- **Scope when uncertain; ask before acting on a wrong assumption.** When an AI feature is not confident about the teacher's intent or the right action, it narrows its scope or asks — it does not proceed on a guess. This applies especially to Q&A and agent features.
+
+- **Consequential actions require explicit approval; everything else gets undo.** Any AI-triggered action that modifies, sends, or deletes records shows the consequence in plain language and waits for an approve or deny before it runs. For lower-stakes outputs, undo is enough. (CMP-2)
+
+- **Make failure safe and unremarkable.** AI errors never use ML or model terminology in user-facing copy. Error messages say what did not work and what the teacher can do next. The failure experience must not be worse than the non-AI fallback.
+
+## Product calibration
+
+Same rules everywhere; weight and tone adjust by product.
+
+| Product | Weight | Notes |
+| --- | --- | --- |
+| Teacher Workspace | Standard | Inline suggestion and generated draft are the most likely first features. Error tone: workmanlike — no apology, no cheerfulness, just the next step. |
+| CaseSync | Higher gravity | Records feed assessments and may affect student placement. R3 (teacher stays author) and R5 (consequential actions gated) carry extra weight. Summaries surface sources every time. Confirmation gates show more consequence detail than the minimum — "This will update the student's reading level record", not "Confirm". Avoid any copy that implies the model has learned from a student's data. |
+| Glow | Lighter | Inline suggestion fits goal-setting and reflection surfaces. Failure tone can be warmer. The AI marking must still be present — no lighter treatment waives the labelling requirement. |
+
+When the routing table lands on a full conversation, see [Conversation design](/guidelines/conversation-design).

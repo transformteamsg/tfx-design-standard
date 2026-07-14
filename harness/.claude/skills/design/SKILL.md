@@ -152,7 +152,9 @@ Establish, asking the user only what you cannot infer:
    everything downstream. **Any
    surface with an async or destructive
    action inherits the `[flow]` controls** (CMP-2, CMP-3) even when it is a single
-   page — do not let the page/flow split scope them out.
+   page — do not let the page/flow split scope them out. **If the surface involves AI
+   — generation, suggestions, summarisation, agents, or a conversation panel — also
+   load `../ai/SKILL.md` and route by its feature-type table before diverging.**
 4. **Done-criteria**: write a short sprint contract — the 3–6 statements the evaluator
    will later grade against. Include the `intent`-phase controls (CNT-2 naming applies
    here: name the feature in plain language now, before a placeholder name spreads).

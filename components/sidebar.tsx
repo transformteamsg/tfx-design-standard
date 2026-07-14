@@ -69,6 +69,8 @@ const nav: NavGroup[] = [
         ],
       },
       { href: "/guidelines/interaction", title: "Interaction" },
+      { href: "/guidelines/ai-design", title: "AI design" },
+      { href: "/guidelines/conversation-design", title: "Conversation design" },
       { href: "/guidelines/web-interface", title: "Web interface" },
       { href: "/guidelines/data-viz", title: "Data visualization" },
       { href: "/guidelines/illustration", title: "Illustration" },

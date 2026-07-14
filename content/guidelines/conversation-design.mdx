@@ -1,0 +1,29 @@
+---
+title: Conversation design
+description: Conversation surfaces work best when no structured control can do the job. Know when to reach for chat - and how to make it trustworthy when you do.
+status: proposed
+---
+
+- **Conversation is the last resort, not the first idea.** Embedded AI inside the task beats chat one step removed from it. Reach for a conversation surface only when the teacher's goal cannot be known in advance. See [AI design](/guidelines/ai-design) for the routing table that helps you decide.
+
+- **Prompt input carries the guidance.** Suggestions show what the assistant is good at. Attachment indicators show what it can read. A teacher who can see both knows immediately how to begin.
+
+  <DemoPromptInput />
+
+- **Streaming must be stoppable.** Progress is visible while the response generates, and the teacher can stop it at any point without losing what arrived so far. No generation leaves the teacher locked out mid-turn.
+
+  <DemoStreaming />
+
+- **Grounded answers show their sources.** Every factual claim traces back to a record the teacher can open. A response without sources is a response a teacher cannot verify or act on with confidence.
+
+  <DemoSources />
+
+- **Consequential actions stop for approval.** Before the assistant files, sends, or modifies a record, it shows the consequences in plain language and waits for an explicit yes. This is the conversational form of CMP-2.
+
+  <DemoConfirmation />
+
+- **Refusals and errors follow the same anatomy as any TFX error (CNT-1): what happened, what it means, what to do next.** No model talk. No apology language. Failure stays safe and boring.
+
+- **Scope when in doubt.** When the teacher's intent is ambiguous, the assistant asks one clarifying question rather than acting on a guess. Acting on the wrong assumption costs more than a single turn of delay.
+
+- **Conversation memory is visible.** The thread shows what the assistant can see in this session. Any context the teacher attached - a document, a student's notes, a class list - stays visible so they know exactly what the assistant is working from.
