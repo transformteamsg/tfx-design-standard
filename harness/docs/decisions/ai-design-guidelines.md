@@ -80,7 +80,7 @@ The spike (index.md section 3) identified four candidate controls not yet in the
 
 **Proposed id:** CNV-1
 
-**Source:** HAX G8; PAIR Pattern 18 (Give control back to the user when automation fails)
+**Source:** HAX G8 (support efficient dismissal)
 
 **Title:** Streaming AI responses render a working stop control
 
@@ -103,9 +103,6 @@ The spike (index.md section 3) identified four candidate controls not yet in the
 
 > "Support efficient dismissal — Make it easy for the user to stop, ignore, or close AI-initiated actions or suggestions."
 > — HAX G8, https://www.microsoft.com/en-us/haxtoolkit/library/ (hax.md)
-
-> "Give control back to the user when automation fails — Provide awareness of the failure, a clear next step, and all context the user needs to act."
-> — PAIR Pattern 18: Supporting Failure, https://pair.withgoogle.com/guidebook-v2/patterns (pair.md)
 
 `[proposed — pending design-lead approval]`
 
@@ -141,8 +138,8 @@ The spike (index.md section 3) identified four candidate controls not yet in the
 > "Consequential actions require explicit approval; everything else gets undo. Any AI-triggered action that modifies, sends, files, or deletes records must show consequences in plain language and wait for an explicit approve/deny before executing."
 > — index.md, R5, citing HAX G8, G9 and TFX CMP-2
 
-> "Convey the consequences of user actions — Show users how their interactions shape the AI's future behavior — before (feedforward), after (feedback), or in documentation."
-> — HAX G16-A/B, hax.md
+> "Let users supervise automation — Enable review and approval of automated decisions. Provides override capability and builds comfort before higher automation. Use when automating decisions that affect user work or data."
+> — PAIR Pattern 16, pair.md
 
 Note: CNV-2 extends CMP-2 (destructive actions show consequences and offer undo/confirm) to cover AI-initiated actions specifically. CMP-2 covers teacher-initiated destructive actions. CNV-2 covers AI-initiated actions that are consequential regardless of whether the teacher triggered them directly.
 
@@ -194,7 +191,7 @@ Note: CNV-2 extends CMP-2 (destructive actions show consequences and offer undo/
 
 **Proposed id:** AID-2
 
-**Source:** PAIR Errors chapter; HAX G12; TFX CNT-1; index.md R6
+**Source:** PAIR Errors chapter; TFX CNT-1; index.md R6
 
 **Title:** AI errors and refusals follow CNT-1 anatomy and contain no model terminology
 

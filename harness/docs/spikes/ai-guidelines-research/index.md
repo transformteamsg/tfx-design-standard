@@ -78,6 +78,9 @@ The failure experience should not be worse than the non-AI fallback.
 
 ## 3. Candidate controls
 
+**Superseded.** The formal proposals live in `docs/decisions/ai-design-guidelines.md`, with different IDs and scopes: CNV-1 stoppable streaming, CNV-2 confirmation for consequential AI actions, AID-1 marking + revert, AID-2 error anatomy.
+The decision record is the single source for control IDs; this section is kept as the research trail.
+
 Four candidate controls for the TFX catalog, one per category.
 Each is verifiable by a reviewer or a static scan.
 

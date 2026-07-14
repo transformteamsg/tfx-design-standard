@@ -17,17 +17,17 @@ Choose your surface from the task type first. The wrong surface creates busywork
 | Agent that takes actions — files, sends, creates records | Inline workflow with an explicit confirmation gate; never silent | `Confirmation`, `Task`, `Plan`, `Checkpoint` | Is every consequential action shown in plain language before it runs? |
 | Full conversation — open-ended chat | Last resort, not first idea — see rule below | `Conversation`, `Message`, `PromptInput`, `Reasoning` | Is this task genuinely open-ended, or does it have a known shape? |
 
-- **Use an embedded, task-specific control when the job is known. Use a conversation surface only when the task cannot be scoped in advance.**
+- **Use an embedded, task-specific control when the job is known. Use a conversation surface only when the task cannot be scoped in advance.** An assistant that takes actions routes to the agent row, even when it is framed as chat.
 
 ## Rules that always apply
 
 - **Set expectations before the first interaction.** Introduce any AI feature with one sentence on what it does and at least one honest limitation — "it works best when…" or "it cannot…".
 
-- **Mark AI-generated content at the point where it appears.** Every surface that shows AI output carries a visible indicator co-located with that content — not only in a header or tooltip. The indicator stays present until the teacher edits the content; it never appears in a disabled state. See the demo below for the TFX pattern. (CMP-2 governs the revert affordance.)
+- **Mark AI-generated content at the point where it appears.** Every surface that shows AI output carries a visible indicator co-located with that content — not only in a header or tooltip. The indicator stays present until the teacher edits the content; it never appears in a disabled state. See the demo below for the TFX pattern.
 
 <DemoAiLabel />
 
-- **The teacher stays the author.** Every AI-generated draft, fill, or suggestion must be editable and revertable. When a teacher edits AI content, the AI marking is removed. When they revert, it returns. Authorship is never ambiguous.
+- **The teacher stays the author.** Every AI-generated draft, fill, or suggestion must be editable and revertable. When a teacher edits AI content, the AI marking is removed. When they revert, it returns. Outputs the teacher cannot edit — summaries, answers — carry one explicit feedback affordance instead.
 
 - **Scope when uncertain; ask before acting on a wrong assumption.** When an AI feature is not confident about the teacher's intent or the right action, it narrows its scope or asks — it does not proceed on a guess. This applies especially to Q&A and agent features.
 
@@ -42,7 +42,7 @@ Same rules everywhere; weight and tone adjust by product.
 | Product | Weight | Notes |
 | --- | --- | --- |
 | Teacher Workspace | Standard | Inline suggestion and generated draft are the most likely first features. Error tone: workmanlike — no apology, no cheerfulness, just the next step. |
-| CaseSync | Higher gravity | Records feed assessments and may affect student placement. R3 (teacher stays author) and R5 (consequential actions gated) carry extra weight. Summaries surface sources every time. Confirmation gates show more consequence detail than the minimum — "This will update the student's reading level record", not "Confirm". Avoid any copy that implies the model has learned from a student's data. |
+| CaseSync | Higher gravity | Records feed assessments and may affect student placement. The author and approval rules carry extra weight. Summaries surface sources every time. Confirmation gates show more consequence detail than the minimum — "This will update the student's reading level record", not "Confirm". Avoid any copy that implies the model has learned from a student's data. |
 | Glow | Lighter | Inline suggestion fits goal-setting and reflection surfaces. Failure tone can be warmer. The AI marking must still be present — no lighter treatment waives the labelling requirement. |
 
 When the routing table lands on a full conversation, see [Conversation design](/guidelines/conversation-design).
