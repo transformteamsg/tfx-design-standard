@@ -32,7 +32,7 @@ export default function Landing() {
     <div className="mx-auto max-w-[880px]">
       <section className="pt-10 sm:pt-16">
         <p className="text-[13px] font-semibold text-tw-blue">
-          TransformX · Teacher &amp; School portfolio
+          DXD · one foundation, four domain expressions
         </p>
         <h1 className="mt-4 max-w-[16ch] font-display text-[48px] font-semibold leading-[1.04] tracking-tight sm:text-[72px]">
           {doc.title}
@@ -54,7 +54,7 @@ export default function Landing() {
             Building with an AI agent?
           </Link>
           <Link
-            href="/how-to-read"
+            href="/harness/get-started"
             className="text-[14px] font-medium text-muted-foreground underline underline-offset-2 hover:text-foreground"
           >
             New here? Start here
@@ -110,7 +110,7 @@ export default function Landing() {
           The one test
         </p>
         <p className="mt-3 max-w-[24ch] font-display text-[24px] font-semibold leading-snug sm:text-[32px]">
-          Does this help teachers work faster with less stress?
+          Does this help people get their time back?
         </p>
         <p className="mt-3 text-[16px] text-white">If not, we don&apos;t build it.</p>
       </section>
@@ -120,7 +120,7 @@ export default function Landing() {
           The designers behind it
         </h2>
         <p className="mt-2 max-w-[60ch] text-[16px] text-muted-foreground">
-          The TransformX product design team writes, argues over, and maintains this standard.
+          The DXD product design team writes, argues over, and maintains this standard.
         </p>
         <div className="mt-8 grid gap-x-6 gap-y-8 sm:grid-cols-3">
           {team.map((m, i) => (

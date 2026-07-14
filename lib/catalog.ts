@@ -23,6 +23,13 @@ type RawCatalog = {
   controls: RawControl[];
 };
 
+export type CatalogMeta = {
+  version: string;
+  updated: string;
+  waiver_syntax: string;
+  domains: Record<string, string>;
+};
+
 /* Fields the public routes (/standards/catalog.yaml, /llms.txt) expose.
    `refs` and `detail` are harness-internal: Notion workspace links and
    repo-relative paths. Detail content is published per control at
@@ -93,6 +100,19 @@ export function getScopeMeta(): {
   };
 }
 
+/* The narrow public metadata contract used by machine readers. Keep this
+   separate from the full meta block so adding catalog implementation details
+   never expands the reader surface by accident. */
+export function getCatalogMeta(): CatalogMeta {
+  const { meta } = readCatalog();
+  return {
+    version: meta.version as string,
+    updated: meta.updated as string,
+    waiver_syntax: meta.waiver_syntax as string,
+    domains: (meta.domains as Record<string, string>) ?? {},
+  };
+}
+
 /* meta keys the public routes expose — deny-by-default, like PUBLIC_FIELDS. */
 const PUBLIC_META = [
   "version",
@@ -120,7 +140,7 @@ export function getPublicCatalogYaml(): string {
   const updated = doc.getIn(["meta", "updated"], true);
   if (updated instanceof Scalar) updated.type = Scalar.QUOTE_DOUBLE;
   const header = [
-    "# TFX Design Standard — control catalog",
+    "# DXD Design Standard — control catalog",
     "# A control is one verifiable statement. If you can't check it, it's not a standard.",
     "# Tiers: L0 = non-negotiable (no waiver) · L1 = mandatory (documented waiver) · L2 = recommended (inline rationale)",
     "# Control rationale and pass/fail examples: /standards/catalog/<id> (append .md for Markdown)",

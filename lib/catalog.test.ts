@@ -2,7 +2,12 @@ import fs from "node:fs";
 import path from "node:path";
 import { parse } from "yaml";
 import { describe, expect, it } from "vitest";
-import { getCatalog, getPublicCatalogYaml, getScopeMeta } from "./catalog";
+import {
+  getCatalog,
+  getCatalogMeta,
+  getPublicCatalogYaml,
+  getScopeMeta,
+} from "./catalog";
 
 /* Characterization tests for the deny-by-default projection in
    lib/catalog.ts. These mirror the module's private PUBLIC_META /
@@ -148,6 +153,24 @@ describe("getScopeMeta — domain registry", () => {
       ["parents", "platform", "students", "teachers-school"].sort(),
     );
     expect(domains["teachers-school"]).toBe("Teachers & School");
+  });
+});
+
+describe("getCatalogMeta — machine-reader contract", () => {
+  it("derives the current waiver syntax and four-domain registry from source meta", () => {
+    const raw = readRawCatalog();
+    const meta = getCatalogMeta();
+    expect(meta.waiver_syntax).toBe(raw.meta.waiver_syntax);
+    expect(meta.waiver_syntax).toMatch(/^dxd-waive\b/);
+    expect(Object.keys(meta.domains).sort()).toEqual(
+      ["parents", "platform", "students", "teachers-school"].sort(),
+    );
+  });
+
+  it("publishes a DXD catalog header without the legacy identity", () => {
+    const yaml = getPublicCatalogYaml();
+    expect(yaml.startsWith("# DXD Design Standard — control catalog")).toBe(true);
+    expect(yaml).not.toMatch(/^# TFX\b/m);
   });
 });
 

@@ -1,6 +1,6 @@
-# tfx-design-standard
+# DXD Design Standard
 
-The DXD Design Standard website (TransformX, Teacher & School portfolio). Next.js 15 App Router + Tailwind v4 + MDX content + YAML control catalog. Package manager: pnpm.
+The DXD Design Standard website: one foundation across Teachers & School, Students, Parents, and Platform. Teachers & School is the first mature domain. Next.js 15 App Router + Tailwind v4 + MDX content + YAML control catalog. Package manager: pnpm.
 
 This site must pass its own standard. Before changing UI, read [harness/standards/catalog.yaml](harness/standards/catalog.yaml) (the single source of truth — the site reads it directly) — especially the SLP (anti-slop) controls.
 
@@ -14,7 +14,7 @@ This site must pass its own standard. Before changing UI, read [harness/standard
 
 - Content lives in `content/`, not in components. Page chrome lives in `components/`. Don't hardcode standard content into TSX.
 - Copy: second person, active voice, sentence case, plain language. Error messages say what happened and what to do next.
-- When editing prose in `content/`, apply SLP-9 (AI-writing tells) — canonical lists and calibration in `harness/standards/controls/slp-9.md`, carried by the tfx:copy skill.
+- When editing prose in `content/`, apply SLP-9 (AI-writing tells) — canonical lists and calibration in `harness/standards/controls/slp-9.md`, carried by the dxd:copy skill.
 - Status frontmatter matters: `settled` vs `proposed` renders different badges. Don't mark proposed things settled.
 
 ## Verify

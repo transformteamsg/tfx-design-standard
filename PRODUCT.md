@@ -6,11 +6,11 @@ product
 
 ## Users
 
-Two audiences. Humans: DXD builders, designers, and engineers across the Teacher & School portfolio (Teacher Workspace, CaseSync, Glow) who consult the standard while shipping; they arrive mid-task and want an answer, not a brochure. Agents: AI coding tools that read /llms.txt and the YAML control catalog to build to the bar without a designer present.
+Two audiences. Humans: DXD domain leads, builders, designers, and engineers who consult the standard while shipping; they arrive mid-task and want an answer, not a brochure. Agents: AI coding tools that read /llms.txt and the YAML control catalog to build to the bar without a designer present. Teachers & School is the first mature domain, alongside Students, Parents, and Platform.
 
 ## Product Purpose
 
-The DXD Design Standard site is the single source of truth for how TransformX designs for Singapore's teachers. It publishes principles that settle arguments, machine-checkable controls (the catalog), guidelines, foundations, and a harness. Success: any builder, human or agent, ships UI that passes the catalog on the first review.
+The DXD Design Standard site is the single source of truth for one design foundation across four domain expressions: Teachers & School, Students, Parents, and Platform. It publishes principles that settle arguments, machine-checkable controls (the catalog), guidelines, foundations, and a harness. Success: any builder, human or agent, applies the correct domain profile and ships UI that passes the catalog on the first review.
 
 ## Brand Personality
 

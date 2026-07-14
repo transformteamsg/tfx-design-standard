@@ -1,14 +1,14 @@
 {
   "name": "dxd",
-  "description": "DXD design tooling for the Teacher & School portfolio — the DXD Design Standard harness and future design skills and tools",
+  "description": "DXD design tooling for one foundation across Teachers & School, Students, Parents, and Platform — the DXD Design Standard harness and future design skills and tools",
   "owner": {
-    "name": "TransformX, GovTech Singapore"
+    "name": "DXD, GovTech Singapore"
   },
   "plugins": [
     {
       "name": "dxd",
       "source": "./harness",
-      "description": "The DXD Design Standard harness: design loop, control catalog, voice & tone, and evaluator agent for Teacher & School products"
+      "description": "The DXD Design Standard harness: design loop, control catalog, voice & tone, and evaluator agent for all DXD domain expressions"
     }
   ]
 }

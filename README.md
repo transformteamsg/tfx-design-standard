@@ -1,9 +1,9 @@
 # DXD Design Standard
 
-The design standard website for **TransformX** (Teacher & School portfolio, GovTech Singapore) — for human builders **and** AI agents.
+The design standard for **DXD**: one foundation across Teachers & School, Students, Parents, and Platform — for human builders **and** AI agents. Teachers & School is the first mature domain.
 
 - Live site: (connect to Vercel — see below)
-- Full standard for agents: `/llms.txt` (with control details: `/llms-full.txt`)
+- Machine-reader index for agents: `/llms.txt`; optional single-response corpus: `/llms-full.txt`
 - Machine-readable control catalog: `/standards/catalog.yaml`
 
 ## Install the design harness (Claude Code plugin)
@@ -52,7 +52,7 @@ ratchet), so an unrelated website commit never looks like a harness update.
 
 ## Editing content
 
-Edit `content/**/*.mdx` — no code changes needed; `/llms.txt` regenerates from the same files on the next build. New page: add an `.mdx` file, register it in `content/map.json` (drives the directory pages and `/llms.txt`), and add a nav entry in `components/sidebar.tsx` — the build guard (`pnpm check:standards`) fails if you miss a step. New control: add to `harness/standards/catalog.yaml` via the ratchet (see `harness/CONTRIBUTING.md`); the site reads that file directly.
+Edit `content/**/*.mdx` — no code changes needed; `/llms.txt` and `/llms-full.txt` regenerate from the same Markdown twins on the next build. New page: add an `.mdx` file, register it in `content/map.json` (drives the directory pages and machine readers), and add a nav entry in `components/sidebar.tsx` — the build guard (`pnpm check:standards`) fails if you miss a step. New control: add to `harness/standards/catalog.yaml` via the ratchet (see `harness/CONTRIBUTING.md`); the site reads that file directly.
 
 ## Later
 
@@ -67,7 +67,7 @@ pnpm dev
 
 ## Deploy
 
-1. Push to GitHub (private repo `transformteamsg/tfx-design-standard`).
+1. Push to GitHub (the private repository named in the migration note above).
 2. vercel.com → Add New Project → import the repo → defaults work (Next.js preset).
 3. Site is public; repo stays private.
 

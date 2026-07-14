@@ -17,11 +17,12 @@ Every page on this site is also available as Markdown: append `.md` to its path.
 
 ## Wiring it into your tool
 
-Two machine surfaces, depending on how much you need:
+Three machine surfaces, depending on how much you need:
 
-- [/llms.txt](/llms.txt) is the curated index — it lists every page and links each `.md` twin. Start here. Any page is also available as Markdown: append `.md` to its path (e.g. `/standards/catalog.md`).
+- [/llms.txt](/llms.txt) is the curated index — it names the DXD contract and links every page's `.md` twin. Start here. Any page is also available as Markdown: append `.md` to its path (e.g. `/standards/catalog.md`).
+- [/llms-full.txt](/llms-full.txt) is the optional single-response corpus, generated from every Markdown twin. Use it when you need the whole standard at once.
 - [/standards/catalog.yaml](/standards/catalog.yaml) is the control source. Point your tool at it when you only need the controls.
 
-Tiers are binding: L0 cannot be waived, L1 needs `tfx-waive <ID> reason="..."` in code, L2 deviations need an inline rationale.
+Tiers are binding: L0 cannot be waived, L1 needs `dxd-waive <ID> reason="..."` in code, L2 deviations need an inline rationale. Legacy `tfx-waive` markers remain valid for migration compatibility.
 
 One thing the catalog is not: a skill. Skills apply the standard inside a session; the catalog *is* the standard. When they disagree, the catalog wins, and the skill gets fixed.
