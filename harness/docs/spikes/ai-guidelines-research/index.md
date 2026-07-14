@@ -68,7 +68,7 @@ Any AI-triggered action that modifies, sends, or deletes records must show conse
 For lower-stakes outputs, undo is sufficient.
 (HAX G8, G9; PAIR Pattern 18: "Give control back to the user when automation fails"; existing TFX CMP-2: "destructive actions show consequences and offer undo/confirm.")
 
-**R6 - Make failure safe and unremarkable.**
+**R6 - Make failure safe and boring.**
 AI errors must not use ML or model terminology in user-facing copy.
 Error messages say what did not work and what the teacher can do next.
 The failure experience should not be worse than the non-AI fallback.

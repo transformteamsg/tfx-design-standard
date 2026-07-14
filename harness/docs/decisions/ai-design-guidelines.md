@@ -222,3 +222,45 @@ Note: CNV-2 extends CMP-2 (destructive actions show consequences and offer undo/
 > — index.md, R6, citing PAIR Errors chapter, HAX G12, and TFX interaction guideline
 
 `[proposed — pending design-lead approval]`
+
+---
+
+## Phase 6 update - 2026-07-15
+
+**Stack story corrected.** The earlier framing in `harness/.claude/skills/ai/SKILL.md`
+and `recipes.md` described the base-nova shadcn/ui variant as a conflict for AI Elements.
+That was wrong. The TFX site's `components.json` style `"base-nova"` means shadcn/ui is
+already initialised; AI Elements installs cleanly with standard `pnpm dlx` commands. The
+conflict story only applies to product repos on raw Base UI without the shadcn wrappers.
+Both files have been corrected.
+
+**All non-Code AI Elements categories are now installed on the TFX site.** The installed
+categories and component counts are: Chatbot (19 components), Voice (6), Workflow (7),
+Utilities (2). Only components referenced in the routing table have active use cases on
+teacher-facing surfaces; Voice, Workflow, and Utilities are installed but not yet routed.
+
+**Two upstream patches were applied at install time:**
+1. `prompt-input` — `DropdownMenuItem.onSelect` replaced with `onClick` +
+   `closeOnClick={false}` to prevent the menu closing before state updates on base-nova.
+2. `voice-selector` — two lucide-react icon imports substituted because the icons are
+   absent from the version pinned by base-nova.
+
+Future AI Elements upgrades should check whether these patches still apply and reapply
+if needed. The substitutions are documented in the commit that installed the components.
+
+**No TOK/COL waivers were needed.** The build passed all catalog gates clean — no
+token, colour, or anti-slop controls were waived.
+
+**The four proposed controls are unchanged.** CNV-1 (stoppable streaming), CNV-2
+(confirmation for consequential AI actions), AID-1 (marking + revert), AID-2 (error
+anatomy) remain as proposed above, pending design-lead approval via the ratchet.
+
+**Citations are now inline on both guideline pages.** Each rule on `ai-design.mdx` and
+`conversation-design.mdx` carries a per-rule inline citation plus a page-level
+`> Reference:` blockquote pointing to the motivating source.
+
+**Two new sections were added to `conversation-design.mdx`:** "Shape the assistant"
+and "Handle the turn". These draw from Anthropic prompt engineering documentation,
+Google Conversation Design guidelines, and Voiceflow research. They cover how to write
+system prompts that produce predictable, safe assistant behaviour on teacher-facing
+surfaces, and how to structure turn-level interaction patterns.

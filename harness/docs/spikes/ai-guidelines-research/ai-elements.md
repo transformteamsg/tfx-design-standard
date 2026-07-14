@@ -147,13 +147,13 @@ Limitation: "Currently, there is no official support for inline citations with S
 Pattern: hover-reveal attribution - citation pills embedded in prose that expand into source cards on hover.
 
 ### Confirmation
-Anatomy: `Confirmation` (wrapper), `ConfirmationRequest`, `ConfirmationAccepted`, `ConfirmationRejected`, `ConfirmationActions`.
+Anatomy: `Confirmation` (wrapper), `ConfirmationTitle`, `ConfirmationRequest`, `ConfirmationAccepted`, `ConfirmationRejected`, `ConfirmationActions`, `ConfirmationAction` (verified against installed source `components/ai-elements/confirmation.tsx`).
 Key behaviour: renders based on four tool-call states - `approval-requested`, `approval-responded`, `output-denied`, `output-available`; backend tools configured with `requireApproval: true`.
 Pattern: human-in-the-loop gate - surfaces approve/deny controls before an agent executes a potentially destructive tool call.
 
 ### Task
 Anatomy: `Task` (container, `defaultOpen` prop), `TaskTrigger` (`title` string required), `TaskContent`, `TaskItem`, `TaskItemFile`.
-Key behaviour: collapsible with per-item status icons (pending, in-progress, completed, error); streams in real time via `experimental_useObject`.
+Key behaviour: collapsible container; `TaskItem` is a plain `<div>` with no built-in status prop (verified against installed source `components/ai-elements/task.tsx`). Author wires per-item status icons manually - the "pending / in-progress / completed / error" states are convention, not a component API. Streams in real time via `experimental_useObject`.
 Pattern: live task list - a checklist that populates and updates as an agent works through subtasks.
 
 ### Plan

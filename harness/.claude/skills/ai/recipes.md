@@ -9,36 +9,47 @@ as copied source files, not versioned npm packages.
 Node.js 18+, React 19, Next.js 14+ App Router, AI SDK configured, Tailwind CSS 4.
 shadcn/ui is auto-initialised if absent when you run any install command.
 
-## Stack check first: there is only one variant, and it is Radix
+## Stack check first
 
 AI Elements ships as a single shadcn/ui registry (source: `github.com/vercel/ai-elements`).
 There is no headless variant, no framework-agnostic npm package, and no `--no-deps` flag.
-Every install path — the AI Elements CLI, the shadcn CLI, or the raw registry JSON —
-requires shadcn/ui initialised first and cascades whatever Radix-backed primitives
-each component needs. TFX uses Base UI, not shadcn/ui, so running any install command
-scaffolds a second, conflicting component layer.
 
-**Radix dependency by component** (checked against `packages/elements/src/*.tsx`):
+**On the TFX site (base-nova): this is the first-class path.** The `components.json`
+style `"base-nova"` means shadcn/ui is already initialised with Base UI primitives
+under the hood. Run `pnpm dlx shadcn@latest add <wrapper>` for any missing primitive
+wrapper, then `pnpm dlx ai-elements@latest add <component>` for the AI Elements
+components. The install commands below work as written.
 
-| Component | Radix primitives pulled in | Install directly, or port? |
-|---|---|---|
-| `Shimmer` | none | Install directly |
-| `Suggestion`, `Confirmation` | `Slot` only (polymorphic `asChild`) | Install directly |
-| `Conversation` | `Slot` only | Install directly |
-| `Message` | `Tooltip` | Port `tooltip.tsx` to Base UI `Tooltip` first |
-| `PromptInput` | `Select`, `DropdownMenu`, `HoverCard`, `Tooltip` | Port four primitives — heaviest component |
-| `Sources`, `Task` | `Collapsible` | Port `collapsible.tsx` to Base UI `Collapsible` |
-| `InlineCitation`, `Attachments` | `HoverCard` | Port `hover-card.tsx` to Base UI `Preview Card` |
-| `Plan` | `Collapsible` | Port `collapsible.tsx` |
-| `Checkpoint` | `Separator`, `Tooltip` | Port both |
+**On a product repo without base-nova:** if the repo uses raw Base UI without the
+shadcn API wrappers, every install path cascades Radix-backed primitives via a shadcn
+init that conflicts with the Base UI layer. Use the porting strategy at the bottom of
+this file instead.
 
-Three components (`Shimmer`, `Suggestion`, `Confirmation`) plus `Conversation` have
-no real Radix dependency and can be installed as-is with no porting work.
+**Radix dependency by component** (checked against `packages/elements/src/*.tsx`).
+On base-nova these are informational — the wrappers already exist. On a non-base-nova
+Base UI stack, this tells you what each component reaches through and what you need to
+port:
+
+| Component | Radix primitives pulled in | On base-nova | On raw Base UI |
+|---|---|---|---|
+| `Shimmer` | none | Install directly | Install directly |
+| `Suggestion`, `Confirmation` | `Slot` only (polymorphic `asChild`) | Install directly | Install directly |
+| `Conversation` | `Slot` only | Install directly | Install directly |
+| `Message` | `Tooltip` | Install directly | Port `tooltip.tsx` to Base UI `Tooltip` first |
+| `PromptInput` | `Select`, `DropdownMenu`, `HoverCard`, `Tooltip` | Install directly | Port four primitives — heaviest component |
+| `Sources`, `Task` | `Collapsible` | Install directly | Port `collapsible.tsx` to Base UI `Collapsible` |
+| `InlineCitation`, `Attachments` | `HoverCard` | Install directly | Port `hover-card.tsx` to Base UI `Preview Card` |
+| `Plan` | `Collapsible` | Install directly | Port `collapsible.tsx` |
+| `Checkpoint` | `Separator`, `Tooltip` | Install directly | Port both |
 
 ## Install commands
 
 ```bash
-# Recommended — AI Elements CLI
+# On base-nova (TFX site) — preferred
+pnpm dlx shadcn@latest add <wrapper>        # add a missing shadcn primitive wrapper
+pnpm dlx ai-elements@latest add <component> # add the AI Elements component
+
+# On any stack — AI Elements CLI
 npx ai-elements@latest add <component>
 
 # Alternative — shadcn CLI
@@ -49,10 +60,9 @@ Replace `<component>` with the kebab-case name: `message`, `prompt-input`,
 `inline-citation`, `confirmation`, etc. Components land in
 `@/components/ai-elements/`.
 
-**On a Base UI product, do not run either command as-is.** Both assume a shadcn/ui
-init. Use the recipe path below instead: `ai`/`@ai-sdk/react` install cleanly with
-zero UI dependencies (verified against their npm manifests), so the chat logic is
-never the problem — only the component layer is.
+`ai`/`@ai-sdk/react` install cleanly with zero UI dependencies (verified against
+their npm manifests) regardless of which stack you are on — the chat logic is never
+the problem, only the component layer is.
 
 ## Key components
 
@@ -164,7 +174,10 @@ routing table pending a confirmed use case.
 | Agent actions | `confirmation`, `task`, `plan` | `checkpoint` if conversation revert is needed |
 | Full conversation | `conversation`, `message`, `prompt-input` | `reasoning`, `suggestion`, `attachments` as needed |
 
-## Install strategy on a Base UI stack
+## Install strategy on a non-base-nova Base UI stack
+
+Use this path only when the product repo is on raw Base UI without the shadcn API
+wrappers. On the TFX site (base-nova), use the install commands above instead.
 
 AI Elements source is plain, MIT/Apache-licensed `.tsx` — the shadcn model is
 copy-paste, not a package, so cherry-picking and porting is a supported way to use
@@ -191,9 +204,9 @@ it, not a hack. In priority order:
 
    `cmdk` (in PromptInput) and `embla-carousel-react` (in InlineCitation) are neither
    Radix nor Base UI — leave them as-is regardless of which primitive layer is chosen.
-4. **Never run `npx shadcn@latest init`** on a Base UI product — it scaffolds a second,
-   conflicting component layer. Track upstream AI Elements changes manually once
-   ported, since forked source doesn't pull registry updates.
+4. **Never run `npx shadcn@latest init`** on a raw Base UI product — it scaffolds a
+   second, conflicting component layer. Track upstream AI Elements changes manually
+   once ported, since forked source doesn't pull registry updates.
 
 If porting is out of scope for the current task, fall back to a from-scratch component
 that mirrors the anatomy with TFX-native primitives — e.g. a `Confirmation` built on
@@ -201,3 +214,35 @@ Base UI `Dialog` with two `Button` variants (primary approve, ghost deny), match
 four Confirmation states. Name it to match the AI Elements anatomy (`<Confirmation>`,
 `<ConfirmationRequest>`) so the routing table stays readable. Use semantic tokens only —
 no raw hex or off-scale spacing (TOK-1..3).
+
+## Voice, Workflow, Utilities — installed on the TFX site but not in the routing table
+
+All non-Code AI Elements categories are installed on the TFX site: Chatbot (19
+components), Voice (6), Workflow (7), Utilities (2). Voice, Workflow, and Utilities do
+not appear in the routing table because teacher-facing use cases are speculative at this
+stage.
+
+- **Voice** — may fit dictation for CaseSync case notes or accessibility-driven input on
+  any product. Worth evaluating when a user-research finding points to hands-free or
+  low-vision use cases.
+- **Workflow / Canvas** — fits admin and ops pipelines (for example, an attendance sync
+  visualisation or a CaseSync case-progression board), not classroom surfaces. Route here
+  only when the task is clearly internal-tooling or admin.
+- **Utilities (Image, Open-In-Chat)** — situational. Use when an existing surface
+  already has an image-heavy or chat-handoff context; don't add for novelty.
+
+## Known upstream patches required for base-nova compatibility
+
+Two AI Elements components needed source-level fixes at install time. If you upgrade
+AI Elements in future, check whether these are still needed and reapply if so.
+
+**`prompt-input` — DropdownMenuItem interaction fix:**
+The upstream `DropdownMenuItem` uses `onSelect` to handle model selection. On base-nova
+the select event fires and immediately closes the menu before state can update.
+Fix: replace `onSelect` with `onClick` and add `closeOnClick={false}` to the item.
+
+**`voice-selector` — lucide icon substitutions:**
+The upstream component imports two lucide-react icons that are not present in the
+version pinned by base-nova. Fix: substitute with the nearest available lucide icons
+(or inline the SVG paths) — the exact substitutions are in the commit that installed
+this component.

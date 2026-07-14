@@ -55,7 +55,7 @@ guess.
 Agent actions that modify, send, file, or delete must show plain-language consequences
 and wait for approve/deny. This is CNV-2 (L1); it layers on top of CMP-2.
 
-**R6 - Make failure safe and unremarkable.** No ML or model terminology in error copy.
+**R6 - Make failure safe and boring.** No ML or model terminology in error copy.
 What did not work, and what the teacher does next. The failure path is never worse
 than the non-AI fallback. This is AID-2 (L2); it follows the CNT-1 anatomy.
 
@@ -89,15 +89,16 @@ consequential AI actions), AID-1 (marking + revert), AID-2 (error anatomy) — p
 
 ## Gotchas
 
-- **AI Elements has one variant, and it always requires shadcn/ui.** There is no
-  headless mode and no `--no-deps` flag — installing any component cascades Radix
-  primitives via a shadcn init, which conflicts with TFX's Base UI stack. `Shimmer`,
-  `Suggestion`, `Confirmation`, and `Conversation` have no real Radix dependency and
-  install cleanly; the rest (Message, PromptInput, Sources, InlineCitation, Task,
-  Plan, Checkpoint, Attachments) pull Tooltip, Select, Collapsible, HoverCard, or
-  DropdownMenu. `ai` and `@ai-sdk/react` have zero UI dependencies and always install
-  clean — the chat logic is never the problem. `recipes.md` has the full dependency
-  table, the cherry-pick order, and the Radix-to-Base-UI porting map.
+- **The TFX site uses base-nova, which is a shadcn/ui variant — AI Elements installs
+  cleanly on this stack.** The `components.json` style `"base-nova"` means the site
+  already has shadcn/ui initialised with Base UI primitives under the hood. You can
+  run `pnpm dlx shadcn@latest add <wrapper>` for any missing primitive wrapper and
+  `pnpm dlx ai-elements@latest add <component>` for the AI Elements components. The
+  conflict story in `recipes.md` only applies to product repos that are on raw Base UI
+  without the shadcn API wrappers, or on a Radix-based shadcn setup in a design system
+  that bans Radix visually. `ai` and `@ai-sdk/react` have zero UI dependencies and
+  always install clean — the chat logic is never the problem. `recipes.md` has the
+  full dependency table and the porting map for non-base-nova stacks.
 
 - **Do not use Carbon's gradient or glow to mark AI-generated content.** Carbon's
   blue-gradient treatment is Carbon's own visual language. TFX bans gradients (SLP-1).

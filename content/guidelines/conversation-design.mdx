@@ -8,11 +8,11 @@ status: proposed
 
 - **Conversation is the last resort, not the first idea.** Embedded AI inside the task beats chat one step removed from it. Reach for a conversation surface only when the teacher's goal cannot be known in advance. See [AI design](/guidelines/ai-design) for the routing table that helps you decide.
 
-  _(PAIR automate-vs-augment framework; HAX G1, G3)_
+  _(PAIR automate-vs-augment framework; HAX G1)_
 
 - **Prompt input carries the guidance.** Suggestions show what the assistant is good at. Attachment indicators show what it can read. A teacher who can see both knows immediately how to begin.
 
-  _(HAX G3, G4)_
+  _(HAX G1; Vercel AI Elements `Suggestion`, `Attachments`)_
 
   <DemoPromptInput />
 
@@ -36,7 +36,7 @@ status: proposed
 
 - **Refusals and errors follow the same anatomy as any TFX error (CNT-1): what happened, what it means, what to do next.** No model talk. No apology language. Failure stays safe and boring.
 
-  _(PAIR "Errors" chapter; HAX G12)_
+  _(PAIR "Errors" chapter; TFX CNT-1 - error message anatomy)_
 
 - **Scope when in doubt.** When the teacher's intent is ambiguous, the assistant asks one clarifying question rather than acting on a guess. Acting on the wrong assumption costs more than a single turn of delay.
 
@@ -44,11 +44,11 @@ status: proposed
 
 - **Conversation memory is visible.** The thread shows what the assistant can see in this session. Any context the teacher attached - a document, a student's notes, a class list - stays visible. They know exactly what the assistant is working from.
 
-  _(Voiceflow conversation design - "Understanding Layer")_
+  _(Voiceflow conversation design - "Understanding Layer / context boundaries")_
 
 ## Shape the assistant
 
-These rules apply when you write or review the system prompt for a TFX conversation surface.
+These rules apply when you write or review a system prompt for a TFX conversation surface.
 
 - **Declare the role in teacher-facing terms from the first line.** "You are a teaching-support assistant for Singapore primary-school educators" anchors tone and scope more reliably than a generic framing.
 
@@ -96,7 +96,7 @@ These rules govern how the assistant behaves during a live conversation.
 
 - **State session-reset boundaries clearly; do not imply continuity.** If the assistant cannot access a prior conversation, say so - "This is a new session - I don't have our previous conversation" - rather than filling in gaps.
 
-  _(Voiceflow conversation design - "Understanding Layer")_
+  _(Voiceflow conversation design - "Understanding Layer / context boundaries")_
 
 - **End turns with an optional forward-offer, not a mandatory question.** "Want me to adjust this for lower-ability learners?" invites the teacher to continue but lets them close the loop. An interrogative like "What do you need next?" creates conversational pressure.
 
