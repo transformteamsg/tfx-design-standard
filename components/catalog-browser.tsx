@@ -55,7 +55,7 @@ export function CatalogBrowser({
       onClick={onClick}
       aria-pressed={active}
       className={clsx(
-        "rounded-full border px-3 py-1 text-[12px] font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue)",
+        "rounded-full border px-3 py-1 text-xs font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue)",
         active
           ? "border-foreground bg-foreground text-white"
           : "border-border bg-surface text-muted-foreground hover:text-foreground"
@@ -111,7 +111,7 @@ export function CatalogBrowser({
         ))}
       </div>
 
-      <p className="mt-4 text-[12px] text-muted-foreground">
+      <p className="mt-4 text-xs text-muted-foreground">
         {filtered.length} of {controls.length} controls
       </p>
 
@@ -126,24 +126,24 @@ export function CatalogBrowser({
               <button
                 onClick={() => copy(c.id)}
                 title="Copy control ID"
-                className="rounded-md border border-border bg-accent px-2 py-0.5 text-[12px] font-semibold hover:border-border-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue)"
+                className="rounded-md border border-border bg-accent px-2 py-0.5 text-xs font-semibold hover:border-border-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue)"
               >
                 {copied === c.id ? "copied ✓" : c.id}
               </button>
               <span
                 className={clsx(
-                  "rounded-full border px-2 py-0.5 text-[11px] font-medium",
+                  "rounded-full border px-2 py-0.5 text-xs font-medium",
                   tierStyles[c.tier]
                 )}
               >
                 {tierLabels[c.tier]}
               </span>
-              <span className="rounded-full border border-border px-2 py-0.5 text-[11px] text-muted-foreground">
+              <span className="rounded-full border border-border px-2 py-0.5 text-xs text-muted-foreground">
                 {c.check}
               </span>
-              <span className="text-[11px] text-muted-foreground">{c.category}</span>
+              <span className="text-xs text-muted-foreground">{c.category}</span>
               {(c.products || c.audiences) && (
-                <span className="rounded-full border border-border px-2 py-0.5 text-[11px] text-muted-foreground">
+                <span className="rounded-full border border-border px-2 py-0.5 text-xs text-muted-foreground">
                   {[
                     ...(c.products ?? []).map((p) => productNames[p] ?? p),
                     ...(c.audiences ?? []).map((a) => audienceNames[a] ?? a),
@@ -152,14 +152,14 @@ export function CatalogBrowser({
               )}
               <a
                 href={`/standards/catalog/${c.id.toLowerCase()}`}
-                className="ml-auto text-[12px] text-tw-blue underline underline-offset-2"
+                className="ml-auto text-xs text-tw-blue underline underline-offset-2"
               >
                 Details →
               </a>
             </div>
-            <p className="mt-2 text-[16px] font-medium">{c.statement}</p>
+            <p className="mt-2 text-base font-medium">{c.statement}</p>
             {c.fails_when && (
-              <p className="mt-1.5 text-[14px] text-muted-foreground">
+              <p className="mt-1.5 text-sm text-muted-foreground">
                 <span className="font-semibold text-danger">Fails when:</span>{" "}
                 {c.fails_when.join(" · ")}
               </p>

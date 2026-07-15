@@ -23,13 +23,13 @@ export default function Overview() {
   const governance = getDoc("governance", "governance");
   return (
     <div className="max-w-[760px]">
-      <p className="text-[12px] font-semibold uppercase tracking-widest text-tw-blue">
+      <p className="text-xs font-semibold uppercase tracking-widest text-tw-blue">
         TransformX · Teacher &amp; School portfolio
       </p>
-      <h1 className="mt-3 font-display text-[32px] font-semibold leading-[1.05] tracking-tight">
+      <h1 className="mt-3 font-display text-3xl font-semibold tracking-tight">
         Kind Utility,<br />held to a standard.
       </h1>
-      <p className="mt-5 text-[18px] leading-[1.6] text-muted-foreground">
+      <p className="mt-5 text-lg text-muted-foreground">
         How TransformX designs for Singapore&apos;s teachers — utility-first at the core,
         human-first at the surface. Principles that settle arguments, standards a machine can
         check, and a harness so every builder ships at the bar, with or without a designer
@@ -39,7 +39,7 @@ export default function Overview() {
       {home?.illustration && <Illo subject={home.illustration} />}
 
       <div
-        className="mt-6 rounded-lg border border-border p-4 text-[16px]"
+        className="mt-6 rounded-lg border border-border p-4 text-base"
         style={{ background: "color-mix(in oklab, var(--tw-blue) 5%, var(--surface))" }}
       >
         <strong>The one test:</strong> does this help teachers work faster with less stress?
@@ -81,7 +81,7 @@ export default function Overview() {
             }}
           />
         )}
-        <p className="mt-7 text-[14px] text-muted-foreground">
+        <p className="mt-7 text-sm text-muted-foreground">
           New here?{" "}
           <Link href="/how-to-read" className="text-tw-blue underline underline-offset-2">
             How to read this standard
@@ -90,18 +90,18 @@ export default function Overview() {
         </p>
       </div>
 
-      <h2 className="mt-14 font-display text-[20px] font-semibold">Three readers, one standard</h2>
+      <h2 className="mt-14 font-display text-xl font-semibold">Three readers, one standard</h2>
       <div className="mt-5 grid gap-8 sm:grid-cols-3">
         <div>
-          <h3 className="text-[16px] font-semibold">Humans</h3>
-          <p className="mt-1.5 text-[14px] leading-[1.6] text-muted-foreground">
+          <h3 className="text-base font-semibold">Humans</h3>
+          <p className="mt-1.5 text-sm leading-normal text-muted-foreground">
             Browse the sections above. Principles and guidelines are written for judgement
             calls only a person can make.
           </p>
         </div>
         <div>
-          <h3 className="text-[16px] font-semibold">Humans → machines</h3>
-          <p className="mt-1.5 text-[14px] leading-[1.6] text-muted-foreground">
+          <h3 className="text-base font-semibold">Humans → machines</h3>
+          <p className="mt-1.5 text-sm leading-normal text-muted-foreground">
             <Link href="/harness/skills" className="text-tw-blue underline underline-offset-2">
               Skills
             </Link>{" "}
@@ -109,8 +109,8 @@ export default function Overview() {
           </p>
         </div>
         <div>
-          <h3 className="text-[16px] font-semibold">Machines</h3>
-          <p className="mt-1.5 text-[14px] leading-[1.6] text-muted-foreground">
+          <h3 className="text-base font-semibold">Machines</h3>
+          <p className="mt-1.5 text-sm leading-normal text-muted-foreground">
             <Link href="/for-agents" className="text-tw-blue underline underline-offset-2">
               For agents
             </Link>
