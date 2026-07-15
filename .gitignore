@@ -7,3 +7,7 @@ out/
 next-env.d.ts
 .vercel
 /.claude/
+
+# Playwright
+/test-results/
+/playwright-report/
