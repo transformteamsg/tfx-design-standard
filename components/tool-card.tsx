@@ -20,7 +20,7 @@ export function ToolCard({ tool }: { tool: Tool }) {
         background: "color-mix(in oklab, var(--tw-blue) 5%, var(--surface))",
       }}
     >
-      <p className="text-[11px] font-semibold uppercase tracking-widest text-tw-blue">
+      <p className="text-[12px] font-semibold text-tw-blue">
         Internal tool
       </p>
       <p className="mt-1.5 font-display text-[18px] font-semibold">{tool.name}</p>
