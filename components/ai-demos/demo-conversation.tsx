@@ -13,14 +13,18 @@ import {
 } from "@/components/ai-elements/prompt-input";
 import { Suggestion, Suggestions } from "@/components/ai-elements/suggestion";
 import { DemoFrame } from "./demo-frame";
+import { ChatShell, ChatShellInput, chatMessagesClass } from "./chat-shell";
 
-/* The outer rounded-lg border IS the conversation shell — it is kept intentionally.
+/* The DemoFrame figure IS the conversation surface — no inner bordered box
+   (that would nest a card, SLP-4). Natural height, so no message clip.
    Suggestions render as siblings ABOVE the PromptInput, outside it. */
 export const DemoConversation = () => (
-  <DemoFrame caption={["Conversation", "ConversationContent", "Message", "MessageContent", "MessageResponse", "PromptInput", "Suggestion"]}>
-    <div className="flex h-[420px] flex-col overflow-hidden rounded-lg border border-border bg-surface">
-      <Conversation className="flex-1 overflow-y-auto">
-        <ConversationContent>
+  <DemoFrame bleed caption={["Conversation", "ConversationContent", "Message", "MessageContent", "MessageResponse", "PromptInput", "Suggestion"]}>
+    <ChatShell>
+      <Conversation>
+        {/* className override tunes the compact-demo rhythm (gap-8 → gap-4);
+            AI Elements source is untouched (CMP-7 documented). */}
+        <ConversationContent className={chatMessagesClass}>
           <Message from="user">
             <MessageContent>
               Summarise Ahmad&apos;s reading progress this term.
@@ -35,7 +39,7 @@ export const DemoConversation = () => (
       </Conversation>
 
       {/* Suggestions render above the input as siblings, not inside PromptInput */}
-      <div className="border-t border-border px-3 pb-3 pt-2">
+      <ChatShellInput>
         <Suggestions className="mb-2">
           <Suggestion suggestion="Draft a reading report" onClick={() => {}} />
           <Suggestion suggestion="Flag students below Band 2" onClick={() => {}} />
@@ -47,7 +51,7 @@ export const DemoConversation = () => (
             <PromptInputSubmit />
           </PromptInputFooter>
         </PromptInput>
-      </div>
-    </div>
+      </ChatShellInput>
+    </ChatShell>
   </DemoFrame>
 );

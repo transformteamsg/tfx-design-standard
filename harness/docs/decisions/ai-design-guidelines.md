@@ -282,3 +282,31 @@ surfaces, and how to structure turn-level interaction patterns.
 **Demos reassigned to match the restructure.** DemoEmptyState, DemoAiLabel, DemoConfidence, DemoConfirmation, DemoFeedback, DemoClarify, DemoError are on the parent. DemoConversation (swapped from DemoEmptyState), DemoPromptInput, DemoStreaming, DemoSources, DemoPlan, DemoTask, DemoAttachments, DemoReasoning are on the conversation child. The new prompt-engineering page carries no demos (the rules are authoring guidance, not interactive UI patterns).
 
 **Navigation updated to an AI subgroup.** `components/sidebar.tsx` now nests all three pages under a collapsible "AI" subgroup inside Guidelines, matching the existing "Content" subgroup pattern. `content/map.json` has "prompt-engineering" added after "conversation-design".
+
+## Phase 9 update (2026-07-15)
+
+**AI pages moved from Guidelines to a top-level AI section.**
+The three AI pages were previously nested under Guidelines as a collapsible subgroup.
+They now live under their own top-level section, accessible at `/ai`.
+
+**Files moved and renamed:**
+
+| Old path | New path | Title change |
+|---|---|---|
+| `content/guidelines/ai-design.mdx` | `content/ai/ai-interactions.mdx` | "AI design" → "AI interactions" |
+| `content/guidelines/conversation-design.mdx` | `content/ai/conversation-ux.mdx` | "Conversation design" → "Conversation UX" |
+| `content/guidelines/prompt-engineering.mdx` | `content/ai/prompt-engineering.mdx` | unchanged |
+
+**New file added:** `content/ai/components.mdx` — a full AI Elements component reference.
+Five tables (Chatbot, Voice, Workflow, Utilities, Code) map each component to the TFX routing table and TFX surfaces.
+Status: proposed.
+
+**`content/map.json`:** removed `ai-design`, `conversation-design`, and `prompt-engineering` from `guidelines.slugs`; added a new `"ai"` section with slugs `ai-interactions`, `conversation-ux`, `prompt-engineering`, `components`.
+
+**`components/sidebar.tsx`:** removed the AI NavSubGroup from under Guidelines; added a new top-level NavGroup labelled "AI" after Guidelines with four leaf items matching the new section.
+
+**New app routes created:** `app/ai/page.tsx` and `app/ai/[slug]/page.tsx` mirror the guidelines route pair, parameterised on `"ai"`.
+
+**Cross-links updated:** all internal links from `/guidelines/ai-design`, `/guidelines/conversation-design`, and `/guidelines/prompt-engineering` replaced with the new `/ai/` paths inside the moved MDX files.
+
+**Harness pointers updated:** `harness/.claude/skills/ai/SKILL.md` Pointers section updated to the four new `content/ai/` paths; `harness/.claude/skills/ai/recipes.md` has a new "Component reference" section pointing to `content/ai/components.mdx`.

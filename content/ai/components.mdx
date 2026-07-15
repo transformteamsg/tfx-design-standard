@@ -1,0 +1,99 @@
+---
+title: Components
+description: AI Elements is a shadcn/ui-compatible registry of copy-paste components for AI surfaces. Pick from here before building your own.
+status: proposed
+---
+
+AI Elements is not a versioned npm package.
+You copy each component's code into your project from the registry at [elements.ai-sdk.dev](https://elements.ai-sdk.dev/components/).
+The tables below map component categories to the AI surfaces on the TFX routing table in [AI interactions](/ai/ai-interactions).
+
+## Chatbot
+
+Components for conversation surfaces and inline AI responses.
+
+| Component | What it is | Reach for it when | Used in |
+| --- | --- | --- | --- |
+| [Attachments](https://elements.ai-sdk.dev/components/attachments) | File or document attachment strip | The teacher adds class data, student work, or a document to a chat session | Conversation surfaces, Q&A over content |
+| [Chain of Thought](https://elements.ai-sdk.dev/components/chain-of-thought) | Collapsible step-by-step reasoning panel | You need to expose multi-step reasoning in full — heavier than Reasoning | Agent surfaces, complex Q&A |
+| [Checkpoint](https://elements.ai-sdk.dev/components/checkpoint) | Named save point in a multi-step agent flow | A long agent job benefits from a resumable midpoint the teacher can return to | Agent surfaces |
+| [Confirmation](https://elements.ai-sdk.dev/components/confirmation) | Approve or deny gate before a consequential action | Any AI-triggered action that modifies, sends, or deletes records | Agent surfaces, consequential actions |
+| [Context](https://elements.ai-sdk.dev/components/context) | Displays what the assistant currently knows or can see | You need to make active context legible — which files, records, or data the assistant holds | Conversation surfaces, agent surfaces |
+| [Conversation](https://elements.ai-sdk.dev/components/conversation) | Full chat thread with message history | Building a conversation surface — the outer container for the whole thread | Conversation surfaces |
+| [Inline Citation](https://elements.ai-sdk.dev/components/inline-citation) | Superscript or footnote citation inside a response | A factual claim traces back to a specific source the teacher can open | Q&A over content, summarisation |
+| [Message](https://elements.ai-sdk.dev/components/message) | A single turn — user or assistant | Any surface that renders chat turns | All conversation and inline AI surfaces |
+| [Model Selector](https://elements.ai-sdk.dev/components/model-selector) | Dropdown to switch the underlying model | You are exposing model choice to the teacher — uncommon in TFX; needs a clear reason | Advanced or admin surfaces only |
+| [Plan](https://elements.ai-sdk.dev/components/plan) | Ordered list of steps the agent intends to run | Showing the teacher what an agent will do before it starts | Agent surfaces |
+| [Prompt Input](https://elements.ai-sdk.dev/components/prompt-input) | Text input with send button and attach affordance | Any surface where the teacher composes a message or prompt | Conversation surfaces, inline suggestion |
+| [Queue](https://elements.ai-sdk.dev/components/queue) | List of pending jobs or requests | Displaying multiple queued AI tasks in a batch workflow | Agent surfaces, batch workflows |
+| [Reasoning](https://elements.ai-sdk.dev/components/reasoning) | Compact, collapsible reasoning trace | Surfacing model reasoning when the teacher would act differently knowing it — hidden by default | Conversation surfaces, agent surfaces |
+| [Shimmer](https://elements.ai-sdk.dev/components/shimmer) | Animated loading skeleton for AI content | AI content is generating and you need a placeholder that signals work in progress | All AI surfaces |
+| [Sources](https://elements.ai-sdk.dev/components/sources) | Source list at the end of a grounded response | Every factual response needs a traceable source list the teacher can open | Q&A over content, summarisation |
+| [Suggestion](https://elements.ai-sdk.dev/components/suggestion) | Chip or card suggesting a next action or prompt | Inline suggestion, prompt guidance, or next-step nudge | Conversation surfaces, inline suggestion |
+| [Task](https://elements.ai-sdk.dev/components/task) | A single step in an agent's task list | Showing progress as each step in a plan completes or fails | Agent surfaces |
+| [Tool](https://elements.ai-sdk.dev/components/tool) | Displays a tool call the agent made (name, args, result) | You need to surface which tools an agent invoked — useful for trust and debugging | Agent surfaces |
+| [Loader](https://elements.ai-sdk.dev/components/loader) | Generic AI loading indicator | A short-duration wait that does not warrant a skeleton | All AI surfaces |
+
+## Voice
+
+Components for voice dictation and audio AI surfaces.
+
+| Component | What it is | Reach for it when | Used in |
+| --- | --- | --- | --- |
+| [Audio Player](https://elements.ai-sdk.dev/components/audio-player) | Playback control for a generated audio clip | The assistant produces spoken output the teacher plays back | Voice surfaces |
+| [Mic Selector](https://elements.ai-sdk.dev/components/mic-selector) | Dropdown to choose the active microphone | Multiple microphone inputs are available and the teacher needs to pick one | Voice surfaces |
+| [Persona](https://elements.ai-sdk.dev/components/persona) | Avatar or name card for a named voice assistant | The assistant has a distinct persona shown during a voice session | Voice surfaces |
+| [Speech Input](https://elements.ai-sdk.dev/components/speech-input) | Mic button that captures and submits voice | The teacher dictates into a field — route to Transcription for live text, generated draft for reinterpreted text | Voice surfaces, transcription |
+| [Transcription](https://elements.ai-sdk.dev/components/transcription) | Live or completed transcript of spoken input | Faithful transcription of the teacher's words is shown or reviewed | Voice surfaces, transcription |
+| [Voice Selector](https://elements.ai-sdk.dev/components/voice-selector) | Dropdown to switch the AI output voice | The assistant has multiple voice options the teacher can choose between | Voice surfaces |
+
+## Workflow
+
+Components for visual agent orchestration and canvas surfaces.
+
+| Component | What it is | Reach for it when | Used in |
+| --- | --- | --- | --- |
+| [Canvas](https://elements.ai-sdk.dev/components/canvas) | Infinite or bounded canvas for node-based layouts | Building a visual workflow or pipeline editor | Workflow and orchestration surfaces |
+| [Connection](https://elements.ai-sdk.dev/components/connection) | Drawn line between two nodes | Representing a data or control flow relationship on a canvas | Workflow and orchestration surfaces |
+| [Controls](https://elements.ai-sdk.dev/components/controls) | Toolbar for canvas interaction — zoom, pan, fit | The teacher needs to navigate a canvas view | Workflow and orchestration surfaces |
+| [Edge](https://elements.ai-sdk.dev/components/edge) | Styled connector between two graph nodes | Representing a directed edge in a node graph | Workflow and orchestration surfaces |
+| [Node](https://elements.ai-sdk.dev/components/node) | A discrete step or entity in a workflow graph | Each stage in a visual pipeline or agent flow | Workflow and orchestration surfaces |
+| [Panel](https://elements.ai-sdk.dev/components/panel) | Overlay panel anchored to the canvas | Showing properties or configuration for a selected node | Workflow and orchestration surfaces |
+| [Toolbar](https://elements.ai-sdk.dev/components/toolbar) | Fixed bar of canvas actions | Providing create, delete, and layout actions for a workflow canvas | Workflow and orchestration surfaces |
+
+## Utilities
+
+General-purpose AI utility components.
+
+| Component | What it is | Reach for it when | Used in |
+| --- | --- | --- | --- |
+| [Image](https://elements.ai-sdk.dev/components/image) | AI-generated or AI-annotated image display | The assistant produces or annotates an image the teacher views inline | Any surface with image output |
+| [Open In Chat](https://elements.ai-sdk.dev/components/open-in-chat) | Button or link that opens content in a chat session | The teacher wants to ask questions about a document or record they are viewing | Document viewers, record detail pages |
+
+## Code
+
+Code-focused AI components — included for completeness, with a note on TFX relevance.
+
+TFX products are teacher-facing curriculum and school-management tools, not developer tools or IDE surfaces.
+The Code category components below are relevant only if a TFX product surface ever needs to display generated code, structured output, or a script in a review context — for example, a formula in a spreadsheet integration or a structured data export.
+They are not default picks for any current TFX product surface.
+
+| Component | What it is | Reach for it when |
+| --- | --- | --- |
+| [Agent](https://elements.ai-sdk.dev/components/agent) | Code-running agent with tool output | A surface needs to show an agent that writes and runs code |
+| [Artifact](https://elements.ai-sdk.dev/components/artifact) | Container for a generated code or text artifact | The assistant produces a discrete, reusable file or snippet |
+| [Code Block](https://elements.ai-sdk.dev/components/code-block) | Syntax-highlighted, copyable code block | Displaying generated code, a formula, or a structured output |
+| [Commit](https://elements.ai-sdk.dev/components/commit) | Structured display of a code commit record | Showing a version-controlled change — unlikely in TFX |
+| [Environment Variables](https://elements.ai-sdk.dev/components/environment-variables) | Key-value list of environment configuration | A teacher-facing config surface needs to show system variables — unlikely in TFX |
+| [File Tree](https://elements.ai-sdk.dev/components/file-tree) | Navigable folder and file tree | Displaying a generated project structure or document hierarchy |
+| [JSX Preview](https://elements.ai-sdk.dev/components/jsx-preview) | Live-rendered JSX preview panel | A surface generates a JSX or HTML snippet the teacher previews — unlikely in TFX |
+| [Package Info](https://elements.ai-sdk.dev/components/package-info) | Structured display of a dependency's metadata | Showing software package information — unlikely in TFX |
+| [Sandbox](https://elements.ai-sdk.dev/components/sandbox) | Isolated execution environment for generated code | The assistant runs code in a safe container — unlikely in current TFX products |
+| [Schema Display](https://elements.ai-sdk.dev/components/schema-display) | Visual representation of a data schema | Showing a generated data model or export schema |
+| [Snippet](https://elements.ai-sdk.dev/components/snippet) | Short inline code fragment | Inline code reference inside a prose response |
+| [Stack Trace](https://elements.ai-sdk.dev/components/stack-trace) | Formatted error stack trace | Displaying a code error in a debugging context — unlikely in TFX |
+| [Terminal](https://elements.ai-sdk.dev/components/terminal) | Emulated terminal output | Showing command-line output from an agent run — unlikely in TFX |
+| [Test Results](https://elements.ai-sdk.dev/components/test-results) | Pass/fail summary for generated tests | Displaying auto-generated test outcomes — unlikely in TFX |
+| [Web Preview](https://elements.ai-sdk.dev/components/web-preview) | Embedded iframe preview of a generated web page | Previewing a generated HTML page or report — unlikely in TFX |
+
+> Reference: [AI Elements components](https://elements.ai-sdk.dev/components/)

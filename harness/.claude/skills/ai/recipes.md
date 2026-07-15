@@ -258,3 +258,8 @@ element). Until upstream fixes it, do not pass `tooltip` to `PromptInputButton`;
 Upstream `MessageAction` wrapped its `Button` as a child of `TooltipTrigger`. Patched in
 `components/ai-elements/message.tsx` to use `TooltipTrigger render={<Button …/>}`.
 If you upgrade AI Elements, reapply this patch or the `tooltip` prop breaks hydration.
+
+## Component reference
+
+Human-readable component reference with routing guidance: `content/ai/components.mdx`.
+Tables map each AI Elements component to the TFX routing table and list relevant TFX surfaces.

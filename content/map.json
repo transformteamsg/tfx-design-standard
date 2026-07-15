@@ -17,14 +17,15 @@
       "text-patterns",
       "naming",
       "interaction",
-      "ai-design",
-      "conversation-design",
-      "prompt-engineering",
       "web-interface",
       "data-viz",
       "illustration",
       "product-icons"
     ]
+  },
+  "ai": {
+    "label": "AI",
+    "slugs": ["ai-interactions", "conversation-ux", "prompt-engineering", "components"]
   },
   "foundations": {
     "label": "Foundations",

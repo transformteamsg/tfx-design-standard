@@ -9,6 +9,7 @@ import { PageActions } from "@/components/page-actions";
 import { ToolCard, type Tool } from "@/components/tool-card";
 import { heading } from "@/components/mdx";
 import {
+  DemoChatbot,
   DemoConversation,
   DemoStreaming,
   DemoSources,
@@ -56,6 +57,7 @@ export async function DocPage({ doc, children }: { doc: Doc; children?: ReactNod
       components: {
         h2: heading("h2"),
         h3: heading("h3"),
+        DemoChatbot,
         DemoConversation,
         DemoStreaming,
         DemoSources,

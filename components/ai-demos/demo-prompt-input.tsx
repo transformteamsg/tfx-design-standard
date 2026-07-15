@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import type { FileUIPart } from "ai";
 import {
   Attachments,
@@ -8,6 +9,11 @@ import {
   AttachmentInfo,
   AttachmentRemove,
 } from "@/components/ai-elements/attachments";
+import {
+  Message,
+  MessageContent,
+  MessageResponse,
+} from "@/components/ai-elements/message";
 import {
   PromptInput,
   PromptInputHeader,
@@ -19,6 +25,7 @@ import {
 import { Suggestion, Suggestions } from "@/components/ai-elements/suggestion";
 import { Paperclip } from "lucide-react";
 import { DemoFrame } from "./demo-frame";
+import { ChatShell, ChatShellMessages, ChatShellInput } from "./chat-shell";
 
 /* Static teacher-realistic attachment so the "what it can read" affordance
    is visible — a running-records PDF already loaded into the input strip. */
@@ -36,49 +43,85 @@ const SUGGESTIONS = [
   "Summarise this week",
 ] as const;
 
+/* Canned reply shown after the first submission — keeps the demo
+   self-contained with no network calls. */
+const CANNED_REPLY =
+  "Got it. I'll look at the running records and summarise the key patterns for you.";
+
 /* Illustrates PromptInput + Suggestion + an attached-file state.
    Anatomy: Suggestions render as siblings ABOVE the PromptInput.
    Attachments render inside the PromptInputHeader slot (above the textarea).
-   All interactive elements are keyboard-reachable (A11Y-2).
-   No network calls — all state is static. */
+   On submit, the prompt appears as a user bubble and a canned assistant reply
+   appears below — showing the mini-thread pattern. */
 export function DemoPromptInput() {
+  const [submitted, setSubmitted] = useState<string | null>(null);
+
+  function handleSubmit({ text }: { text: string }) {
+    if (text.trim()) {
+      setSubmitted(text.trim());
+    }
+  }
+
   return (
-    <DemoFrame caption={["PromptInput", "PromptInputHeader", "Suggestion", "Attachments"]}>
-      <div className="flex flex-col gap-3">
-        {/* Suggestion chips render outside / above the PromptInput */}
-        <Suggestions>
-          {SUGGESTIONS.map((s) => (
-            <Suggestion key={s} suggestion={s} onClick={() => {}} />
-          ))}
-        </Suggestions>
+    <DemoFrame bleed caption={["PromptInput", "PromptInputHeader", "Suggestion", "Attachments", "Message"]}>
+      <ChatShell>
+        {/* Mini thread — visible after first submission */}
+        {submitted && (
+          <ChatShellMessages>
+            <Message from="user">
+              <MessageContent>{submitted}</MessageContent>
+            </Message>
+            <Message from="assistant">
+              <MessageResponse>{CANNED_REPLY}</MessageResponse>
+            </Message>
+          </ChatShellMessages>
+        )}
 
-        <PromptInput onSubmit={() => {}}>
-          {/* Attachments go in the header slot — above the textarea */}
-          <PromptInputHeader>
-            <Attachments variant="list">
-              <Attachment data={ATTACHED_FILE}>
-                <AttachmentPreview />
-                <AttachmentInfo />
-                <AttachmentRemove />
-              </Attachment>
-            </Attachments>
-          </PromptInputHeader>
+        {/* Divider only once a thread sits above the input. */}
+        <ChatShellInput divider={submitted !== null}>
+          {/* Suggestion chips render outside / above the PromptInput */}
+          {!submitted && (
+            <Suggestions className="mb-2">
+              {SUGGESTIONS.map((s) => (
+                <Suggestion
+                  key={s}
+                  suggestion={s}
+                  onClick={() => setSubmitted(s)}
+                />
+              ))}
+            </Suggestions>
+          )}
 
-          <PromptInputTextarea placeholder="Ask about a student, class, or report…" />
+          <PromptInput onSubmit={handleSubmit}>
+            {/* Attachments go in the header slot — above the textarea */}
+            {!submitted && (
+              <PromptInputHeader>
+                <Attachments variant="list">
+                  <Attachment data={ATTACHED_FILE}>
+                    <AttachmentPreview />
+                    <AttachmentInfo />
+                    <AttachmentRemove />
+                  </Attachment>
+                </Attachments>
+              </PromptInputHeader>
+            )}
 
-          <PromptInputFooter>
-            {/* Attach affordance — labelled for screen readers (A11Y-2).
-                No tooltip prop: the tooltip trigger renders its own <button>,
-                nesting buttons and breaking hydration on this Base UI stack. */}
-            <PromptInputButton aria-label="Attach file">
-              <Paperclip className="size-4" aria-hidden="true" />
-              <span className="text-xs">Attach</span>
-            </PromptInputButton>
+            <PromptInputTextarea placeholder="Ask about a student, class, or report…" />
 
-            <PromptInputSubmit />
-          </PromptInputFooter>
-        </PromptInput>
-      </div>
+            <PromptInputFooter>
+              {/* Attach affordance — labelled for screen readers (A11Y-2).
+                  No tooltip prop: the tooltip trigger renders its own <button>,
+                  nesting buttons and breaking hydration on this Base UI stack. */}
+              <PromptInputButton aria-label="Attach file">
+                <Paperclip className="size-4" aria-hidden="true" />
+                <span className="text-xs">Attach</span>
+              </PromptInputButton>
+
+              <PromptInputSubmit />
+            </PromptInputFooter>
+          </PromptInput>
+        </ChatShellInput>
+      </ChatShell>
     </DemoFrame>
   );
 }

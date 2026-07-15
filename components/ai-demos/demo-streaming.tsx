@@ -9,6 +9,7 @@ import {
   PromptInputFooter,
 } from "@/components/ai-elements/prompt-input";
 import { DemoFrame } from "./demo-frame";
+import { ChatShell, ChatShellMessages, ChatShellInput } from "./chat-shell";
 import { useReplay } from "./use-replay";
 
 /* step 0 = nothing yet
@@ -34,34 +35,37 @@ export const DemoStreaming = () => {
 
   return (
     <DemoFrame
+      bleed
       caption={["MessageResponse", "Shimmer", "PromptInput (stop state)", "PromptInputSubmit"]}
       onReplay={replay}
     >
-      <div className="flex flex-col gap-4">
-        <Message from="user">
-          <MessageContent>
-            Which students in 5A haven&apos;t submitted their reading log this week?
-          </MessageContent>
-        </Message>
-
-        {step > 0 && (
-          <Message from="assistant">
-            <MessageResponse isAnimating={step === 1}>
-              {text}
-            </MessageResponse>
-            {isStreaming && (
-              <div className="mt-2 pl-1">
-                <Shimmer as="p" className="text-sm text-muted-foreground">
-                  Retrieving final record from CaseSync…
-                </Shimmer>
-              </div>
-            )}
+      <ChatShell>
+        <ChatShellMessages>
+          <Message from="user">
+            <MessageContent>
+              Which students in 5A haven&apos;t submitted their reading log this week?
+            </MessageContent>
           </Message>
-        )}
+
+          {step > 0 && (
+            <Message from="assistant">
+              <MessageResponse isAnimating={step === 1}>
+                {text}
+              </MessageResponse>
+              {isStreaming && (
+                <div className="mt-2 pl-1">
+                  <Shimmer as="p" className="text-sm text-muted-foreground">
+                    Retrieving final record from CaseSync…
+                  </Shimmer>
+                </div>
+              )}
+            </Message>
+          )}
+        </ChatShellMessages>
 
         {/* Input is locked in stop state for the duration of streaming.
             The square icon and aria-label="Stop" make the affordance unambiguous. */}
-        <div className="border-t border-border pt-3">
+        <ChatShellInput>
           <PromptInput onSubmit={() => {}}>
             <PromptInputTextarea
               disabled={isStreaming}
@@ -76,8 +80,8 @@ export const DemoStreaming = () => {
               )}
             </PromptInputFooter>
           </PromptInput>
-        </div>
-      </div>
+        </ChatShellInput>
+      </ChatShell>
     </DemoFrame>
   );
 };

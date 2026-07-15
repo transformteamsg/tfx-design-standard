@@ -1,0 +1,180 @@
+---
+title: Conversation UX
+description: Conversation surfaces work best when no structured control can do the job. Know when to reach for chat - and how to make it trustworthy when you do.
+status: proposed
+---
+
+> Reference: [Google PAIR Guidebook](https://pair.withgoogle.com/guidebook/), [Microsoft HAX Toolkit](https://www.microsoft.com/en-us/haxtoolkit/library/), [IBM Carbon for AI](https://carbondesignsystem.com/guidelines/carbon-for-ai/), [Vercel AI Elements](https://elements.ai-sdk.dev/). Rules below are distilled from the highest-agreement points across all four sources and adapted to TFX products and the Kind Utility brand.
+
+A conversation surface is one type of AI surface.
+The [AI interactions](/ai/ai-interactions) principles — being honest about the AI, keeping the teacher in charge, and handling doubt and failure safely — all apply here.
+This page adds only what is specific to a conversation surface.
+
+Send a message below to see the full pattern in one place — streaming, reasoning, sources, and a stop control.
+Each rule further down isolates one part of it.
+
+<DemoChatbot />
+
+### Choose the surface
+
+- **Conversation is the last resort, not the first idea.** Embedded AI inside the task beats chat one step removed from it.
+
+  | Do | Don't |
+  | --- | --- |
+  | Use an inline suggestion chip on the attendance form when a teacher is marking absences for Class 5A. | Open a chat panel and ask the teacher to type "Mark all of Class 5A present" as a prompt. |
+
+  _([PAIR "User Needs + Defining Success" chapter](https://pair.withgoogle.com/chapter/user-needs/) - automate-vs-augment; [HAX G3](https://www.microsoft.com/en-us/haxtoolkit/guideline/time-services-based-on-context/), [G4](https://www.microsoft.com/en-us/haxtoolkit/guideline/show-contextually-relevant-information/))_
+
+- **The empty state sets expectations before the teacher types.** State what the assistant can do in one sentence, name one limitation, and offer example prompts.
+
+  | Do | Don't |
+  | --- | --- |
+  | "I can help you draft end-of-term comments and plan lessons. I can't access student assessment scores." with two example prompts. | Show a blank text box with placeholder text "Ask me anything." |
+
+  _([HAX G1](https://www.microsoft.com/en-us/haxtoolkit/guideline/make-clear-what-the-system-can-do/), [pattern G1-A](https://www.microsoft.com/en-us/haxtoolkit/pattern/g1-a-introductory-blurb/) - introductory blurb; [PAIR "Mental Models" chapter](https://pair.withgoogle.com/chapter/mental-models/))_
+
+  <DemoConversation />
+
+### Guide the input
+
+- **Prompt input carries the guidance.** Suggestions show what the assistant is good at; attached files stay visible throughout the session.
+
+  | Do | Don't |
+  | --- | --- |
+  | Show suggestion chips: "Draft comments for Class 5A", "Suggest a differentiation strategy for this lesson plan." | Show a bare text input with no suggestions and no attach affordance. |
+
+  _([HAX pattern G1-D](https://www.microsoft.com/en-us/haxtoolkit/pattern/g1-d-demonstrate-possible-system-inputs/) - demonstrate possible inputs; Vercel AI Elements [`Suggestion`](https://elements.ai-sdk.dev/components/suggestion), [`Attachments`](https://elements.ai-sdk.dev/components/attachments))_
+
+  <DemoPromptInput />
+
+- **Conversation memory is visible.** Attached context — documents, student notes, class lists — stays visible in the attachments strip for the whole session.
+
+  | Do | Don't |
+  | --- | --- |
+  | Keep the "Class 5A reading records.pdf" chip visible in the strip throughout; say "I can no longer see this file" if the session resets. | Let the attachment silently drop out of scope and answer as if it is still available. |
+
+  _([Voiceflow conversation design](https://www.voiceflow.com/blog/conversation-design) - "Understanding Layer / context boundaries"; Vercel AI Elements [`Attachments`](https://elements.ai-sdk.dev/components/attachments), [`Context`](https://elements.ai-sdk.dev/components/context))_
+
+  <DemoAttachments />
+
+### Show what the assistant is doing
+
+- **Streaming must be stoppable.** Progress is visible while the response generates; the teacher can stop it at any point without losing what arrived so far.
+
+  | Do | Don't |
+  | --- | --- |
+  | Show a visible Stop button the moment streaming begins; preserve the partial response when the teacher clicks it. | Put the stop control inside an overflow menu, or discard the partial response on stop. |
+
+  _([HAX G8](https://www.microsoft.com/en-us/haxtoolkit/guideline/support-efficient-dismissal/); [Vercel AI Elements streaming pattern](https://elements.ai-sdk.dev/))_
+
+  <DemoStreaming />
+
+- **Sources survive the whole session, not just the last answer.** In a multi-turn conversation a teacher may act on an answer from three turns back; its sources must still be reachable when they do.
+
+  | Do | Don't |
+  | --- | --- |
+  | Keep each answer's `Sources` panel attached to its own message as the thread grows. | Show sources only on the newest message, so earlier claims become unverifiable. |
+
+  _([HAX G11](https://www.microsoft.com/en-us/haxtoolkit/guideline/make-clear-why-the-system-did-what-it-did/); [PAIR "Explainability + Trust" chapter](https://pair.withgoogle.com/chapter/explainability-trust/); Vercel AI Elements [`Sources`](https://elements.ai-sdk.dev/components/sources), [`InlineCitation`](https://elements.ai-sdk.dev/components/inline-citation))_
+
+  <DemoSources />
+
+- **Agents show their work.** When the assistant runs a multi-step job, show the plan before it starts and the task list as it progresses.
+
+  | Do | Don't |
+  | --- | --- |
+  | Before drafting term comments for all of Class 5A, show: "1. Read records · 2. Draft comment · 3. Flag low-confidence items" and let the teacher confirm before step 1 runs. | Start generating 30 comments with no preview of what will happen or how to stop partway. |
+
+  _([HAX G16-A](https://www.microsoft.com/en-us/haxtoolkit/pattern/g16-a-feedforward-convey-the-consequences-of-user-actions-before-the-user-takes-action/) - feedforward; Vercel AI Elements [`Plan`](https://elements.ai-sdk.dev/components/plan), [`Task`](https://elements.ai-sdk.dev/components/task), [`Checkpoint`](https://elements.ai-sdk.dev/components/checkpoint))_
+
+  <DemoPlan />
+
+  <DemoTask />
+
+- **Reasoning stays hidden by default.** Surface model reasoning only when the teacher would act differently knowing how the answer was reached.
+
+  | Do | Don't |
+  | --- | --- |
+  | Show reasoning for a suggested reading band only when the band is low-confidence and the teacher needs to decide whether to accept it. | Append a chain-of-thought paragraph to every response, including simple ones like "Here is next week's lesson plan." |
+
+  _([PAIR "Explainability + Trust" chapter](https://pair.withgoogle.com/chapter/explainability-trust/); Vercel AI Elements [`Reasoning`](https://elements.ai-sdk.dev/components/reasoning))_
+
+  <DemoReasoning />
+
+The always-apply rules — expectations, marking, authorship, approval, scoping, failure — are defined on [AI interactions](/ai/ai-interactions) and bind here too.
+
+## Handle the turn
+
+These rules govern how the assistant behaves during a live conversation.
+
+### Open the conversation
+
+- **Open with a scope statement and one forward prompt.** Teachers have limited time; a feature list wastes it.
+
+  | Do | Don't |
+  | --- | --- |
+  | "I can help you plan this lesson or suggest differentiation strategies — where would you like to start?" | List every capability at launch: "I can draft comments, plan lessons, suggest strategies, analyse trends…" |
+
+  _([Google Conversation Design guide](https://developers.google.com/assistant/conversation-design/create-a-persona) - "Create a persona")_
+
+- **State session-reset boundaries clearly; do not imply continuity.** If the assistant cannot access a prior conversation, say so directly.
+
+  | Do | Don't |
+  | --- | --- |
+  | "This is a new session — I don't have our previous conversation. Can you tell me what you're working on today?" | Begin the new session as if the prior context is available and answer based on it. |
+
+  _([Voiceflow conversation design](https://www.voiceflow.com/blog/conversation-design) - "Understanding Layer / context boundaries")_
+
+### During the turn
+
+- **Ask one clarifying question at a time, and only what the system does not already know.** Stacking questions feels like a badly designed form.
+
+  | Do | Don't |
+  | --- | --- |
+  | "Which subject is this lesson for?" when the class and year level are already in the session context. | "What class is this for, what subject, what year level, and how long is the lesson?" |
+
+  _([Amazon Alexa design principles](https://developer.amazon.com/en-US/docs/alexa/alexa-design/get-started.html) - "Be Brief / Be Contextual")_
+
+- **Calibrate response length to the register.** A quick question gets 2-3 sentences; a structured request can run longer.
+
+  | Do | Don't |
+  | --- | --- |
+  | Answer "What's Band 4 in reading?" in two sentences. | Return a five-paragraph explainer for a question the teacher asked while opening their gradebook. |
+
+  _([Amazon Alexa design principles](https://developer.amazon.com/en-US/docs/alexa/alexa-design/get-started.html) - "Be Brief"; [Google Conversation Design guide](https://developers.google.com/assistant/conversation-design))_
+
+- **Match confirmation weight to consequence.** Irreversible actions get explicit yes or no; reversible ones use implicit confirmation the teacher can interrupt.
+
+  | Do | Don't |
+  | --- | --- |
+  | Say "I'll draft this now" before generating a lesson plan; ask "Confirm update to Amir's record?" before writing to CaseSync. | Ask "Shall I proceed?" before every step, including trivial ones like reformatting a list. |
+
+  _([Google Conversation Design guide](https://developers.google.com/assistant/conversation-design/confirmations) - "Confirmations")_
+
+### When things go wrong
+
+- **Escalate fallbacks: brief reprompt on the first miss, add an example on the second, exit gracefully at the third.** Never imply the teacher did something wrong.
+
+  | Do | Don't |
+  | --- | --- |
+  | First miss: "I'm not sure I understood — could you say more about what you need?" Second miss: "For example, 'Draft a comment for a student who improved in reading this term'?" | "Invalid input. Please rephrase your query." |
+
+  _([Google Conversation Design guide](https://developers.google.com/assistant/conversation-design/errors) - "Errors")_
+
+- **Design unhappy paths explicitly; do not rely on base model defaults.** Off-topic input gets a brief acknowledgement before the redirect — never a blunt refusal.
+
+  | Do | Don't |
+  | --- | --- |
+  | "That's outside what I can help with here. For timetable questions, try the admin portal." | "I can't help with that." — no redirect, no context. |
+
+  _([Voiceflow conversation design](https://www.voiceflow.com/blog/conversation-design) - "Unhappy Path Design")_
+
+### Close the turn
+
+- **End turns with an optional forward-offer, not a mandatory question.** An invitation lets the teacher continue; an interrogative creates pressure.
+
+  | Do | Don't |
+  | --- | --- |
+  | "Want me to adjust this for lower-ability learners?" after drafting a lesson plan. | "What do you need next?" at the end of every response. |
+
+  _([Amazon Alexa design principles](https://developer.amazon.com/en-US/docs/alexa/alexa-design/get-started.html) - "Be Natural")_

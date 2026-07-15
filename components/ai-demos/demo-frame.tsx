@@ -2,26 +2,33 @@
 
 import type { ReactNode } from "react";
 import { RotateCcw } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 /* Shared wrapper for AI interaction pattern demos.
    Accepts children, an optional caption listing AI Elements components,
    and an optional onReplay callback. When onReplay is provided a ghost
    "Replay" button is rendered in the header so visitors can restart the
-   animated sequence. */
+   animated sequence.
+
+   `bleed` drops the content padding so a child (the ChatShell) can own its
+   own p-4 inset and run an edge-to-edge divider — used by the chat demos so
+   they don't nest a second bordered box inside this figure (SLP-4). */
 
 export function DemoFrame({
   children,
   caption,
   onReplay,
+  bleed = false,
 }: {
   children: ReactNode;
   caption?: string[];
   onReplay?: () => void;
+  bleed?: boolean;
 }) {
   return (
-    <figure className="not-prose my-8 overflow-hidden rounded-lg border border-border bg-surface">
+    <figure className="not-prose my-8 rounded-lg border border-border bg-surface">
       {/* Live demo label + optional replay */}
-      <div className="flex items-center gap-2 border-b border-border px-4 py-2.5">
+      <div className="flex items-center gap-2 rounded-t-lg border-b border-border px-4 py-2.5">
         <span
           aria-hidden="true"
           className="inline-block h-2 w-2 rounded-full bg-success-9 opacity-80"
@@ -42,12 +49,13 @@ export function DemoFrame({
         )}
       </div>
 
-      {/* Demo content — interior canvas is page background; components carry their own surfaces */}
-      <div className="p-5 sm:p-6">{children}</div>
+      {/* Demo content — interior canvas is page background; components carry their own surfaces.
+          `bleed` removes the inset so a ChatShell child can own padding + a full-bleed divider. */}
+      <div className={cn(bleed ? "p-0" : "p-5 sm:p-6")}>{children}</div>
 
       {/* Caption: component name chips */}
       {caption && caption.length > 0 && (
-        <figcaption className="flex flex-wrap items-center gap-2 border-t border-border px-4 py-3">
+        <figcaption className="flex flex-wrap items-center gap-2 rounded-b-lg border-t border-border px-4 py-3">
           <span className="text-xs text-muted-foreground">Components:</span>
           {caption.map((name) => (
             <span

@@ -1,4 +1,5 @@
 export { DemoFrame } from "./demo-frame";
+export { DemoChatbot } from "./demo-chatbot";
 export { DemoConversation } from "./demo-conversation";
 export { DemoStreaming } from "./demo-streaming";
 export { DemoSources } from "./demo-sources";
