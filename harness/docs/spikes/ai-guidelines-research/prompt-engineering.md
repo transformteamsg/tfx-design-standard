@@ -18,7 +18,7 @@ Even a single sentence ("You are a helpful coding assistant") measurably changes
 
 **3. Use examples (few-shot / multishot)**
 3-5 `<example>` blocks covering edge cases are one of the most reliable ways to steer output format, tone, and structure.
-- Source: Anthropic - Prompting best practices, "Use examples effectively"; OpenAI - Prompt engineering guide (https://developers.openai.com/api/docs/guides/prompt-engineering), "Few-shot learning"
+- Source: Anthropic - Prompting best practices, "Use examples effectively"; OpenAI - Prompt engineering guide (https://platform.openai.com/docs/guides/prompt-engineering), "Few-shot learning"
 - TFX applicability: include one example of a correct teacher-facing reply and one example of a reply that is too clinical, so the model learns the warmth calibration.
 
 **4. Structure prompts with XML tags**

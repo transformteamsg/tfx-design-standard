@@ -22,6 +22,10 @@ import {
   DemoPromptInput,
   DemoAiLabel,
   DemoEmptyState,
+  DemoConfidence,
+  DemoFeedback,
+  DemoClarify,
+  DemoError,
 } from "@/components/ai-demos";
 
 /* Sections whose docs live at /{section}/{slug} and get a breadcrumb back to
@@ -65,6 +69,10 @@ export async function DocPage({ doc, children }: { doc: Doc; children?: ReactNod
         DemoPromptInput,
         DemoAiLabel,
         DemoEmptyState,
+        DemoConfidence,
+        DemoFeedback,
+        DemoClarify,
+        DemoError,
       },
       options: { mdxOptions: { remarkPlugins: [remarkGfm] } },
     });

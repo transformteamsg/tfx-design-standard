@@ -253,3 +253,8 @@ Button's own `<button>` — invalid HTML that breaks hydration. `CheckpointTrigg
 the correct pattern (Base UI `TooltipTrigger render={<Button …/>}` merges into one
 element). Until upstream fixes it, do not pass `tooltip` to `PromptInputButton`; use
 `aria-label` plus visible text instead.
+
+**`message` — `MessageAction` tooltip had the same nested-button bug (patched 2026-07-15):**
+Upstream `MessageAction` wrapped its `Button` as a child of `TooltipTrigger`. Patched in
+`components/ai-elements/message.tsx` to use `TooltipTrigger render={<Button …/>}`.
+If you upgrade AI Elements, reapply this patch or the `tooltip` prop breaks hydration.

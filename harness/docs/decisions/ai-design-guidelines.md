@@ -264,3 +264,21 @@ and "Handle the turn". These draw from Anthropic prompt engineering documentatio
 Google Conversation Design guidelines, and Voiceflow research. They cover how to write
 system prompts that produce predictable, safe assistant behaviour on teacher-facing
 surfaces, and how to structure turn-level interaction patterns.
+
+## Phase 8 update (2026-07-15)
+
+**IA restructured to a parent page plus two child pages.** The flat two-page layout (ai-design, conversation-design) was not MECE: confirmation, scoping, expectations, and failure appeared on both pages. The new structure is:
+
+- `ai-design.mdx` — parent and overview; owns the routing table and eight always-apply rules grouped into three h3 sections ("Be honest about the AI", "Keep the teacher in charge", "Handle doubt and failure safely"); ends with a "Go deeper" section linking both children.
+- `conversation-design.mdx` — child covering what is specific to a conversation surface; seven surface-specific rules retained; three duplicate rules (consequential-actions approval, refusals/errors, scope-when-in-doubt) removed and replaced with a single pointer line back to the parent.
+- `prompt-engineering.mdx` — new child covering system prompt authoring; the nine "Shape the assistant" rules moved verbatim from conversation-design.mdx to this page.
+
+**Principles grouped under three h3 headings on the parent.** The eight always-apply rules were ungrouped before; they are now assigned to three named groups (three rules, three rules, two rules) to make the structure scannable and the intent clear.
+
+**Duplicates removed; each rule lives on exactly one page.** MECE check confirmed: no bold rule lead-in appears on more than one page. The parent owns the principles; the children own the surface specifics.
+
+**Citations remain inline with their rules.** Every markdown link was preserved when content moved between pages. No citation was stripped.
+
+**Demos reassigned to match the restructure.** DemoEmptyState, DemoAiLabel, DemoConfidence, DemoConfirmation, DemoFeedback, DemoClarify, DemoError are on the parent. DemoConversation (swapped from DemoEmptyState), DemoPromptInput, DemoStreaming, DemoSources, DemoPlan, DemoTask, DemoAttachments, DemoReasoning are on the conversation child. The new prompt-engineering page carries no demos (the rules are authoring guidance, not interactive UI patterns).
+
+**Navigation updated to an AI subgroup.** `components/sidebar.tsx` now nests all three pages under a collapsible "AI" subgroup inside Guidelines, matching the existing "Content" subgroup pattern. `content/map.json` has "prompt-engineering" added after "conversation-design".

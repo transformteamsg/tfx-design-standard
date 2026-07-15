@@ -11,7 +11,7 @@ import { DemoFrame } from "./demo-frame";
 
 export const DemoSources = () => (
   <DemoFrame caption={["Message", "MessageResponse", "Sources", "SourcesTrigger", "SourcesContent", "Source"]}>
-    <div className="flex flex-col gap-4 rounded-lg border border-border bg-surface p-4">
+    <div className="flex flex-col gap-4">
       <Message from="user">
         <MessageContent>
           How is Ahmad tracking against year-level benchmarks?

@@ -17,7 +17,8 @@ import { DemoFrame } from "./demo-frame";
 
 /* Illustrates ConversationEmptyState — the first thing a teacher sees before
    any messages exist. Title names the scope; description states one clear
-   capability and one honest limitation so expectations are set up front. */
+   capability and one honest limitation so expectations are set up front.
+   Suggestions render as siblings ABOVE the PromptInput, outside it. */
 export const DemoEmptyState = () => (
   <DemoFrame caption={["ConversationEmptyState", "Suggestion"]}>
     <div className="flex h-[420px] flex-col overflow-hidden rounded-lg border border-border bg-surface">
@@ -31,14 +32,14 @@ export const DemoEmptyState = () => (
         </ConversationContent>
       </Conversation>
 
-      {/* Prompt input with starter chips so teachers know what to ask */}
-      <div className="border-t border-border p-3">
+      {/* Suggestions render above the input as siblings, not inside PromptInput */}
+      <div className="border-t border-border px-3 pb-3 pt-2">
+        <Suggestions className="mb-2">
+          <Suggestion suggestion="Summarise 5A this term" onClick={() => {}} />
+          <Suggestion suggestion="Draft comments for Ahmad" onClick={() => {}} />
+          <Suggestion suggestion="Who needs a check-in?" onClick={() => {}} />
+        </Suggestions>
         <PromptInput onSubmit={() => {}}>
-          <Suggestions>
-            <Suggestion suggestion="Summarise 5A this term" onClick={() => {}} />
-            <Suggestion suggestion="Draft comments for Ahmad" onClick={() => {}} />
-            <Suggestion suggestion="Who needs a check-in?" onClick={() => {}} />
-          </Suggestions>
           <PromptInputTextarea placeholder="Ask about a student or class…" />
           <PromptInputFooter>
             <PromptInputSubmit />

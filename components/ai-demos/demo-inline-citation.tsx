@@ -26,8 +26,7 @@ const SOURCES = [
 
 export const DemoInlineCitation = () => (
   <DemoFrame caption={["InlineCitation", "InlineCitationCard", "InlineCitationCardTrigger", "InlineCitationCardBody", "InlineCitationSource", "InlineCitationQuote"]}>
-    <div className="flex flex-col gap-4 rounded-lg border border-border bg-surface p-4">
-      <Message from="assistant">
+    <Message from="assistant">
         <p className="text-sm text-foreground leading-relaxed">
           Ahmad is currently reading at{" "}
           <InlineCitation>
@@ -75,6 +74,5 @@ export const DemoInlineCitation = () => (
           {" — meeting mid-year expectations. Comprehension scores have averaged 72% this term, up from 58% in Term 1."}
         </p>
       </Message>
-    </div>
   </DemoFrame>
 );

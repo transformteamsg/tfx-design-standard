@@ -12,3 +12,7 @@ export { DemoReasoning } from "./demo-reasoning";
 export { DemoPromptInput } from "./demo-prompt-input";
 export { DemoAiLabel } from "./demo-ai-label";
 export { DemoEmptyState } from "./demo-empty-state";
+export { DemoConfidence } from "./demo-confidence";
+export { DemoFeedback } from "./demo-feedback";
+export { DemoClarify } from "./demo-clarify";
+export { DemoError } from "./demo-error";

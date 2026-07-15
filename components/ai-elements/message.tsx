@@ -98,10 +98,19 @@ export const MessageAction = ({
   );
 
   if (tooltip) {
+    // Base UI TooltipTrigger renders its own <button>; wrapping the Button as a
+    // child nests buttons and breaks hydration. `render` merges into one element.
     return (
       <TooltipProvider>
         <Tooltip>
-          <TooltipTrigger>{button}</TooltipTrigger>
+          <TooltipTrigger
+            render={
+              <Button size={size} type="button" variant={variant} {...props} />
+            }
+          >
+            {children}
+            <span className="sr-only">{label || tooltip}</span>
+          </TooltipTrigger>
           <TooltipContent>
             <p>{tooltip}</p>
           </TooltipContent>

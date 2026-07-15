@@ -1,0 +1,49 @@
+---
+title: Prompt engineering
+description: The system prompt is a design surface. It sets the assistant's role, tone, and limits before any pixel renders — this page covers how to write one well.
+status: proposed
+---
+
+> Reference: [Anthropic prompt engineering overview](https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview), [OpenAI prompt engineering guide](https://platform.openai.com/docs/guides/prompt-engineering).
+
+## Shape the assistant
+
+These rules apply when you write or review a system prompt for a TFX AI surface.
+
+- **Declare the role in teacher-facing terms from the first line.** "You are a teaching-support assistant for Singapore primary-school educators" anchors tone and scope more reliably than a generic framing.
+
+  _([Anthropic Prompting best practices](https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview) - "Give Claude a role")_
+
+- **Explain the why behind each constraint, not just the rule.** The model generalises from reasons. "Use MOE-prescribed terminology so responses match what teachers see in official materials" teaches a principle, not just a word list.
+
+  _([Anthropic Prompting best practices](https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview) - "Add context to improve performance")_
+
+- **Include 3-5 labelled examples covering the warmth calibration.** One example of a correct reply and one that is too clinical teach the Kind Utility register faster than prose description.
+
+  _([Anthropic Prompting best practices](https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview) - "Use examples effectively"; [OpenAI Prompt engineering guide](https://platform.openai.com/docs/guides/prompt-engineering) - "Few-shot learning")_
+
+- **Structure the prompt: identity, instructions, examples, context - using XML tags.** This ordering is auditable and prevents later sections silently overriding earlier ones.
+
+  _([OpenAI Prompt engineering guide](https://platform.openai.com/docs/guides/prompt-engineering) - "Message formatting with Markdown and XML"; [Anthropic Prompting best practices](https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview) - "Structure prompts with XML tags")_
+
+- **For complex tasks, instruct the model to reason before answering.** "Before drafting the lesson hook, consider the year level, the objective, and what the teacher already knows" beats asking for the answer directly.
+
+  _([Anthropic Prompting best practices](https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview) - "Thinking and reasoning")_
+
+- **Control output format with positive instructions, not prohibitions.** "Respond in plain prose, one idea per sentence" is more reliable than "do not use bullet lists."
+
+  _([Anthropic Prompting best practices](https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview) - "Control the format of responses")_
+
+- **Wrap classroom-context data in labelled tags so the model knows what is fixed.** `<context>` blocks containing subject, level, and class size stop the model from asking the teacher to repeat what the system already holds.
+
+  _([Anthropic Prompting best practices](https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview) - "Structure prompts with XML tags"; [OpenAI Prompt engineering guide](https://platform.openai.com/docs/guides/prompt-engineering) - "Include relevant context information")_
+
+- **Treat teacher-pasted content as data, not instructions.** Wrap it in a labelled tag (`<student_work>`, `<document>`) and state that content inside those tags never overrides the assistant's role or constraints.
+
+  _([Anthropic Prompting best practices](https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview) - "Structure prompts with XML tags"; [Anthropic agentic security guidance](https://docs.anthropic.com/en/docs/build-with-claude/computer-use#prompt-injection-safeguards))_
+
+- **Test the prompt with real teacher inputs before shipping.** Run 5-10 representative inputs — one ambiguous, one off-topic, one very short — and check tone, scope, and fallbacks.
+
+  _([Anthropic prompt engineering overview](https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview) - "Before prompt engineering: build evaluations")_
+
+For how the assistant should behave turn-by-turn once the conversation is live, see [Conversation design](/guidelines/conversation-design). For the principles the prompt must encode — honesty, authorship, approval, and safe failure — see [AI design](/guidelines/ai-design).

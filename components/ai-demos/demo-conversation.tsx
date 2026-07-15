@@ -14,6 +14,8 @@ import {
 import { Suggestion, Suggestions } from "@/components/ai-elements/suggestion";
 import { DemoFrame } from "./demo-frame";
 
+/* The outer rounded-lg border IS the conversation shell — it is kept intentionally.
+   Suggestions render as siblings ABOVE the PromptInput, outside it. */
 export const DemoConversation = () => (
   <DemoFrame caption={["Conversation", "ConversationContent", "Message", "MessageContent", "MessageResponse", "PromptInput", "Suggestion"]}>
     <div className="flex h-[420px] flex-col overflow-hidden rounded-lg border border-border bg-surface">
@@ -31,13 +33,15 @@ export const DemoConversation = () => (
           </Message>
         </ConversationContent>
       </Conversation>
-      <div className="border-t border-border p-3">
+
+      {/* Suggestions render above the input as siblings, not inside PromptInput */}
+      <div className="border-t border-border px-3 pb-3 pt-2">
+        <Suggestions className="mb-2">
+          <Suggestion suggestion="Draft a reading report" onClick={() => {}} />
+          <Suggestion suggestion="Flag students below Band 2" onClick={() => {}} />
+          <Suggestion suggestion="Summarise this week" onClick={() => {}} />
+        </Suggestions>
         <PromptInput onSubmit={() => {}}>
-          <Suggestions>
-            <Suggestion suggestion="Draft a reading report" onClick={() => {}} />
-            <Suggestion suggestion="Flag students below Band 2" onClick={() => {}} />
-            <Suggestion suggestion="Summarise this week" onClick={() => {}} />
-          </Suggestions>
           <PromptInputTextarea placeholder="Ask about your class…" />
           <PromptInputFooter>
             <PromptInputSubmit />

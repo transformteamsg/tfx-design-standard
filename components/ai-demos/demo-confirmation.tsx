@@ -14,8 +14,7 @@ const APPROVAL = { id: "send-parent-summaries-v1" };
 
 export const DemoConfirmation = () => (
   <DemoFrame caption={["Confirmation", "ConfirmationTitle", "ConfirmationRequest", "ConfirmationActions", "ConfirmationAction"]}>
-    <div className="flex flex-col gap-4 rounded-lg border border-border bg-surface p-4">
-      <Message from="assistant">
+    <Message from="assistant">
         <MessageContent>
           I&apos;ve drafted progress summaries for all 32 students in Class 5A. Ready to send to parents.
         </MessageContent>
@@ -32,7 +31,6 @@ export const DemoConfirmation = () => (
             <ConfirmationAction>Confirm — send now</ConfirmationAction>
           </ConfirmationActions>
         </Confirmation>
-      </Message>
-    </div>
+    </Message>
   </DemoFrame>
 );

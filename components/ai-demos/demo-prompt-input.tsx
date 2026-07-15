@@ -10,6 +10,7 @@ import {
 } from "@/components/ai-elements/attachments";
 import {
   PromptInput,
+  PromptInputHeader,
   PromptInputTextarea,
   PromptInputFooter,
   PromptInputButton,
@@ -36,28 +37,32 @@ const SUGGESTIONS = [
 ] as const;
 
 /* Illustrates PromptInput + Suggestion + an attached-file state.
+   Anatomy: Suggestions render as siblings ABOVE the PromptInput.
+   Attachments render inside the PromptInputHeader slot (above the textarea).
    All interactive elements are keyboard-reachable (A11Y-2).
    No network calls — all state is static. */
 export function DemoPromptInput() {
   return (
-    <DemoFrame caption={["PromptInput", "Suggestion", "Attachments"]}>
+    <DemoFrame caption={["PromptInput", "PromptInputHeader", "Suggestion", "Attachments"]}>
       <div className="flex flex-col gap-3">
-        <PromptInput onSubmit={() => {}}>
-          {/* Attachment strip — shows what the AI can read */}
-          <Attachments variant="list">
-            <Attachment data={ATTACHED_FILE}>
-              <AttachmentPreview />
-              <AttachmentInfo />
-              <AttachmentRemove />
-            </Attachment>
-          </Attachments>
+        {/* Suggestion chips render outside / above the PromptInput */}
+        <Suggestions>
+          {SUGGESTIONS.map((s) => (
+            <Suggestion key={s} suggestion={s} onClick={() => {}} />
+          ))}
+        </Suggestions>
 
-          {/* Suggestion chips above the textarea */}
-          <Suggestions>
-            {SUGGESTIONS.map((s) => (
-              <Suggestion key={s} suggestion={s} onClick={() => {}} />
-            ))}
-          </Suggestions>
+        <PromptInput onSubmit={() => {}}>
+          {/* Attachments go in the header slot — above the textarea */}
+          <PromptInputHeader>
+            <Attachments variant="list">
+              <Attachment data={ATTACHED_FILE}>
+                <AttachmentPreview />
+                <AttachmentInfo />
+                <AttachmentRemove />
+              </Attachment>
+            </Attachments>
+          </PromptInputHeader>
 
           <PromptInputTextarea placeholder="Ask about a student, class, or report…" />
 
@@ -67,7 +72,7 @@ export function DemoPromptInput() {
                 nesting buttons and breaking hydration on this Base UI stack. */}
             <PromptInputButton aria-label="Attach file">
               <Paperclip className="size-4" aria-hidden="true" />
-              <span className="text-[12px]">Attach</span>
+              <span className="text-xs">Attach</span>
             </PromptInputButton>
 
             <PromptInputSubmit />

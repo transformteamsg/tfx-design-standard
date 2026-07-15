@@ -10,7 +10,7 @@ import { DemoFrame } from "./demo-frame";
 
 export const DemoCheckpoint = () => (
   <DemoFrame caption={["Checkpoint", "CheckpointIcon", "CheckpointTrigger"]}>
-    <div className="flex flex-col gap-4 rounded-lg border border-border bg-surface p-4">
+    <div className="flex flex-col gap-4">
       <Message from="assistant">
         <MessageResponse>
           {"I've reviewed attendance records and running records for Class 5A. All data is current as of this morning's sync."}
