@@ -52,12 +52,35 @@ SLP-4 (primary — nested cards removed), SLP-7 (rhythm), SLP-11 (removed boxes 
 
 ## Verify verdict
 
-- **Screenshots:** (filled in Phase 5 — desktop before/after per chat demo; one non-chat demo regression check; CMP-3 streaming state frames)
-- **Token block line range:** N/A — no `tfx-tokens` exemption region added
-- **Dark mode:** N/A — site is light-only (`app/globals.css` custom-variant dark never activated)
-- **Verification ledger:** (filled in Phase 5)
-- **Evaluator verdict:** (pasted verbatim in Phase 5)
+- **Route note:** during the session the guidelines pages were concurrently restructured (by Tasha, in a parallel editor) into an `/ai/` subgroup; the chat demos now render at `/ai/conversation-ux`. Content unchanged, only the route moved. Changes landed in commit `a8654a3` (Phase 9, tashayip).
+- **Screenshots (desktop, dev server `/ai/conversation-ux`):**
+  - DemoConversation after — full assistant message renders (no mid-sentence clip), no inner box, single full-bleed divider, even rhythm (browser MCP `ss_4932h37q4`).
+  - DemoChatbot empty state on canvas (`ss_07348uu4u`); streaming/submitted with stop control (`ss_75273xash`); Reasoning auto-open "Thinking…" (`ss_4076j7h6a`); response with collapsed Reasoning + Sources streaming (`ss_22866rf1n`).
+  - Before-state reference (old `/guidelines/conversation-design`): inner box + mid-sentence clip + airy gap-8 (`ss_7425bq5bl`, `ss_2519gm9p0`).
+- **CMP-3 frames:** loading (disabled textarea, "Waiting for response…"), streaming (visible square stop control), success (streamed response + reasoning + sources) all captured. Error state not exercised (mock transport has no error path); noted, not blocking.
+- **Token block line range:** N/A — no `tfx-tokens` exemption region added.
+- **Dark mode:** N/A — site is light-only (`app/globals.css` custom-variant dark never activated).
+- **Deterministic:** `tsc --noEmit` clean; production `next build` compiled all 223 pages; `token-audit.py` exit 0; no raw hex in the 6 changed files; no inner `rounded…border…bg-surface` in the 4 demos; `git diff 92ff709 HEAD -- components/ai-elements/{conversation,prompt-input}.tsx` empty (source untouched).
+- **Evaluator verdict (verbatim, agent `tfx-design-evaluator`):**
+
+  > VERDICT: pass
+  >
+  > This is a clean, well-scoped modification. Every done-criterion is met, every in-scope control I could verify passes, and the two headline claims that carry the most risk — "AI Elements source untouched" and "no nested cards" — are provable deterministically rather than on the builder's say-so. Note: the working tree is committed (changes landed at commits `1c14804` Phase 8 / `a8654a3` Phase 9), so I graded the committed state and diffed the AI Elements source against its Phase 6.1 install point (`92ff709`).
+  >
+  > BLOCKING: None. ADVISORY: None that rise to a finding — two close calls recorded (A11Y-5 Shimmer keyframe halt under reduced-motion, and LAY-6 1280 render) are both "verify by human", neither a control failure on the evidence.
+  >
+  > Contract: all 5 done-criteria MET (rhythm single-sourced; SLP-4 nested boxes removed; only DemoChatbot scrolls, no clip; AI Elements source byte-identical to install; tokens/fonts/motion/stop-control preserved). Plan fidelity: matches approved Option A exactly, no structure drift.
+  >
+  > Grades: Design quality strong (one rhythm, composed not boxed — anti-slop done right); Originality strong (appropriately invisible — boring shared shell is the correct answer); Craft strong (divider prop avoids doubling the header border; textarea default left on purpose and documented); Functionality strong (chatbot flow completes; stop reachable throughout).
+  >
+  > Control ledger: SLP-4 pass (script+manual); SLP-7 pass; SLP-11 pass; TOK-1/2/3 pass (token-audit exit 0); TYP-1 pass; CMP-7 pass (override recorded with reason, spacing-only, no A11Y-1 trigger); LAY-6 pass (verified in code; recommend human glance at 1280); CMP-3 pass (SquareIcon+onStop on streaming, wired in both demos); MOT-1/SLP-8 pass (no bounce/spring/transition-all); A11Y-5 pass with one unverified sub-item (Shimmer keyframe halt — pre-existing untouched component, needs a human with reduced-motion set); CMP-1 asserted (no `.tfx` manifest; chat-shell is a layout wrapper, not a re-implemented primitive).
+  >
+  > Uncovered defects: none. One courtesy observation (not a finding): `demo-chatbot.tsx` `setStatus(ac.signal.aborted ? "ready" : "ready")` is a no-op ternary — harmless, pre-existing, outside any design control.
 
 ## Ratchet
 
-(filled in Phase 6)
+- **No new control proposed** — the evaluator found no defect uncovered by an existing control. SLP-4 already covered the nested-card root cause; SLP-7 covered the rhythm. Ratchet: no proposal.
+- **Courtesy follow-ups (not gating, pre-existing, outside this change's scope):**
+  1. `demo-chatbot.tsx` no-op ternary `setStatus(ac.signal.aborted ? "ready" : "ready")` — trivial simplify.
+  2. A11Y-5: confirm the `Shimmer` (`motion/react`) keyframe halts under `prefers-reduced-motion` — a human with the OS preference set should eyeball it.
+  3. Pre-existing environmental: `[slug]` doc pages hit `Cannot find module './vendor-chunks/@shikijs.js'` on cold-cache `next dev` (shiki MDX highlighter); affects all doc pages, unrelated to this change. Worth a separate look (e.g. `serverExternalPackages`).
