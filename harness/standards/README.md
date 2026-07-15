@@ -16,7 +16,7 @@ standard.* Standards are the only layer the harness can enforce automatically. R
 - id: TYP-2                     # TFX-DS control id (category prefix + number)
   source: TFX-DS                # TFX-DS (the normative source); WCAG/SGDS/GOVUK are
                                 # references noted in rationale, not sources
-  title: Body text at least 14px; labels at least 11px; body line-height 1.5-1.6
+  title: Body text at least 14px; labels at least 12px; body line-height 1.5-1.6
   tier: L1                      # see Tiers
   check: deterministic          # deterministic | judgment | hybrid
   phase: [implement, verify]    # loop phases where it applies:

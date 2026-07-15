@@ -270,9 +270,13 @@ controls:
     script: checks/type-scan.py
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
 
+  # TYP-2: ratchet revision 2026-07-15 — label floor raised 11px→12px as part of the
+  # migration to Tailwind's default type scale (see TYP-3). Approved by: Reza Ilmi
+  # (design lead), 2026-07-15 — in-session decision (chose "Migrate to Tailwind
+  # defaults" over keeping the TFX scale); recommended options adopted.
   - id: TYP-2
     source: TFX-DS
-    title: Body text at least 14px; labels at least 11px; body line-height 1.5-1.6
+    title: Body text at least 14px; labels at least 12px; body line-height 1.5-1.6
     tier: L1
     check: deterministic
     phase: [implement, verify]
@@ -287,14 +291,20 @@ controls:
     script: checks/type-scan.py
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
 
+  # TYP-3: ratchet revision 2026-07-15 — migrated the published scale from the
+  # custom TFX pixel set to Tailwind's default type scale, adopted from the harness
+  # philosophy "the stack is fixed and boring on purpose: Base UI components, Radix
+  # Colors, shadcn/ui default tokens." Approved by: Reza Ilmi (design lead),
+  # 2026-07-15 — in-session decision (chose "Migrate to Tailwind defaults" over
+  # keeping the TFX scale); recommended options adopted.
   - id: TYP-3
     source: TFX-DS
-    title: Type sizes come from the TFX type scale; no off-scale sizes
+    title: Type sizes come from the Tailwind default type scale; no off-scale sizes
     tier: L1
     check: deterministic
     phase: [implement, verify]
     applies_to: [page, component]
-    verify: "Sizes in {120,96,72,48,32,24,20,18,16,14,12,11}; checks/type-scan"
+    verify: "Sizes in {128,96,72,60,48,36,30,24,20,18,16,14,12}; checks/type-scan"
     waiver: documented
     fails_when:
       - font sizes not on the published scale
