@@ -1,6 +1,7 @@
 import { isValidElement, type ReactNode } from "react";
 import { slugify } from "@/lib/toc";
 import { MotionScale } from "@/components/diagrams/motion-scale";
+import { OrbitLoop } from "@/components/diagrams/orbit-loop";
 
 export function textOf(node: ReactNode): string {
   if (typeof node === "string" || typeof node === "number") return String(node);
@@ -23,4 +24,5 @@ export const mdxComponents = {
   h2: heading("h2"),
   h3: heading("h3"),
   MotionScale,
+  OrbitLoop,
 };
