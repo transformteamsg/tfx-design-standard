@@ -23,7 +23,7 @@ export default function Overview() {
   const governance = getDoc("governance", "governance");
   return (
     <div className="max-w-[760px]">
-      <p className="text-xs font-semibold uppercase tracking-widest text-tw-blue">
+      <p className="text-xs font-semibold text-tw-blue">
         TransformX · Teacher &amp; School portfolio
       </p>
       <h1 className="mt-3 font-display text-3xl font-semibold tracking-tight">

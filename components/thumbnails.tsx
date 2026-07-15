@@ -139,7 +139,7 @@ export function SectionTile({ topic, tag, count }: { topic: Topic; tag?: string;
       <div className="mt-3 flex items-baseline justify-between gap-3">
         <p className="font-display text-lg font-semibold leading-snug">{topic.title}</p>
         {tag && (
-          <span className="shrink-0 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          <span className="shrink-0 text-xs font-semibold text-muted-foreground">
             {tag}
           </span>
         )}

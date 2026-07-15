@@ -31,7 +31,7 @@ export default function Landing() {
   return (
     <div className="mx-auto max-w-[880px]">
       <section className="pt-10 sm:pt-16">
-        <p className="text-xs font-semibold uppercase tracking-widest text-tw-blue">
+        <p className="text-xs font-semibold text-tw-blue">
           TransformX · Teacher &amp; School portfolio
         </p>
         <h1 className="mt-4 max-w-[16ch] font-display text-5xl font-semibold tracking-tight sm:text-7xl">
@@ -100,7 +100,7 @@ export default function Landing() {
       </section>
 
       <section className="mt-14 rounded-xl bg-tw-blue px-8 py-10 text-white sm:px-12">
-        <p className="text-xs font-semibold uppercase tracking-widest text-white">
+        <p className="text-xs font-semibold text-white">
           The one test
         </p>
         <p className="mt-3 max-w-[24ch] font-display text-2xl font-semibold leading-snug sm:text-3xl">
