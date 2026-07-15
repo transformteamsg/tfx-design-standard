@@ -1,16 +1,14 @@
 "use client";
 
-import {
-  motion,
-  useReducedMotion,
-  useScroll,
-  useTransform,
-} from "motion/react";
+import { motion, useScroll, useTransform } from "motion/react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useReducedMotionSafe } from "@/lib/motion";
 
 /* Essential landing content renders visibly on the server. Decorative
    scroll-linked motion is added only after hydration and only when the user
-   has not requested reduced motion. */
+   has not requested reduced motion. The drift itself carries no duration or
+   easing — the scrollbar is the easing — so the motion token set (MOT-2)
+   binds here only through the shared reduced-motion hook. */
 
 export function Reveal({
   children,
@@ -37,7 +35,7 @@ export function Parallax({
 }) {
   const ref = useRef<HTMLDivElement | null>(null);
   const [mounted, setMounted] = useState(false);
-  const reduced = useReducedMotion() === true;
+  const reduced = useReducedMotionSafe();
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start end", "end start"],

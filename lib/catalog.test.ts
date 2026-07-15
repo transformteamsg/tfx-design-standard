@@ -126,16 +126,16 @@ describe("getPublicCatalogYaml — control projection", () => {
     }
   });
 
-  it("status: proposed survives projection for exactly the three stamped proposals (plan 011)", () => {
+  it("status: proposed survives projection for exactly the five stamped proposals (plan 011)", () => {
     const yaml = getPublicCatalogYaml();
-    expect(yaml.match(/status: proposed/g)?.length).toBe(3);
+    expect(yaml.match(/status: proposed/g)?.length).toBe(5);
 
     const projected = parse(yaml) as { controls: Record<string, unknown>[] };
     const proposedIds = projected.controls
       .filter((c) => c.status === "proposed")
       .map((c) => c.id)
       .sort();
-    expect(proposedIds).toEqual(["CNT-5", "CNT-6", "CNT-7"]);
+    expect(proposedIds).toEqual(["CNT-5", "CNT-6", "CNT-7", "MOT-2", "MOT-3"]);
   });
 });
 
@@ -151,9 +151,9 @@ describe("getCatalogMeta — machine-reader contract", () => {
 });
 
 describe("getCatalog", () => {
-  it("carries status: proposed on CNT-5/6/7 and leaves settled controls undefined", () => {
+  it("carries status: proposed on CNT-5/6/7 and MOT-2/3, leaves settled controls undefined", () => {
     const controls = getCatalog();
-    for (const id of ["CNT-5", "CNT-6", "CNT-7"]) {
+    for (const id of ["CNT-5", "CNT-6", "CNT-7", "MOT-2", "MOT-3"]) {
       expect(controls.find((c) => c.id === id)?.status).toBe("proposed");
     }
     expect(controls.find((c) => c.id === "A11Y-1")?.status).toBeUndefined();
