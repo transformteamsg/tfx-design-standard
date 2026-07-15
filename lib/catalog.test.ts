@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { parse } from "yaml";
 import { describe, expect, it } from "vitest";
-import { getCatalog, getPublicCatalogYaml } from "./catalog";
+import { getCatalog, getCatalogMeta, getPublicCatalogYaml } from "./catalog";
 
 /* Characterization tests for the deny-by-default projection in
    lib/catalog.ts. These mirror the module's private PUBLIC_META /
@@ -136,6 +136,17 @@ describe("getPublicCatalogYaml — control projection", () => {
       .map((c) => c.id)
       .sort();
     expect(proposedIds).toEqual(["CNT-5", "CNT-6", "CNT-7"]);
+  });
+});
+
+describe("getCatalogMeta — machine-reader contract", () => {
+  it("derives version, updated, and waiver syntax from source meta", () => {
+    const raw = readRawCatalog();
+    const meta = getCatalogMeta();
+    expect(meta.version).toBe(raw.meta.version);
+    expect(meta.updated).toBe(raw.meta.updated);
+    expect(meta.waiver_syntax).toBe(raw.meta.waiver_syntax);
+    expect(meta.waiver_syntax).toMatch(/^tfx-waive\b/);
   });
 });
 

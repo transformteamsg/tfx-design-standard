@@ -88,6 +88,24 @@ export function getScopeMeta(): {
   };
 }
 
+export type CatalogMeta = {
+  version: string;
+  updated: string;
+  waiver_syntax: string;
+};
+
+/* The narrow public metadata contract used by machine readers. Keep this
+   separate from the full meta block so adding catalog implementation details
+   never expands the reader surface by accident. */
+export function getCatalogMeta(): CatalogMeta {
+  const { meta } = readCatalog();
+  return {
+    version: meta.version as string,
+    updated: meta.updated as string,
+    waiver_syntax: meta.waiver_syntax as string,
+  };
+}
+
 /* meta keys the public routes expose — deny-by-default, like PUBLIC_FIELDS. */
 const PUBLIC_META = [
   "version",
