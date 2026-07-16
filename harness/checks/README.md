@@ -15,11 +15,11 @@ canonical `ERROR <file>:<line> [<CTL>] <found> — suggest: <…>` line
 (`emit_error` — `detect.py`'s `_FINDING_RE` reverse-parses this exact shape),
 and the `SELF-TEST OK/FAILED (N cases)` report tail. `checks/` is not a Python
 package, so each script imports it by path with the same importlib snippet
-`waiver-reconcile.py` already used for `audit-record.py`. A few scripts keep
-their own formatting where it genuinely differs (`contrast.py`'s multi-part
-A11Y-1 message, `token-audit.py`'s `[waiver-claimed]` variant, `component-manifest.py`
-and `detect.py`'s self-test tails) — see the plan for the full list of what did and
-didn't move.
+`waiver-reconcile.py` already used for `audit-record.py`. A few pieces keep
+their own formatting where they genuinely differ (`token-audit.py`'s
+`[waiver-claimed]` variant, `component-manifest.py` and `detect.py`'s self-test
+tails). checklib has its own gate: `python3 checks/checklib.py --self-test` →
+`SELF-TEST OK (16 cases)`.
 
 ## Detector — one entry over the checks (built)
 
