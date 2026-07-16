@@ -298,6 +298,39 @@ def l0_parity_errors(repo_root, catalog_by_id, xref_re):
     return errors
 
 
+def lay_parity_errors(repo_root, catalog_by_id, xref_re):
+    """
+    [LAY-SYNC] Each inline layout-controls list (the design skill's SKILL.md, the
+    evaluator agent's Layout grading paragraph, the layout skill's control subset)
+    must equal the catalog's LAY-* id set. Missing markers are an error. Set
+    comparison, so prose/order/detail around the IDs is free.
+    """
+    errors = []
+    source = {cid for cid in catalog_by_id if cid.startswith("LAY-")}
+    consumers = [
+        os.path.join(repo_root, ".claude", "skills", "design", "SKILL.md"),
+        os.path.join(repo_root, ".claude", "agents", "evaluator.md"),
+        os.path.join(repo_root, ".claude", "skills", "layout", "SKILL.md"),
+    ]
+    for fpath in consumers:
+        if not os.path.isfile(fpath):
+            continue
+        rel = os.path.relpath(fpath, repo_root)
+        with open(fpath) as fh:
+            text = fh.read()
+        span = extract_sync_block(text, "lay-controls")
+        if span is None:
+            errors.append(f"ERROR {rel} [LAY-SYNC]: missing tfx-sync:lay-controls markers")
+            continue
+        inline = {m.group(0) for m in xref_re.finditer(span)}
+        if inline != source:
+            errors.append(
+                f"ERROR {rel} [LAY-SYNC]: inline LAY list {{{', '.join(sorted(inline))}}} "
+                f"!= catalog LAY set {{{', '.join(sorted(source))}}}"
+            )
+    return errors
+
+
 def slp9_parity_errors(repo_root):
     """
     [SLP9-SYNC] The copy skill's buzzword summary must be a SUBSET of the
@@ -803,6 +836,7 @@ def collect_errors(repo_root, _return_count=False):
     errors.extend(count_parity_errors(repo_root, len(catalog_by_id)))
     errors.extend(wiring_parity_errors(repo_root, catalog_by_id))
     errors.extend(skill_sync_errors(repo_root, catalog_by_id, xref_re))
+    errors.extend(lay_parity_errors(repo_root, catalog_by_id, xref_re))
 
     return result(len(catalog_by_id))
 
@@ -963,6 +997,32 @@ def run_self_test():
     assert_error("L0 missing markers",
                  l0_errs_for_span(extract_sync_block("no markers here", "L0")),
                  "missing tfx-sync:L0 markers")
+
+    LAY_SOURCE = {"LAY-1", "LAY-2", "LAY-3", "LAY-4", "LAY-5", "LAY-6", "LAY-7"}
+
+    def lay_errs_for_span(span_text):
+        """Drive the LAY parity comparison against a synthetic consumer span."""
+        if span_text is None:
+            return ["ERROR scratch.md [LAY-SYNC]: missing tfx-sync:lay-controls markers"]
+        inline = {m.group(0) for m in xref_re.finditer(span_text)}
+        if inline != LAY_SOURCE:
+            return [f"ERROR scratch.md [LAY-SYNC]: inline LAY list != catalog LAY set"]
+        return []
+
+    # LAY clean: span lists exactly the seven → no error.
+    assert_clean("LAY clean span",
+                 lay_errs_for_span("LAY-1, LAY-2, LAY-3, LAY-4, LAY-5, LAY-6, LAY-7"))
+    # LAY missing an id: span omits LAY-4 → error.
+    assert_error("LAY missing control",
+                 lay_errs_for_span("LAY-1, LAY-2, LAY-3, LAY-5, LAY-6, LAY-7"), "[LAY-SYNC]")
+    # LAY extra/ghost id: span adds LAY-8 → error.
+    assert_error("LAY extra control",
+                 lay_errs_for_span("LAY-1, LAY-2, LAY-3, LAY-4, LAY-5, LAY-6, LAY-7, LAY-8"),
+                 "[LAY-SYNC]")
+    # LAY missing markers: extract_sync_block None → missing-markers error.
+    assert_error("LAY missing markers",
+                 lay_errs_for_span(extract_sync_block("no markers here", "lay-controls")),
+                 "missing tfx-sync:lay-controls markers")
 
     # Buzzword parity — drive tokenize_buzzwords + the subset/required-core rules.
     BUZZ_SOURCE = tokenize_buzzwords(

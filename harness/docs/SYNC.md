@@ -46,6 +46,7 @@ restatement registers itself with the check instead of free-floating.
 | `NAME` | Source | Consumers | Check | Rule |
 |---|---|---|---|---|
 | `L0` | catalog `tier: L0` set | `CLAUDE.md`, `.claude/skills/design/SKILL.md` | `[L0-SYNC]` | inline ID set **==** catalog L0 set |
+| `lay-controls` | catalog `LAY-*` id set | `.claude/skills/design/SKILL.md`, `.claude/agents/evaluator.md`, `.claude/skills/layout/SKILL.md` | `[LAY-SYNC]` | inline ID set **==** catalog LAY set |
 | `slp9-buzzwords` | `standards/controls/slp-9.md` (marked `source`) | `.claude/skills/copy/SKILL.md` | `[SLP9-SYNC]` | consumer ⊆ source (skill may show fewer, never more) |
 | `wiring` | catalog `enforced: script\|partial` + `script:` fields | `package.json` prebuild, `.github/workflows/ci.yml` | `[WIRING-SYNC]` | every claimed script runs in prebuild or CI, or is on the `WIRING_EXEMPT` list in `validate.py` with a reason; a listed exemption whose script no longer exists or is no longer claimed is also an error |
 | `skill-sync` | catalog id set | `.claude/skills/**/*.md`, `.claude/agents/*.md` | `[SKILL-SYNC]` | skill-ids ⊆ catalog (no ghost ids); catalog ⊆ skill-ids ∪ `SKILL_WIRING_GRANDFATHERED` in `validate.py` (no silent orphans) — a grandfathered id no longer a catalog id is a dead-entry error |
@@ -55,6 +56,10 @@ restatement registers itself with the check instead of free-floating.
 - **L0**: control IDs are matched as a set via the catalog's ID regex, so order and the
   surrounding prose are free; only the set of IDs inside the span must equal the catalog's
   `tier: L0` set.
+- **lay-controls**: same mechanism as L0, source = the catalog's `LAY-*` id set (not a
+  tier — layout controls span L1 and L2). Three consumers, no `source`-marked copy — the
+  catalog itself is the source, so all three spans are plain `tfx-sync:lay-controls` blocks
+  compared directly against the catalog.
 - **slp9-buzzwords**: tokens are lowercased, split on commas/whitespace/bullets, and a
   trailing parenthetical inflection is stripped (`streamline(d)` → `streamline`,
   `effortless(ly)` → `effortless`). There is **no** morphological stemming — the source and
