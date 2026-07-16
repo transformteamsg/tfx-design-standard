@@ -456,6 +456,17 @@ def run_self_test():
     )
 
     # ── Report ─────────────────────────────────────────────────────────────────
+    # ── Fixtures ───────────────────────────────────────────────────────────────
+    fixtures_dir = os.path.join(_CHECKS_DIR, "fixtures", "a11y-static")
+    for fname in sorted(os.listdir(fixtures_dir)):
+        case_count += 1
+        fpath = os.path.join(fixtures_dir, fname)
+        errs = check_file(fpath)
+        if "fail" in fname and not errs:
+            failures.append(f"FAIL fixture {fname}: expected >=1 ERROR — got none")
+        elif "pass" in fname and errs:
+            failures.append(f"FAIL fixture {fname}: expected 0 ERRORs — got: {errs}")
+
     checklib.report_self_test(failures, case_count)
 
 

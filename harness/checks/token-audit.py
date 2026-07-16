@@ -805,6 +805,18 @@ def run_self_test():
     if errs:
         failures.append(f"FAIL var() in arbitrary value: expected clean — got: {errs}")
 
+    # ── Fixtures ───────────────────────────────────────────────────────────────
+    fixtures_dir = os.path.join(_CHECKS_DIR, "fixtures", "token-audit")
+    theme_names_by_fixture = {"pass-theme-defined.tsx": {"amber-11", "lime-3"}}
+    for fname in sorted(os.listdir(fixtures_dir)):
+        case_count += 1
+        fpath = os.path.join(fixtures_dir, fname)
+        errs = check_file(fpath, theme_names_by_fixture.get(fname, set()))
+        if "fail" in fname and not errs:
+            failures.append(f"FAIL fixture {fname}: expected >=1 ERROR — got none")
+        elif "pass" in fname and errs:
+            failures.append(f"FAIL fixture {fname}: expected 0 ERRORs — got: {errs}")
+
     # ── Report ─────────────────────────────────────────────────────────────────
     checklib.report_self_test(failures, case_count)
 
