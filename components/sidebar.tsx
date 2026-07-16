@@ -108,7 +108,10 @@ const nav: NavGroup[] = [
   {
     label: "Governance",
     href: "/governance",
-    items: [{ href: "/governance", title: "How this evolves" }],
+    items: [
+      { href: "/governance", title: "How this evolves" },
+      { href: "/governance/changes", title: "Change log" },
+    ],
   },
 ];
 
