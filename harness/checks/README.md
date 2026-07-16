@@ -19,6 +19,15 @@ contrast, a11y-static, TYP-1) on an edited UI file and reminds the agent on new
 findings — it never blocks an edit, and its "clean" is the curated subset's clean, not
 a whole-catalog pass. Off by default; install via the snippet in [`../hooks/README.md`](../hooks/README.md).
 
+**`detect.py`'s role: hook-only, by design (plan 069).** `hooks/design-hook.py` is
+`detect.py`'s only caller, and the hook itself is deliberately not shipped in the
+plugin (`plugin.json` carries no `hooks` key) — it's a paste-in `settings.json`
+snippet, consent by construction (see `../hooks/README.md`). `detect.py` is
+deliberately **not** part of `package.json` prebuild or `.github/workflows/ci.yml`;
+those run the individual check scripts directly (see "Wiring status" below). This is
+a "keep, hook-only" decision, not a deprecation — promoting `detect.py` to the single
+prebuild/CI runner was considered and rejected for now.
+
 **Exit contract (0 / 2 / 1).** `detect.py` adopts Impeccable's codes, which differ from
 the per-script 0/1: **0 = clean, 2 = findings, 1 = tool failure** (a wrapped script
 crashed, or `.tfx/config.json` is invalid). A wrapped script's exit 1 (violations) maps
@@ -314,15 +323,27 @@ Wiring (V1): run as a PostToolUse hook on file edits during the implement phase
 (fast subset: token-audit, type-scan, content-lint) and as the verify-phase gate
 (full suite). L0 failures block; L1 failures loop the agent back to implement.
 
-Wiring status: `type-scan` and `content-lint` are **built but not yet wired into
-`package.json` prebuild** (which runs `token-audit` + `a11y-static` over `app
-components lib`). Both currently surface pre-existing violations on this repo's own
-tree — `content-lint` flags long-sentence (CNT-3) prose in `content/`, and `type-scan`
-flags sub-14px `text-[11/12/13px]` labels and tight `leading-[…]` headings across
-`app`/`components` (the documented 11/14 label-floor and display line-height
-ambiguities). Per the harness rule "never wire a failing check into the build,"
-wiring is deferred until the live tree is clean or the flagged values are reviewed and
-either fixed or waived. Until then, run both manually during the implement phase.
+Wiring status (plan 069): `package.json` prebuild and `.github/workflows/ci.yml` both
+run the same Python gate — `validate.py --self-test`, `validate.py`, `token-audit.py`
+over `app components lib`, `a11y-static.py`, and `type-scan.py` over `app components`.
+`type-scan` was wired in once its tree went clean (plan 068's Tailwind default type
+scale migration removed the sub-14px `text-[11/12/13px]` labels and tight
+`leading-[…]` headings it flagged).
+
+`content-lint.py`, `contrast.py`, and `component-manifest.py` stay **manual** — each is
+on the `WIRING_EXEMPT` list in `checks/validate.py`, with a one-line reason: per the
+harness rule "never wire a failing check into the build," `content-lint` surfaces
+pre-existing long-sentence (CNT-3) and filler-word (CNT-6) prose in `content/`, and
+`contrast` surfaces a pre-existing sub-AA pair in `components/ui/button.tsx` (A11Y-1);
+neither is wired until that content is fixed or waived. `component-manifest` targets a
+product's `.tfx/component-manifest.json`, which this repo (the harness/site itself)
+does not have — wiring it here would have nothing to check.
+
+The `[WIRING-SYNC]` check in `validate.py` now enforces this list: a control claiming
+`enforced: script|partial` via a `script:` field must run in prebuild or CI, or be on
+`WIRING_EXEMPT` with a reason — the exemption list above is exactly, and only, what
+`WIRING_EXEMPT` says. Stamping a control `enforced: script` without wiring the script
+or adding an exemption now fails validation; that friction is the point.
 
 Waiver handling: checks must respect inline `tfx-waive <CTL-ID> reason="..."`
 comments for L2 controls only — a waiver on an L0/L1 control is itself reported as a
