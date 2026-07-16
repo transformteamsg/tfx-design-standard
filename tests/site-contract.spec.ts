@@ -7,6 +7,8 @@ const routes = [
   { name: "standards catalog", path: "/standards/catalog" },
   { name: "for agents", path: "/for-agents" },
   { name: "the loop", path: "/harness/loop" },
+  { name: "standards index", path: "/standards" },
+  { name: "motion foundations", path: "/foundations/motion" },
 ] as const;
 
 const mobileWidths = [320, 360] as const;
@@ -25,7 +27,7 @@ async function expectMinimumTarget(locator: Locator, minimum: number) {
   expect(box!.height, "target height").toBeGreaterThanOrEqual(minimum);
 }
 
-test.describe("six-route rendered contract", () => {
+test.describe("rendered route contract", () => {
   for (const route of routes) {
     test(`${route.name} has exactly one main landmark`, async ({ page }) => {
       await open(page, route.path);
