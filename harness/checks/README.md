@@ -5,6 +5,22 @@ Scripts that verify `check: deterministic` controls (and the deterministic half 
 violation, and prints violations with file/line/element and the control id — verbose
 on failure, silent on success.
 
+## Shared scaffolding: `checklib.py` (plan 071)
+
+`checklib.py` holds what used to be duplicated across the check scripts: the
+`/* … */` comment stripper, the source-file walker (`iter_target_files`, which
+skips `node_modules`/`.git`/`.next`/`dist`/`out` as well as dotdirs — one unified,
+stricter policy, not the mixed dotdir-only/stricter split that existed before), the
+canonical `ERROR <file>:<line> [<CTL>] <found> — suggest: <…>` line
+(`emit_error` — `detect.py`'s `_FINDING_RE` reverse-parses this exact shape),
+and the `SELF-TEST OK/FAILED (N cases)` report tail. `checks/` is not a Python
+package, so each script imports it by path with the same importlib snippet
+`waiver-reconcile.py` already used for `audit-record.py`. A few scripts keep
+their own formatting where it genuinely differs (`contrast.py`'s multi-part
+A11Y-1 message, `token-audit.py`'s `[waiver-claimed]` variant, `component-manifest.py`
+and `detect.py`'s self-test tails) — see the plan for the full list of what did and
+didn't move.
+
 ## Detector — one entry over the checks (built)
 
 `python3 checks/detect.py [<path>...]` is the **unified entry point**: a façade that
@@ -132,7 +148,7 @@ this **replaces hand-maintained gap lists**, which drift as controls are added (
 
 **Peer-radius-consistency (TOK-3):** The scanner checks on-scale and concentric nesting per element, but cannot compare peer elements (cross-element). Peer-radius-consistency is **judgment-only** — the evaluator carries consistency against the product's Card/`--radius` anchor.
 
-**Self-test:** `python3 checks/token-audit.py --self-test` → `SELF-TEST OK (23 cases)`.
+**Self-test:** `python3 checks/token-audit.py --self-test` → `SELF-TEST OK (29 cases)` (includes the `fixtures/token-audit/` pass/fail files).
 
 ## Audit record (built)
 
@@ -178,7 +194,7 @@ Pass `--repo-root <path>` to audit a consumer repo's `docs/decisions/` (the defa
 
 **Waiver suppression:** A11Y-2 and A11Y-3 are L0 — never waivable. This script does not parse `tfx-waive` markers; every violation is a hard ERROR.
 
-**Self-test:** `python3 checks/a11y-static.py --self-test` → `SELF-TEST OK (14 cases)`.
+**Self-test:** `python3 checks/a11y-static.py --self-test` → `SELF-TEST OK (18 cases)` (includes the `fixtures/a11y-static/` pass/fail files).
 
 ## Contrast scan (built — static subset)
 
@@ -258,7 +274,7 @@ This closes the loop `token-audit.py` leaves open ("a human closes the decision-
 - CNT-5's harder half — "press" and "see", ambiguous link text ("click here", "read more"), and confirming a hit is a UI instruction rather than incidental prose — judgment (evaluator).
 - CNT-6's harder half — "such", "that", droppable articles/conjunctions ("a", "the", "and"), and the clarity exception on every hit ("only if it does not reduce clarity") — judgment (evaluator).
 
-**Self-test:** `python3 checks/content-lint.py --self-test` → `SELF-TEST OK (34 cases)`.
+**Self-test:** `python3 checks/content-lint.py --self-test` → `SELF-TEST OK (44 cases)`.
 
 ## Type scan (built — static subset)
 
