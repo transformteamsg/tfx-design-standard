@@ -401,9 +401,7 @@ def check_file(filepath, type_scale=None, rules=None):
         def emit(ctl_id, found, suggest):
             if rule_filter is not None and ctl_id not in rule_filter:
                 return
-            results.append(
-                f"ERROR {rel}:{lineno} [{ctl_id}] {found} — suggest: {suggest}"
-            )
+            results.append(checklib.emit_error(rel, lineno, ctl_id, found, suggest))
 
         def note(msg):
             results.append(f"NOTE {rel}:{lineno} {msg}")

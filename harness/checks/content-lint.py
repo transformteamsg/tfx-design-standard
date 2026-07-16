@@ -610,9 +610,7 @@ def check_file(filepath, lists=None, phrase_res=None, word_res=None, device_re=N
         line = raw_line.rstrip("\n")
 
         def emit(ctl_id, found, suggest):
-            errors.append(
-                f"ERROR {rel}:{lineno} [{ctl_id}] {found} — suggest: {suggest}"
-            )
+            errors.append(checklib.emit_error(rel, lineno, ctl_id, found, suggest))
 
         # ── Strip comments so comment text is not flagged ─────────────────────
         scan_line = checklib.strip_block_comments(line, in_block_comment)
