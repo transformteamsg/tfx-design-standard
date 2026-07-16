@@ -855,25 +855,14 @@ def scan_paths(paths):
     cnt13_res = _build_cnt13_res(cnt13_lists)
 
     all_errors = []
-    for p in paths:
-        if os.path.isfile(p):
-            all_errors.extend(
-                check_file(p, lists, phrase_res, word_res, device_re, cnt6_res,
-                           cnt13_res))
-        elif os.path.isdir(p):
-            for root, dirs, files in os.walk(p):
-                dirs[:] = [d for d in dirs if not d.startswith(".")]
-                for fname in sorted(files):
-                    ext = os.path.splitext(fname)[1].lower()
-                    if ext in TARGET_EXTENSIONS:
-                        all_errors.extend(
-                            check_file(os.path.join(root, fname),
-                                       lists, phrase_res, word_res, device_re,
-                                       cnt6_res, cnt13_res)
-                        )
+    for kind, val in checklib.iter_target_files(paths, TARGET_EXTENSIONS):
+        if kind == "missing":
+            print(f"ERROR content-lint: path not found: {val}")
+            all_errors.append(f"ERROR content-lint: path not found: {val}")
         else:
-            print(f"ERROR content-lint: path not found: {p}")
-            all_errors.append(f"ERROR content-lint: path not found: {p}")
+            all_errors.extend(
+                check_file(val, lists, phrase_res, word_res, device_re, cnt6_res,
+                           cnt13_res))
     return all_errors
 
 

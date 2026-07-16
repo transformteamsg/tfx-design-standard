@@ -453,21 +453,12 @@ def scan_paths(paths, rules=None):
     if scale_note:
         print(scale_note)
     all_results = []
-    for p in paths:
-        if os.path.isfile(p):
-            all_results.extend(check_file(p, type_scale, rules))
-        elif os.path.isdir(p):
-            for root, dirs, files in os.walk(p):
-                dirs[:] = [d for d in dirs if not d.startswith(".")]
-                for fname in sorted(files):
-                    ext = os.path.splitext(fname)[1].lower()
-                    if ext in TARGET_EXTENSIONS:
-                        all_results.extend(
-                            check_file(os.path.join(root, fname), type_scale, rules)
-                        )
+    for kind, val in checklib.iter_target_files(paths, TARGET_EXTENSIONS):
+        if kind == "missing":
+            print(f"ERROR type-scan: path not found: {val}")
+            all_results.append(f"ERROR type-scan: path not found: {val}")
         else:
-            print(f"ERROR type-scan: path not found: {p}")
-            all_results.append(f"ERROR type-scan: path not found: {p}")
+            all_results.extend(check_file(val, type_scale, rules))
     return all_results
 
 

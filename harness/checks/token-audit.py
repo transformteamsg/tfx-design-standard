@@ -553,20 +553,12 @@ def scan_paths(paths, theme_names=None):
     if theme_names is None:
         theme_names = set()
     all_errors = []
-    for p in paths:
-        if os.path.isfile(p):
-            all_errors.extend(check_file(p, theme_names))
-        elif os.path.isdir(p):
-            for root, dirs, files in os.walk(p):
-                # Skip hidden directories
-                dirs[:] = [d for d in dirs if not d.startswith(".")]
-                for fname in sorted(files):
-                    ext = os.path.splitext(fname)[1].lower()
-                    if ext in TARGET_EXTENSIONS:
-                        all_errors.extend(check_file(os.path.join(root, fname), theme_names))
+    for kind, val in checklib.iter_target_files(paths, TARGET_EXTENSIONS):
+        if kind == "missing":
+            print(f"ERROR token-audit: path not found: {val}")
+            all_errors.append(f"ERROR token-audit: path not found: {val}")
         else:
-            print(f"ERROR token-audit: path not found: {p}")
-            all_errors.append(f"ERROR token-audit: path not found: {p}")
+            all_errors.extend(check_file(val, theme_names))
     return all_errors
 
 

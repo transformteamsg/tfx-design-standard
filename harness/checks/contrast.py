@@ -396,17 +396,11 @@ def check_file(filepath, resolver):
 
 def scan_paths(paths, resolver):
     all_out = []
-    for p in paths:
-        if os.path.isfile(p):
-            all_out.extend(check_file(p, resolver))
-        elif os.path.isdir(p):
-            for root, dirs, files in os.walk(p):
-                dirs[:] = [d for d in dirs if not d.startswith(".")]
-                for fname in sorted(files):
-                    if os.path.splitext(fname)[1].lower() in TARGET_EXTENSIONS:
-                        all_out.extend(check_file(os.path.join(root, fname), resolver))
+    for kind, val in checklib.iter_target_files(paths, TARGET_EXTENSIONS):
+        if kind == "missing":
+            all_out.append(f"ERROR contrast: path not found: {val}")
         else:
-            all_out.append(f"ERROR contrast: path not found: {p}")
+            all_out.extend(check_file(val, resolver))
     return all_out
 
 
