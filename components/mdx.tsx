@@ -2,6 +2,10 @@ import { isValidElement, type ReactNode } from "react";
 import { slugify } from "@/lib/toc";
 import { MotionScale } from "@/components/diagrams/motion-scale";
 import { OrbitLoop } from "@/components/diagrams/orbit-loop";
+import { FontRoles, TypeScale } from "@/components/foundations/type-scale";
+import { SpacingScale } from "@/components/foundations/spacing-scale";
+import { RadiusScale } from "@/components/foundations/radius-scale";
+import { IconSet } from "@/components/foundations/icon-set";
 
 export function textOf(node: ReactNode): string {
   if (typeof node === "string" || typeof node === "number") return String(node);
@@ -25,4 +29,9 @@ export const mdxComponents = {
   h3: heading("h3"),
   MotionScale,
   OrbitLoop,
+  TypeScale,
+  FontRoles,
+  SpacingScale,
+  RadiusScale,
+  IconSet,
 };
