@@ -2,6 +2,10 @@ import { isValidElement, type ReactNode } from "react";
 import { slugify } from "@/lib/toc";
 import { MotionScale } from "@/components/diagrams/motion-scale";
 import { OrbitLoop } from "@/components/diagrams/orbit-loop";
+import { ColorRamp } from "@/components/foundations/color-ramp";
+import { PrimarySwatches } from "@/components/foundations/primary-swatches";
+import { FunctionalColours } from "@/components/foundations/functional-colours";
+import { TokenTable } from "@/components/foundations/token-table";
 
 export function textOf(node: ReactNode): string {
   if (typeof node === "string" || typeof node === "number") return String(node);
@@ -25,4 +29,8 @@ export const mdxComponents = {
   h3: heading("h3"),
   MotionScale,
   OrbitLoop,
+  ColorRamp,
+  PrimarySwatches,
+  FunctionalColours,
+  TokenTable,
 };
