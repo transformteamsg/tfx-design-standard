@@ -89,7 +89,7 @@ def _load_checklib():
 checklib = _load_checklib()
 
 # ── Target extensions ──────────────────────────────────────────────────────────
-TARGET_EXTENSIONS = {".css", ".html", ".jsx", ".tsx", ".js", ".ts", ".vue", ".svelte"}
+TARGET_EXTENSIONS = checklib.TARGET_EXTENSIONS
 
 # ── TYP-3 type scale ──────────────────────────────────────────────────────────
 # Sourced from TYP-3's catalog `verify` field:

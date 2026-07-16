@@ -60,9 +60,6 @@ CHECKS_DIR = os.path.dirname(os.path.abspath(__file__))
 CATALOG_PATH = os.path.join(REPO_ROOT, "standards", "catalog.yaml")
 DECISIONS_DIR = os.path.join(REPO_ROOT, "docs", "decisions")
 
-# Reuse a11y-static's source-file extension set so the same tree is scanned.
-TARGET_EXTENSIONS = {".css", ".html", ".jsx", ".tsx", ".js", ".ts", ".vue", ".svelte"}
-
 # Inline waiver syntax (CLAUDE.md "Always-on rules" / checks/README.md):
 #   tfx-waive <CTL-ID> reason="..."
 # Generalised to ALL control prefixes (token-audit only matches TOK/COL).
@@ -99,6 +96,8 @@ def _load_checklib():
 
 
 checklib = _load_checklib()
+# Reuse a11y-static's source-file extension set so the same tree is scanned.
+TARGET_EXTENSIONS = checklib.TARGET_EXTENSIONS
 split_sections = _AR.split_sections
 find_section = _AR.find_section
 

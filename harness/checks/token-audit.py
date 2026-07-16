@@ -63,7 +63,7 @@ def _load_checklib():
 checklib = _load_checklib()
 
 # ── Target extensions ──────────────────────────────────────────────────────────
-TARGET_EXTENSIONS = {".css", ".html", ".jsx", ".tsx", ".js", ".ts", ".vue", ".svelte"}
+TARGET_EXTENSIONS = checklib.TARGET_EXTENSIONS
 
 # ── Spacing scale (shadcn default, px) ────────────────────────────────────────
 SPACING_SCALE_PX = {
@@ -363,9 +363,7 @@ def check_file(filepath, theme_names=None):
                     f" — verify approver in decision record"
                 )
             else:
-                errors.append(
-                    f"ERROR {rel}:{lineno} [{ctl_id}] {found} — suggest: {suggest}"
-                )
+                errors.append(checklib.emit_error(rel, lineno, ctl_id, found, suggest))
 
         # ── Skip token-definition blocks ──────────────────────────────────────
         if in_token_def:

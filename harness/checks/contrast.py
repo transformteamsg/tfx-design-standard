@@ -77,7 +77,7 @@ def _load_checklib():
 checklib = _load_checklib()
 
 # ── Target extensions ──────────────────────────────────────────────────────────
-TARGET_EXTENSIONS = {".css", ".html", ".jsx", ".tsx", ".js", ".ts", ".vue", ".svelte"}
+TARGET_EXTENSIONS = checklib.TARGET_EXTENSIONS
 
 # CSS colour keywords this check resolves (kept tiny on purpose).
 CSS_KEYWORDS = {"white": "#ffffff", "black": "#000000", "transparent": None}
