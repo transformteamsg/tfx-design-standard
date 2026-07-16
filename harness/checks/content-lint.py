@@ -88,9 +88,23 @@ Exit 0 and print nothing (or SELF-TEST OK) on success.
 Exit 1 with ERROR lines on any violation.
 """
 
+import importlib.util
 import os
 import re
 import sys
+
+_CHECKS_DIR = os.path.dirname(os.path.abspath(__file__))
+
+
+def _load_checklib():
+    path = os.path.join(_CHECKS_DIR, "checklib.py")
+    spec = importlib.util.spec_from_file_location("_tfx_checklib", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+checklib = _load_checklib()
 
 # ── Target extensions ──────────────────────────────────────────────────────────
 # Same UI source set as a11y-static.py, plus .mdx (the content corpus this check
@@ -601,8 +615,8 @@ def check_file(filepath, lists=None, phrase_res=None, word_res=None, device_re=N
             )
 
         # ── Strip comments so comment text is not flagged ─────────────────────
-        scan_line = _strip_block_comments(line, in_block_comment)
-        in_block_comment = _ends_in_block_comment(line, in_block_comment)
+        scan_line = checklib.strip_block_comments(line, in_block_comment)
+        in_block_comment = checklib.ends_in_block_comment(line, in_block_comment)
         scan_line = re.sub(r"<!--.*?-->", "", scan_line)
         if is_code:
             scan_line = re.sub(r"//.*$", "", scan_line)
@@ -811,49 +825,6 @@ def _check_cnt1_text(text, raw_line, lineno, all_lines, emit):
         if not same and not following:
             emit("CNT-1", '"Something went wrong" with no next step',
                  "tell the teacher what happened and what to do next")
-
-
-def _strip_block_comments(line, in_comment):
-    """Replace /* ... */ block-comment spans with nothing. Mirrors a11y-static."""
-    result = []
-    i = 0
-    n = len(line)
-    while i < n:
-        if in_comment:
-            end = line.find("*/", i)
-            if end == -1:
-                break
-            i = end + 2
-            in_comment = False
-        else:
-            start = line.find("/*", i)
-            if start == -1:
-                result.append(line[i:])
-                break
-            result.append(line[i:start])
-            i = start + 2
-            in_comment = True
-    return "".join(result)
-
-
-def _ends_in_block_comment(line, in_comment):
-    """Return True if `line` ends inside a /* ... */ block comment."""
-    i = 0
-    n = len(line)
-    while i < n:
-        if in_comment:
-            end = line.find("*/", i)
-            if end == -1:
-                return True
-            i = end + 2
-            in_comment = False
-        else:
-            start = line.find("/*", i)
-            if start == -1:
-                return False
-            i = start + 2
-            in_comment = True
-    return in_comment
 
 
 def scan_paths(paths):

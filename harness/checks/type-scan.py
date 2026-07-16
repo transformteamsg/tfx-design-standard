@@ -70,9 +70,23 @@ Exit 0 and print nothing (or SELF-TEST OK) on success.
 Exit 1 with ERROR lines on any violation (NOTE lines alone do not fail).
 """
 
+import importlib.util
 import os
 import re
 import sys
+
+_CHECKS_DIR = os.path.dirname(os.path.abspath(__file__))
+
+
+def _load_checklib():
+    path = os.path.join(_CHECKS_DIR, "checklib.py")
+    spec = importlib.util.spec_from_file_location("_tfx_checklib", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+checklib = _load_checklib()
 
 # ── Target extensions ──────────────────────────────────────────────────────────
 TARGET_EXTENSIONS = {".css", ".html", ".jsx", ".tsx", ".js", ".ts", ".vue", ".svelte"}
@@ -350,48 +364,6 @@ def _check_allcaps_rule(scan_line):
     return None
 
 
-# ── comment stripping (mirrors a11y-static.py) ────────────────────────────────
-
-def _strip_block_comments(line, in_comment):
-    result = []
-    i = 0
-    n = len(line)
-    while i < n:
-        if in_comment:
-            end = line.find("*/", i)
-            if end == -1:
-                break
-            i = end + 2
-            in_comment = False
-        else:
-            start = line.find("/*", i)
-            if start == -1:
-                result.append(line[i:])
-                break
-            result.append(line[i:start])
-            i = start + 2
-            in_comment = True
-    return "".join(result)
-
-
-def _ends_in_block_comment(line, in_comment):
-    i = 0
-    n = len(line)
-    while i < n:
-        if in_comment:
-            end = line.find("*/", i)
-            if end == -1:
-                return True
-            i = end + 2
-            in_comment = False
-        else:
-            start = line.find("/*", i)
-            if start == -1:
-                return False
-            i = start + 2
-            in_comment = True
-    return in_comment
-
 
 def check_file(filepath, type_scale=None, rules=None):
     """
@@ -436,8 +408,8 @@ def check_file(filepath, type_scale=None, rules=None):
         def note(msg):
             results.append(f"NOTE {rel}:{lineno} {msg}")
 
-        scan_line = _strip_block_comments(line, in_block_comment)
-        in_block_comment = _ends_in_block_comment(line, in_block_comment)
+        scan_line = checklib.strip_block_comments(line, in_block_comment)
+        in_block_comment = checklib.ends_in_block_comment(line, in_block_comment)
         scan_line = re.sub(r"<!--.*?-->", "", scan_line)
         if ext in (".js", ".ts", ".jsx", ".tsx"):
             scan_line = re.sub(r"//.*$", "", scan_line)

@@ -44,9 +44,23 @@ Exit 0 and print nothing (or SELF-TEST OK) on success.
 Exit 1 with ERROR lines on any violation.
 """
 
+import importlib.util
 import os
 import re
 import sys
+
+_CHECKS_DIR = os.path.dirname(os.path.abspath(__file__))
+
+
+def _load_checklib():
+    path = os.path.join(_CHECKS_DIR, "checklib.py")
+    spec = importlib.util.spec_from_file_location("_tfx_checklib", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+checklib = _load_checklib()
 
 # ── Target extensions ──────────────────────────────────────────────────────────
 TARGET_EXTENSIONS = {".css", ".html", ".jsx", ".tsx", ".js", ".ts", ".vue", ".svelte"}
@@ -300,58 +314,6 @@ def extract_waived_ctl(line):
     return None
 
 
-def _strip_block_comments(line, in_comment):
-    """
-    Return a version of `line` with /* ... */ block-comment spans replaced by
-    spaces.  `in_comment` is True if the previous line ended inside a block
-    comment.  Only handles CSS-style /* */ comments (not // or <!-- -->).
-    """
-    result = []
-    i = 0
-    n = len(line)
-    while i < n:
-        if in_comment:
-            # Look for end of block comment
-            end = line.find("*/", i)
-            if end == -1:
-                # Entire rest of line is comment
-                break
-            else:
-                i = end + 2
-                in_comment = False
-        else:
-            # Look for start of block comment
-            start = line.find("/*", i)
-            if start == -1:
-                result.append(line[i:])
-                break
-            else:
-                result.append(line[i:start])
-                i = start + 2
-                in_comment = True
-    return "".join(result)
-
-
-def _ends_in_block_comment(line, in_comment):
-    """
-    Return True if `line` ends inside a /* ... */ block comment.
-    """
-    i = 0
-    n = len(line)
-    while i < n:
-        if in_comment:
-            end = line.find("*/", i)
-            if end == -1:
-                return True
-            i = end + 2
-            in_comment = False
-        else:
-            start = line.find("/*", i)
-            if start == -1:
-                return False
-            i = start + 2
-            in_comment = True
-    return in_comment
 
 
 def check_file(filepath, theme_names=None):
@@ -413,9 +375,9 @@ def check_file(filepath, theme_names=None):
         # Handle multi-line /* ... */ block comments.
         # Strategy: process the raw line character-by-character to remove spans
         # that are inside block comments.
-        scan_line = _strip_block_comments(line, in_block_comment)
+        scan_line = checklib.strip_block_comments(line, in_block_comment)
         # Update block comment state for next line
-        in_block_comment = _ends_in_block_comment(line, in_block_comment)
+        in_block_comment = checklib.ends_in_block_comment(line, in_block_comment)
 
         # Strip HTML comments (<!-- ... -->) from the scan line
         scan_line = re.sub(r"<!--.*?-->", "", scan_line)
