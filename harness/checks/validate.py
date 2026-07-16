@@ -10,9 +10,11 @@ Validates standards/catalog.yaml for internal consistency:
      controls must carry one. meta.categories covers every ID prefix.
   6. Reverse check: every standards/controls/*.md frontmatter matches catalog.
   7. Cross-reference sweep: every control ID mentioned in prose exists in catalog.
-  8. tfx-sync parity: [L0-SYNC], [SLP9-SYNC], and [COUNT-SYNC] (every "<N> controls"
+  8. tfx-sync parity: [L0-SYNC], [SLP9-SYNC], [COUNT-SYNC] (every "<N> controls"
      claim in README.md or docs/index.html must equal the catalog's actual
-     control count).
+     control count), [WIRING-SYNC] (enforced:script|partial claims actually run
+     in prebuild/CI or are exempted), and [SKILL-SYNC] (every catalog id is
+     wired into >=1 skill/agent file or grandfathered; no ghost ids in skills).
 Exit 0 and print "OK: <n> controls valid" on success.
 Exit 1 and print "ERROR <location>: <message>" lines on failure.
 """
@@ -455,6 +457,101 @@ def wiring_parity_errors(repo_root, catalog_by_id):
     return errors
 
 
+# [SKILL-SYNC] catalog ids referenced by NO skill or agent file, grandfathered
+# at the introduction of this check (plan 070) — each entry names the reason
+# it is not yet wired. Additions need a reason; removals (once a control gets
+# wired) are free — shrink-only in practice.
+SKILL_WIRING_GRANDFATHERED = {
+    "A11Y-9": "title/lang check (title-lang) is planned but unbuilt (checks/README.md V1 table) — not yet named in any skill",
+    "A11Y-10": "skip-link check is planned but unbuilt (checks/README.md V1 table) — not yet named in any skill",
+    "CNT-9": "judgment/hybrid clarity control — unwired at introduction of SKILL-SYNC — wire into copy skill or justify",
+    "CNT-10": "judgment terminology-consistency control — unwired at introduction of SKILL-SYNC — wire into copy skill or justify",
+    "CNT-11": "judgment terminology-match control — unwired at introduction of SKILL-SYNC — wire into copy skill or justify",
+    "CNT-13": "hybrid spelling/proofreading control — unwired at introduction of SKILL-SYNC — wire into copy skill or justify",
+    "IDN-1": "identity check (logo/lockup) is planned but unbuilt (checks/README.md V1 table) — not yet named in any skill",
+    "TYP-6": "hybrid measure (line-length) control — unwired at introduction of SKILL-SYNC — wire into layout/polish skill or justify",
+}
+
+
+def skill_sync_errors(repo_root, catalog_by_id, xref_re):
+    """
+    [SKILL-SYNC] Two guarantees over the catalog<->skill-layer boundary:
+    (a) no ghost ids — every control id mentioned anywhere under
+    `.claude/skills/**/*.md` or `.claude/agents/*.md` exists in the catalog;
+    (b) no orphan controls — every catalog id is mentioned in at least one of
+    those files, or sits on SKILL_WIRING_GRANDFATHERED with a documented
+    reason. Catches the drift class from plan 063: a control lands in the
+    catalog but no skill or agent is taught to apply it.
+
+    An allowlisted id that is no longer an orphan (someone wired it) prints a
+    NOTE (not an error) suggesting its removal from the allowlist — never
+    fails the build. An allowlisted id that is not a catalog id at all is a
+    dead entry — ERROR.
+    """
+    errors = []
+
+    consumer_dirs = [
+        os.path.join(repo_root, ".claude", "skills"),
+        os.path.join(repo_root, ".claude", "agents"),
+    ]
+
+    # Nothing to check when neither consumer dir exists at all (e.g. a
+    # synthetic/partial repo_root fixture with no .claude tree) — mirrors
+    # wiring_parity_errors' "no consumer found" bail-out.
+    if not any(os.path.isdir(d) for d in consumer_dirs):
+        return errors
+
+    consumer_files = []
+    for d in consumer_dirs:
+        if not os.path.isdir(d):
+            continue
+        for root, _dirs, fnames in os.walk(d):
+            for fname in fnames:
+                if fname.endswith(".md"):
+                    consumer_files.append(os.path.join(root, fname))
+
+    mentioned = set()
+    for fpath in sorted(consumer_files):
+        rel = os.path.relpath(fpath, repo_root)
+        with open(fpath) as fh:
+            text = fh.read()
+        for m in xref_re.finditer(text):
+            ref_id = m.group(0)
+            mentioned.add(ref_id)
+            if ref_id not in catalog_by_id:
+                errors.append(
+                    f"ERROR {rel} [SKILL-SYNC]: names {ref_id} which is not in the catalog"
+                )
+
+    catalog_ids = set(catalog_by_id)
+    orphans = catalog_ids - mentioned
+    for cid in sorted(orphans):
+        if cid not in SKILL_WIRING_GRANDFATHERED:
+            errors.append(
+                f"ERROR standards/catalog.yaml [SKILL-SYNC]: {cid} is not "
+                f"mentioned in any skill or agent file, and is not on "
+                f"SKILL_WIRING_GRANDFATHERED"
+            )
+
+    # Grandfathered entries that have gone stale: no longer an orphan
+    # (someone wired it — NOTE, shrink the list), or no longer a catalog id
+    # at all (dead entry — ERROR).
+    for cid in sorted(SKILL_WIRING_GRANDFATHERED):
+        if cid not in catalog_ids:
+            errors.append(
+                f"ERROR checks/validate.py [SKILL-SYNC]: SKILL_WIRING_GRANDFATHERED "
+                f"entry '{cid}' is not a catalog id (dead entry)"
+            )
+        elif cid not in orphans:
+            print(
+                f"NOTE checks/validate.py [SKILL-SYNC]: {cid} is now mentioned "
+                f"in a skill/agent file — consider removing it from "
+                f"SKILL_WIRING_GRANDFATHERED"
+            )
+
+    return errors
+
+
 def collect_errors(repo_root, _return_count=False):
     """
     Run all of Steps 1–7 against `repo_root` and return a list of error
@@ -691,6 +788,7 @@ def collect_errors(repo_root, _return_count=False):
     errors.extend(slp9_parity_errors(repo_root))
     errors.extend(count_parity_errors(repo_root, len(catalog_by_id)))
     errors.extend(wiring_parity_errors(repo_root, catalog_by_id))
+    errors.extend(skill_sync_errors(repo_root, catalog_by_id, xref_re))
 
     return result(len(catalog_by_id))
 
@@ -1029,6 +1127,64 @@ def run_self_test():
                      wiring_parity_errors(harness_dir, {}), "dead exemption")
     finally:
         shutil.rmtree(wiring_tmp, ignore_errors=True)
+
+    # ── [SKILL-SYNC] cases ────────────────────────────────────────────────────
+    skillsync_tmp = tempfile.mkdtemp(prefix="validate-selftest-skillsync-")
+    try:
+        skill_dir = os.path.join(skillsync_tmp, ".claude", "skills", "x")
+        os.makedirs(skill_dir, exist_ok=True)
+        skill_path = os.path.join(skill_dir, "SKILL.md")
+
+        base_catalog = {"TOK-1": {"id": "TOK-1"}, "A11Y-1": {"id": "A11Y-1"}}
+
+        # Full fixture catalog also carries every real SKILL_WIRING_GRANDFATHERED
+        # id (mirrors production, per the WIRING_EXEMPT self-test pattern above)
+        # so the "clean" cases below don't trip the dead-entry check on the
+        # real allowlist's own entries.
+        gf_ids = sorted(SKILL_WIRING_GRANDFATHERED)
+        full_catalog = dict(base_catalog, **{cid: {"id": cid} for cid in gf_ids})
+
+        # Case 1: skill names a known catalog id, and every catalog id (incl.
+        # the real grandfathered set) is either mentioned or grandfathered →
+        # clean.
+        with open(skill_path, "w") as fh:
+            fh.write("Apply TOK-1 and A11Y-1 in every component.")
+        assert_clean("skill-sync known ids, all wired-or-grandfathered",
+                     skill_sync_errors(skillsync_tmp, full_catalog, xref_re))
+
+        # Case 2: skill names a ghost id (real prefix shape, absent from the
+        # catalog) → [SKILL-SYNC] ghost error.
+        with open(skill_path, "w") as fh:
+            fh.write("Apply TOK-1, A11Y-1, and LAY-99 in every component.")
+        assert_error("skill-sync ghost id",
+                     skill_sync_errors(skillsync_tmp, full_catalog, xref_re),
+                     "names LAY-99 which is not in the catalog")
+
+        # Case 3: catalog id absent from all skills, not grandfathered → orphan
+        # error.
+        with open(skill_path, "w") as fh:
+            fh.write("Apply TOK-1 only.")
+        assert_error("skill-sync unwired orphan",
+                     skill_sync_errors(skillsync_tmp, full_catalog, xref_re),
+                     "A11Y-1 is not mentioned in any skill or agent file")
+
+        # Case 4: grandfathered orphan (the real gf_ids, present in the catalog
+        # but named in no skill file) → clean, no error.
+        with open(skill_path, "w") as fh:
+            fh.write("Apply TOK-1 and A11Y-1 only.")
+        assert_clean("skill-sync grandfathered orphans clean",
+                     skill_sync_errors(skillsync_tmp, full_catalog, xref_re))
+
+        # Case 5: dead grandfather entry — a grandfathered id removed from the
+        # catalog (simulating "no longer a catalog id at all") → error.
+        dead_catalog = {k: v for k, v in full_catalog.items() if k != gf_ids[0]}
+        with open(skill_path, "w") as fh:
+            fh.write("Apply TOK-1 and A11Y-1 only.")
+        assert_error("skill-sync dead grandfather entry",
+                     skill_sync_errors(skillsync_tmp, dead_catalog, xref_re),
+                     "dead entry")
+    finally:
+        shutil.rmtree(skillsync_tmp, ignore_errors=True)
 
     # ── Filesystem integration case for collect_errors ───────────────────────
 
