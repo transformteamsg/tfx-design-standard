@@ -415,16 +415,7 @@ def run_self_test():
         expect_notes=[],
     )
 
-    if failures:
-        for f in failures:
-            print(f)
-        print(
-            f"SELF-TEST FAILED ({len(failures)} failures, "
-            f"{case_count} cases run)"
-        )
-        sys.exit(1)
-    print(f"SELF-TEST OK ({case_count} cases)")
-    sys.exit(0)
+    checklib.report_self_test(failures, case_count)
 
 
 # ── Entry point ────────────────────────────────────────────────────────────────

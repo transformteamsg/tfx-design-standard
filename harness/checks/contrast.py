@@ -571,13 +571,7 @@ def run_self_test():
         ".css",
     )
 
-    if failures:
-        for f in failures:
-            print(f)
-        print(f"SELF-TEST FAILED ({len(failures)} failures, {case_count} cases run)")
-        sys.exit(1)
-    print(f"SELF-TEST OK ({case_count} cases)")
-    sys.exit(0)
+    checklib.report_self_test(failures, case_count)
 
 
 # ── Entry point ────────────────────────────────────────────────────────────────
