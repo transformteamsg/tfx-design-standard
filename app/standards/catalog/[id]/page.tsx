@@ -65,6 +65,11 @@ export default async function ControlDetailPage({
         section={{ label: "Control catalog", href: "/standards/catalog" }}
         current={detail.id}
       />
+      {detail.status === "proposed" && (
+        <span className="mb-2 inline-block rounded-full border border-warning-muted bg-warning-subtle px-2 py-0.5 text-[11px] font-medium text-warning">
+          ⚑ Proposed — react, don&apos;t obey
+        </span>
+      )}
       <div className="flex flex-wrap items-center gap-2">
         <span className="rounded-md border border-border bg-accent px-2 py-0.5 text-[12px] font-semibold">
           {detail.id}

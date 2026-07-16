@@ -7,7 +7,7 @@ import { Toc } from "@/components/toc";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { PageActions } from "@/components/page-actions";
 import { ToolCard, type Tool } from "@/components/tool-card";
-import { heading } from "@/components/mdx";
+import { mdxComponents } from "@/components/mdx";
 
 /* Sections whose docs live at /{section}/{slug} and get a breadcrumb back to
    the section root. Single-doc sections (governance) and start pages don't. */
@@ -34,12 +34,16 @@ export async function DocPage({ doc, children }: { doc: Doc; children?: ReactNod
   try {
     const { content } = await compileMDX({
       source: doc.content,
-      components: { h2: heading("h2"), h3: heading("h3") },
+      components: mdxComponents,
       options: { mdxOptions: { remarkPlugins: [remarkGfm] } },
     });
     rendered = content;
-  } catch {
+  } catch (err) {
     rawFallback = true;
+    console.warn(
+      `[doc-page] MDX compile failed for ${doc.section}/${doc.slug} — serving raw-markdown fallback:`,
+      err instanceof Error ? err.message : err,
+    );
   }
 
   return (
@@ -71,8 +75,8 @@ export async function DocPage({ doc, children }: { doc: Doc; children?: ReactNod
         {rawFallback ? (
           <div className="mt-8">
             <p className="text-[14px] text-muted-foreground">
-              Showing the raw Markdown source — this doc uses a token the renderer reads as
-              markup, so it is shown verbatim below.
+              This doc contains a token the renderer reads as markup, so you are seeing the raw
+              Markdown source.
             </p>
             <pre className="prose mt-3 overflow-x-auto whitespace-pre-wrap rounded-lg border border-border bg-surface p-4 text-[14px]">
               {doc.content}
@@ -83,7 +87,7 @@ export async function DocPage({ doc, children }: { doc: Doc; children?: ReactNod
         )}
         {children}
       </div>
-      {headings.length >= 2 && <Toc headings={headings} />}
+      {!rawFallback && headings.length >= 2 && <Toc headings={headings} />}
     </div>
   );
 }

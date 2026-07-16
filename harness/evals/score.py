@@ -26,12 +26,14 @@ Assertion types (exactly these four — adding more is a plan STOP condition)
           strip_tags: true|false}                       # optional, default false —
                                                         #   strip HTML tags + decode
                                                         #   &nbsp;/&amp; before matching
-  {type: command, run, exit: 0|1}                       # whitelist: run must
-                                                        #   start "python3 checks/"
+  {type: command, run, exit: 0|1}                       # run must be
+                                                        #   "python3 checks/<direct-child>.py ..."
   {type: count, path, pattern, min}                     # regex match count ≥ min
 
 Paths are relative to the repo root (absolute paths also accepted, used by the
-self-test fixtures). Commands execute with cwd = repo root.
+self-test fixtures). Commands execute with cwd = repo root. Command scripts
+must exist as regular `.py` files whose canonical parent is exactly
+`harness/checks`; shell features are not supported.
 
 Output
 ──────
@@ -55,9 +57,9 @@ except ImportError:
     sys.exit(1)
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+CHECKS_DIR = os.path.join(REPO_ROOT, "checks")
 
 ASSERTION_TYPES = {"file_exists", "grep", "command", "count"}
-COMMAND_WHITELIST_PREFIX = "python3 checks/"
 
 REQUIRED_TASK_FIELDS = ["id", "brief", "traps", "artifacts", "assertions"]
 REQUIRED_ARTIFACT_FIELDS = ["record", "page", "screenshots_dir"]
@@ -192,20 +194,48 @@ def run_grep(a):
     return summary, None
 
 
+def parse_checker_command(run, checks_dir=CHECKS_DIR):
+    """Return a canonical checker argv or a refusal/parse error."""
+    try:
+        argv = shlex.split(run)
+    except (TypeError, ValueError) as exc:
+        return None, f"cannot parse command: {exc}"
+
+    if len(argv) < 2:
+        return None, ("REFUSED — command must be 'python3 "
+                      "checks/<direct-child>.py ...'; not executed")
+    if argv[0] != "python3":
+        return None, ("REFUSED — command interpreter must be exactly "
+                      "'python3'; not executed")
+
+    script_arg = argv[1]
+    script_path = (script_arg if os.path.isabs(script_arg)
+                   else os.path.join(REPO_ROOT, script_arg))
+    canonical_script = os.path.realpath(script_path)
+    canonical_checks = os.path.realpath(checks_dir)
+
+    if (not script_arg.endswith(".py")
+            or not canonical_script.endswith(".py")
+            or not os.path.isfile(canonical_script)):
+        return None, ("REFUSED — checker must be an existing regular .py file; "
+                      "not executed")
+    if os.path.dirname(canonical_script) != canonical_checks:
+        return None, ("REFUSED — checker must be a canonical direct child of "
+                      "checks/; not executed")
+
+    return [argv[0], canonical_script, *argv[2:]], None
+
+
 def run_command(a):
     run, expected_exit = a["run"], a["exit"]
     summary = f"command {run}"
-    if not run.startswith(COMMAND_WHITELIST_PREFIX):
-        return summary, (f"REFUSED — command not whitelisted "
-                         f"(must start with '{COMMAND_WHITELIST_PREFIX}'); not executed")
-    try:
-        argv = shlex.split(run)
-    except ValueError as exc:
-        return summary, f"cannot parse command: {exc}"
+    argv, err = parse_checker_command(run)
+    if err:
+        return summary, err
     try:
         proc = subprocess.run(argv, cwd=REPO_ROOT,
                               stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                              timeout=120)
+                              timeout=120, shell=False)
     except FileNotFoundError as exc:
         return summary, f"command failed to start: {exc}"
     except subprocess.TimeoutExpired:
@@ -320,6 +350,17 @@ def run_self_test():
             failures.append(f"FAIL {name}: expected error containing "
                             f"'{must_contain}', got: {errs}")
 
+    def expect_command_error(name, run, must_contain, checks_dir=CHECKS_DIR):
+        """Assert parser refusal without risking a subprocess side effect."""
+        nonlocal case_count
+        case_count += 1
+        argv, err = parse_checker_command(run, checks_dir=checks_dir)
+        if err is None:
+            failures.append(f"FAIL {name}: expected an error, got argv: {argv}")
+        elif must_contain not in err:
+            failures.append(f"FAIL {name}: expected error containing "
+                            f"'{must_contain}', got: {err}")
+
     # 1–2: file_exists pass / fail
     expect_pass("file_exists-pass",
                 [{"type": "file_exists", "path": fixture_path}])
@@ -369,7 +410,7 @@ def run_self_test():
                    "pattern": "beta", "min": 4}],
                  "found 3 matches")
 
-    # 10–11: command — whitelisted check passes / exit-code mismatch fails
+    # Command — an existing direct checker passes / exit-code mismatch fails.
     expect_pass("command-pass",
                 [{"type": "command", "run": "python3 checks/validate.py",
                   "exit": 0}])
@@ -378,17 +419,80 @@ def run_self_test():
                    "exit": 1}],
                  "exit 0, expected 1")
 
-    # 12: REQUIRED — non-whitelisted command is REFUSED, never executed
+    # The runner routes an obvious non-checker command through the validator.
     expect_error("command-whitelist-refusal",
                  [{"type": "command", "run": "rm -rf /", "exit": 0}],
                  "REFUSED")
 
-    # 13: unknown assertion type → schema error
+    # Adversarial commands are checked directly so they cannot execute even if
+    # the expected refusal regresses.
+    expect_command_error(
+        "command-traversal-refusal",
+        "python3 checks/../evals/score.py --self-test",
+        "REFUSED")
+    expect_command_error(
+        "command-nested-checker-refusal",
+        "python3 checks/subdir/tool.py",
+        "REFUSED")
+    expect_command_error(
+        "command-missing-checker-refusal",
+        "python3 checks/does-not-exist.py",
+        "REFUSED")
+    expect_command_error(
+        "command-alternate-interpreter-refusal",
+        "python checks/validate.py",
+        "REFUSED")
+    expect_command_error(
+        "command-absolute-interpreter-refusal",
+        "/usr/bin/python3 checks/validate.py",
+        "REFUSED")
+    expect_command_error(
+        "command-malformed-quoting",
+        "python3 checks/validate.py 'unterminated",
+        "cannot parse command")
+
+    # Accepted commands use the canonical script path and preserve literal args.
+    case_count += 1
+    argv, err = parse_checker_command(
+        "python3 checks/validate.py 'argument with spaces' ';' '$HOME'")
+    expected_argv = [
+        "python3",
+        os.path.realpath(os.path.join(CHECKS_DIR, "validate.py")),
+        "argument with spaces",
+        ";",
+        "$HOME",
+    ]
+    if err or argv != expected_argv:
+        failures.append(
+            "FAIL command-canonical-literal-args: expected "
+            f"{expected_argv}, got argv={argv}, error={err}")
+
+    # If symlinks are supported, a checker link resolving outside the injected
+    # checks directory is refused. The real harness/checks directory is untouched.
+    with tempfile.TemporaryDirectory() as symlink_root:
+        temporary_checks = os.path.join(symlink_root, "checks")
+        os.mkdir(temporary_checks)
+        outside_checker = os.path.join(symlink_root, "outside.py")
+        with open(outside_checker, "w", encoding="utf-8") as fh:
+            fh.write("# symlink self-test fixture\n")
+        symlink_checker = os.path.join(temporary_checks, "tool.py")
+        try:
+            os.symlink(outside_checker, symlink_checker)
+        except (NotImplementedError, OSError):
+            pass
+        else:
+            expect_command_error(
+                "command-escaping-symlink-refusal",
+                f"python3 {symlink_checker}",
+                "REFUSED",
+                checks_dir=temporary_checks)
+
+    # Unknown assertion type → schema error.
     expect_error("unknown-assertion-type",
                  [{"type": "pixel_diff", "path": fixture_path}],
                  "unknown type")
 
-    # 14: schema — missing required task field
+    # Schema — missing required task field.
     case_count += 1
     bad_task = make_task([{"type": "file_exists", "path": fixture_path}])
     del bad_task["brief"]
@@ -396,7 +500,7 @@ def run_self_test():
     if not any("missing required field 'brief'" in e for e in errs):
         failures.append(f"FAIL schema-missing-field: got: {errs}")
 
-    # 15: schema — grep with invalid expect value
+    # Schema — grep with invalid expect value.
     expect_error("grep-bad-expect",
                  [{"type": "grep", "path": fixture_path,
                    "pattern": "alpha", "expect": "maybe"}],

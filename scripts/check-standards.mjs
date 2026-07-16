@@ -35,6 +35,7 @@ const APPLIES_TO = new Set(schema.applies_to);
 const ID_RE = new RegExp(`^(${schema.id_prefixes.join("|")})-\\d+$`);
 const PRODUCTS = new Set(schema.products);
 const AUDIENCES = new Set(schema.audiences);
+const STATUS = new Set(schema.status);
 
 const catalogPath = "harness/standards/catalog.yaml";
 let catalog;
@@ -78,6 +79,9 @@ if (catalog) {
         }
       }
     }
+    // Optional status field — absence means settled; only 'proposed' is valid.
+    if ("status" in c && !STATUS.has(c.status))
+      err(loc, `invalid status '${c.status}' — absence means settled`);
     if (c.tier && c.waiver && schema.tier_waiver[c.tier] !== c.waiver)
       err(loc, `tier ${c.tier} requires waiver '${schema.tier_waiver[c.tier]}', got '${c.waiver}'`);
     if (c.id != null) {
@@ -129,9 +133,10 @@ const sidebarHrefs = new Set(
 
 const expectedHrefs = new Set();
 for (const [section, def] of Object.entries(map)) {
-  for (const slug of def.slugs) {
-    // Root sections render their single doc at the section href itself.
-    const href = def.root ? `/${section}` : `/${section}/${slug}`;
+  for (const [i, slug] of def.slugs.entries()) {
+    // Root sections render their first doc at the section href itself;
+    // any further slugs are normal /section/slug pages.
+    const href = def.root && i === 0 ? `/${section}` : `/${section}/${slug}`;
     expectedHrefs.add(href);
     if (!sidebarHrefs.has(href))
       err("components/sidebar.tsx", `no nav entry for registered doc '${href}'`);

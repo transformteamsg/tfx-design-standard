@@ -76,9 +76,12 @@ extra path config is needed.
 
 ## Behaviour
 
-- **File filter first.** Only UI extensions run the detector: `.tsx .jsx .css .html
-  .vue .svelte`. Everything else exits 0 immediately (this fires on every edit — no
-  work on a miss).
+- **File filter first.** The detector runs on the same extensions the checkers it
+  wraps scan: `.tsx .jsx .js .ts .css .html .vue .svelte`. Everything else exits 0
+  immediately (this fires on every edit — no work on a miss). This means plain
+  logic-file (`.js`/`.ts`) edits also trigger a detector run, since design tokens and
+  user-facing strings often live in those files too — the run is fast and scoped to
+  the single edited file, so this is an accepted trade-off, not a bug.
 - **On findings** (`detect` exit 2): one reminder — finding count, the top new finding
   (control id + `file:line` + the detector's own fix direction), and
   `python3 checks/detect.py <file>` for the full list.

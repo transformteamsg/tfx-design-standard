@@ -126,11 +126,43 @@ re-check. Which scripts exist and exactly what each does *not* cover: `checks/RE
 
 ## Phase 1 — Intent (sprint contract)
 
-Establish, asking the user only what you cannot infer:
+### Clarify the ask before you scope it
+
+A request like "apply the standards", "improve this", "polish it", or "make it
+better" names *no dimension of change* — and you cannot infer one, so do not try.
+"Apply the standards" in particular reads by default as a **compliance + anti-slop
+pass**: on a surface that is already decent, that can finish with the visuals looking
+almost unchanged. That is exactly what disappointed the Glow pilot — the builder
+wanted a brand-forward visual redesign, said "apply the standards", and got a run that
+tightened UX the surface had mostly got right already. The fix is not to guess bigger;
+it is to **ask**. When the request is open-ended, use a structured `AskUserQuestion`
+to pin down which **dimension(s)** are in scope:
+
+- **Visual & brand expression** — colour, type expression, imagery, the surface's
+  energy, and how strongly it carries the product's brand (Glow's warmth, TW's blue,
+  CaseSync's indigo). This is the dimension "apply the standards" silently drops.
+- **Layout & structure** — hierarchy, composition, page template, density.
+- **UX & flow** — the teacher's path, the steps, the states, the friction.
+- **Copy** — headings, labels, microcopy, error states.
+- **Compliance & anti-slop only** — fix control violations, change nothing that is
+  deliberate. This is the *narrowest* ask; confirm it is what the builder meant
+  rather than the default they fell into.
+
+Pair the dimensions with an **ambition level** — the smallest reversible change that
+meets the contract (Phase 4's standing default), a targeted lift of the
+underperforming parts, or a bold reimagining *within the product's existing system*
+(never an invented aesthetic — COL-1, TYP-1, SLP-1 still bind). Standards compliance
+is the floor in every case; this question decides whether the ceiling is in scope
+too. Write the answer into the done-criteria so the evaluator grades against the
+dimension the builder wanted, not the one the phrase defaulted to.
+
+Establish the rest, asking the user only what you cannot infer:
 
 > For an **existing** surface, run "Existing surfaces: critique before you polish"
 > (above) before writing the contract — the contract's done-criteria should target the
-> critique's findings, not a blanket redesign. ("Critique the current state first".)
+> critique's findings *through the dimensions chosen above*, not a blanket redesign and
+> not a compliance-only pass when the builder asked for more. ("Critique the current
+> state first".)
 
 1. **Purpose**: what must the teacher accomplish on this page? One sentence. Apply
    the one test: *does this help teachers work faster with less stress?* If not,
@@ -154,8 +186,12 @@ Establish, asking the user only what you cannot infer:
    action inherits the `[flow]` controls** (CMP-2, CMP-3) even when it is a single
    page — do not let the page/flow split scope them out.
 4. **Done-criteria**: write a short sprint contract — the 3–6 statements the evaluator
-   will later grade against. Include the `intent`-phase controls (CNT-2 naming applies
-   here: name the feature in plain language now, before a placeholder name spreads).
+   will later grade against. State the **dimension(s) and ambition** chosen in "Clarify
+   the ask" as explicit criteria (e.g. "the surface visibly carries Glow's warmth", not
+   just "passes the standards") — otherwise the evaluator has no way to catch a run that
+   delivered compliance when the builder wanted a visual redesign. Include the
+   `intent`-phase controls (CNT-2 naming applies here: name the feature in plain
+   language now, before a placeholder name spreads).
 5. **Component inventory**: list the surface as a coverage checklist — the route,
    every component it renders (by import name), and every **interactive control**
    on it (buttons, inputs, dropdowns/combobox, toggles, tabs, links, menus). For

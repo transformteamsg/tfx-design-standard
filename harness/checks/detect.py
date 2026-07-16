@@ -66,6 +66,18 @@ EXIT_FAILURE = 1
 # The per-subprocess timeout (a hung script is a tool failure, not a silent pass).
 CHECK_TIMEOUT = 180
 
+# Directories never scanned during ignoreFiles expansion (mirrors the check
+# scripts' own recursion, which skips vendor and build output).
+PRUNE_DIRS = {"node_modules", "dist", "build", "out", "coverage", "vendor", "__pycache__"}
+
+# Union of every wrapped check's TARGET_EXTENSIONS (content-lint adds .md/.mdx).
+SCAN_EXTENSIONS = {".css", ".html", ".jsx", ".tsx", ".js", ".ts", ".vue",
+                   ".svelte", ".md", ".mdx"}
+
+# <!-- tfx-sync:L0 source=catalog -->
+L0_CONTROL_IDS = frozenset({"A11Y-1", "A11Y-2", "A11Y-3", "CMP-2"})
+# <!-- /tfx-sync:L0 -->
+
 # ERROR-line convention (checks/README.md):
 #   ERROR <file>:<line> [<CTL>] <message>
 #   ERROR <file>:<line> [<CTL>][waiver-claimed] <message>   (token-audit)
@@ -158,16 +170,24 @@ def is_ignored(path, globs, repo_root):
 def expand_targets(paths, ignore_globs, repo_root):
     """Expand dir targets into a flat file list and drop ignoreFiles matches. Only
     called when ignoreFiles is set — otherwise the raw targets are passed straight
-    through (each script recurses itself)."""
+    through (each script recurses itself).
+
+    Directory targets are walked with PRUNE_DIRS (vendor/build dirs) and dot-dirs
+    pruned, and only files whose extension is in SCAN_EXTENSIONS are kept — this
+    keeps the expanded argv well under ARG_MAX on real repos. Explicit file targets
+    (the os.path.isfile branch) pass through unfiltered: a user who names a file
+    gets it scanned regardless of extension."""
     files = []
     for p in paths:
         if os.path.isfile(p):
             files.append(p)
         elif os.path.isdir(p):
             for root, dirs, fnames in os.walk(p):
-                dirs[:] = [d for d in dirs if not d.startswith(".")]
+                dirs[:] = [d for d in dirs
+                           if not d.startswith(".") and d not in PRUNE_DIRS]
                 for fn in sorted(fnames):
-                    files.append(os.path.join(root, fn))
+                    if os.path.splitext(fn)[1].lower() in SCAN_EXTENSIONS:
+                        files.append(os.path.join(root, fn))
         else:
             files.append(p)  # let the script report the missing path
     return [f for f in files if not is_ignored(f, ignore_globs, repo_root)]
@@ -259,12 +279,15 @@ def parse_findings(check_name, error_lines):
     return out
 
 
+def effective_ignore_rules(ignore_rules):
+    """Return configured rules that may be ignored; catalog L0 controls never may."""
+    return set(ignore_rules) - L0_CONTROL_IDS
+
+
 def apply_ignore_rules(findings, ignore_rules):
-    """Drop findings whose control id is in ignoreRules. Control-less (operational)
+    """Drop non-L0 findings named in ignoreRules. Control-less (operational)
     findings are never dropped — an operational error is not a rule."""
-    if not ignore_rules:
-        return list(findings)
-    ig = set(ignore_rules)
+    ig = effective_ignore_rules(ignore_rules)
     return [f for f in findings if f["control"] not in ig]
 
 
@@ -377,7 +400,7 @@ def build_json_report(findings, results, crashed, profile, exit_code):
 
 
 def print_text_report(findings, results, crashed, ignore_rules):
-    ig = set(ignore_rules)
+    ig = effective_ignore_rules(ignore_rules)
     for r in results:
         if r["kind"] == "skipped":
             print(f"── {r['name']}: skipped ({r['reason']}) ──")
@@ -482,6 +505,8 @@ def main():
 # ── Self-test (pure — no real check subprocesses) ────────────────────────────────
 
 def run_self_test():
+    import contextlib
+    import io
     import tempfile
 
     failures = []
@@ -552,14 +577,36 @@ def run_self_test():
     check("NOTE-only stdout on exit 0 is clean",
           classify_run(0, "NOTE  contrast: could not resolve … — verify manually\n", "")[0] == "clean")
 
-    # 9. ignoreRules drops matching control, keeps others + operational.
+    # 9. ignoreRules drops L1/L2 findings only; L0 and operational findings remain.
     fs = [{"check": "a", "control": "A11Y-2", "file": "x", "line": 1, "message": "m"},
-          {"check": "a", "control": "TOK-1", "file": "y", "line": 2, "message": "m"},
+          {"check": "a", "control": "CMP-2", "file": "y", "line": 2, "message": "m"},
+          {"check": "a", "control": "TYP-2", "file": "z", "line": 3, "message": "m"},
           {"check": "a", "control": None, "file": None, "line": None, "message": "op"}]
-    kept = apply_ignore_rules(fs, ["A11Y-2"])
-    check("ignoreRules drops A11Y-2", not any(f["control"] == "A11Y-2" for f in kept))
-    check("ignoreRules keeps TOK-1", any(f["control"] == "TOK-1" for f in kept))
+    ignored = ["TYP-2", "A11Y-2", "CMP-2"]
+    kept = apply_ignore_rules(fs, ignored)
+    check("ignoreRules drops L1 TYP-2", not any(f["control"] == "TYP-2" for f in kept))
+    check("ignoreRules keeps L0 A11Y-2", any(f["control"] == "A11Y-2" for f in kept))
+    check("ignoreRules keeps L0 CMP-2", any(f["control"] == "CMP-2" for f in kept))
     check("ignoreRules never drops operational", any(f["control"] is None for f in kept))
+    check("effective ignores exclude every L0 control",
+          not (effective_ignore_rules(list(L0_CONTROL_IDS) + ["TYP-2"]) & L0_CONTROL_IDS))
+
+    text_results = [{
+        "name": "a11y-static",
+        "kind": "findings",
+        "error_lines": [
+            "ERROR app/x.tsx:1 [A11Y-2] focus state missing",
+            "ERROR app/x.tsx:2 [TYP-2] text size too small",
+        ],
+        "note_lines": [],
+        "findings": kept,
+    }]
+    text_output = io.StringIO()
+    with contextlib.redirect_stdout(text_output):
+        print_text_report(kept, text_results, [], ["A11Y-2", "TYP-2"])
+    rendered = text_output.getvalue()
+    check("text report keeps ignored L0 A11Y-2 and hides L1 TYP-2",
+          "[A11Y-2]" in rendered and "[TYP-2]" not in rendered)
 
     # 10. ignoreFiles glob filtering.
     with tempfile.TemporaryDirectory() as td:
@@ -576,6 +623,35 @@ def run_self_test():
         got2 = expand_targets([td], ["*.css"], td)
         rels2 = {os.path.relpath(f, td) for f in got2}
         check("ignoreFiles *.css glob drops the css", "legacy/old.css" not in rels2)
+
+    # 10b. Vendor dirs (PRUNE_DIRS) are never walked even for scan extensions.
+    with tempfile.TemporaryDirectory() as td:
+        os.makedirs(os.path.join(td, "node_modules", "pkg"))
+        os.makedirs(os.path.join(td, "src"))
+        open(os.path.join(td, "node_modules", "pkg", "index.js"), "w").close()
+        open(os.path.join(td, "src", "page.tsx"), "w").close()
+        got = expand_targets([td], ["legacy/*"], td)
+        rels = {os.path.relpath(f, td) for f in got}
+        check("prune keeps src/page.tsx", "src/page.tsx" in rels)
+        check("prune drops node_modules .js",
+              not any(r.startswith("node_modules") for r in rels))
+
+    # 10c. Non-scan extensions are filtered out of dir expansion.
+    with tempfile.TemporaryDirectory() as td:
+        os.makedirs(os.path.join(td, "src"))
+        open(os.path.join(td, "src", "notes.txt"), "w").close()
+        open(os.path.join(td, "src", "page.tsx"), "w").close()
+        got = expand_targets([td], ["legacy/*"], td)
+        rels = {os.path.relpath(f, td) for f in got}
+        check("extension filter keeps src/page.tsx", "src/page.tsx" in rels)
+        check("extension filter drops src/notes.txt", "src/notes.txt" not in rels)
+
+    # 10d. An explicit file target survives regardless of extension (isfile branch).
+    with tempfile.TemporaryDirectory() as td:
+        weird = os.path.join(td, "weird.xyz")
+        open(weird, "w").close()
+        got = expand_targets([weird], ["legacy/*"], td)
+        check("explicit non-scan file target survives expansion", weird in got)
 
     # 11. Config loading.
     with tempfile.TemporaryDirectory() as td:

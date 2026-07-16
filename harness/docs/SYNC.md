@@ -45,14 +45,16 @@ restatement registers itself with the check instead of free-floating.
 
 | `NAME` | Source | Consumers | Check | Rule |
 |---|---|---|---|---|
-| `L0` | catalog `tier: L0` set | `CLAUDE.md`, `.claude/skills/design/SKILL.md` | `[L0-SYNC]` | inline ID set **==** catalog L0 set |
+| `L0` | catalog `tier: L0` set | `CLAUDE.md`, `.claude/skills/design/SKILL.md`, `checks/detect.py` | `[L0-SYNC]` | inline ID set **==** catalog L0 set |
 | `slp9-buzzwords` | `standards/controls/slp-9.md` (marked `source`) | `.claude/skills/copy/SKILL.md` | `[SLP9-SYNC]` | consumer ⊆ source (skill may show fewer, never more) |
 
 ### Normalization
 
 - **L0**: control IDs are matched as a set via the catalog's ID regex, so order and the
   surrounding prose are free; only the set of IDs inside the span must equal the catalog's
-  `tier: L0` set.
+  `tier: L0` set. `checks/detect.py` is an executable consumer: its marked immutable set
+  excludes L0 controls from `ignoreRules`, so parity makes a future tier change fail until
+  that enforcement set is updated.
 - **slp9-buzzwords**: tokens are lowercased, split on commas/whitespace/bullets, and a
   trailing parenthetical inflection is stripped (`streamline(d)` → `streamline`,
   `effortless(ly)` → `effortless`). There is **no** morphological stemming — the source and

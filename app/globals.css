@@ -10,7 +10,7 @@
   --background: #fafafa;
   --surface: #ffffff;
   --foreground: #18181b;
-  --muted-foreground: #71717a;
+  --muted-foreground: #67676f; /* darkened from zinc-500 #71717a to clear WCAG AA 4.5:1 on the --muted #f4f4f5 fill, not just the page bg (A11Y-1, L0) */
   --border: #e4e4e7;
   --ring: #0064ff;
 
@@ -60,6 +60,19 @@
 
   --radius: 0.5rem;
 
+  /* ── Motion — the only durations and easings site code may use (MOT-2, proposed).
+     Duration follows the size of the change; easing follows its direction
+     (enter/exit → out, on-screen movement → in-out, hover tint → plain ease).
+     Interface motion stays ≤300ms (MOT-1); --motion-story is for narrative
+     surfaces only — explanatory diagrams and the landing reveal — never task UI.
+     A11Y-5: every consumer provides a reduced-motion variant. ── */
+  --motion-fast: 120ms;
+  --motion-base: 200ms;
+  --motion-slow: 300ms;
+  --motion-story: 600ms;
+  --ease-out: cubic-bezier(0.215, 0.61, 0.355, 1);
+  --ease-in-out: cubic-bezier(0.645, 0.045, 0.355, 1);
+
   /* ── shadcn/ui compatibility tokens — mapped onto the brand tokens above so
      shadcn components (Base UI) render on-brand and stay TOK-1 compliant: every
      value resolves to a token defined here, never a raw value in a component. ── */
@@ -86,6 +99,18 @@
   --sidebar-accent-foreground: var(--foreground);
   --sidebar-border: var(--border);
   --sidebar-ring: var(--ring);
+
+  /* ── Anti-specimen tokens — used ONLY by components/compare.tsx to draw the
+     "before" (default-AI) panel of the standards demo. Never use these in
+     product UI: they exist to be pointed at (SLP-1/SLP-2 exhibits). ── */
+  --demo-slop-grad-a: #7c3aed;
+  /* fuchsia-700, darkened from fuchsia-600 so 13px text on the gradient and
+     the gradient-clipped title both clear 4.5:1 (A11Y-1 holds even here). */
+  --demo-slop-grad-b: #a21caf;
+  --demo-slop-surface: #f5f3ff;
+  --demo-slop-ink: #4c1d95;
+  --demo-slop-border: color-mix(in oklab, var(--demo-slop-grad-a) 25%, var(--surface));
+  --demo-slop-glow: color-mix(in oklab, var(--demo-slop-grad-a) 35%, transparent);
 }
 
 @theme inline {
@@ -171,23 +196,28 @@ body {
 
 h1, h2, h3, h4 { font-family: "Plus Jakarta Sans Variable", system-ui, sans-serif; letter-spacing: -0.01em; }
 
-/* prose defaults for MDX */
-.prose { max-width: 70ch; line-height: 1.6; font-size: 16px; }
-.prose h1 { font-size: 32px; font-weight: 600; margin: 0 0 16px; }
-.prose h2 { font-size: 24px; font-weight: 600; margin: 40px 0 12px; }
-.prose h3 { font-size: 20px; font-weight: 600; margin: 28px 0 8px; }
-.prose p { margin: 0 0 14px; color: var(--prose-body); }
-.prose ul, .prose ol { margin: 0 0 14px; padding-left: 20px; color: var(--prose-body); }
-.prose ul { list-style: disc; }
-.prose ol { list-style: decimal; }
-.prose ul ul { list-style: circle; margin-top: 4px; margin-bottom: 0; }
-.prose li { margin-bottom: 4px; }
-.prose table { width: 100%; border-collapse: collapse; font-size: 14px; margin: 16px 0 20px; }
-.prose th { text-align: left; font-weight: 600; padding: 8px 12px; border-bottom: 2px solid var(--border); }
-.prose td { padding: 8px 12px; border-bottom: 1px solid var(--border); vertical-align: top; color: var(--prose-body); }
-.prose code { background: var(--muted); border: 1px solid var(--border); border-radius: 4px; padding: 1px 4px; font-size: 0.875em; }
-.prose pre { background: var(--foreground); color: var(--background); border-radius: 8px; padding: 14px 16px; overflow-x: auto; margin: 0 0 16px; }
-.prose pre code { background: none; border: none; color: inherit; padding: 0; }
-.prose blockquote { border-left: 3px solid var(--tw-blue); padding-left: 16px; color: var(--muted-foreground); margin: 0 0 14px; }
-.prose a { color: var(--tw-blue); text-decoration: underline; text-underline-offset: 2px; }
-.prose strong { color: var(--foreground); font-weight: 600; }
+/* prose defaults for MDX — layered as components so Tailwind utilities on
+   embedded UI (diagrams, figures) can override them. */
+@layer components {
+  .prose { max-width: 70ch; line-height: 1.6; font-size: 16px; }
+  .prose h1 { font-size: 32px; font-weight: 600; margin: 0 0 16px; }
+  .prose h2 { font-size: 24px; font-weight: 600; margin: 40px 0 12px; }
+  .prose h3 { font-size: 20px; font-weight: 600; margin: 28px 0 8px; }
+  .prose p { margin: 0 0 14px; color: var(--prose-body); }
+  .prose ul, .prose ol { margin: 0 0 14px; padding-left: 20px; color: var(--prose-body); }
+  .prose ul { list-style: disc; }
+  .prose ol { list-style: decimal; }
+  .prose ul ul { list-style: circle; margin-top: 4px; margin-bottom: 0; }
+  .prose li { margin-bottom: 4px; }
+  /* display:block lets a wide table scroll inside its own container instead of
+     overflowing the page at narrow widths (A11Y — no horizontal page scroll). */
+  .prose table { display: block; width: 100%; border-collapse: collapse; font-size: 14px; margin: 16px 0 20px; overflow-x: auto; }
+  .prose th { text-align: left; font-weight: 600; padding: 8px 12px; border-bottom: 2px solid var(--border); }
+  .prose td { padding: 8px 12px; border-bottom: 1px solid var(--border); vertical-align: top; color: var(--prose-body); }
+  .prose code { background: var(--muted); border: 1px solid var(--border); border-radius: 4px; padding: 1px 4px; font-size: 0.875em; overflow-wrap: anywhere; word-break: break-word; }
+  .prose pre { background: var(--foreground); color: var(--background); border-radius: 8px; padding: 14px 16px; overflow-x: auto; margin: 0 0 16px; }
+  .prose pre code { background: none; border: none; color: inherit; padding: 0; overflow-wrap: normal; word-break: normal; white-space: inherit; }
+  .prose blockquote { border-left: 3px solid var(--tw-blue); padding-left: 16px; color: var(--muted-foreground); margin: 0 0 14px; }
+  .prose a { color: var(--tw-blue); text-decoration: underline; text-underline-offset: 2px; }
+  .prose strong { color: var(--foreground); font-weight: 600; }
+}

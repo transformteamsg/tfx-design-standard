@@ -62,6 +62,7 @@ def load_schema_bits(repo_root):
         "allowed_products": set(schema["products"]),
         "allowed_audiences": set(schema["audiences"]),
         "allowed_enforced": set(schema["enforced"]),
+        "allowed_status": set(schema["status"]),
         "control_id_re": re.compile(rf"^({prefixes})-\d+$"),
         "xref_re": re.compile(rf"\b({prefixes})-\d+\b"),
     }
@@ -174,6 +175,14 @@ def validate_control(control, idx, schema_bits):
     if enforced == "evaluator" and check not in ("judgment", "hybrid"):
         err(loc, f"enforced 'evaluator' is only valid on check 'judgment' or 'hybrid' — got '{check}'")
 
+    # 2e. Optional status field — 'proposed' marks a control pending
+    # design-lead approval. Absence means settled; 'settled' is never
+    # written explicitly.
+    allowed_status = schema_bits["allowed_status"]
+    status = control.get("status")
+    if status is not None and status not in allowed_status:
+        err(loc, f"invalid status '{status}' — allowed: {sorted(allowed_status)} (absence means settled)")
+
     # 3. Tier→waiver pairing
     if tier in tier_waiver and waiver is not None:
         expected_waiver = tier_waiver[tier]
@@ -253,15 +262,16 @@ def tokenize_buzzwords(span):
 
 def l0_parity_errors(repo_root, catalog_by_id, xref_re):
     """
-    [L0-SYNC] Each inline 'Non-negotiables (L0)' list (CLAUDE.md and the
-    design skill's SKILL.md) must equal the catalog's tier:L0 set. Missing
-    markers are an error. Set comparison, so prose/order around the IDs is free.
+    [L0-SYNC] Each marked L0 consumer must equal the catalog's tier:L0 set.
+    Missing markers are an error. Set comparison, so prose/order around the IDs
+    is free.
     """
     errors = []
     source = {cid for cid, c in catalog_by_id.items() if c.get("tier") == "L0"}
     consumers = [
         os.path.join(repo_root, "CLAUDE.md"),
         os.path.join(repo_root, ".claude", "skills", "design", "SKILL.md"),
+        os.path.join(repo_root, "checks", "detect.py"),
     ]
     for fpath in consumers:
         if not os.path.isfile(fpath):
@@ -765,6 +775,16 @@ def run_self_test():
                  l0_errs_for_span(extract_sync_block("no markers here", "L0")),
                  "missing tfx-sync:L0 markers")
 
+    # The detector is an executable L0 consumer. A malformed fixture must be
+    # reported; this fails if its path is silently skipped by l0_parity_errors.
+    with tempfile.TemporaryDirectory() as td:
+        os.makedirs(os.path.join(td, "checks"))
+        with open(os.path.join(td, "checks", "detect.py"), "w") as fh:
+            fh.write("# no L0 marker")
+        assert_error("L0 detector consumer is not skipped",
+                     l0_parity_errors(td, {cid: {"tier": "L0"} for cid in L0_SOURCE}, xref_re),
+                     "checks/detect.py [L0-SYNC]: missing tfx-sync:L0 markers")
+
     # Buzzword parity — drive tokenize_buzzwords + the subset/required-core rules.
     BUZZ_SOURCE = tokenize_buzzwords(
         "streamline(d), empower, supercharge, effortless(ly), seamless(ly), "
@@ -859,6 +879,17 @@ def run_self_test():
     assert_control_error("script wrong type",
                          dict(valid_control, enforced="script", script=42),
                          "'script' must be a string or list of strings")
+
+    # ── Status field cases ───────────────────────────────────────────────
+    # status: proposed → clean.
+    assert_control_clean("status proposed",
+                         dict(valid_control, status="proposed"))
+    # status: settled → error (absence means settled; the explicit value is invalid).
+    assert_control_error("status settled invalid",
+                         dict(valid_control, status="settled"),
+                         "invalid status 'settled'")
+    # status absent → clean (the base valid_control carries no status).
+    assert_control_clean("status absent", dict(valid_control))
 
     # ── [COUNT-SYNC] cases ─────────────────────────────────────────────────
     count_tmp = tempfile.mkdtemp(prefix="validate-selftest-count-")

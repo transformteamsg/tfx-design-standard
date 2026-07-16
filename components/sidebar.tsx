@@ -83,6 +83,7 @@ const nav: NavGroup[] = [
       { href: "/foundations/typography", title: "Typography" },
       { href: "/foundations/spacing-radius", title: "Spacing & radius" },
       { href: "/foundations/iconography", title: "Iconography" },
+      { href: "/foundations/motion", title: "Motion" },
     ],
   },
   {
@@ -107,12 +108,14 @@ const nav: NavGroup[] = [
   {
     label: "Governance",
     href: "/governance",
-    items: [{ href: "/governance", title: "How this evolves" }],
+    items: [
+      { href: "/governance", title: "How this evolves" },
+      { href: "/governance/changes", title: "Change log" },
+    ],
   },
 ];
 
-const groupLabel =
-  "px-1 py-1.5 text-[11px] font-semibold uppercase tracking-wider";
+const groupLabel = "px-1 py-1.5 text-[12px] font-semibold";
 
 export function AppSidebar() {
   const pathname = usePathname();

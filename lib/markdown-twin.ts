@@ -157,10 +157,12 @@ function renderStrippedBlock(tag: string, blockText: string): string | null {
 function sectionTwins(): Twin[] {
   const twins: Twin[] = [];
 
-  // Dynamic docs: each non-root section's slugs.
+  // Dynamic docs: each section's slugs. For root sections the first slug is
+  // the section-root doc (its twin comes from SINGLETONS); later slugs are
+  // normal /section/slug pages.
   for (const [key, def] of Object.entries(contentMap)) {
-    if (def.root) continue;
-    for (const slug of def.slugs) {
+    for (const [i, slug] of def.slugs.entries()) {
+      if (def.root && i === 0) continue;
       const doc = getDoc(key, slug);
       if (!doc) continue;
       const htmlPath = `/${key}/${slug}`;
