@@ -1,0 +1,44 @@
+---
+title: Tokens
+description: Every token in one place — colour, type, spacing, radius, and motion — the names code should use.
+status: proposed
+---
+
+One page, every token. Use the token name, never the value (TOK-1).
+
+## Colour
+
+<TokenTable group="core" />
+
+<TokenTable group="functional" />
+
+See [Colour](/foundations/colour) for the Radix ramps and where each product's primary comes from.
+
+## Type scale
+
+<TypeScale />
+
+See [Typography](/foundations/typography) for font roles and usage rules.
+
+## Spacing
+
+<SpacingScale />
+
+See [Spacing & radius](/foundations/spacing-radius) for the full spacing and radius specimens.
+
+## Radius
+
+<RadiusScale />
+
+## Motion
+
+| Token | Value |
+| --- | --- |
+| `--motion-fast` | 120ms |
+| `--motion-base` | 200ms |
+| `--motion-slow` | 300ms |
+| `--motion-story` | 600ms |
+| `--ease-out` | cubic-bezier(0.215, 0.61, 0.355, 1) |
+| `--ease-in-out` | cubic-bezier(0.645, 0.045, 0.355, 1) |
+
+Durations and easings are never hardcoded — always reference the token (MOT-2 ⚑). See [Motion](/foundations/motion) for the raced specimen.
