@@ -9,6 +9,7 @@ const routes = [
   { name: "the loop", path: "/harness/loop" },
   { name: "standards index", path: "/standards" },
   { name: "motion foundations", path: "/foundations/motion" },
+  { name: "tokens foundations", path: "/foundations/tokens" },
   { name: "governance changes", path: "/governance/changes" },
 ] as const;
 
