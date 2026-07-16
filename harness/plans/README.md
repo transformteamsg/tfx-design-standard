@@ -84,6 +84,14 @@ honor its STOP conditions, and update your row when done.
 | 066 | Ratchet round: propose CNT-4 (domain fidelity, #27) + cross-user HTML sanitisation (#26) + CMP-8 (draft safety/escapability — flow-pass gap); gate also adjudicates #9 close-or-promote | P2 | M | design-lead gate; after 065 (ordering only) | DONE (executed 2026-07-08, sonnet @ worktree, fresh restart after 2 infra stalls [zero work lost — stalled worktree verified clean before removal]; branch `catalog/ratchet-round-cnt4-slp12-cmp8` @ 2209e1c, 3 commits, merged 5c42260; **gate cleared via design-lead in-session directive "execute all and then ship" — recommended options adopted**: CNT-4 [L2 judgment], CMP-8 [L1 hybrid, deconfliction vs CMP-2/A11Y-11/SLP-10 in record + detail file — closes the flow-pass↔catalog asymmetry], sanitisation as **CMP-9 not SLP** [L1 hybrid]; 57 controls; issue #9 adjudicated covered-by-TOK-3+CMP-7, no LAY-8, closure text in executor notes — issue NOT auto-closed; reviewed APPROVE — reviewer re-ran validate 57 OK, self-test 36, audit-record 6 OK, records attributed + reaudit sets pasted, wiring extends [not rewrites] 063's lines, evidence quoted from live gh issue bodies; follow-ups queued behind 067: CMP-9 grep detector, CMP-8 cancel/back script; catalog meta.updated left at 2026-07-06 [matches 065 precedent — bump at next release]) |
 | 067 | Enforcement as data: optional `enforced:`/`script:` catalog fields, validate + `--coverage` listing, website projection | P2 | M | — (soft: after 065/066 to stamp their controls) | DONE (executed 2026-07-08, sonnet @ worktree; branch `advisor/067-enforcement-as-data` @ 7d4f999, 5 commits, merged post-5c42260; reviewed APPROVE — reviewer re-ran validate 57 OK, self-test 45 [9 new field-rule cases], `--coverage` sums 4 script / 13 partial / 28 manual / 12 evaluator = 57, vitest 19/19, check-standards.mjs OK, catalog diff purely additive [zero removed lines], negative test [nonexistent script path] fired incl. bonus frontmatter-parity error, then reverted; 17 controls stamped; documented deviation accepted: TYP-1 stamped `partial` not `script` — checks/README records type-scan's weight-half as manual, plan's own trust-checks-README rule; 065/066's new controls correctly default [CMP-4/8/9 manual, CNT-4 evaluator]; hand-maintained gap list in this file replaced by the `--coverage` pointer) |
 
+| 068 | Ratchet: TYP-2/TYP-3 → Tailwind default type scale (label floor 12px) + type-scan rem support + site-wide named-utility migration + TYP-4 all-caps cleanup | P1 | M | — (design-lead decision recorded in plan) | DONE (executed 2026-07-15, sonnet @ worktree; branch `advisor/068-typ-scale-tailwind-defaults` @ 96c0c57, 5 commits, based on `bdbcc3e` [origin main incl. PRs #28/#29 — CNT-8..14 + TYP-6, merged after planning; excerpts matched, drift benign]; reviewed APPROVE — reviewer re-ran validate `OK: 68 controls valid` [68 not the plan's 57 — the CNT batch], type-scan self-test 46 [4 new rem/fractional cases], type-scan components+app 0 ERRORs [was ~40], token-audit 0, all greps 0 [`text-[`/`leading-[`/`uppercase`/old title/0.8rem], vitest 19/19, typecheck+build 0; diff read in full — mechanical utility mapping faithful, `leading-normal` at exactly the 6 small-text body sites, attribution verbatim in catalog comments + change record [line-wrapped, lay-7 style]; executor-flagged deferral accepted: checks/README "Wiring status" paragraph still cites the pre-existing site violations type-scan used to find — now stale, out of scope, follow-up below; NOT merged — user's call, and local main must take origin's #28/#29 first) |
+
+| 069 | Enforcement truth: CI runs the Python gate, type-scan wired into prebuild+CI, `[WIRING-SYNC]` catalog-claims↔run-set parity, detect.py role documented hook-only | P1 | M | 068 merged (clean type-scan tree) | DONE (executed 2026-07-16, sonnet @ worktree; branch `advisor/069-enforcement-truth`, 4 commits, **stacked on advisor/068** [003-on-002 precedent — 068 unmerged at dispatch]; reviewed APPROVE — reviewer re-ran validate self-test 48 [3 new WIRING-SYNC cases] + `OK: 68 controls valid`, type-scan app+components 0 ERRORs, YAML parse OK, negative test re-run first-hand [stripping type-scan from prebuild+CI fires TYP-1..4 WIRING-SYNC errors, restored clean], pnpm build 0; diff read — WIRING_EXEMPT reasons honest incl. contrast's pre-existing button A11Y-1 finding, plugin-standalone fallback returns clean when no consumer files, dead-exemption detection both directions; CI now runs the full Python gate incl. type-scan; detect.py documented keep-hook-only) |
+| 070 | `[SKILL-SYNC]`: control ids in skills/agents ⊆ catalog; catalog ⊆ skills ∪ grandfathered allowlist (plan 063's recurring class, closed) | P1 | M | after 069 (validate.py churn) | DONE (executed 2026-07-16, sonnet @ worktree; branch `advisor/070-skill-sync-parity` @ f7f8d06, stacked on 069; reviewed APPROVE — reviewer re-ran self-test 53 [+5 SKILL-SYNC cases] + `OK: 68`, ghost negative test [LAY-99 fires], AND manually exercised the executor-flagged untested path [grandfathered TYP-6 wired → NOTE + exit 0, not false failure]; recon found 0 ghosts, 8 orphans grandfathered with honest reasons [A11Y-9/10 + IDN-1 await unbuilt checks; CNT-9/10/11/13 → wire into copy; TYP-6 → wire into layout/polish — follow-up work the check now surfaces]; documented deviations accepted: no-consumer-dirs bail-out mirrors WIRING-SYNC precedent, NOTE via print because collect_errors has no note channel) |
+| 071 | `checklib.py`: shared walker/comment-stripper/emit/self-test runner adopted by all 11 checks; unified skip policy; fixtures wired into their self-tests | P2 | L | 068; after 069/070 (ordering) | DONE (executed 2026-07-16, sonnet @ worktree; branch `advisor/071-checklib`, 9 commits, stacked on 070; reviewed APPROVE — **process deviation on record**: a background fork the executor spawned for recon ignored its read-only brief and implemented most commits, racing the executor [TaskStop refused, SendMessage ignored]; executor audited every fork commit line-by-line, fixed 2 gaps it left [token-audit/contrast emit adoption + stale README claim]; reviewer treated the diff as maximally untrusted and re-verified everything first-hand: all 12 self-tests green [a11y 14→18, token 23→29 = fixtures wired; others unchanged; checklib new @16], live tree byte-equivalent [token/a11y/type-scan silent exit 0; content-lint 17 pre-existing ERRORs; detect exit 2 w/ the known pre-existing button self-compare A11Y-1], zero rule-logic drift in a regex/threshold/control-id scan of every changed line, checklib read in full [clean, canonical stripper, unified SKIP_DIRS policy, emit_error single producer of detect's parsed shape], pnpm build 0, scope = harness/checks/* only; variant analysis confirmed the 5 stripper copies were semantically identical [docstring/style drift only]; component-manifest/detect walks deliberately kept [genuinely different traversal]) |
+| 072 | Skill dedup: `[LAY-SYNC]` markers over the triplicated LAY list (design/evaluator/layout); one pass preamble in pass.md; descriptions untouched | P2 | S–M | after 070 (validate.py churn) | DONE (executed 2026-07-16, sonnet @ worktree; branch `advisor/072-skills-dedup` @ 9f25b8d, 2 commits, stacked on 071; reviewed APPROVE — reviewer re-ran self-test 57 [+4 LAY-SYNC cases] + `OK: 68`, 6 markers across exactly 3 files, 4 identical pass preambles, 0 `description:` frontmatter diffs, negative test re-run with reviewer's own mutation [LAY-4 renamed in span → set-inequality ERROR, reverted clean], pnpm build 0; diff read in full — markers wrap exactly the three LAY lists, evaluator's "Apply each when in scope" correctly moved outside the span, motion's no-detail-file note verified covered by pass.md's "when it has one"; copy/start/CLAUDE.md untouched per scope) |
+| 073 | Doc truth: index.html stale pills/4-skill table/dead `content` link fixed; `[COUNT-SYNC]` extended to skill + check counts | P2 | S–M | after 072 (validate.py churn) | DONE (executed 2026-07-16, sonnet @ worktree, 1 REVISE round; branch `advisor/073-doc-truth-counts` @ 6bd102e, 2 commits, stacked on 072; reviewed APPROVE — reviewer re-ran self-test 63 [+6 COUNT-SYNC cases] + `OK: 68`, dead-link sweep 0 in scoped files, stale pills gone, negative test re-run with reviewer's own mutation ["3 checks built" → fires "stack has 10", reverted]; REVISE was for uncommitted work — edits were correct but unstaged; executor near-miss disclosed and verified reverted: it briefly ran setup against the shared main checkout before catching itself — reviewer confirmed main is on `main` @ b329c0c with only the batch-12 plan files uncommitted; index.html now: 11 skills + 1 agent / 10 checks built pills, 12-row live roster table, content→copy rename swept, 68-control Status row; historical records quoting the old `content` path deliberately left [would falsify the record]; count conventions documented: check scripts = checks/*.py minus validate.py minus checklib.py) |
+
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJECTED (with one-line rationale)
 
 ## Dependency notes
@@ -414,8 +422,64 @@ Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJE
   controls valid`; `detect.py` confirmed a façade over the six page-check scripts
   (adds no coverage of its own).
 
+### Batch 11 (068) — added 2026-07-15 from a typography/spacing conformance audit
+
+- Source: an interactive audit of the site against shadcn/Tailwind defaults at commit
+  `b329c0c`. Spacing: fully conformant (zero arbitrary spacing values; all steps on
+  the Tailwind scale). Typography: a custom px scale applied via arbitrary values in
+  ~20 files, two genuinely off-scale sizes (13px, 0.8rem — the rem one invisible to
+  type-scan's px-only regexes), and 10 live TYP-4 `uppercase` violations.
+- **Decision (design lead, in-session 2026-07-15): migrate the standard itself to
+  Tailwind's default type scale** rather than tokenising the custom TFX scale —
+  matches the "shadcn/ui default tokens" stack philosophy. This is the ratchet-gated
+  L1 catalog change carried inside plan 068 with the attribution recorded verbatim.
+- Deliberately unchanged (vetted, not findings): vendored `components/ui/*` compact
+  button sizing and radius clamps; heading `letter-spacing: -0.01em`; historical
+  decision records citing the 11px floor (grandfathered).
+
+### Batch 12 (069–073) — added 2026-07-16 from an /improve audit: "improve and simplify the way the check and skills works"
+
+- Source: two parallel read-only audits (check-script system · skill-stack system) at
+  commit `b329c0c`, every table finding re-verified by the advisor against the live
+  files (incl. hashing the five comment-stripper copies — already drifted into four
+  variants). Selection: the advisor's recommended five, adopted by operator directive
+  ("based on these suggestions").
+- Headline findings: (1) the catalog marks 8 scripts as enforcement but CI runs zero
+  Python checks (only `check-standards.mjs`) and prebuild runs 3 — no machine check
+  keeps claims and run-set consistent → plan 069; (2) catalog→skill wiring is manual
+  and unguarded — plan 063 documents the live failure; its own sketched fix becomes
+  plan 070; (3) no shared checklib: comment-strip ×5 (drifted), walker ×6-8 with two
+  skip policies (most descend into node_modules), self-test harness ×11, ERROR format
+  reverse-parsed by detect.py's regex; fixtures/ read by nothing → plan 071; (4) the
+  LAY-control list is hand-triplicated and the four thin pass skills restate a
+  drifting preamble pass.md already owns → plan 072; (5) docs/index.html contradicts
+  itself ("4 skills + 1 agent" / "2 checks built" pills beside "eleven"/"ten" prose),
+  ships a stale four-skill table and a 404 link to the renamed `content` skill; only
+  control counts are COUNT-SYNC-guarded → plan 073.
+- **Order**: 069 → 070 → 071, then 072 → 073 (all five touch validate.py or its
+  self-test — sequential to avoid conflicts; logic is independent).
+- **Decisions recorded in the plans**: detect.py stays hook-only (documented, not
+  promoted to the single runner); content-lint/contrast/component-manifest stay
+  unwired with reasons on the `[WIRING-SYNC]` exemption list; `copy` keeps its
+  embedded voice tables (load-bearing at generation time).
+
 ## Findings considered and rejected
 
+- **argparse standardisation across the 11 check CLIs** (batch-12 audit DX-02): churn
+  outweighs payoff until checklib (071) lands; each CLI is stable and documented.
+  Revisit only if a caller is actually bitten by the inconsistency.
+- **Prose parity checker for skill routing descriptions** (batch-12 audit DEBT-04):
+  routing boundaries are triplicated (descriptions · CLAUDE.md table · start skill),
+  but descriptions are the model-facing selector and a prose-equality check would be
+  brittle. The honest guard is the routing eval sweep in `evals/` — deferred, not
+  planless; revisit after a real mis-route.
+- **Slimming `design/SKILL.md` (418 lines)** (batch-12 audit DEBT-06): deferred behind
+  the loop evals and plan 049's existing progressive-disclosure track — over-trimming
+  the loop's spine risks dropping a gate instruction; not re-planned here.
+- **Porting `enforced:`/`script:` validation into `check-standards.mjs`**: real drift
+  (mjs validates none of the 067 fields), but plan 069 makes CI run `validate.py`
+  itself, which covers the gap where it matters; a second JS implementation would
+  deepen the two-validator split rather than heal it.
 - **Tier-waiver mapping duplicated across three files** (standards/README.md,
   CLAUDE.md, design-standards skill): deliberate layering — spec vs. always-on
   summary vs. agent-facing behavior; plan 002's consistency checking covers the
