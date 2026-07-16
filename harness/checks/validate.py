@@ -369,6 +369,92 @@ def count_parity_errors(repo_root, catalog_count, relpaths=COUNT_SYNC_PATHS):
     return errors
 
 
+# [WIRING-SYNC] scripts claimed as enforced:script|partial that are allowed to
+# run in neither prebuild nor CI, with a one-line honest reason each. Keep this
+# in sync with the "Wiring status" prose in checks/README.md.
+WIRING_EXEMPT = {
+    "checks/content-lint.py": "pre-existing CNT-3/CNT-6/SLP-9 findings in content/ — wire after cleanup",
+    "checks/contrast.py": "pre-existing A11Y-1 finding (components/ui/button.tsx) — wire after cleanup",
+    "checks/component-manifest.py": "validates a product's .tfx/component-manifest.json; this repo has none to validate",
+}
+
+
+def wiring_parity_errors(repo_root, catalog_by_id):
+    """
+    [WIRING-SYNC] Every control claiming enforced:script|partial via a
+    script: field must have that script actually running somewhere
+    (package.json prebuild, or .github/workflows/ci.yml) — unless it is on
+    the WIRING_EXEMPT list with a documented reason. Catches the class of
+    drift where a catalog control claims automated enforcement that no
+    automation delivers.
+
+    `repo_root` is this validator's own root (harness/); package.json and
+    ci.yml live one level up, at the consuming site's repo root. If neither
+    file exists there (e.g. the harness ships standalone as a plugin with no
+    consuming site checked out), there is nothing to check — return clean.
+    """
+    errors = []
+
+    # Claimed set: script path -> [(control id, effective enforced value)].
+    claimed = {}
+    for cid, control in catalog_by_id.items():
+        enforced, _ = effective_enforcement(control)
+        if enforced not in ("script", "partial"):
+            continue
+        script = control.get("script")
+        if script is None:
+            continue
+        script_list = script if isinstance(script, list) else [script]
+        for sp in script_list:
+            if isinstance(sp, str):
+                claimed.setdefault(sp, []).append((cid, enforced))
+
+    # Running set: scan package.json + ci.yml one level above repo_root.
+    top_root = os.path.dirname(repo_root)
+    consumer_paths = [
+        os.path.join(top_root, "package.json"),
+        os.path.join(top_root, ".github", "workflows", "ci.yml"),
+    ]
+    running = set()
+    any_consumer_found = False
+    for cpath in consumer_paths:
+        if not os.path.isfile(cpath):
+            continue
+        any_consumer_found = True
+        with open(cpath) as fh:
+            text = fh.read()
+        running.update(f"checks/{m.group(1)}" for m in re.finditer(r"checks/([a-z0-9-]+\.py)", text))
+
+    if not any_consumer_found:
+        return errors
+
+    for sp, claimants in sorted(claimed.items()):
+        if sp in running or sp in WIRING_EXEMPT:
+            continue
+        for cid, enforced in claimants:
+            errors.append(
+                f"ERROR standards/catalog.yaml [WIRING-SYNC]: {cid} claims "
+                f"enforced:{enforced} via {sp} but it runs in neither prebuild "
+                f"nor CI and is not exempted"
+            )
+
+    # Dead exemptions: exempted script no longer exists, or no longer claimed.
+    for sp in sorted(WIRING_EXEMPT):
+        script_abs = os.path.join(repo_root, sp)
+        if not os.path.isfile(script_abs):
+            errors.append(
+                f"ERROR harness/checks/README.md [WIRING-SYNC]: exempted script "
+                f"'{sp}' no longer exists on disk (dead exemption)"
+            )
+        elif sp not in claimed:
+            errors.append(
+                f"ERROR harness/checks/README.md [WIRING-SYNC]: exempted script "
+                f"'{sp}' is no longer claimed by any control (dead exemption)"
+            )
+
+    return errors
+
+
 def collect_errors(repo_root, _return_count=False):
     """
     Run all of Steps 1–7 against `repo_root` and return a list of error
@@ -604,6 +690,7 @@ def collect_errors(repo_root, _return_count=False):
     errors.extend(l0_parity_errors(repo_root, catalog_by_id, xref_re))
     errors.extend(slp9_parity_errors(repo_root))
     errors.extend(count_parity_errors(repo_root, len(catalog_by_id)))
+    errors.extend(wiring_parity_errors(repo_root, catalog_by_id))
 
     return result(len(catalog_by_id))
 
@@ -897,6 +984,51 @@ def run_self_test():
                      count_parity_errors(count_tmp, 48), "[COUNT-SYNC]")
     finally:
         shutil.rmtree(count_tmp, ignore_errors=True)
+
+    # ── [WIRING-SYNC] cases ──────────────────────────────────────────────────
+    wiring_tmp = tempfile.mkdtemp(prefix="validate-selftest-wiring-")
+    try:
+        harness_dir = os.path.join(wiring_tmp, "harness")
+        checks_dir = os.path.join(harness_dir, "checks")
+        os.makedirs(checks_dir, exist_ok=True)
+        # A real-looking script file so "does the file exist" checks pass.
+        open(os.path.join(checks_dir, "widget-scan.py"), "w").close()
+        # Stub files for the real WIRING_EXEMPT scripts too, and a control
+        # claiming each, so the exemption list itself doesn't fire dead-
+        # exemption noise in the "clean" cases below (mirrors production,
+        # where each exempted script IS claimed by real catalog controls).
+        exempt_controls = {}
+        for i, sp in enumerate(WIRING_EXEMPT):
+            script_abs = os.path.join(harness_dir, sp)
+            os.makedirs(os.path.dirname(script_abs), exist_ok=True)
+            open(script_abs, "w").close()
+            cid = f"EXM-{i}"
+            exempt_controls[cid] = {"id": cid, "check": "hybrid", "enforced": "partial", "script": sp}
+
+        pkg_path = os.path.join(wiring_tmp, "package.json")
+
+        control_wired = dict(exempt_controls, **{
+            "WGT-1": {"id": "WGT-1", "check": "deterministic", "enforced": "script",
+                      "script": "checks/widget-scan.py"}
+        })
+
+        # Case: claimed + running (wired in package.json) → clean.
+        with open(pkg_path, "w") as fh:
+            fh.write('{"scripts": {"prebuild": "python3 harness/checks/widget-scan.py"}}')
+        assert_clean("wiring-sync claimed+running",
+                     wiring_parity_errors(harness_dir, control_wired))
+
+        # Case: claimed but wired nowhere, not exempted → fires.
+        with open(pkg_path, "w") as fh:
+            fh.write('{"scripts": {"prebuild": "echo nothing"}}')
+        assert_error("wiring-sync claimed+unwired+unexempted",
+                     wiring_parity_errors(harness_dir, control_wired), "[WIRING-SYNC]")
+
+        # Case: dead exemption — exempted script no longer claimed by any control.
+        assert_error("wiring-sync dead exemption (unclaimed)",
+                     wiring_parity_errors(harness_dir, {}), "dead exemption")
+    finally:
+        shutil.rmtree(wiring_tmp, ignore_errors=True)
 
     # ── Filesystem integration case for collect_errors ───────────────────────
 
