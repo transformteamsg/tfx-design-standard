@@ -318,9 +318,10 @@ def _verdict_line(rel, lineno, fg_rgb, bg_rgb):
     is_error, band = _band(ratio)
     if not is_error:
         return None
-    return (f"ERROR {rel}:{lineno} [A11Y-1] text {_fmt_hex(fg_rgb)} on "
-            f"{_fmt_hex(bg_rgb)} = {ratio:.2f}:1 ({band}) — suggest: use a "
-            f"higher-contrast token (e.g. Radix step-12 for small text)")
+    return checklib.emit_error(
+        rel, lineno, "A11Y-1",
+        f"text {_fmt_hex(fg_rgb)} on {_fmt_hex(bg_rgb)} = {ratio:.2f}:1 ({band})",
+        "use a higher-contrast token (e.g. Radix step-12 for small text)")
 
 
 def _check_line(scan_line, rel, lineno, resolver):
