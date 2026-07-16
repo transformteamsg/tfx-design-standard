@@ -50,6 +50,7 @@ restatement registers itself with the check instead of free-floating.
 | `slp9-buzzwords` | `standards/controls/slp-9.md` (marked `source`) | `.claude/skills/copy/SKILL.md` | `[SLP9-SYNC]` | consumer ⊆ source (skill may show fewer, never more) |
 | `wiring` | catalog `enforced: script\|partial` + `script:` fields | `package.json` prebuild, `.github/workflows/ci.yml` | `[WIRING-SYNC]` | every claimed script runs in prebuild or CI, or is on the `WIRING_EXEMPT` list in `validate.py` with a reason; a listed exemption whose script no longer exists or is no longer claimed is also an error |
 | `skill-sync` | catalog id set | `.claude/skills/**/*.md`, `.claude/agents/*.md` | `[SKILL-SYNC]` | skill-ids ⊆ catalog (no ghost ids); catalog ⊆ skill-ids ∪ `SKILL_WIRING_GRANDFATHERED` in `validate.py` (no silent orphans) — a grandfathered id no longer a catalog id is a dead-entry error |
+| `count-sync` | catalog control count; `.claude/skills/*/SKILL.md` dir count; `checks/*.py` minus `validate.py`/`checklib.py` count | `README.md`, `docs/index.html` | `[COUNT-SYNC]` | every "`<N> controls`", "`<N> skills`", "`<N> check scripts`", or "`<N> checks built`" claim **==** its live count — no markers, the claim's own wording is the trigger |
 
 ### Normalization
 

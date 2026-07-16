@@ -391,14 +391,76 @@ def slp9_parity_errors(repo_root):
 COUNT_SYNC_PATHS = ("README.md", "docs/index.html")
 
 
-def count_parity_errors(repo_root, catalog_count, relpaths=COUNT_SYNC_PATHS):
+def live_skills_count(repo_root):
     """
-    [COUNT-SYNC] Every "<N> controls" claim in README.md or docs/index.html
-    must equal the catalog's actual control count. Catches the class of
-    drift where a control is added/removed but a prose count is never
-    updated. A file with no count claim (or that doesn't exist) is not an
+    Number of dirs under `<repo_root>/.claude/skills` that contain a
+    `SKILL.md`. This is the "N skills" claimed in prose (the `evaluator`
+    subagent is counted separately as "+ 1 agent", never folded in).
+    """
+    skills_dir = os.path.join(repo_root, ".claude", "skills")
+    if not os.path.isdir(skills_dir):
+        return 0
+    count = 0
+    for name in os.listdir(skills_dir):
+        if os.path.isfile(os.path.join(skills_dir, name, "SKILL.md")):
+            count += 1
+    return count
+
+
+def live_checks_count(repo_root):
+    """
+    Number of check scripts under `<repo_root>/checks/*.py`, per the repo's
+    own prose convention (checks/README.md, docs/index.html): the catalog
+    validator (`validate.py`) is counted separately in prose ("the catalog
+    validator + N check scripts"), and `checklib.py` is a shared library, not
+    a check. So: check scripts = `checks/*.py` minus `validate.py` minus
+    `checklib.py`.
+    """
+    checks_dir = os.path.join(repo_root, "checks")
+    if not os.path.isdir(checks_dir):
+        return 0
+    exempt = {"validate.py", "checklib.py"}
+    return len(
+        [
+            fname
+            for fname in os.listdir(checks_dir)
+            if fname.endswith(".py") and fname not in exempt
+        ]
+    )
+
+
+def count_parity_errors(repo_root, catalog_count, relpaths=COUNT_SYNC_PATHS,
+                         skills_count=None, checks_count=None):
+    """
+    [COUNT-SYNC] Every roster-size claim in README.md or docs/index.html
+    must equal the live count it claims to describe. Catches the class of
+    drift where a control/skill/check is added or removed but a prose count
+    is never updated. A file with no claim (or that doesn't exist) is not an
     error (nothing to check).
+
+    Three claim types, each matched by its own regex and compared against
+    its own live count:
+      - "<N> controls"      vs. the catalog's actual control count
+      - "<N> skills"        vs. `live_skills_count` (dirs with a SKILL.md)
+      - "<N> check scripts" / "<N> checks built" vs. `live_checks_count`
+        (checks/*.py minus validate.py minus checklib.py)
+
+    `skills_count`/`checks_count` default to the live counts computed from
+    `repo_root`; callers (e.g. the self-test) may pass fabricated counts
+    against a fabricated tempdir tree instead.
     """
+    if skills_count is None:
+        skills_count = live_skills_count(repo_root)
+    if checks_count is None:
+        checks_count = live_checks_count(repo_root)
+
+    claim_types = (
+        (r"(\d+) controls", "controls", catalog_count, "catalog has"),
+        (r"(\d+) skills", "skills", skills_count, "stack has"),
+        (r"(\d+) check scripts", "check scripts", checks_count, "stack has"),
+        (r"(\d+) checks built", "checks built", checks_count, "stack has"),
+    )
+
     errors = []
     for relpath in relpaths:
         path = os.path.join(repo_root, relpath)
@@ -407,14 +469,15 @@ def count_parity_errors(repo_root, catalog_count, relpaths=COUNT_SYNC_PATHS):
         rel = os.path.relpath(path, repo_root)
         with open(path) as fh:
             text = fh.read()
-        seen = set()
-        for m in re.finditer(r"(\d+) controls", text):
-            n = int(m.group(1))
-            if n != catalog_count and n not in seen:
-                seen.add(n)
-                errors.append(
-                    f"ERROR {rel} [COUNT-SYNC]: says {n} controls, catalog has {catalog_count}"
-                )
+        for pattern, label, live_count, verb in claim_types:
+            seen = set()
+            for m in re.finditer(pattern, text):
+                n = int(m.group(1))
+                if n != live_count and n not in seen:
+                    seen.add(n)
+                    errors.append(
+                        f"ERROR {rel} [COUNT-SYNC]: says {n} {label}, {verb} {live_count}"
+                    )
     return errors
 
 
@@ -1154,6 +1217,59 @@ def run_self_test():
             fh.write('<span class="pill">47 controls</span>')
         assert_error("count-sync index.html mismatched count",
                      count_parity_errors(count_tmp, 48), "[COUNT-SYNC]")
+
+        # ── skills/check-scripts extension ───────────────────────────────
+        # Fabricate a skills tree (2 real skills + 1 dir with no SKILL.md,
+        # which must not count) and a checks tree (3 check scripts +
+        # validate.py + checklib.py, neither of which counts).
+        skills_dir = os.path.join(count_tmp, ".claude", "skills")
+        for skill_name in ("alpha", "beta"):
+            skill_path = os.path.join(skills_dir, skill_name)
+            os.makedirs(skill_path, exist_ok=True)
+            with open(os.path.join(skill_path, "SKILL.md"), "w") as fh:
+                fh.write("---\nname: " + skill_name + "\n---\n")
+        os.makedirs(os.path.join(skills_dir, "no-skill-md"), exist_ok=True)
+
+        checks_dir = os.path.join(count_tmp, "checks")
+        os.makedirs(checks_dir, exist_ok=True)
+        for check_name in ("one.py", "two.py", "three.py", "validate.py", "checklib.py"):
+            with open(os.path.join(checks_dir, check_name), "w") as fh:
+                fh.write("# fixture\n")
+
+        case_count += 1
+        fab_skills, fab_checks = live_skills_count(count_tmp), live_checks_count(count_tmp)
+        if (fab_skills, fab_checks) != (2, 3):
+            failures.append(
+                f"FAIL count-sync fabricated skills/checks trees: expected (2, 3) "
+                f"skills/checks — got {(fab_skills, fab_checks)}"
+            )
+
+        with open(readme_path, "w") as fh:
+            fh.write("This installs 2 skills and 3 check scripts.")
+        with open(index_path, "w") as fh:
+            fh.write('<span class="pill">48 controls</span>')
+        assert_clean("count-sync matching skills and check-scripts counts",
+                     count_parity_errors(count_tmp, 48))
+
+        with open(readme_path, "w") as fh:
+            fh.write("This installs 5 skills and 3 check scripts.")
+        assert_error("count-sync mismatched skills count",
+                     count_parity_errors(count_tmp, 48), "[COUNT-SYNC]")
+
+        with open(readme_path, "w") as fh:
+            fh.write("This installs 2 skills and 9 check scripts.")
+        assert_error("count-sync mismatched check-scripts count",
+                     count_parity_errors(count_tmp, 48), "[COUNT-SYNC]")
+
+        with open(readme_path, "w") as fh:
+            fh.write("This installs 2 skills and 3 check scripts; 7 checks built today.")
+        assert_error("count-sync mismatched checks-built count",
+                     count_parity_errors(count_tmp, 48), "[COUNT-SYNC]")
+
+        with open(readme_path, "w") as fh:
+            fh.write("No roster claim of any kind in this file at all.")
+        assert_clean("count-sync no roster claim",
+                     count_parity_errors(count_tmp, 48))
     finally:
         shutil.rmtree(count_tmp, ignore_errors=True)
 
