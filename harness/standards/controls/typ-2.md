@@ -1,7 +1,7 @@
 ---
 id: TYP-2
 source: TFX-DS
-title: Body text at least 14px; labels at least 11px; body line-height 1.5-1.6
+title: Body text at least 14px; labels at least 12px; body line-height 1.5-1.6
 tier: L1
 check: deterministic
 phase: [implement, verify]
@@ -16,9 +16,9 @@ refs:
 
 ## Requirement
 
-Set body copy at 14px or larger in Inter, UI labels at 11px or larger, and body
-line-height between 1.5 and 1.6. Sizes come from the TFX type scale (TYP-3); this
-control sets the floors.
+Set body copy at 14px or larger in Inter, UI labels at 12px or larger, and body
+line-height between 1.5 and 1.6. Sizes come from the Tailwind default type scale
+(TYP-3); this control sets the floors.
 
 ## Rationale
 
@@ -29,13 +29,13 @@ inverts Utility by Default.
 ## Passes when
 
 - All body copy is ≥ 14px (Body Small is the 14px floor; Body 16, Body Large 18).
-- Labels and captions are ≥ 11px (Label 11 / Caption 12 styles).
+- Labels and captions are ≥ 12px (Label/Caption 12 styles).
 - Body text line-height computes to 1.5–1.6.
 
 ## Fails when
 
 - Body copy below 14px — including "just this dense table".
-- UI labels below 11px.
+- UI labels below 12px.
 - Line-height under 1.5 on body copy.
 
 ## How to verify

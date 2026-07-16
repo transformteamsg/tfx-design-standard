@@ -9,8 +9,8 @@ A focused pass on the **polish** dimension: the token, type, and colour craft th
 a screen read as cared-for rather than templated. You judge the visual surface only —
 structure, wording, motion, and flow are out of scope and get NOTED and routed.
 
-**Dimension controls** (cite these; the catalog holds the rules — load them from
-`../../../standards/catalog.yaml`, read each `detail` file that exists):
+**Dimension controls** (the subset for this pass; procedure and loading rules:
+../critique/pass.md):
 
 - **Tokens** — TOK-1 (no raw colour), TOK-2 (spacing scale), TOK-3 (radius scale).
 - **Type** — TYP-1 (Plus Jakarta Sans / Inter only), TYP-2 (min sizes + line-height),

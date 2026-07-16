@@ -46,7 +46,11 @@ restatement registers itself with the check instead of free-floating.
 | `NAME` | Source | Consumers | Check | Rule |
 |---|---|---|---|---|
 | `L0` | catalog `tier: L0` set | `CLAUDE.md`, `.claude/skills/design/SKILL.md`, `checks/detect.py` | `[L0-SYNC]` | inline ID set **==** catalog L0 set |
+| `lay-controls` | catalog `LAY-*` id set | `.claude/skills/design/SKILL.md`, `.claude/agents/evaluator.md`, `.claude/skills/layout/SKILL.md` | `[LAY-SYNC]` | inline ID set **==** catalog LAY set |
 | `slp9-buzzwords` | `standards/controls/slp-9.md` (marked `source`) | `.claude/skills/copy/SKILL.md` | `[SLP9-SYNC]` | consumer ⊆ source (skill may show fewer, never more) |
+| `wiring` | catalog `enforced: script\|partial` + `script:` fields | `package.json` prebuild, `.github/workflows/ci.yml` | `[WIRING-SYNC]` | every claimed script runs in prebuild or CI, or is on the `WIRING_EXEMPT` list in `validate.py` with a reason; a listed exemption whose script no longer exists or is no longer claimed is also an error |
+| `skill-sync` | catalog id set | `.claude/skills/**/*.md`, `.claude/agents/*.md` | `[SKILL-SYNC]` | skill-ids ⊆ catalog (no ghost ids); catalog ⊆ skill-ids ∪ `SKILL_WIRING_GRANDFATHERED` in `validate.py` (no silent orphans) — a grandfathered id no longer a catalog id is a dead-entry error |
+| `count-sync` | catalog control count; `.claude/skills/*/SKILL.md` dir count; `checks/*.py` minus `validate.py`/`checklib.py` count | `README.md`, `docs/index.html` | `[COUNT-SYNC]` | every "`<N> controls`", "`<N> skills`", "`<N> check scripts`", or "`<N> checks built`" claim **==** its live count — no markers, the claim's own wording is the trigger |
 
 ### Normalization
 
@@ -55,6 +59,10 @@ restatement registers itself with the check instead of free-floating.
   `tier: L0` set. `checks/detect.py` is an executable consumer: its marked immutable set
   excludes L0 controls from `ignoreRules`, so parity makes a future tier change fail until
   that enforcement set is updated.
+- **lay-controls**: same mechanism as L0, source = the catalog's `LAY-*` id set (not a
+  tier — layout controls span L1 and L2). Three consumers, no `source`-marked copy — the
+  catalog itself is the source, so all three spans are plain `tfx-sync:lay-controls` blocks
+  compared directly against the catalog.
 - **slp9-buzzwords**: tokens are lowercased, split on commas/whitespace/bullets, and a
   trailing parenthetical inflection is stripped (`streamline(d)` → `streamline`,
   `effortless(ly)` → `effortless`). There is **no** morphological stemming — the source and

@@ -103,7 +103,7 @@ export function CatalogBrowser({
       onClick={onClick}
       aria-pressed={active}
       className={clsx(
-        "inline-flex min-h-11 min-w-11 items-center justify-center rounded-full border px-3 py-1 text-[12px] font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue) sm:min-h-6 sm:min-w-0",
+        "inline-flex min-h-11 min-w-11 items-center justify-center rounded-full border px-3 py-1 text-xs font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue) sm:min-h-6 sm:min-w-0",
         active
           ? "border-foreground bg-foreground text-white"
           : "border-border bg-surface text-muted-foreground hover:text-foreground",
@@ -128,29 +128,29 @@ export function CatalogBrowser({
         <button
           onClick={() => copy(c.id)}
           title="Copy control ID"
-          className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-md border border-border bg-accent px-2 py-0.5 text-[12px] font-semibold hover:border-border-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue) sm:min-h-6 sm:min-w-0"
+          className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-md border border-border bg-accent px-2 py-0.5 text-xs font-semibold hover:border-border-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue) sm:min-h-6 sm:min-w-0"
         >
           {copied === c.id ? "copied ✓" : c.id}
         </button>
         <span
           className={clsx(
-            "rounded-full border px-2 py-0.5 text-[11px] font-medium",
+            "rounded-full border px-2 py-0.5 text-xs font-medium",
             tierStyles[c.tier]
           )}
         >
           {tierLabels[c.tier]}
         </span>
-        <span className="rounded-full border border-border px-2 py-0.5 text-[11px] text-muted-foreground">
+        <span className="rounded-full border border-border px-2 py-0.5 text-xs text-muted-foreground">
           {c.check}
         </span>
-        <span className="text-[11px] text-muted-foreground">{c.category}</span>
+        <span className="text-xs text-muted-foreground">{c.category}</span>
         {c.status === "proposed" && (
-          <span className="rounded-full border border-warning-muted bg-warning-subtle px-2 py-0.5 text-[11px] font-medium text-warning">
+          <span className="rounded-full border border-warning-muted bg-warning-subtle px-2 py-0.5 text-xs font-medium text-warning">
             Proposed
           </span>
         )}
         {(c.products || c.audiences) && (
-          <span className="rounded-full border border-border px-2 py-0.5 text-[11px] text-muted-foreground">
+          <span className="rounded-full border border-border px-2 py-0.5 text-xs text-muted-foreground">
             {[
               ...(c.products ?? []).map((p) => productNames[p] ?? p),
               ...(c.audiences ?? []).map((a) => audienceNames[a] ?? a),
@@ -159,14 +159,14 @@ export function CatalogBrowser({
         )}
         <a
           href={`/standards/catalog/${c.id.toLowerCase()}`}
-          className="ml-auto inline-flex min-h-11 items-center text-[12px] text-tw-blue underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue) sm:min-h-6"
+          className="ml-auto inline-flex min-h-11 items-center text-xs text-tw-blue underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue) sm:min-h-6"
         >
           Details →
         </a>
       </div>
-      <p className="mt-2 text-[16px] font-medium">{c.statement}</p>
+      <p className="mt-2 text-base font-medium">{c.statement}</p>
       {c.fails_when && (
-        <p className="mt-1.5 text-[14px] text-muted-foreground">
+        <p className="mt-1.5 text-sm text-muted-foreground">
           <span className="font-semibold text-danger">Fails when:</span>{" "}
           {c.fails_when.join(" · ")}
         </p>
@@ -184,9 +184,9 @@ export function CatalogBrowser({
           onChange={(e) => setQ(e.target.value)}
           placeholder="Search controls — id, rule, fail condition"
           aria-label="Search controls"
-          className="min-h-11 w-full max-w-[360px] rounded-md border border-border bg-surface px-3 py-1.5 text-[14px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue) sm:min-h-8"
+          className="min-h-11 w-full max-w-[360px] rounded-md border border-border bg-surface px-3 py-1.5 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue) sm:min-h-8"
         />
-        <kbd className="rounded border border-border bg-muted px-1.5 text-[11px] text-muted-foreground">
+        <kbd className="rounded border border-border bg-muted px-1.5 text-xs text-muted-foreground">
           /
         </kbd>
       </div>
@@ -248,7 +248,7 @@ export function CatalogBrowser({
         ))}
       </div>
 
-      <p className="mt-4 text-[12px] text-muted-foreground">
+      <p className="mt-4 text-xs text-muted-foreground">
         {filtered.length} of {controls.length} controls
       </p>
 
@@ -259,7 +259,7 @@ export function CatalogBrowser({
             if (inCategory.length === 0) return null;
             return (
               <div key={cat}>
-                <h3 className="text-[12px] font-semibold text-muted-foreground">
+                <h3 className="text-xs font-semibold text-muted-foreground">
                   {cat} ({inCategory.length})
                 </h3>
                 <div className="mt-2 flex flex-col gap-3">{inCategory.map(renderCard)}</div>

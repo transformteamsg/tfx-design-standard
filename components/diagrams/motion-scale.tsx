@@ -28,10 +28,10 @@ export function MotionScale() {
         <div className="flex flex-col gap-3">
           {ROWS.map((row) => (
             <div key={row.token} className="flex items-center gap-3">
-              <span className="w-32 shrink-0 text-[12px] font-medium text-foreground">
+              <span className="w-32 shrink-0 text-xs font-medium text-foreground">
                 {row.token}
               </span>
-              <span className="w-12 shrink-0 text-right text-[12px] tabular-nums text-muted-foreground">
+              <span className="w-12 shrink-0 text-right text-xs tabular-nums text-muted-foreground">
                 {row.ms}
               </span>
               <div aria-hidden className="relative h-3 min-w-0 flex-1 rounded-full bg-muted">
@@ -58,13 +58,13 @@ export function MotionScale() {
           <button
             type="button"
             onClick={() => setRunId((n) => n + 1)}
-            className="mt-4 inline-flex items-center justify-center rounded-full border border-border px-3 py-1 text-[12px] font-medium transition-colors duration-(--motion-fast) hover:border-border-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue) max-sm:min-h-11"
+            className="mt-4 inline-flex items-center justify-center rounded-full border border-border px-3 py-1 text-xs font-medium transition-colors duration-(--motion-fast) hover:border-border-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue) max-sm:min-h-11"
           >
             Play
           </button>
         )}
       </div>
-      <figcaption className="mt-3 max-w-[52ch] text-[12px] leading-[1.6] text-muted-foreground">
+      <figcaption className="mt-3 max-w-[52ch] text-xs leading-normal text-muted-foreground">
         The four durations, raced: every knob leaves together on --ease-out and
         covers the same distance — only the time differs.
       </figcaption>

@@ -27,9 +27,23 @@ Exit 0 and print "OK: <n> records audited" on success.
 Exit 1 and print "ERROR <file>: <message>" lines on failure.
 """
 
+import importlib.util
 import os
 import re
 import sys
+
+_CHECKS_DIR = os.path.dirname(os.path.abspath(__file__))
+
+
+def _load_checklib():
+    path = os.path.join(_CHECKS_DIR, "checklib.py")
+    spec = importlib.util.spec_from_file_location("_tfx_checklib", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+checklib = _load_checklib()
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DECISIONS_DIR = os.path.join(REPO_ROOT, "docs", "decisions")
@@ -653,16 +667,7 @@ def run_self_test():
         "no verification ledger",
     )
 
-    if failures:
-        for f in failures:
-            print(f)
-        print(
-            f"SELF-TEST FAILED ({len(failures)} failures, "
-            f"{case_count} cases run)"
-        )
-        sys.exit(1)
-    print(f"SELF-TEST OK ({case_count} cases)")
-    sys.exit(0)
+    checklib.report_self_test(failures, case_count)
 
 
 # ── Entry point ────────────────────────────────────────────────────────────

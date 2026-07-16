@@ -247,13 +247,13 @@ export function OrbitLoop({ variant = "full" }: { variant?: "full" | "inline" })
       <div className="pointer-events-none absolute inset-0" aria-hidden="true">
         {/* centre wordmark + tagline */}
         <span
-          className="absolute -translate-x-1/2 -translate-y-1/2 font-display text-[20px] font-semibold leading-none text-foreground"
+          className="absolute -translate-x-1/2 -translate-y-1/2 font-display text-xl font-semibold leading-none text-foreground"
           style={{ left: "50%", top: `${(234 / VIEW) * 100}%` }}
         >
           the loop
         </span>
         <span
-          className="absolute -translate-x-1/2 -translate-y-1/2 text-[12px] text-muted-foreground"
+          className="absolute -translate-x-1/2 -translate-y-1/2 text-xs text-muted-foreground"
           style={{ left: "50%", top: `${(258 / VIEW) * 100}%` }}
         >
           intent without loss
@@ -287,7 +287,7 @@ export function OrbitLoop({ variant = "full" }: { variant?: "full" | "inline" })
             >
               <span
                 className={
-                  "text-[12px] leading-tight" +
+                  "text-xs leading-tight" +
                   (isSelected
                     ? " font-semibold text-foreground"
                     : " font-medium text-muted-foreground") +
@@ -299,7 +299,7 @@ export function OrbitLoop({ variant = "full" }: { variant?: "full" | "inline" })
               {p.gate && (
                 <span
                   className={
-                    "inline-flex items-center whitespace-nowrap rounded-full px-2 py-0.5 text-[11px] font-semibold " +
+                    "inline-flex items-center whitespace-nowrap rounded-full px-2 py-0.5 text-xs font-semibold " +
                     (p.gate === "plan"
                       ? "bg-tw-blue text-primary-foreground"
                       : "border border-tw-blue text-tw-blue")
@@ -308,7 +308,7 @@ export function OrbitLoop({ variant = "full" }: { variant?: "full" | "inline" })
                   {p.gateLabel}
                 </span>
               )}
-              <span className="text-[11px] leading-tight text-muted-foreground">{p.note}</span>
+              <span className="text-xs leading-tight text-muted-foreground">{p.note}</span>
             </div>
           );
         })}
@@ -354,7 +354,7 @@ export function OrbitLoop({ variant = "full" }: { variant?: "full" | "inline" })
               <span
                 aria-hidden="true"
                 className={
-                  "text-[12px] font-semibold" +
+                  "text-xs font-semibold" +
                   (isSelected ? " text-surface" : " text-foreground") +
                   colorTransition
                 }
@@ -390,26 +390,26 @@ export function OrbitLoop({ variant = "full" }: { variant?: "full" | "inline" })
         transition={reduced ? { duration: 0 } : { duration: DUR.base, ease: EASE_OUT }}
       >
         <p className="flex flex-wrap items-baseline gap-x-2.5 gap-y-1.5">
-          <span className="font-display text-[16px] font-semibold tabular-nums text-tw-blue">
+          <span className="font-display text-base font-semibold tabular-nums text-tw-blue">
             0{phase.n}
           </span>
-          <span className="font-display text-[18px] font-semibold text-foreground">
+          <span className="font-display text-lg font-semibold text-foreground">
             {phase.label}
           </span>
           {phase.gate && (
             <span
               className={
                 phase.gate === "plan"
-                  ? "rounded-full bg-tw-blue px-2 py-0.5 text-[11px] font-semibold text-primary-foreground"
-                  : "rounded-full border border-tw-blue px-2 py-0.5 text-[11px] font-semibold text-tw-blue"
+                  ? "rounded-full bg-tw-blue px-2 py-0.5 text-xs font-semibold text-primary-foreground"
+                  : "rounded-full border border-tw-blue px-2 py-0.5 text-xs font-semibold text-tw-blue"
               }
             >
               {phase.gateLabel}
             </span>
           )}
         </p>
-        <p className="mt-2.5 text-[14px] leading-[1.65] text-(--prose-body)">{phase.detail}</p>
-        <p className="mt-3 text-[12px] leading-[1.6] text-muted-foreground">
+        <p className="mt-2.5 text-sm leading-normal text-(--prose-body)">{phase.detail}</p>
+        <p className="mt-3 text-xs leading-normal text-muted-foreground">
           <span className="font-semibold text-foreground">You: </span>
           {phase.you}
         </p>
@@ -429,7 +429,7 @@ export function OrbitLoop({ variant = "full" }: { variant?: "full" | "inline" })
         {ring}
         {panel}
       </div>
-      <figcaption className="mt-3 max-w-[52ch] text-[12px] leading-[1.6] text-muted-foreground">
+      <figcaption className="mt-3 max-w-[52ch] text-xs leading-normal text-muted-foreground">
         Select a phase to read what happens there.
         {!reduced && " The dot pauses at the two gates — where the loop waits for you."}
       </figcaption>

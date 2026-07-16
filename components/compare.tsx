@@ -36,7 +36,7 @@ const SLOP_TILES = [
    so the divider hides it together with the thing it points at. */
 function Violation({ children }: { children: string }) {
   return (
-    <span className="pointer-events-none inline-flex shrink-0 items-center whitespace-nowrap rounded-full border border-danger-muted bg-danger-subtle px-1.5 py-px text-[11px] font-medium leading-4 text-danger">
+    <span className="pointer-events-none inline-flex shrink-0 items-center whitespace-nowrap rounded-full border border-danger-muted bg-danger-subtle px-1.5 py-px text-xs font-medium leading-4 text-danger">
       {children}
     </span>
   );
@@ -55,14 +55,14 @@ function BeforePanel() {
         className="flex shrink-0 flex-wrap items-center gap-x-2 gap-y-1 px-4 py-2.5"
         style={{ background: SLOP_GRADIENT }}
       >
-        <span className="text-[14px] text-primary-foreground">Communication Hub</span>
+        <span className="text-sm text-primary-foreground">Communication Hub</span>
         <Violation>SLP-1 gradient palette</Violation>
       </div>
       <div className="flex min-h-0 flex-1 flex-col gap-3 p-4">
         {/* tfx-waive SLP-2 reason="quarantined anti-specimen: the before panel of the standards demo" */}
         <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
           <span
-            className="bg-clip-text text-[14px] font-medium text-transparent"
+            className="bg-clip-text text-sm font-medium text-transparent"
             style={{ backgroundImage: SLOP_GRADIENT }}
           >
             Term 3 broadcast
@@ -70,18 +70,18 @@ function BeforePanel() {
           <Violation>SLP-2 gradient text</Violation>
         </div>
         {/* tfx-waive SLP-9 reason="quarantined anti-specimen: the before panel of the standards demo" */}
-        <p className="max-w-[56ch] text-[14px] leading-[1.5] text-(--demo-slop-ink)">
+        <p className="max-w-[56ch] text-sm leading-normal text-(--demo-slop-ink)">
           Revolutionise your seamless communication workflow and unlock
           engagement at scale. <Violation>SLP-9 buzzword copy</Violation>
         </p>
         {/* tfx-waive SLP-4 reason="quarantined anti-specimen: the before panel of the standards demo" */}
         <div className="rounded-lg border border-(--demo-slop-border) bg-surface p-3 shadow-sm">
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-            <span className="text-[14px] text-(--demo-slop-ink)">Audience</span>
+            <span className="text-sm text-(--demo-slop-ink)">Audience</span>
             <Violation>SLP-4 nested cards</Violation>
           </div>
           <div className="mt-2 rounded-md border border-(--demo-slop-border) bg-(--demo-slop-surface) p-2.5">
-            <span className="text-[14px] text-(--demo-slop-ink)">4 classes · 127 parents</span>
+            <span className="text-sm text-(--demo-slop-ink)">4 classes · 127 parents</span>
           </div>
         </div>
         <div className="grid shrink-0 grid-cols-3 gap-2">
@@ -96,24 +96,24 @@ function BeforePanel() {
               >
                 <tile.icon className="size-4" aria-hidden />
               </span>
-              <span className="text-[14px] text-(--demo-slop-ink)">{tile.label}</span>
+              <span className="text-sm text-(--demo-slop-ink)">{tile.label}</span>
             </div>
           ))}
         </div>
         <div className="mt-auto flex flex-col gap-3">
           {/* tfx-waive CMP-5 reason="quarantined anti-specimen: the before panel of the standards demo" */}
           <div className="flex flex-wrap items-center gap-2">
-            <span className="rounded-md bg-(--demo-slop-grad-a) px-3.5 py-2 text-[14px] text-primary-foreground shadow-[0_2px_10px_var(--demo-slop-glow)]">
+            <span className="rounded-md bg-(--demo-slop-grad-a) px-3.5 py-2 text-sm text-primary-foreground shadow-[0_2px_10px_var(--demo-slop-glow)]">
               Get started!
             </span>
-            <span className="rounded-md bg-(--demo-slop-grad-a) px-3.5 py-2 text-[14px] text-primary-foreground shadow-[0_2px_10px_var(--demo-slop-glow)]">
+            <span className="rounded-md bg-(--demo-slop-grad-a) px-3.5 py-2 text-sm text-primary-foreground shadow-[0_2px_10px_var(--demo-slop-glow)]">
               Learn more
             </span>
             <Violation>CMP-5 two primaries</Violation>
           </div>
           {/* tfx-waive SLP-6 reason="quarantined anti-specimen: the before panel of the standards demo" */}
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-            <span className="text-[14px] text-(--demo-slop-ink)">
+            <span className="text-sm text-(--demo-slop-ink)">
               Status: Draft saved just now
             </span>
             <Violation>SLP-6 flat hierarchy</Violation>
@@ -137,27 +137,27 @@ function AfterPanel() {
     >
       <div className="flex h-full flex-col p-5">
         <div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-1">
-          <span className="font-display text-[16px] font-semibold tracking-tight text-foreground">
+          <span className="font-display text-base font-semibold tracking-tight text-foreground">
             Term 3 broadcast
           </span>
-          <span className="inline-flex shrink-0 items-center whitespace-nowrap rounded-full border border-success-muted bg-success-subtle px-1.5 py-px text-[11px] font-medium leading-4 text-success">
+          <span className="inline-flex shrink-0 items-center whitespace-nowrap rounded-full border border-success-muted bg-success-subtle px-1.5 py-px text-xs font-medium leading-4 text-success">
             Passes the catalog
           </span>
         </div>
-        <p className="mt-1.5 max-w-[44ch] text-[14px] leading-[1.6] text-muted-foreground">
+        <p className="mt-1.5 max-w-[44ch] text-sm leading-normal text-muted-foreground">
           Reaches every parent by Friday morning. Drafts save automatically.
         </p>
         <div className="mt-4 border-t border-border pt-3">
-          <p className="text-[14px] text-foreground">
+          <p className="text-sm text-foreground">
             To: <span className="font-medium">4 classes</span>
             <span className="text-muted-foreground"> · 127 parents</span>
           </p>
         </div>
         <div className="mt-auto flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-t border-border pt-4">
-          <p className="text-[12px] text-muted-foreground">Draft · saved just now</p>
+          <p className="text-xs text-muted-foreground">Draft · saved just now</p>
           <div className="flex items-center gap-4">
-            <span className="text-[14px] font-medium text-muted-foreground">Save draft</span>
-            <span className="rounded-md bg-tw-blue px-3.5 py-2 text-[14px] font-medium text-primary-foreground">
+            <span className="text-sm font-medium text-muted-foreground">Save draft</span>
+            <span className="rounded-md bg-tw-blue px-3.5 py-2 text-sm font-medium text-primary-foreground">
               Send to 4 classes
             </span>
           </div>
@@ -258,10 +258,10 @@ export function SlopCompare() {
           <ChevronsLeftRight className="size-3.5 text-muted-foreground" aria-hidden />
         </div>
       </div>
-      <p className="mt-2 text-[12px] text-muted-foreground">
+      <p className="mt-2 text-xs text-muted-foreground">
         Drag the handle — or focus it and use arrow keys.
       </p>
-      <figcaption className="mt-2 max-w-[62ch] text-[12px] leading-[1.6] text-muted-foreground">
+      <figcaption className="mt-2 max-w-[62ch] text-xs leading-normal text-muted-foreground">
         The same screen twice: what defaults produce, and what ships under the
         standard. Every chip is a control ID from the{" "}
         <Link

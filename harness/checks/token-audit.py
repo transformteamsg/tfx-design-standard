@@ -44,12 +44,26 @@ Exit 0 and print nothing (or SELF-TEST OK) on success.
 Exit 1 with ERROR lines on any violation.
 """
 
+import importlib.util
 import os
 import re
 import sys
 
+_CHECKS_DIR = os.path.dirname(os.path.abspath(__file__))
+
+
+def _load_checklib():
+    path = os.path.join(_CHECKS_DIR, "checklib.py")
+    spec = importlib.util.spec_from_file_location("_tfx_checklib", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+checklib = _load_checklib()
+
 # ── Target extensions ──────────────────────────────────────────────────────────
-TARGET_EXTENSIONS = {".css", ".html", ".jsx", ".tsx", ".js", ".ts", ".vue", ".svelte"}
+TARGET_EXTENSIONS = checklib.TARGET_EXTENSIONS
 
 # ── Spacing scale (shadcn default, px) ────────────────────────────────────────
 SPACING_SCALE_PX = {
@@ -300,58 +314,6 @@ def extract_waived_ctl(line):
     return None
 
 
-def _strip_block_comments(line, in_comment):
-    """
-    Return a version of `line` with /* ... */ block-comment spans replaced by
-    spaces.  `in_comment` is True if the previous line ended inside a block
-    comment.  Only handles CSS-style /* */ comments (not // or <!-- -->).
-    """
-    result = []
-    i = 0
-    n = len(line)
-    while i < n:
-        if in_comment:
-            # Look for end of block comment
-            end = line.find("*/", i)
-            if end == -1:
-                # Entire rest of line is comment
-                break
-            else:
-                i = end + 2
-                in_comment = False
-        else:
-            # Look for start of block comment
-            start = line.find("/*", i)
-            if start == -1:
-                result.append(line[i:])
-                break
-            else:
-                result.append(line[i:start])
-                i = start + 2
-                in_comment = True
-    return "".join(result)
-
-
-def _ends_in_block_comment(line, in_comment):
-    """
-    Return True if `line` ends inside a /* ... */ block comment.
-    """
-    i = 0
-    n = len(line)
-    while i < n:
-        if in_comment:
-            end = line.find("*/", i)
-            if end == -1:
-                return True
-            i = end + 2
-            in_comment = False
-        else:
-            start = line.find("/*", i)
-            if start == -1:
-                return False
-            i = start + 2
-            in_comment = True
-    return in_comment
 
 
 def check_file(filepath, theme_names=None):
@@ -401,9 +363,7 @@ def check_file(filepath, theme_names=None):
                     f" — verify approver in decision record"
                 )
             else:
-                errors.append(
-                    f"ERROR {rel}:{lineno} [{ctl_id}] {found} — suggest: {suggest}"
-                )
+                errors.append(checklib.emit_error(rel, lineno, ctl_id, found, suggest))
 
         # ── Skip token-definition blocks ──────────────────────────────────────
         if in_token_def:
@@ -413,9 +373,9 @@ def check_file(filepath, theme_names=None):
         # Handle multi-line /* ... */ block comments.
         # Strategy: process the raw line character-by-character to remove spans
         # that are inside block comments.
-        scan_line = _strip_block_comments(line, in_block_comment)
+        scan_line = checklib.strip_block_comments(line, in_block_comment)
         # Update block comment state for next line
-        in_block_comment = _ends_in_block_comment(line, in_block_comment)
+        in_block_comment = checklib.ends_in_block_comment(line, in_block_comment)
 
         # Strip HTML comments (<!-- ... -->) from the scan line
         scan_line = re.sub(r"<!--.*?-->", "", scan_line)
@@ -591,20 +551,12 @@ def scan_paths(paths, theme_names=None):
     if theme_names is None:
         theme_names = set()
     all_errors = []
-    for p in paths:
-        if os.path.isfile(p):
-            all_errors.extend(check_file(p, theme_names))
-        elif os.path.isdir(p):
-            for root, dirs, files in os.walk(p):
-                # Skip hidden directories
-                dirs[:] = [d for d in dirs if not d.startswith(".")]
-                for fname in sorted(files):
-                    ext = os.path.splitext(fname)[1].lower()
-                    if ext in TARGET_EXTENSIONS:
-                        all_errors.extend(check_file(os.path.join(root, fname), theme_names))
+    for kind, val in checklib.iter_target_files(paths, TARGET_EXTENSIONS):
+        if kind == "missing":
+            print(f"ERROR token-audit: path not found: {val}")
+            all_errors.append(f"ERROR token-audit: path not found: {val}")
         else:
-            print(f"ERROR token-audit: path not found: {p}")
-            all_errors.append(f"ERROR token-audit: path not found: {p}")
+            all_errors.extend(check_file(val, theme_names))
     return all_errors
 
 
@@ -851,15 +803,20 @@ def run_self_test():
     if errs:
         failures.append(f"FAIL var() in arbitrary value: expected clean — got: {errs}")
 
+    # ── Fixtures ───────────────────────────────────────────────────────────────
+    fixtures_dir = os.path.join(_CHECKS_DIR, "fixtures", "token-audit")
+    theme_names_by_fixture = {"pass-theme-defined.tsx": {"amber-11", "lime-3"}}
+    for fname in sorted(os.listdir(fixtures_dir)):
+        case_count += 1
+        fpath = os.path.join(fixtures_dir, fname)
+        errs = check_file(fpath, theme_names_by_fixture.get(fname, set()))
+        if "fail" in fname and not errs:
+            failures.append(f"FAIL fixture {fname}: expected >=1 ERROR — got none")
+        elif "pass" in fname and errs:
+            failures.append(f"FAIL fixture {fname}: expected 0 ERRORs — got: {errs}")
+
     # ── Report ─────────────────────────────────────────────────────────────────
-    if failures:
-        for f in failures:
-            print(f)
-        print(f"SELF-TEST FAILED ({len(failures)} failures, {case_count} cases run)")
-        sys.exit(1)
-    else:
-        print(f"SELF-TEST OK ({case_count} cases)")
-        sys.exit(0)
+    checklib.report_self_test(failures, case_count)
 
 
 # ── Entry point ────────────────────────────────────────────────────────────────

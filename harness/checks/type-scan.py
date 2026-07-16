@@ -12,10 +12,11 @@ FONT        TYP-1     A CSS `font-family:` or a Tailwind `font-[…]` arbitrary
             (L1)      value naming a typeface other than Plus Jakarta Sans or
                       Inter. The token names font-display / font-body /
                       font-sans / --font-display / --font-body are allowed.
-SIZEFLOOR   TYP-2     A `font-size:` or Tailwind `text-[Npx]` with N < 14
-            (L1)      (body floor). Labels may go to 11px, so 11–13px is flagged
-                      with a note that it's only a violation outside a label
-                      context (the 11/14 ambiguity is in the suggest text).
+SIZEFLOOR   TYP-2     A `font-size:` or Tailwind `text-[Npx]`/`text-[Nrem]` (rem
+            (L1)      converted at ×16) with N < 14 (body floor). Labels may go
+                      to 12px, so 12–13px is flagged with a note that it's only
+                      a violation outside a label context (the 12/14 ambiguity
+                      is in the suggest text).
 LINEHEIGHT  TYP-2     An explicit numeric `line-height:` or Tailwind
             (L1)      `leading-[N]` clearly outside the 1.5–1.6 body band.
                       Conservative: only unitless / em values are judged; px
@@ -23,10 +24,13 @@ LINEHEIGHT  TYP-2     An explicit numeric `line-height:` or Tailwind
                       The band is BODY-scoped — line-heights inside an h1–h6 CSS
                       rule, or on a heading element, are excluded (headings run
                       tighter by design; see controls/typ-2.md).
-ONSCALE     TYP-3     A `text-[Npx]` or `font-size:Npx` whose N is not on the
-            (L1)      TFX type scale {120,96,72,48,32,24,20,18,16,14,12,11}.
-                      The scale is sourced from TYP-3's catalog `verify` field
-                      (see TYPE_SCALE below) so it cannot drift.
+ONSCALE     TYP-3     A `text-[Npx]`/`text-[Nrem]` or `font-size:Npx`/`Nrem`
+            (L1)      whose size (rem converted at ×16) is not on the Tailwind
+                      default type scale {128,96,72,60,48,36,30,24,20,18,16,14,12}.
+                      A fractional-pixel size is off-scale by definition, even if
+                      its rounded value happens to be in the set. The scale is
+                      sourced from TYP-3's catalog `verify` field (see
+                      TYPE_SCALE below) so it cannot drift.
 ALLCAPS     TYP-4     A `text-transform: uppercase` declaration or an `uppercase`
             (L2)      Tailwind class (in a class/className attr or a class-list
                       string). Text is never set in all-caps, at any length;
@@ -38,8 +42,8 @@ What this script does NOT verify
 - Font WEIGHTS (TYP-1's "PJS 600 / Inter 400/500/600 only" half): a weight is
   rarely co-located with the family on one line and "approved weight" needs the
   family resolved. Weight enforcement is deferred to the manual pass.
-- The 11px-vs-14px floor decision (TYP-2): whether a given element is a "label"
-  (11px floor) or "body" (14px floor) needs rendered context. Sizes 11–13px are
+- The 12px-vs-14px floor decision (TYP-2): whether a given element is a "label"
+  (12px floor) or "body" (14px floor) needs rendered context. Sizes 12–13px are
   flagged with the ambiguity noted, not asserted as definite body violations.
 - Line-heights given in px or % (TYP-2): the 1.5–1.6 ratio needs the font size,
   which is rarely on the same line. Only unitless/em line-heights are judged.
@@ -66,20 +70,34 @@ Exit 0 and print nothing (or SELF-TEST OK) on success.
 Exit 1 with ERROR lines on any violation (NOTE lines alone do not fail).
 """
 
+import importlib.util
 import os
 import re
 import sys
 
+_CHECKS_DIR = os.path.dirname(os.path.abspath(__file__))
+
+
+def _load_checklib():
+    path = os.path.join(_CHECKS_DIR, "checklib.py")
+    spec = importlib.util.spec_from_file_location("_tfx_checklib", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+checklib = _load_checklib()
+
 # ── Target extensions ──────────────────────────────────────────────────────────
-TARGET_EXTENSIONS = {".css", ".html", ".jsx", ".tsx", ".js", ".ts", ".vue", ".svelte"}
+TARGET_EXTENSIONS = checklib.TARGET_EXTENSIONS
 
 # ── TYP-3 type scale ──────────────────────────────────────────────────────────
 # Sourced from TYP-3's catalog `verify` field:
-#   "Sizes in {120,96,72,48,32,24,20,18,16,14,12,11}; checks/type-scan"
+#   "Sizes in {128,96,72,60,48,36,30,24,20,18,16,14,12}; checks/type-scan"
 # Read at runtime from standards/catalog.yaml when available (so it cannot drift
 # from the catalog), with this set as the embedded fallback if the catalog can't
-# be read/parsed.
-TYPE_SCALE_FALLBACK = {120, 96, 72, 48, 32, 24, 20, 18, 16, 14, 12, 11}
+# be read/parsed. This is Tailwind's default type scale (text-xs … text-9xl).
+TYPE_SCALE_FALLBACK = {128, 96, 72, 60, 48, 36, 30, 24, 20, 18, 16, 14, 12}
 
 CATALOG_PATH = os.path.join(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
@@ -90,7 +108,7 @@ CATALOG_PATH = os.path.join(
 def load_type_scale(path=CATALOG_PATH):
     """
     Read the allowed type-scale set from TYP-3's `verify` field in catalog.yaml:
-    `Sizes in {120,96,72,48,32,24,20,18,16,14,12,11}; …`. Returns (set, note);
+    `Sizes in {128,96,72,60,48,36,30,24,20,18,16,14,12}; …`. Returns (set, note);
     `note` is non-None if the embedded fallback was used.
     """
     try:
@@ -198,6 +216,8 @@ def _check_font_rule(scan_line):
 # ── SIZE (TYP-2 floor + TYP-3 on-scale) ───────────────────────────────────────
 CSS_FONT_SIZE_RE = re.compile(r"font-size\s*:\s*([0-9.]+)px", re.IGNORECASE)
 TW_TEXT_PX_RE = re.compile(r"\btext-\[([0-9.]+)px\]")
+CSS_FONT_SIZE_REM_RE = re.compile(r"font-size\s*:\s*([0-9.]+)rem", re.IGNORECASE)
+TW_TEXT_REM_RE = re.compile(r"\btext-\[([0-9.]+)rem\]")
 
 
 def _check_size_rules(scan_line, type_scale):
@@ -208,29 +228,33 @@ def _check_size_rules(scan_line, type_scale):
         sizes.append((float(m.group(1)), "CSS font-size"))
     for m in TW_TEXT_PX_RE.finditer(scan_line):
         sizes.append((float(m.group(1)), "text-[…px]"))
+    for m in CSS_FONT_SIZE_REM_RE.finditer(scan_line):
+        sizes.append((float(m.group(1)) * 16.0, "CSS font-size (rem)"))
+    for m in TW_TEXT_REM_RE.finditer(scan_line):
+        sizes.append((float(m.group(1)) * 16.0, "text-[…rem] (rem)"))
 
     for px, source in sizes:
-        n = px
         n_int = int(px) if px == int(px) else px
         # TYP-2: below the 14px body floor.
         if px < 14:
-            if px < 11:
+            if px < 12:
                 hits.append((
                     "TYP-2",
-                    f"font size {n_int}px below the 11px label floor ({source})",
-                    "labels >= 11px, body >= 14px",
+                    f"font size {n_int}px below the 12px label floor ({source})",
+                    "labels >= 12px, body >= 14px",
                 ))
             else:
                 hits.append((
                     "TYP-2",
                     f"font size {n_int}px below the 14px body floor ({source})",
-                    "body >= 14px; only short labels may go to 11px",
+                    "body >= 14px; only short labels may go to 12px",
                 ))
-        # TYP-3: off the published scale (only judge whole-px sizes).
-        if px == int(px) and int(px) not in type_scale:
+        # TYP-3: off the published scale. A fractional-pixel size is off-scale
+        # by definition, even when its rounded value happens to be in the set.
+        if px != int(px) or int(px) not in type_scale:
             hits.append((
                 "TYP-3",
-                f"font size {int(px)}px not on the TFX type scale ({source})",
+                f"font size {n_int}px not on the Tailwind default type scale ({source})",
                 f"use a scale size: {sorted(type_scale, reverse=True)}",
             ))
     return hits
@@ -340,48 +364,6 @@ def _check_allcaps_rule(scan_line):
     return None
 
 
-# ── comment stripping (mirrors a11y-static.py) ────────────────────────────────
-
-def _strip_block_comments(line, in_comment):
-    result = []
-    i = 0
-    n = len(line)
-    while i < n:
-        if in_comment:
-            end = line.find("*/", i)
-            if end == -1:
-                break
-            i = end + 2
-            in_comment = False
-        else:
-            start = line.find("/*", i)
-            if start == -1:
-                result.append(line[i:])
-                break
-            result.append(line[i:start])
-            i = start + 2
-            in_comment = True
-    return "".join(result)
-
-
-def _ends_in_block_comment(line, in_comment):
-    i = 0
-    n = len(line)
-    while i < n:
-        if in_comment:
-            end = line.find("*/", i)
-            if end == -1:
-                return True
-            i = end + 2
-            in_comment = False
-        else:
-            start = line.find("/*", i)
-            if start == -1:
-                return False
-            i = start + 2
-            in_comment = True
-    return in_comment
-
 
 def check_file(filepath, type_scale=None, rules=None):
     """
@@ -419,15 +401,13 @@ def check_file(filepath, type_scale=None, rules=None):
         def emit(ctl_id, found, suggest):
             if rule_filter is not None and ctl_id not in rule_filter:
                 return
-            results.append(
-                f"ERROR {rel}:{lineno} [{ctl_id}] {found} — suggest: {suggest}"
-            )
+            results.append(checklib.emit_error(rel, lineno, ctl_id, found, suggest))
 
         def note(msg):
             results.append(f"NOTE {rel}:{lineno} {msg}")
 
-        scan_line = _strip_block_comments(line, in_block_comment)
-        in_block_comment = _ends_in_block_comment(line, in_block_comment)
+        scan_line = checklib.strip_block_comments(line, in_block_comment)
+        in_block_comment = checklib.ends_in_block_comment(line, in_block_comment)
         scan_line = re.sub(r"<!--.*?-->", "", scan_line)
         if ext in (".js", ".ts", ".jsx", ".tsx"):
             scan_line = re.sub(r"//.*$", "", scan_line)
@@ -471,21 +451,12 @@ def scan_paths(paths, rules=None):
     if scale_note:
         print(scale_note)
     all_results = []
-    for p in paths:
-        if os.path.isfile(p):
-            all_results.extend(check_file(p, type_scale, rules))
-        elif os.path.isdir(p):
-            for root, dirs, files in os.walk(p):
-                dirs[:] = [d for d in dirs if not d.startswith(".")]
-                for fname in sorted(files):
-                    ext = os.path.splitext(fname)[1].lower()
-                    if ext in TARGET_EXTENSIONS:
-                        all_results.extend(
-                            check_file(os.path.join(root, fname), type_scale, rules)
-                        )
+    for kind, val in checklib.iter_target_files(paths, TARGET_EXTENSIONS):
+        if kind == "missing":
+            print(f"ERROR type-scan: path not found: {val}")
+            all_results.append(f"ERROR type-scan: path not found: {val}")
         else:
-            print(f"ERROR type-scan: path not found: {p}")
-            all_results.append(f"ERROR type-scan: path not found: {p}")
+            all_results.extend(check_file(val, type_scale, rules))
     return all_results
 
 
@@ -545,9 +516,23 @@ def run_self_test():
     # text-[15px] is on the floor (>=14) but OFF the scale → TYP-3 only.
     assert_violations("SIZE: text-[15px] off-scale only",
                       '<p className="text-[15px]">ok size, off scale</p>', ".tsx", ["TYP-3"])
-    # CSS font-size: 10px is below the 11px label floor.
+    # CSS font-size: 10px is below the 12px label floor.
     assert_violations("SIZE: CSS 10px below label floor",
                       ".tiny { font-size: 10px; }", ".css", ["TYP-2"])
+    # text-[0.8rem] (12.8px) is fractional → off-scale (TYP-3) and below the
+    # 14px body floor but above the 12px label floor (TYP-2).
+    assert_violations("SIZE: text-[0.8rem] fractional off-scale",
+                      '<p className="text-[0.8rem]">small</p>', ".tsx", ["TYP-2", "TYP-3"])
+    # text-[0.875rem] = 14px exactly → on-scale, at the body floor → clean.
+    assert_clean("SIZE: text-[0.875rem] (14px) clean",
+                 '<p className="text-[0.875rem]">ok</p>', ".tsx")
+    # CSS font-size: 1.875rem = 30px exactly → on the Tailwind scale → clean.
+    assert_clean("SIZE: CSS font-size 1.875rem (30px) clean",
+                 ".h { font-size: 1.875rem; }", ".css")
+    # CSS font-size: 0.6875rem = 11px → below the new 12px label floor AND
+    # off the new scale → TYP-2 + TYP-3.
+    assert_violations("SIZE: CSS font-size 0.6875rem (11px) below floor and off-scale",
+                      ".tiny { font-size: 0.6875rem; }", ".css", ["TYP-2", "TYP-3"])
 
     # ── TYP-1 fonts ───────────────────────────────────────────────────────────
     assert_violations("FONT: CSS Georgia",
@@ -693,14 +678,7 @@ def run_self_test():
     except ValueError:
         pass
 
-    if failures:
-        for f in failures:
-            print(f)
-        print(f"SELF-TEST FAILED ({len(failures)} failures, {case_count} cases run)")
-        sys.exit(1)
-    else:
-        print(f"SELF-TEST OK ({case_count} cases)")
-        sys.exit(0)
+    checklib.report_self_test(failures, case_count)
 
 
 # ── Entry point ────────────────────────────────────────────────────────────────

@@ -15,7 +15,7 @@ function aspectOf(subject: string): string {
 export function Illo({ subject }: { subject: string }) {
   return (
     <details className="group my-8 rounded-lg border border-dashed border-border bg-surface">
-      <summary className="flex cursor-pointer list-none items-center gap-2 rounded-lg px-4 py-2.5 text-[12px] font-medium text-muted-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue) [&::-webkit-details-marker]:hidden">
+      <summary className="flex cursor-pointer list-none items-center gap-2 rounded-lg px-4 py-2.5 text-xs font-medium text-muted-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue) [&::-webkit-details-marker]:hidden">
         <span
           aria-hidden="true"
           className="transition-transform duration-(--motion-fast) group-open:rotate-90"
@@ -29,12 +29,12 @@ export function Illo({ subject }: { subject: string }) {
           className="grid place-items-center rounded-md bg-muted"
           style={{ aspectRatio: aspectOf(subject) }}
         >
-          <p className="max-w-[44ch] px-6 text-center text-[14px] leading-[1.6] text-muted-foreground">
+          <p className="max-w-[44ch] px-6 text-center text-sm leading-normal text-muted-foreground">
             Generate with the prompt below, regenerate if off-brand, then place
             the approved file from the library here.
           </p>
         </div>
-        <code className="mt-2.5 block select-all rounded-md border border-border bg-surface px-3.5 py-2.5 text-[12px] leading-[1.6] text-muted-foreground">
+        <code className="mt-2.5 block select-all rounded-md border border-border bg-surface px-3.5 py-2.5 text-xs leading-normal text-muted-foreground">
           {subject} {SREF}
         </code>
       </div>

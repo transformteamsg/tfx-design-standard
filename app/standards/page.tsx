@@ -9,10 +9,10 @@ export default function Page() {
     <div>
       <SectionIndex sectionKey="standards" />
       <section className="mt-14 max-w-[760px]">
-        <h2 className="font-display text-[24px] font-semibold tracking-tight">
+        <h2 className="font-display text-2xl font-semibold tracking-tight">
           See what the catalog catches
         </h2>
-        <p className="mt-2 max-w-[62ch] text-[16px] leading-[1.6] text-muted-foreground">
+        <p className="mt-2 max-w-[62ch] text-base text-muted-foreground">
           The catalog reads as one demo. Drag the handle.
         </p>
         <SlopCompare />

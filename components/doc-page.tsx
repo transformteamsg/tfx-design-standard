@@ -54,18 +54,18 @@ export async function DocPage({ doc, children }: { doc: Doc; children?: ReactNod
         </div>
         {crumb && <Breadcrumb section={crumb} current={doc.title} />}
         {doc.status === "proposed" && (
-          <span className="mb-2 inline-block rounded-full border border-warning-muted bg-warning-subtle px-2 py-0.5 text-[11px] font-medium text-warning">
+          <span className="mb-2 inline-block rounded-full border border-warning-muted bg-warning-subtle px-2 py-0.5 text-xs font-medium text-warning">
             ⚑ Proposed — react, don&apos;t obey
           </span>
         )}
         {doc.status === "settled" && (
-          <span className="mb-2 inline-block rounded-full border border-success-muted bg-success-subtle px-2 py-0.5 text-[11px] font-medium text-success">
+          <span className="mb-2 inline-block rounded-full border border-success-muted bg-success-subtle px-2 py-0.5 text-xs font-medium text-success">
             Settled
           </span>
         )}
-        <h1 className="font-display text-[32px] font-semibold tracking-tight">{doc.title}</h1>
+        <h1 className="font-display text-3xl font-semibold tracking-tight">{doc.title}</h1>
         {doc.description && (
-          <p className="mt-3 text-[18px] leading-[1.6] text-muted-foreground">
+          <p className="mt-3 text-lg text-muted-foreground">
             {doc.description}
           </p>
         )}
@@ -74,11 +74,11 @@ export async function DocPage({ doc, children }: { doc: Doc; children?: ReactNod
         ))}
         {rawFallback ? (
           <div className="mt-8">
-            <p className="text-[14px] text-muted-foreground">
+            <p className="text-sm text-muted-foreground">
               This doc contains a token the renderer reads as markup, so you are seeing the raw
               Markdown source.
             </p>
-            <pre className="prose mt-3 overflow-x-auto whitespace-pre-wrap rounded-lg border border-border bg-surface p-4 text-[14px]">
+            <pre className="prose mt-3 overflow-x-auto whitespace-pre-wrap rounded-lg border border-border bg-surface p-4 text-sm">
               {doc.content}
             </pre>
           </div>

@@ -115,7 +115,7 @@ const nav: NavGroup[] = [
   },
 ];
 
-const groupLabel = "px-1 py-1.5 text-[12px] font-semibold";
+const groupLabel = "px-1 py-1.5 text-xs font-semibold";
 
 export function AppSidebar() {
   const pathname = usePathname();

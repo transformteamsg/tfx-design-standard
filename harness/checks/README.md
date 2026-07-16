@@ -5,6 +5,22 @@ Scripts that verify `check: deterministic` controls (and the deterministic half 
 violation, and prints violations with file/line/element and the control id — verbose
 on failure, silent on success.
 
+## Shared scaffolding: `checklib.py` (plan 071)
+
+`checklib.py` holds what used to be duplicated across the check scripts: the
+`/* … */` comment stripper, the source-file walker (`iter_target_files`, which
+skips `node_modules`/`.git`/`.next`/`dist`/`out` as well as dotdirs — one unified,
+stricter policy, not the mixed dotdir-only/stricter split that existed before), the
+canonical `ERROR <file>:<line> [<CTL>] <found> — suggest: <…>` line
+(`emit_error` — `detect.py`'s `_FINDING_RE` reverse-parses this exact shape),
+and the `SELF-TEST OK/FAILED (N cases)` report tail. `checks/` is not a Python
+package, so each script imports it by path with the same importlib snippet
+`waiver-reconcile.py` already used for `audit-record.py`. A few pieces keep
+their own formatting where they genuinely differ (`token-audit.py`'s
+`[waiver-claimed]` variant, `component-manifest.py` and `detect.py`'s self-test
+tails). checklib has its own gate: `python3 checks/checklib.py --self-test` →
+`SELF-TEST OK (16 cases)`.
+
 ## Detector — one entry over the checks (built)
 
 `python3 checks/detect.py [<path>...]` is the **unified entry point**: a façade that
@@ -18,6 +34,15 @@ Code PostToolUse hook that runs this detector's **curated profile only** (token-
 contrast, a11y-static, TYP-1) on an edited UI file and reminds the agent on new
 findings — it never blocks an edit, and its "clean" is the curated subset's clean, not
 a whole-catalog pass. Off by default; install via the snippet in [`../hooks/README.md`](../hooks/README.md).
+
+**`detect.py`'s role: hook-only, by design (plan 069).** `hooks/design-hook.py` is
+`detect.py`'s only caller, and the hook itself is deliberately not shipped in the
+plugin (`plugin.json` carries no `hooks` key) — it's a paste-in `settings.json`
+snippet, consent by construction (see `../hooks/README.md`). `detect.py` is
+deliberately **not** part of `package.json` prebuild or `.github/workflows/ci.yml`;
+those run the individual check scripts directly (see "Wiring status" below). This is
+a "keep, hook-only" decision, not a deprecation — promoting `detect.py` to the single
+prebuild/CI runner was considered and rejected for now.
 
 **Exit contract (0 / 2 / 1).** `detect.py` adopts Impeccable's codes, which differ from
 the per-script 0/1: **0 = clean, 2 = findings, 1 = tool failure** (a wrapped script
@@ -89,9 +114,9 @@ their behaviour is proven by their own `--self-test`s and a real-corpus run over
 
 `python3 checks/validate.py` — validates `standards/catalog.yaml` against the schema in `standards/README.md`: field presence and allowed values, tier→waiver pairing, `detail:` file existence, detail-frontmatter ↔ catalog consistency, and that every control ID referenced in skills/docs exists in the catalog. Exit 0 on pass, exit 1 with `ERROR` lines on failure. This is the repo's verification baseline — run it before committing any `standards/` change.
 
-The validator also enforces two **fragment-parity** sub-checks via `<!-- tfx-sync:… -->` markers: `[L0-SYNC]` (the inline "Non-negotiables (L0)" lists in `CLAUDE.md` and `design/SKILL.md` must equal the catalog's `tier: L0` set) and `[SLP9-SYNC]` (the `copy` buzzword summary must be a subset of the canonical list in `standards/controls/slp-9.md`). See [docs/SYNC.md](../docs/SYNC.md). A third check, `[COUNT-SYNC]`, needs no markers: every "`<N> controls`" claim in `README.md` **and `docs/index.html`** must equal the catalog's actual control count, so an added or removed control fails the build until the prose is updated.
+The validator also enforces two **fragment-parity** sub-checks via `<!-- tfx-sync:… -->` markers: `[L0-SYNC]` (the inline "Non-negotiables (L0)" lists in `CLAUDE.md` and `design/SKILL.md` must equal the catalog's `tier: L0` set) and `[SLP9-SYNC]` (the `copy` buzzword summary must be a subset of the canonical list in `standards/controls/slp-9.md`). See [docs/SYNC.md](../docs/SYNC.md). A third check, `[COUNT-SYNC]`, needs no markers: every "`<N> controls`", "`<N> skills`", "`<N> check scripts`", or "`<N> checks built`" claim in `README.md` **and `docs/index.html`** must equal the live count it claims — the catalog's control count, the number of `.claude/skills/*/SKILL.md` dirs, or `checks/*.py` minus `validate.py` minus `checklib.py` — so an added, removed, or renamed control/skill/check fails the build until the prose is updated. A fourth, `[WIRING-SYNC]`, verifies every `enforced: script|partial` claim actually runs in prebuild or CI (or is on the `WIRING_EXEMPT` allowlist below). A fifth, `[SKILL-SYNC]`, verifies every control id named under `.claude/skills/**` or `.claude/agents/**` exists in the catalog (no ghost ids), and every catalog id is named in at least one skill/agent file or sits on the `SKILL_WIRING_GRANDFATHERED` allowlist in `validate.py` (no silent orphans) — see `docs/SYNC.md`. A sixth, `[LAY-SYNC]`, verifies the inline layout-controls list in `design/SKILL.md`, `evaluator.md`, and `layout/SKILL.md` each equal the catalog's `LAY-*` id set — see `docs/SYNC.md`.
 
-**Self-test:** `python3 checks/validate.py --self-test` → `SELF-TEST OK (45 cases)`.
+**Self-test:** `python3 checks/validate.py --self-test` → `SELF-TEST OK (63 cases)`.
 
 **Enforcement coverage (`enforced:` / `script:`).** Two OPTIONAL per-control catalog
 fields make the built/unbuilt boundary machine-readable instead of living in prose
@@ -123,7 +148,7 @@ this **replaces hand-maintained gap lists**, which drift as controls are added (
 
 **Peer-radius-consistency (TOK-3):** The scanner checks on-scale and concentric nesting per element, but cannot compare peer elements (cross-element). Peer-radius-consistency is **judgment-only** — the evaluator carries consistency against the product's Card/`--radius` anchor.
 
-**Self-test:** `python3 checks/token-audit.py --self-test` → `SELF-TEST OK (23 cases)`.
+**Self-test:** `python3 checks/token-audit.py --self-test` → `SELF-TEST OK (29 cases)` (includes the `fixtures/token-audit/` pass/fail files).
 
 ## Audit record (built)
 
@@ -169,7 +194,7 @@ Pass `--repo-root <path>` to audit a consumer repo's `docs/decisions/` (the defa
 
 **Waiver suppression:** A11Y-2 and A11Y-3 are L0 — never waivable. This script does not parse `tfx-waive` markers; every violation is a hard ERROR.
 
-**Self-test:** `python3 checks/a11y-static.py --self-test` → `SELF-TEST OK (14 cases)`.
+**Self-test:** `python3 checks/a11y-static.py --self-test` → `SELF-TEST OK (18 cases)` (includes the `fixtures/a11y-static/` pass/fail files).
 
 ## Contrast scan (built — static subset)
 
@@ -249,7 +274,7 @@ This closes the loop `token-audit.py` leaves open ("a human closes the decision-
 - CNT-5's harder half — "press" and "see", ambiguous link text ("click here", "read more"), and confirming a hit is a UI instruction rather than incidental prose — judgment (evaluator).
 - CNT-6's harder half — "such", "that", droppable articles/conjunctions ("a", "the", "and"), and the clarity exception on every hit ("only if it does not reduce clarity") — judgment (evaluator).
 
-**Self-test:** `python3 checks/content-lint.py --self-test` → `SELF-TEST OK (34 cases)`.
+**Self-test:** `python3 checks/content-lint.py --self-test` → `SELF-TEST OK (44 cases)`.
 
 ## Type scan (built — static subset)
 
@@ -258,9 +283,9 @@ This closes the loop `token-audit.py` leaves open ("a human closes the decision-
 **Rules:**
 
 - **TYP-1 fonts (L1):** a CSS `font-family:` or Tailwind `font-[…]` arbitrary value naming a typeface other than Plus Jakarta Sans or Inter; the named Tailwind family utilities `font-mono` / `font-serif` (which resolve to a third default typeface stack — but **never** the weight utilities `font-semibold` / `font-bold` / …, which are not a typeface choice); and a non-approved generic — `monospace` / `serif` / `ui-monospace` / `ui-serif` — used as the **primary** CSS `font-family`. Allowed: the token names `font-display` / `font-body` / `font-sans` / `--font-display` / `--font-body`, the sans fallbacks `sans-serif` / `system-ui` / `ui-sans-serif`, and any utility a project sanctions by adding it to `ALLOWED_FONT_TOKENS`.
-- **TYP-2 size floor (L1):** a `font-size:` or `text-[Npx]` with `N < 14`. The suggest text carries the 11/14 ambiguity (labels may go to 11px; body floor is 14px) since label-vs-body context needs rendered layout.
+- **TYP-2 size floor (L1):** a `font-size:` or `text-[Npx]`/`text-[Nrem]` with `N < 14` (rem values are converted at ×16 before judging). The suggest text carries the 12/14 ambiguity (labels may go to 12px; body floor is 14px) since label-vs-body context needs rendered layout.
 - **TYP-2 line-height (L1):** an explicit unitless / em `line-height:` or `leading-[N]` clearly outside the 1.5–1.6 body band (judged with a generous 1.4–1.7 tolerance). px / % line-heights are NOT judged — the ratio needs the font size.
-- **TYP-3 on-scale (L1):** a `text-[Npx]` or `font-size:Npx` whose whole-px `N` is not on the **TFX type scale `{120,96,72,48,32,24,20,18,16,14,12,11}`**. The scale is read at runtime from TYP-3's catalog `verify` field (`Sizes in {…}; checks/type-scan`) so it cannot drift; the same set is the embedded fallback if the catalog can't be read.
+- **TYP-3 on-scale (L1):** a `text-[Npx]`/`text-[Nrem]` or `font-size:Npx`/`Nrem` whose size (rem converted at ×16) is not on the **Tailwind default type scale `{128,96,72,60,48,36,30,24,20,18,16,14,12}`**. A fractional-pixel size is off-scale by definition, even when its rounded value happens to be in the set. The scale is read at runtime from TYP-3's catalog `verify` field (`Sizes in {…}; checks/type-scan`) so it cannot drift; the same set is the embedded fallback if the catalog can't be read.
 - **TYP-4 all-caps (L2):** a `text-transform: uppercase` declaration or an `uppercase` Tailwind utility (matched as a class token — inside a class/className attr or a class-list-shaped string). Text is never set in all-caps, at any length — short labels included (HF-20). The English word "uppercase" in body text, and genuine acronyms (literal capitals, not a transform), are not flagged.
 
 **TYP-3 scope decision:** TYP-3 **is** implemented (the preferred path) — the allowed scale is sourced live from the catalog `verify` field, not invented.
@@ -268,12 +293,12 @@ This closes the loop `token-audit.py` leaves open ("a human closes the decision-
 **Static-subset caveat — what this script does NOT verify:**
 
 - Font *weights* (TYP-1's "PJS 600 / Inter 400/500/600" half) — weight is rarely co-located with the family and "approved weight" needs the family resolved; deferred to the manual pass.
-- The 11px-vs-14px floor *decision* (TYP-2) — whether an element is a label (11px floor) or body (14px floor) needs rendered context; 11–13px is flagged with the ambiguity noted, not asserted as a definite body violation.
+- The 12px-vs-14px floor *decision* (TYP-2) — whether an element is a label (12px floor) or body (14px floor) needs rendered context; 12–13px is flagged with the ambiguity noted, not asserted as a definite body violation.
 - Line-heights given in px or % (TYP-2) — the ratio needs the font size, rarely on the same line.
 - All-caps set via camelCase inline style (TYP-4) — `style={{textTransform:'uppercase'}}` in JSX is not matched; only the CSS `text-transform: uppercase` form and the Tailwind `uppercase` utility are.
 - Fonts / sizes set in a separate stylesheet the line-local rule can't see, or composed from variables / class-name interpolation — out of static reach.
 
-**Self-test:** `python3 checks/type-scan.py --self-test` → `SELF-TEST OK (42 cases)`.
+**Self-test:** `python3 checks/type-scan.py --self-test` → `SELF-TEST OK (46 cases)`.
 
 ## Component manifest (built)
 
@@ -314,15 +339,27 @@ Wiring (V1): run as a PostToolUse hook on file edits during the implement phase
 (fast subset: token-audit, type-scan, content-lint) and as the verify-phase gate
 (full suite). L0 failures block; L1 failures loop the agent back to implement.
 
-Wiring status: `type-scan` and `content-lint` are **built but not yet wired into
-`package.json` prebuild** (which runs `token-audit` + `a11y-static` over `app
-components lib`). Both currently surface pre-existing violations on this repo's own
-tree — `content-lint` flags long-sentence (CNT-3) prose in `content/`, and `type-scan`
-flags sub-14px `text-[11/12/13px]` labels and tight `leading-[…]` headings across
-`app`/`components` (the documented 11/14 label-floor and display line-height
-ambiguities). Per the harness rule "never wire a failing check into the build,"
-wiring is deferred until the live tree is clean or the flagged values are reviewed and
-either fixed or waived. Until then, run both manually during the implement phase.
+Wiring status (plan 069): `package.json` prebuild and `.github/workflows/ci.yml` both
+run the same Python gate — `validate.py --self-test`, `validate.py`, `token-audit.py`
+over `app components lib`, `a11y-static.py`, and `type-scan.py` over `app components`.
+`type-scan` was wired in once its tree went clean (plan 068's Tailwind default type
+scale migration removed the sub-14px `text-[11/12/13px]` labels and tight
+`leading-[…]` headings it flagged).
+
+`content-lint.py`, `contrast.py`, and `component-manifest.py` stay **manual** — each is
+on the `WIRING_EXEMPT` list in `checks/validate.py`, with a one-line reason: per the
+harness rule "never wire a failing check into the build," `content-lint` surfaces
+pre-existing long-sentence (CNT-3) and filler-word (CNT-6) prose in `content/`, and
+`contrast` surfaces a pre-existing sub-AA pair in `components/ui/button.tsx` (A11Y-1);
+neither is wired until that content is fixed or waived. `component-manifest` targets a
+product's `.tfx/component-manifest.json`, which this repo (the harness/site itself)
+does not have — wiring it here would have nothing to check.
+
+The `[WIRING-SYNC]` check in `validate.py` now enforces this list: a control claiming
+`enforced: script|partial` via a `script:` field must run in prebuild or CI, or be on
+`WIRING_EXEMPT` with a reason — the exemption list above is exactly, and only, what
+`WIRING_EXEMPT` says. Stamping a control `enforced: script` without wiring the script
+or adding an exemption now fails validation; that friction is the point.
 
 Waiver handling: checks must respect inline `tfx-waive <CTL-ID> reason="..."`
 comments for L2 controls only — a waiver on an L0/L1 control is itself reported as a

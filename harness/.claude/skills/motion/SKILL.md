@@ -9,11 +9,14 @@ A focused pass on the **motion** dimension: how the interface moves — entrance
 and view changes, hover/press feedback. You judge motion only; styling, layout, copy,
 and flow structure are out of scope and get NOTED and routed.
 
-**Dimension controls** (cite these; the catalog holds the rules — load them from
-`../../../standards/catalog.yaml`; these three carry their statement in the catalog, with
-no separate detail file):
+**Dimension controls** (the subset for this pass; procedure and loading rules:
+../critique/pass.md):
 
 - **MOT-1** — 100–300ms, standard easing, no decorative motion on critical paths.
+- **MOT-2** — motion values come from the declared motion token set; durations and
+  easings are never hardcoded in component code.
+- **MOT-3** — motion may emphasise meaning but never carry it alone; the surface
+  communicates the same information with animations off.
 - **A11Y-5** — a `prefers-reduced-motion` variant disables non-essential animation.
 - **SLP-8** — no bounce or elastic easing on interface elements.
 
