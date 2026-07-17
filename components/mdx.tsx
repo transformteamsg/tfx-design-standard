@@ -10,6 +10,7 @@ import { FontRoles, TypeScale } from "@/components/foundations/type-scale";
 import { SpacingScale } from "@/components/foundations/spacing-scale";
 import { RadiusScale } from "@/components/foundations/radius-scale";
 import { IconSet } from "@/components/foundations/icon-set";
+import { BrandIconSet } from "@/components/foundations/brand-icon-set";
 
 export function textOf(node: ReactNode): string {
   if (typeof node === "string" || typeof node === "number") return String(node);
@@ -42,4 +43,5 @@ export const mdxComponents = {
   SpacingScale,
   RadiusScale,
   IconSet,
+  BrandIconSet,
 };
