@@ -35,7 +35,12 @@ export async function DocPage({ doc, children }: { doc: Doc; children?: ReactNod
     const { content } = await compileMDX({
       source: doc.content,
       components: mdxComponents,
-      options: { mdxOptions: { remarkPlugins: [remarkGfm] } },
+      // blockJS defaults to true, which strips JS expression-container
+      // attributes (e.g. `items={[...]}`) entirely — needed for DoDont's
+      // inline array prop. blockDangerousJS stays on (its default) so
+      // eval/Function/import() calls are still rejected; all doc content
+      // is first-party (content/), not user-supplied.
+      options: { mdxOptions: { remarkPlugins: [remarkGfm] }, blockJS: false },
     });
     rendered = content;
   } catch (err) {

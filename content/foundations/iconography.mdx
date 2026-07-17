@@ -23,8 +23,23 @@ Brand and feature iconography is generated with the internal **Icon Generator**,
 
 Use the inked style for product marketing and communications, not dense UI — it's slower to scan than Lucide.
 
-## Rules
+## Usage
 
-- Icon-only buttons carry a descriptive `aria-label` (A11Y-3 territory: icons have labels).
-- Icons sit beside their meaning, not above it in decorative tiles (SLP-5).
-- Match icon stroke weight to adjacent text weight so lockups don't clash.
+```tsx
+import { Calendar } from "lucide-react";
+
+<Calendar aria-hidden size={20} strokeWidth={2} />
+
+{/* An icon-only button carries a label */}
+<button aria-label="Open calendar"><Calendar aria-hidden /></button>
+```
+
+## Best practices
+
+<DoDont items={[
+  { kind: "do", text: "Use Lucide for interface icons, and the ink set for marketing and comms." },
+  { kind: "do", text: "Give every icon-only button a descriptive aria-label (A11Y-3)." },
+  { kind: "do", text: "Match an icon's stroke weight to the adjacent text weight." },
+  { kind: "dont", text: "Mix icon sets inside product UI." },
+  { kind: "dont", text: "Stack an icon in a decorative tile above its heading (SLP-5)." },
+]} />

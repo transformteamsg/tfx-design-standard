@@ -44,9 +44,23 @@ Tokens describe purpose, not appearance, so a colour can change without touching
 
 <TokenTable group="functional" />
 
-## Rules
+## Usage
 
-- Primary actions and brand moments use the product's primary (COL-1).
-- Functional colours always from the shared Radix scales, never ad-hoc (COL-2).
-- No purple/violet gradients, cyan-on-dark, glow accents, or gradient text (SLP-1, SLP-2).
-- Don't rely on colour alone: pair with text labels (accessibility baseline).
+```tsx
+// Semantic Tailwind classes — the default
+<div className="bg-surface text-foreground border border-border" />
+<span className="text-success bg-success-subtle" />
+
+// CSS-variable escape hatch, when no class fits
+<div style={{ background: "var(--muted)" }} />
+```
+
+## Best practices
+
+<DoDont items={[
+  { kind: "do", text: "Use the product's own primary for primary actions and brand moments (COL-1)." },
+  { kind: "do", text: "Take success, warning, and danger colours from the shared Radix scales (COL-2)." },
+  { kind: "do", text: "Pair colour with a text label — never signal with colour alone." },
+  { kind: "dont", text: "Hardcode a hex value in a component; use a semantic token instead (TOK-1)." },
+  { kind: "dont", text: "Use purple or violet gradients, cyan-on-dark, glow accents, or gradient text (SLP-1, SLP-2)." },
+]} />

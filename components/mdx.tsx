@@ -11,6 +11,8 @@ import { SpacingScale } from "@/components/foundations/spacing-scale";
 import { RadiusScale } from "@/components/foundations/radius-scale";
 import { IconSet } from "@/components/foundations/icon-set";
 import { BrandIconSet } from "@/components/foundations/brand-icon-set";
+import { CodeBlock } from "@/components/code-block";
+import { DoDont } from "@/components/foundations/do-dont";
 
 export function textOf(node: ReactNode): string {
   if (typeof node === "string" || typeof node === "number") return String(node);
@@ -27,11 +29,27 @@ export function heading(Tag: "h2" | "h3") {
   return Heading;
 }
 
+/* Fenced code blocks render through CodeBlock (framed, copyable) instead of a
+   bare <pre>. Falls back to a plain <pre> if the child isn't the expected
+   <code> element (e.g. an empty fence). */
+function Pre({ children }: { children?: ReactNode }) {
+  if (isValidElement(children)) {
+    const p = children.props as { className?: string; children?: ReactNode };
+    const lang = p.className?.replace(/^language-/, "");
+    const code = textOf(p.children).replace(/\n$/, "");
+    return <CodeBlock code={code} lang={lang} />;
+  }
+  return <pre>{children}</pre>;
+}
+
 /* Components available inside doc-page MDX bodies. Headings get slug ids so the
    TOC rail can target them; the diagrams are token-only inline SVG. */
 export const mdxComponents = {
   h2: heading("h2"),
   h3: heading("h3"),
+  pre: Pre,
+  CodeBlock,
+  DoDont,
   MotionScale,
   OrbitLoop,
   ColorRamp,
