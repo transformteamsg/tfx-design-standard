@@ -7,7 +7,7 @@ import { Toc } from "@/components/toc";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { PageActions } from "@/components/page-actions";
 import { ToolCard, type Tool } from "@/components/tool-card";
-import { mdxComponents } from "@/components/mdx";
+import { buildMdxComponents, type SectionDescriptions } from "@/components/mdx";
 
 /* Sections whose docs live at /{section}/{slug} and get a breadcrumb back to
    the section root. Single-doc sections (governance) and start pages don't. */
@@ -24,6 +24,7 @@ export async function DocPage({ doc, children }: { doc: Doc; children?: ReactNod
   const crumb = sectionCrumbs[doc.section];
   const headings = extractHeadings(doc.content);
   const tools = (doc.data.tools ?? []) as Tool[];
+  const sections = doc.data.sections as SectionDescriptions | undefined;
 
   /* Doc bodies are plain Markdown, but a stray angle token outside a code
      span (e.g. "<date>" in prose) makes MDX read it as an unclosed JSX tag.
@@ -34,7 +35,7 @@ export async function DocPage({ doc, children }: { doc: Doc; children?: ReactNod
   try {
     const { content } = await compileMDX({
       source: doc.content,
-      components: mdxComponents,
+      components: buildMdxComponents(sections),
       // blockJS defaults to true, which strips JS expression-container
       // attributes (e.g. `items={[...]}`) entirely — needed for DoDont's
       // inline array prop. blockDangerousJS stays on (its default) so
