@@ -55,3 +55,23 @@ meaning: states, order, and relationships stay legible statically (MOT-3).
 - [MOT-3](/standards/catalog/mot-3) ⚑ — motion may emphasise meaning but never
   carry it alone; the surface communicates the same information with
   animations off.
+
+## Usage
+
+```tsx
+{/* CSS: duration and easing from tokens */}
+<div className="transition-colors duration-(--motion-fast)" />
+
+{/* motion/react, via lib/motion.ts which mirrors the CSS tokens */}
+transition={{ duration: DUR.base, ease: EASE_OUT }}
+```
+
+## Best practices
+
+<DoDont items={[
+  { kind: "do", text: "Take durations and easings from the motion token set (MOT-2)." },
+  { kind: "do", text: "Keep interface motion at 300ms or less (MOT-1)." },
+  { kind: "do", text: "Give every animated surface a reduced-motion variant (A11Y-5)." },
+  { kind: "dont", text: "Hardcode a duration or easing in component code." },
+  { kind: "dont", text: "Use bounce or overshoot easing (SLP-8)." },
+]} />

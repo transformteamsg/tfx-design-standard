@@ -4,12 +4,15 @@ description: "Type sets the hierarchy a tired teacher scans first: what's a head
 status: settled
 ---
 
-| Role | Font | Weights | Why |
-| --- | --- | --- | --- |
-| Display & headlines | **Plus Jakarta Sans** | 600 | Geometric enough to feel modern, soft enough to feel warm. The name nods to Southeast Asia. |
-| Body & UI | **Inter** | 400 / 500 / 600 | Designed for screens: tall x-height, open apertures. For teachers scanning between classes, readability is kindness. |
+<FontRoles />
+
+**Plus Jakarta Sans** is geometric enough to feel modern, soft enough to feel warm. The name nods to Southeast Asia.
+
+**Inter** is designed for screens: tall x-height, open apertures. For teachers scanning between classes, readability is kindness.
 
 ## Type scale
+
+<TypeScale />
 
 | Step | Size | Font |
 | --- | --- | --- |
@@ -29,6 +32,16 @@ Body line-height: 1.5–1.6. Related controls: TYP-1, TYP-2, TYP-3, TYP-4.
 
 ## Usage
 
-**Do:** Plus Jakarta Sans exclusively for display and headlines · Inter for all body and UI text · generous line height · respect the scale.
+```tsx
+<h2 className="font-display text-2xl font-semibold" />  {/* Heading 2 */}
+<p className="font-body text-base" />                    {/* Body */}
+```
 
-**Don't:** mix display and body roles · decorative or script fonts · body text below 14px · all-caps text — use sentence case (genuine acronyms excepted).
+## Best practices
+
+<DoDont items={[
+  { kind: "do", text: "Use Plus Jakarta Sans for display and headlines, Inter for body and UI." },
+  { kind: "do", text: "Give body text a line height of 1.5 to 1.6, and respect the scale." },
+  { kind: "dont", text: "Mix display and body roles, or reach for a decorative or script font." },
+  { kind: "dont", text: "Set body text below 14px, or use all-caps — use sentence case (genuine acronyms excepted)." },
+]} />

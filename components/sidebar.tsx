@@ -84,6 +84,7 @@ const nav: NavGroup[] = [
       { href: "/foundations/spacing-radius", title: "Spacing & radius" },
       { href: "/foundations/iconography", title: "Iconography" },
       { href: "/foundations/motion", title: "Motion" },
+      { href: "/foundations/tokens", title: "Tokens" },
     ],
   },
   {
