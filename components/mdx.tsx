@@ -13,6 +13,7 @@ import { IconSet } from "@/components/foundations/icon-set";
 import { BrandIconSet } from "@/components/foundations/brand-icon-set";
 import { CodeBlock } from "@/components/code-block";
 import { DoDont } from "@/components/foundations/do-dont";
+import { SectionInfo } from "@/components/section-info";
 
 export function textOf(node: ReactNode): string {
   if (typeof node === "string" || typeof node === "number") return String(node);
@@ -21,10 +22,23 @@ export function textOf(node: ReactNode): string {
   return "";
 }
 
-/* Heading ids must match lib/toc's extractHeadings so the rail can target them. */
-export function heading(Tag: "h2" | "h3") {
+/* Per-doc map of heading slug → plain-language section description, authored in
+   the doc's frontmatter `sections:`. */
+export type SectionDescriptions = Record<string, string>;
+
+/* Heading ids must match lib/toc's extractHeadings so the rail can target them.
+   An h2 whose slug has a frontmatter description also renders a SectionInfo help
+   affordance after its text; h3s never do (major sections only). */
+export function heading(Tag: "h2" | "h3", sections?: SectionDescriptions) {
   function Heading({ children }: { children?: ReactNode }) {
-    return <Tag id={slugify(textOf(children))}>{children}</Tag>;
+    const text = textOf(children);
+    const description = Tag === "h2" ? sections?.[slugify(text)] : undefined;
+    return (
+      <Tag id={slugify(text)}>
+        {children}
+        {description && <SectionInfo heading={text} description={description} />}
+      </Tag>
+    );
   }
   return Heading;
 }
@@ -43,11 +57,19 @@ function Pre({ children }: { children?: ReactNode }) {
 }
 
 /* Components available inside doc-page MDX bodies. Headings get slug ids so the
-   TOC rail can target them; the diagrams are token-only inline SVG. */
-export const mdxComponents = {
-  h2: heading("h2"),
-  h3: heading("h3"),
-  pre: Pre,
+   TOC rail can target them; the diagrams are token-only inline SVG. Built per
+   doc so h2 headings can pick up their frontmatter section descriptions. */
+export function buildMdxComponents(sections?: SectionDescriptions) {
+  return {
+    h2: heading("h2", sections),
+    h3: heading("h3"),
+    pre: Pre,
+    ...sharedMdxComponents,
+  };
+}
+
+/* Static (non-heading) components, shared across every doc. */
+const sharedMdxComponents = {
   CodeBlock,
   DoDont,
   MotionScale,
