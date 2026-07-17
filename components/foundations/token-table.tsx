@@ -16,7 +16,7 @@ export function TokenTable({ group }: { group?: "core" | "functional" }) {
   return (
     <figure className="my-8">
       <div className="overflow-x-auto rounded-lg border border-border bg-surface p-4">
-        <table className="w-full border-collapse text-[13px]">
+        <table className="w-full border-collapse text-sm">
           <thead>
             <tr>
               <th className="w-10 pb-2 text-left font-medium text-muted-foreground"></th>

@@ -20,14 +20,14 @@ export function PrimarySwatches() {
               />
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-[14px] font-medium text-foreground">{entry.product}</span>
+                  <span className="text-sm font-medium text-foreground">{entry.product}</span>
                   {entry.proposed && (
-                    <span className="inline-block rounded-full border border-warning-muted bg-warning-subtle px-2 py-0.5 text-[11px] font-medium text-warning">
+                    <span className="inline-block rounded-full border border-warning-muted bg-warning-subtle px-2 py-0.5 text-xs font-medium text-warning">
                       ⚑ proposed
                     </span>
                   )}
                 </div>
-                <div className="text-[12px] text-muted-foreground">
+                <div className="text-xs text-muted-foreground">
                   <code>{entry.token}</code> · {entry.value} · {entry.source}
                 </div>
               </div>

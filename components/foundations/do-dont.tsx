@@ -9,7 +9,7 @@ export function DoDont({ items }: { items: Item[] }) {
         {items.map((it, i) => (
           <li key={i} className="flex items-start gap-3 bg-surface px-4 py-3">
             <span
-              className={`mt-0.5 inline-block shrink-0 rounded-full border px-2 py-0.5 text-[11px] font-medium ${
+              className={`mt-0.5 inline-block shrink-0 rounded-full border px-2 py-0.5 text-xs font-medium ${
                 it.kind === "do"
                   ? "border-success-muted bg-success-subtle text-success"
                   : "border-danger-muted bg-danger-subtle text-danger"
@@ -17,7 +17,7 @@ export function DoDont({ items }: { items: Item[] }) {
             >
               {it.kind === "do" ? "Do" : "Don't"}
             </span>
-            <span className="text-[14px] leading-[1.6] text-(--prose-body)">{it.text}</span>
+            <span className="text-sm leading-[1.6] text-(--prose-body)">{it.text}</span>
           </li>
         ))}
       </ul>

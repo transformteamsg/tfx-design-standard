@@ -15,10 +15,10 @@ export function SpacingScale() {
         <div className="flex flex-col gap-2">
           {SPACING_PX.map((px) => (
             <div key={px} className="flex items-center gap-3">
-              <span className="w-10 shrink-0 text-right text-[12px] tabular-nums text-muted-foreground">
+              <span className="w-10 shrink-0 text-right text-xs tabular-nums text-muted-foreground">
                 {px / 4}
               </span>
-              <span className="w-12 shrink-0 text-right text-[12px] tabular-nums text-muted-foreground">
+              <span className="w-12 shrink-0 text-right text-xs tabular-nums text-muted-foreground">
                 {px}px
               </span>
               <div className="h-3 min-w-0 rounded-sm bg-muted" style={{ width: px }} />
@@ -26,7 +26,7 @@ export function SpacingScale() {
           ))}
         </div>
       </div>
-      <figcaption className="mt-3 max-w-[60ch] text-[12px] leading-[1.6] text-muted-foreground">
+      <figcaption className="mt-3 max-w-[60ch] text-xs leading-[1.6] text-muted-foreground">
         The shadcn spacing scale, unmodified. It continues 112 / 128px beyond
         what&apos;s shown here.
       </figcaption>

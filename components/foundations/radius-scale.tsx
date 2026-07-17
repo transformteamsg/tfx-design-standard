@@ -16,14 +16,14 @@ export function RadiusScale() {
                 className="h-14 w-14 border border-border bg-muted"
                 style={{ borderRadius: r }}
               />
-              <span className="text-[12px] tabular-nums text-muted-foreground">
+              <span className="text-xs tabular-nums text-muted-foreground">
                 {r === 9999 ? "full" : `${r}px`}
               </span>
             </div>
           ))}
         </div>
       </div>
-      <figcaption className="mt-3 max-w-[60ch] text-[12px] leading-[1.6] text-muted-foreground">
+      <figcaption className="mt-3 max-w-[60ch] text-xs leading-[1.6] text-muted-foreground">
         Cards top out around 12–16px; full is reserved for tags and buttons.
       </figcaption>
     </figure>

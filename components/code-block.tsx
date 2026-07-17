@@ -15,7 +15,7 @@ export function CodeBlock({ code, lang }: { code: string; lang?: string }) {
   }
   return (
     <figure className="my-6 overflow-hidden rounded-lg border border-border bg-muted">
-      <figcaption className="flex items-center justify-between border-b border-border px-4 py-2 text-[12px] text-muted-foreground">
+      <figcaption className="flex items-center justify-between border-b border-border px-4 py-2 text-xs text-muted-foreground">
         <span>{lang ?? "code"}</span>
         <button
           type="button"
@@ -27,7 +27,7 @@ export function CodeBlock({ code, lang }: { code: string; lang?: string }) {
           {copied ? "Copied" : "Copy"}
         </button>
       </figcaption>
-      <pre className="overflow-x-auto p-4 text-[13px] leading-[1.6]"><code className="font-mono text-foreground">{code}</code></pre>
+      <pre className="overflow-x-auto p-4 text-sm leading-[1.6]"><code className="text-foreground">{code}</code></pre>
     </figure>
   );
 }

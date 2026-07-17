@@ -23,8 +23,8 @@ export function ColorRamp({ name, caption }: { name: RampName; caption?: string 
                   i === ramp.steps.length - 1 ? "rounded-r-md" : ""
                 }`}
               />
-              <span className="text-[11px] tabular-nums text-muted-foreground">{step.step}</span>
-              <span className="hidden text-[10px] tabular-nums text-muted-foreground sm:block">
+              <span className="text-xs tabular-nums text-muted-foreground">{step.step}</span>
+              <span className="hidden text-xs tabular-nums text-muted-foreground sm:block">
                 {step.value}
               </span>
             </div>
@@ -32,14 +32,14 @@ export function ColorRamp({ name, caption }: { name: RampName; caption?: string 
         </div>
         <div className="mt-3 flex flex-col gap-1 sm:flex-row sm:gap-0">
           {STEP_ROLES.map((band) => (
-            <div key={band.steps} className="flex-1 text-[11px] text-muted-foreground">
+            <div key={band.steps} className="flex-1 text-xs text-muted-foreground">
               <span className="font-medium text-foreground">{band.steps}</span> {band.role}
             </div>
           ))}
         </div>
       </div>
       {caption && (
-        <figcaption className="mt-3 max-w-[52ch] text-[12px] leading-[1.6] text-muted-foreground">
+        <figcaption className="mt-3 max-w-[52ch] text-xs leading-[1.6] text-muted-foreground">
           {caption}
         </figcaption>
       )}

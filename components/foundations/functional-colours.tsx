@@ -21,12 +21,12 @@ export function FunctionalColours() {
           {FUNCTIONAL_COLOURS.map((entry) => (
             <div key={entry.role} className="flex flex-wrap items-center gap-3">
               <div aria-hidden style={{ background: entry.step9 }} className="h-8 w-8 shrink-0 rounded-md" />
-              <div className="min-w-0 text-[12px] text-muted-foreground">
+              <div className="min-w-0 text-xs text-muted-foreground">
                 <span className="font-medium text-foreground">{entry.scaleName}</span> · step 9 ·{" "}
                 {entry.step9}
               </div>
               <span
-                className={`ml-auto inline-block rounded-full border px-2 py-0.5 text-[11px] font-medium ${BADGE_CLASSES[entry.role]}`}
+                className={`ml-auto inline-block rounded-full border px-2 py-0.5 text-xs font-medium ${BADGE_CLASSES[entry.role]}`}
               >
                 {entry.label}
               </span>

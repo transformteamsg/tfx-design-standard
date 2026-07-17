@@ -66,19 +66,19 @@ export function BrandIconSet() {
               <div className="flex items-center gap-3">
                 <div className="flex flex-col items-center gap-1">
                   <Lucide aria-hidden size={24} strokeWidth={2} />
-                  <span className="text-[10px] text-muted-foreground">Lucide</span>
+                  <span className="text-xs text-muted-foreground">Lucide</span>
                 </div>
                 <div className="flex flex-col items-center gap-1">
                   <InkIcon artKey={key} size={24} />
-                  <span className="text-[10px] text-muted-foreground">Ink</span>
+                  <span className="text-xs text-muted-foreground">Ink</span>
                 </div>
               </div>
-              <span className="text-center text-[11px] text-muted-foreground">{name}</span>
+              <span className="text-center text-xs text-muted-foreground">{name}</span>
             </div>
           ))}
         </div>
       </div>
-      <figcaption className="mt-3 max-w-[60ch] text-[12px] leading-[1.6] text-muted-foreground">
+      <figcaption className="mt-3 max-w-[60ch] text-xs leading-[1.6] text-muted-foreground">
         Same glyphs, two renderings: flat Lucide for interface, inked for marketing and comms.
       </figcaption>
     </figure>

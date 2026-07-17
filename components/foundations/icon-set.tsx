@@ -42,12 +42,12 @@ export function IconSet() {
           {ICONS.map(({ name, Icon }) => (
             <div key={name} className="flex flex-col items-center gap-1.5">
               <Icon aria-hidden size={20} strokeWidth={2} />
-              <span className="text-center text-[11px] text-muted-foreground">{name}</span>
+              <span className="text-center text-xs text-muted-foreground">{name}</span>
             </div>
           ))}
         </div>
       </div>
-      <figcaption className="mt-3 max-w-[60ch] text-[12px] leading-[1.6] text-muted-foreground">
+      <figcaption className="mt-3 max-w-[60ch] text-xs leading-[1.6] text-muted-foreground">
         Standard sizes: 16 / 20 / 24px, stroke ~2px, colour follows{" "}
         <code>currentColor</code>.
       </figcaption>
