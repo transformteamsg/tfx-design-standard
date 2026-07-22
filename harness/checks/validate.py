@@ -584,10 +584,6 @@ def wiring_parity_errors(repo_root, catalog_by_id):
 SKILL_WIRING_GRANDFATHERED = {
     "A11Y-9": "title/lang check (title-lang) is planned but unbuilt (checks/README.md V1 table) — not yet named in any skill",
     "A11Y-10": "skip-link check is planned but unbuilt (checks/README.md V1 table) — not yet named in any skill",
-    "CNT-9": "judgment/hybrid clarity control — unwired at introduction of SKILL-SYNC — wire into copy skill or justify",
-    "CNT-10": "judgment terminology-consistency control — unwired at introduction of SKILL-SYNC — wire into copy skill or justify",
-    "CNT-11": "judgment terminology-match control — unwired at introduction of SKILL-SYNC — wire into copy skill or justify",
-    "CNT-13": "hybrid spelling/proofreading control — unwired at introduction of SKILL-SYNC — wire into copy skill or justify",
     "IDN-1": "identity check (logo/lockup) is planned but unbuilt (checks/README.md V1 table) — not yet named in any skill",
     "TYP-6": "hybrid measure (line-length) control — unwired at introduction of SKILL-SYNC — wire into layout/polish skill or justify",
 }

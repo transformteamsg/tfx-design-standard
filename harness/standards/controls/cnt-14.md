@@ -6,7 +6,7 @@ tier: L2
 check: judgment
 phase: [implement, verify]
 applies_to: [content]
-verify: "Evaluator reads the copy against the voice attributes and the tone-by-context table in voice-tone-proposed.mdx: does it sound Clear/Thoughtful/Approachable (not cold, robotic, patronising, alarmist, or sappy), and does the tone match the surface (affirming success, calm error, sober destructive, inviting empty state)?"
+verify: "Evaluator reads the copy against the voice attributes and the tone-by-context table in voice-tone.mdx: does it sound Clear/Thoughtful/Approachable (not cold, robotic, patronising, alarmist, or sappy), and does the tone match the surface (affirming success, calm error, sober destructive, inviting empty state)?"
 waiver: rationale
 refs:
   - https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb
@@ -58,7 +58,7 @@ matches the moment — and no static signal decides it.
 This control makes that gestalt control-backed, the same move SLP made for slop and
 CNT-7 made for lead-with-purpose: a quality that was previously only a soft
 design-quality grade becomes a named, waivable finding pointing at a written standard
-(`content/guidelines/voice-tone-proposed.mdx`).
+(`content/guidelines/voice-tone.mdx`).
 
 ## Passes when
 

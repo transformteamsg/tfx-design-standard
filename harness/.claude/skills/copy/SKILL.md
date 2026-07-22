@@ -7,23 +7,28 @@ description: Improve, write, or review the copy on a Teacher & School product su
 
 The TFX-DS voice & tone (§4.1) and naming (§4.2) guidelines, applied at generation
 time. The intent: copy arrives already on-voice, so no builder — least of all
-non-native English speakers — carries the UX-writing burden personally. Catalog
-controls CNT-1 (error anatomy), CNT-2 (naming), and CNT-3 (voice mechanics) bind this
-skill.
+non-native English speakers — carries the UX-writing burden personally. The content
+catalog controls CNT-1 through CNT-14 and SLP-9 (AI-writing tells) bind this skill.
 
-**Source of truth.** The normative rules are the catalog controls — CNT-1 (error
-anatomy), CNT-2 (naming), CNT-3 (voice mechanics), and SLP-9 (AI-writing tells), each
-with a detail file in `../../../standards/controls/`. This skill is their application
-layer (it travels in the plugin); the website's voice-tone and naming guidelines present
-the same controls for human readers. If any of the three disagree, the catalog control
-wins and the others are corrected.
+**Source of truth.** The normative rules are the catalog controls — the content family
+CNT-1 through CNT-14 (error anatomy, naming, voice mechanics, domain fidelity, device
+verbs, filler, lead-with-purpose, plain verbs, clarity, term consistency, established
+terms, sentence case, spelling, and voice/tone quality) and SLP-9 (AI-writing tells),
+each with a detail file in `../../../standards/controls/`. This skill is their application
+layer (it travels in the plugin); the website's voice & tone, naming, UI text, grammar &
+mechanics, and text-patterns guidelines present the same controls for human readers. If
+any disagree, the catalog control wins and the others are corrected.
 
 **Improve-the-copy pass.** For a scoped "improve / polish the copy on `<page>`" run —
 capture the surface, judge only the wording, propose ranked fixes, gate, and verify —
 follow `../critique/pass.md` with this skill's dimension subset: **CNT-1, CNT-2, CNT-3,
 CNT-4 (domain fidelity — content modeling a real-world artifact is faithful to it or
 labelled illustrative), CNT-5 (device-agnostic action verbs), CNT-6 (low-informational-value
-words), CNT-7 (lead with purpose), CNT-14 (voice quality + tone-fit — the copy sounds
+words), CNT-7 (lead with purpose), CNT-8 (plain action verbs, not nominalisations),
+CNT-9 (clarity — one idea per sentence, simple present tense, no noun stacks, acronyms
+defined on the surface), CNT-10 (one term per thing within a product), CNT-11 (match the
+UI term teachers already know — "Search" not "Find"), CNT-12 (sentence case), CNT-13
+(Singapore English spelling, proofread), CNT-14 (voice quality + tone-fit — the copy sounds
 Clear/Thoughtful/Approachable and its tone matches the surface context), SLP-9, and IDN-3
 (IDN-4 on CaseSync surfaces)**. The rest of this file is that pass's reference: it is what
 "on-voice" means.
@@ -37,24 +42,29 @@ stress, or it goes.
 
 ## Voice (constant)
 
+The voice is **Clear, Thoughtful, Approachable** — the three attributes the
+[voice & tone guideline](/guidelines/voice-tone) defines and CNT-14 grades. Its
+"we are / we are not" table is the boundary to hold:
+
 | We are | We are not |
 |---|---|
-| Warm but not sappy | Corporate-speak or jargon-heavy |
-| Clear but not cold | Overly casual or slang-filled |
-| Helpful but not pushy | Condescending or preachy |
-| Professional but not stiff | Vague or wishy-washy |
-| Confident but not arrogant | Salesy or hype-driven |
+| Clear but not cold | Robotic or detached |
+| Simple but not simplistic | Vague, generic or too minimal to be useful |
+| Thoughtful but not wordy | Repetitive or too detailed |
+| Helpful but not overbearing | Patronising or overly prescriptive |
+| Approachable but not careless | Corporate speak or overly casual |
+| Reassuring but not sappy | Alarmist or dramatic |
 
 ## Tone (adapts by context)
 
 | Context | Tone | Direction |
 |---|---|---|
-| Success | Celebratory, brief | Acknowledge, don't gush |
+| Success | Affirming, brief | Acknowledge, don't gush |
 | Error | Calm, helpful | What happened → what it means → what to do next |
 | Onboarding | Encouraging | Lower the stakes; show the quick win |
 | Destructive action | Sober, precise | Plain consequences, no drama (CMP-2) |
 | Empty state | Inviting | Lead with the next action |
-| Permission / data request | Transparent, plain | Say what's collected, why, and how it's used — before asking |
+| Permission / data request | Transparent, respectful | Say what's collected, why, and how it's used — before asking |
 
 ## Writing mechanics (CNT-3)
 
@@ -86,8 +96,26 @@ stress, or it goes.
   seamless, world-class <!-- /tfx-sync:slp9-buzzwords --> and kin describe nothing — say what the thing does. No
   em-dash chains standing in for sentence structure, and no label/sublabel/helper
   triplets that restate each other — if removing one line loses nothing, remove it.
+- **Plain action verbs, not nominalisations (CNT-8).** Pull the verb out of the
+  noun: "Save", not "make a saving"; "choose", not "make a selection"; "sync",
+  not "perform a sync". Don't let a "to be" verb carry a buried action.
+- **Keep it clear (CNT-9).** One idea per sentence, simple present tense, no
+  double negatives, no noun stacks ("class mark entry screen"). Short words over
+  long. Any acronym or technical term has a reachable definition on the surface
+  (inline, tooltip, help text, or glossary), not only in the copy string.
+- **One term per thing (CNT-10), and the term teachers already know (CNT-11).**
+  Name an action, object, or state one way everywhere it appears — no drift
+  across nav, buttons, labels, filters, and messages. For standard UI elements
+  use the established word teachers meet elsewhere: "Search" not "Find",
+  "Settings" not "Preferences", "Sign in" not "Log on".
+- **Sentence case (CNT-12).** Capitalise the first word and proper or branded
+  nouns only — headings, labels, and buttons included.
 - Read it aloud — if it sounds robotic, rewrite it.
-- Singapore English spelling (British base): organise, colour, centre.
+- Singapore English spelling, proofread (CNT-13): organise, colour, centre; no
+  typos, homophones, or doubled words in shipped text.
+
+The [Grammar & mechanics](/guidelines/grammar-mechanics) and [Text
+patterns](/guidelines/text-patterns) guidelines present these for human readers.
 
 ## The editing sequence (method, not a control)
 
@@ -103,9 +131,12 @@ in passes:
    per sentence, well under the 25-word ceiling (CNT-3).
 4. **Conversational.** Second person, active voice; read it aloud (CNT-3). Name the
    action, not the device (CNT-5).
-5. **Clear.** Simple words, simple present tense; no double negatives or noun stacks.
-6. **Check.** Consistent terms (CNT-2), plain error anatomy (CNT-1), and a last pass
-   for AI-writing tells (SLP-9).
+5. **Clear.** Simple words, simple present tense; no double negatives or noun
+   stacks; every acronym defined on the surface (CNT-9).
+6. **Check.** One term per thing (CNT-10) using the word teachers already know
+   (CNT-11), clear names (CNT-2), sentence case (CNT-12), Singapore English
+   spelling and a proofread (CNT-13), plain error anatomy (CNT-1), and a last
+   pass for AI-writing tells (SLP-9).
 
 The website's [UI text](/guidelines/ui-text) guideline presents the full sequence
 for human readers; this skill is where an agent applies it.
