@@ -653,13 +653,12 @@ controls:
   # the HDB e-services UX-writing guide (Step 9, accessibility) during the writing-
   # guide port. Built as the exemplar new content control. Renumbered from the
   # proposed CNT-4 after CNT-4 was assigned to domain fidelity (issue #27) on main.
-  # Pending design-lead approval; re-audit set = every shipped surface carrying CTA
-  # or link copy.
+  # Design-lead approved 2026-07-22; re-audit set = every shipped surface carrying
+  # CTA or link copy.
   - id: CNT-5
     source: TFX-DS
     title: UI action words name the action, not the input device — "choose", "select", "view", never "click", "tap", "swipe", or "press"
     tier: L2
-    status: proposed
     check: hybrid
     phase: [implement, verify]
     applies_to: [content]
@@ -678,13 +677,12 @@ controls:
   # writing-guide port (edit-to-be-concise). Boundary with SLP-9: SLP-9 catches
   # AI-writing tells (buzzwords, phrase filler, structural tells); CNT-6 catches
   # no-op words in any copy regardless of author; lint lists stay disjoint so one
-  # token never fires two controls. Pending design-lead approval; re-audit set =
+  # token never fires two controls. Design-lead approved 2026-07-22; re-audit set =
   # every shipped surface carrying user-facing copy.
   - id: CNT-6
     source: TFX-DS
     title: Copy carries no low-informational-value words — no empty openers, filler words, or droppable articles and conjunctions, unless removing them hurts clarity
     tier: L2
-    status: proposed
     check: hybrid
     phase: [implement, verify]
     applies_to: [content]
@@ -702,14 +700,13 @@ controls:
   # port. The purpose clause is pure judgment and kept straddling guideline sections,
   # while CNT-3's other clauses are mechanical; one ID for both made findings and
   # waivers ambiguous. Renumbered from the proposed CNT-5 after CNT-5 was assigned to
-  # device verbs. Pending design-lead approval; re-audit set = every shipped surface
-  # carrying descriptive prose (page titles, descriptions, section intros, empty
+  # device verbs. Design-lead approved 2026-07-22; re-audit set = every shipped
+  # surface carrying descriptive prose (page titles, descriptions, section intros, empty
   # states, feature blurbs — in this repo, all content/**.mdx frontmatter and intros).
   - id: CNT-7
     source: TFX-DS
     title: Descriptive copy leads with its purpose — what it does for the teacher and when to reach for it — before the mechanism
     tier: L2
-    status: proposed
     check: judgment
     phase: [implement, verify]
     applies_to: [content]
@@ -865,16 +862,17 @@ controls:
     detail: controls/cnt-13.md
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
 
-  # CNT-14: ratchet PROPOSAL 2026-07-10 — holistic voice quality + tone-fit, the one
-  # slice of the voice & tone guideline (content/guidelines/voice-tone-proposed.mdx)
-  # no existing control owns. Judgment-only: no static signal decides "sounds
+  # CNT-14: ratchet 2026-07-10, design-lead approved 2026-07-22 — holistic voice
+  # quality + tone-fit, the one slice of the voice & tone guideline
+  # (content/guidelines/voice-tone.mdx) no existing control owns. Judgment-only:
+  # no static signal decides "sounds
   # thoughtful" or "tone fits this surface". Disjoint from the mechanical voice
   # controls (CNT-3 person/voice/length, CNT-6 filler, CNT-8 nominalisations, CNT-12
   # case, SLP-9 AI tells) — those catch specific tokens/patterns; CNT-14 grades the
   # gestalt a string can fail while passing every mechanical control. Boundary with
   # CMP-2: CMP-2 governs destructive-action behaviour (consequences + undo/confirm);
-  # CNT-14 governs whether the wording is sober vs dramatic. Pending design-lead
-  # approval; re-audit set = every shipped surface carrying user-facing copy.
+  # CNT-14 governs whether the wording is sober vs dramatic. Re-audit set =
+  # every shipped surface carrying user-facing copy.
   - id: CNT-14
     source: TFX-DS
     title: Copy embodies the TFX voice (Clear, Thoughtful, Approachable) and its tone fits the surface context
@@ -882,7 +880,7 @@ controls:
     check: judgment
     phase: [implement, verify]
     applies_to: [content]
-    verify: "Evaluator reads the copy against the voice attributes and the tone-by-context table in voice-tone-proposed.mdx: does it sound Clear/Thoughtful/Approachable (not cold, robotic, patronising, alarmist, or sappy), and does the tone match the surface (affirming success, calm error, sober destructive, inviting empty state)?"
+    verify: "Evaluator reads the copy against the voice attributes and the tone-by-context table in voice-tone.mdx: does it sound Clear/Thoughtful/Approachable (not cold, robotic, patronising, alarmist, or sappy), and does the tone match the surface (affirming success, calm error, sober destructive, inviting empty state)?"
     waiver: rationale
     fails_when:
       - an error message that is alarmist or dramatic rather than calm and helpful
