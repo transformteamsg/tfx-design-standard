@@ -1,18 +1,14 @@
 ---
-title: "Step 3: Build your change"
-description: The build loop, by hand or with a harness, and how to keep an eye on the basics.
+title: "Step 3: Build"
+description: The build loop, step by step, and how to keep an eye on the basics.
 status: proposed
 ---
 
-Once you know what you're making, the loop is the same every time.
-
-> **If your repo has a design harness, it runs the build, check, and review phases for you.** It builds to the standard, stops for your approval before and after, and has a separate reviewer grade the result (on a TFX repo, that's `/tfx:design` and its [six-phase loop](/harness/loop)). You still make the branch and open the merge request yourself. No harness yet? Drive the steps by hand below; honestly, doing it manually first is the best way to learn what's actually going on.
+Once you know what you're making, the loop is the same every time. Doing it by hand is the best way to learn what's actually going on.
 
 ## 1. Make a branch
 
-Pull the latest shared code first (the shared branch is usually called `main`), then make your branch off it, so you build on the current version. Have your AI show you the exact git command and wait for your OK before it runs. Git actions are worth a quick double-check.
-
-> Branch naming is team-specific. For example, `102-add-feedback-link` or `feat/add-feedback-link`. Ask what yours uses.
+Pull the latest shared code first (the shared branch is usually called `main`), then make your branch off it, so you build on the current version. Have your AI show you the exact git command and wait for your OK before it runs; git actions are worth a quick double-check. Branch names are team-specific, like `102-add-feedback-link` or `feat/add-feedback-link`, so ask what yours uses.
 
 ## 2. Let your AI learn the codebase first
 
@@ -20,7 +16,7 @@ Before it writes anything, have your AI read the project, so it copies what's al
 
 > *"Before writing anything, read this codebase: the setup file, a few existing components, and the design tokens or guidelines. Then follow how this project already does things."*
 
-> You don't have to re-orient from scratch every session. Many codebases keep a `CLAUDE.md` file (or similar) that your AI reads automatically when a session starts, so it begins oriented. If yours has one, lean on it. It's a shared team file, so read from it rather than writing your own notes into it.
+You don't have to re-orient from scratch every session. Many codebases keep a `CLAUDE.md` file (or similar) that your AI reads automatically when a session starts, so it begins oriented. If yours has one, lean on it; it's a shared team file, so read from it rather than writing your own notes into it.
 
 ## 3. Match what's already there
 
@@ -37,22 +33,31 @@ Reuse what's there before building new. A change that looks like it belongs is e
 
 ## 4. Build only what the task needs
 
-Skip unrelated "improvements"; they make the review harder. Pause to ask an engineer if the AI wants to install a new dependency, edit files outside the frontend folder (like `backend/`), touch a lot of files at once, or do something you don't understand.
+Skip unrelated "improvements"; they make the review harder. Pause to ask an engineer if the AI wants to:
+
+- install a new dependency
+- edit files outside the frontend folder (like `backend/`)
+- touch a lot of files at once
+- do something you don't understand
 
 ## 5. Check it in your preview
 
-Look at your change in the running app at `localhost`, at mobile and desktop widths, and in every state: **empty** (no data yet), **loading** (while it fetches), and **error** (when it fails). Those three states are where UI usually breaks, and they're easy to forget.
+Look at your change in the running app at `localhost`, at mobile and desktop widths, and in every state, not just the main flow:
 
-> To see the mobile width, open your browser's dev tools (right-click the page and choose Inspect) and click the phone/tablet icon for device view. Or just drag the window narrower.
+- **Empty**: no data yet
+- **Loading**: while it fetches
+- **Error**: when it fails
 
-> **Let your AI drive the browser.** [Claude in Chrome](https://claude.com/claude-for-chrome) can open your preview, click through the states, and resize for mobile, so it catches visual issues without you doing every click yourself.
+Those three states are where UI usually breaks, and they're easy to forget. To see the mobile width, open your browser's dev tools (right-click the page and choose Inspect) and click the phone/tablet icon for device view, or just drag the window narrower. [Claude in Chrome](https://claude.com/claude-for-chrome) can also drive your preview: it clicks through the states and resizes for mobile, so it catches visual issues without you doing every click.
 
 ## 6. Run the checks
 
-Ask your AI to run the project's checks *and* its build. Run both, since the quick checks (types, formatting) can pass while the full build fails. If your team has automated design checks, run those too: they catch hardcoded colours, contrast failures, missing focus states, tiny fonts, and generic "AI slop". A green result means nothing automated was flagged, not that the design is done, so still look at it yourself. On a TFX repo, what gets checked lives in the [standards catalog](/standards/catalog). If a check flags one dimension (spacing, colour, wording), a focused pass like `/tfx:polish` or `/tfx:copy` fixes just that.
+Ask your AI to run the project's checks and its build. Run both, since the quick checks (types, formatting) can pass while the full build fails. These are the same checks GitLab runs as a **pipeline** when you open a merge request (Step 4), so running them now catches failures early. If your team has automated design checks, run those too: they catch hardcoded colours, contrast failures, missing focus states, tiny fonts, and generic "AI slop". A green result means nothing automated was flagged, not that the design is done, so still look at it yourself. On a TFX repo, what gets checked lives in the [standards catalog](/standards/catalog). If a check flags one dimension (spacing, colour, wording), a focused pass like `/tfx:polish` or `/tfx:copy` fixes just that.
 
-## 7. Get the code reviewed before a human sees it
+## 7. Get an adversarial review
 
-Ask for an *adversarial* review, a deliberately critical pass that hunts for problems. On a TFX repo, [`/tfx:critique`](/harness/skills) does this against the standard; otherwise, run Claude Code's `/code-review` skill. Even better, have a *different* model do the review. The model that wrote the code is a poor judge of its own work, so a fresh set of eyes catches more; Codex is good for this. Either way, it cleans things up first, so your engineer's review goes faster.
+Before a human sees it, ask for an *adversarial* review, a deliberately critical pass that hunts for problems. On a TFX repo, [`/tfx:critique`](/harness/skills) does this against the standard; otherwise, run Claude Code's `/code-review` skill. Even better, have a *different* model do the review: the model that wrote the code is a poor judge of its own work, so a fresh set of eyes catches more (Codex is good for this). Either way, it cleans things up first, so your engineer's review goes faster.
 
-Next: [Step 4: ship it](/getting-started/ship).
+Once you've done this by hand, a design harness can run the build, check, and review phases for you, stopping for your approval before and after (on a TFX repo, that's `/tfx:design` and its [six-phase loop](/harness/loop)). You still make the branch and open the merge request yourself.
+
+Next: [Step 4: Ship](/getting-started/ship).

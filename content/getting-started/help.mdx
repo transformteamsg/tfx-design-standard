@@ -1,5 +1,5 @@
 ---
-title: Troubleshooting and prompts
+title: "Help & prompts"
 description: What to do when something breaks, where to go next, and prompts you can copy.
 status: proposed
 ---
@@ -13,7 +13,7 @@ Errors are normal, and on your own branch they're safe. Two things to remember:
 
 ## Going further
 
-Once you're comfortable, you can hand more to a harness over time: from asking it questions, to directing one change at a time, to writing the intent and approving the plan while it builds. The [Designer on-ramp](/harness/on-ramp) lays out that path.
+As you get comfortable, hand more to a harness: first asking questions, then directing one change at a time, then approving the plan while it builds. The [Designer on-ramp](/harness/on-ramp) lays out that path.
 
 ## Prompts you can copy
 
@@ -21,29 +21,39 @@ Starting points that work in any repo. Your assistant fills in the specifics.
 
 **Getting set up**
 
-- **Understand the project:** "What's the tech stack here, and how do I install, run, and build this project?"
-- **Clone it:** "Clone this repo for me: [paste the address]."
+| What it does | Prompt |
+| --- | --- |
+| Understand the project | "What's the tech stack here, and how do I install, run, and build this project?" |
+| Clone it | "Clone this repo for me: [paste the address]." |
 
 **Building**
 
-- **Learn the codebase first:** "Before writing anything, read this codebase and its design tokens, then follow how it already does things."
-- **Make a branch:** "Make a branch for this change. Show me the git command and wait for my OK first."
-- **Reuse over invent:** "Reuse existing components and tokens. Check the ui/ and common/ folders before making anything new, and don't hardcode colours."
-- **Check the blast radius:** "Before you change a component, tell me if it's used on more than one page."
-- **Review before a human does:** "Use the `/code-review` skill on this change (or a different model like Codex). Find anything an engineer would flag, and check it fits the codebase's conventions."
+| What it does | Prompt |
+| --- | --- |
+| Learn the codebase first | "Before writing anything, read this codebase and its design tokens, then follow how it already does things." |
+| Make a branch | "Make a branch for this change. Show me the git command and wait for my OK first." |
+| Reuse over invent | "Reuse existing components and tokens. Check the ui/ and common/ folders before making anything new, and don't hardcode colours." |
+| Check the blast radius | "Before you change a component, tell me if it's used on more than one page." |
+| Review before a human does | "Use the /code-review skill on this change (or a different model like Codex). Find anything an engineer would flag, and check it fits the codebase's conventions." |
 
 **Shipping**
 
-- **Verify your change:** "Run the project's checks (lint, types, tests) and its build, plus the design checks if it has them. Show me what passes and what fails."
-- **Commit and push safely:** "Stage only the files I changed, commit with a clear message, and push my branch. Confirm the commands first."
-- **Draft the MR:** "Draft an MR description from what we did, with before/after screenshots."
-- **Update your branch:** "Update my branch with the latest main. Tell me whether this repo uses rebase or merge first."
+| What it does | Prompt |
+| --- | --- |
+| Verify your change | "Run the project's checks (lint, types, tests) and its build, plus the design checks if it has them. Show me what passes and what fails." |
+| Commit and push safely | "Stage only the files I changed, commit with a clear message, and push my branch. Confirm the commands first." |
+| Draft the MR | "Draft an MR description from what we did, with before/after screenshots." |
+| Update your branch | "Update my branch with the latest main. Tell me whether this repo uses rebase or merge first." |
 
 **When stuck**
 
-- **Fix a failed check:** "This check failed. Read the error and tell me what's wrong and how to fix it."
-- **Restart the preview:** "The preview stopped. Can you start it again?"
+| What it does | Prompt |
+| --- | --- |
+| Fix a failed check | "This check failed. Read the error and tell me what's wrong and how to fix it." |
+| Restart the preview | "The preview stopped. Can you start it again?" |
 
 ---
 
 *A living starting point. When your team does something differently, especially around setup, access, and secrets, trust your engineers over this guide, and help improve it.*
+
+*Thanks to the LangBuddy engineers who taught me most of this.*
