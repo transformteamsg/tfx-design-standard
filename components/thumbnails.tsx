@@ -15,6 +15,7 @@ export const sectionInk: Record<string, string> = {
   foundations: "var(--sec-foundations)",
   products: "var(--sec-products)",
   harness: "var(--sec-harness)",
+  "getting-started": "var(--sec-getting-started)",
   governance: "var(--sec-governance)",
 };
 

@@ -33,11 +33,24 @@ const leafHrefs = (items: NavItem[]): string[] =>
 
 const nav: NavGroup[] = [
   {
-    label: "Start",
+    label: "Start with TFX Design Standard",
     items: [
       { href: "/overview", title: "Overview" },
       { href: "/how-to-read", title: "How to read this" },
       { href: "/for-agents", title: "For agents" },
+    ],
+  },
+  {
+    label: "Start with code",
+    items: [
+      { href: "/getting-started", title: "Overview" },
+      { href: "/getting-started/git-basics", title: "Git in plain words" },
+      { href: "/getting-started/guardrails", title: "What makes this safe" },
+      { href: "/getting-started/set-up", title: "Step 1: Get set up" },
+      { href: "/getting-started/decide", title: "Step 2: Decide what you're making" },
+      { href: "/getting-started/build", title: "Step 3: Build your change" },
+      { href: "/getting-started/ship", title: "Step 4: Ship it" },
+      { href: "/getting-started/help", title: "Troubleshooting & prompts" },
     ],
   },
   {
