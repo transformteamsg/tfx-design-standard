@@ -10,16 +10,16 @@ import type { ReactNode } from "react";
 export function Checklist({ children }: { children?: ReactNode }) {
   return (
     <figure className="my-8 overflow-hidden rounded-lg border border-border bg-surface">
-      <ul className="divide-y divide-border">{children}</ul>
+      <ul className="m-0 list-none divide-y divide-border p-0">{children}</ul>
     </figure>
   );
 }
 
 export function Check({ children }: { children?: ReactNode }) {
   return (
-    <li className="flex items-start gap-3 px-4 py-3">
-      <span className="mt-0.5 inline-flex size-5 shrink-0 items-center justify-center rounded-full border border-success-muted bg-success-subtle text-success">
-        <CheckIcon className="size-3" aria-hidden />
+    <li className="mb-0 flex items-start gap-3 px-4 py-3">
+      <span className="mt-px inline-flex size-5 shrink-0 items-center justify-center rounded-full border border-success-muted bg-success-subtle text-success">
+        <CheckIcon size={13} strokeWidth={2.5} aria-hidden />
       </span>
       <span className="text-sm leading-[1.6] text-(--prose-body)">{children}</span>
     </li>

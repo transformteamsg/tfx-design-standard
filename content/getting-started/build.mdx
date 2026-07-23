@@ -33,12 +33,16 @@ Reuse what's there before building new. A change that looks like it belongs is e
 
 ## 4. Build only what the task needs
 
-Skip unrelated "improvements"; they make the review harder. Pause to ask an engineer if the AI wants to:
+Keep the change focused. Skip unrelated "improvements", even tempting ones; they make it harder to review and to undo.
+
+Some moves are higher-stakes and worth a closer look. Read carefully when the AI wants to:
 
 - install a new dependency
 - edit files outside the frontend folder (like `backend/`)
 - touch a lot of files at once
 - do something you don't understand
+
+None of these are off-limits, and most turn out fine. They're just the moments to slow down, understand what's happening, and loop in an engineer if it's outside your area or you're unsure.
 
 ## 5. Check it in your preview
 
@@ -52,7 +56,14 @@ Those three states are where UI usually breaks, and they're easy to forget. To s
 
 ## 6. Run the checks
 
-Ask your AI to run the project's checks and its build. Run both, since the quick checks (types, formatting) can pass while the full build fails. These are the same checks GitLab runs as a **pipeline** when you open a merge request (Step 4), so running them now catches failures early. If your team has automated design checks, run those too: they catch hardcoded colours, contrast failures, missing focus states, tiny fonts, and generic "AI slop". A green result means nothing automated was flagged, not that the design is done, so still look at it yourself. On a TFX repo, what gets checked lives in the [standards catalog](/standards/catalog). If a check flags one dimension (spacing, colour, wording), a focused pass like `/tfx:polish` or `/tfx:copy` fixes just that.
+Ask your AI to run two things. Run both, since the quick checks can pass while the full build still fails:
+
+- **Code checks** - types, formatting, and tests, plus the build step.
+- **Design checks**, if your team has them - they catch hardcoded colours, contrast failures, missing focus states, tiny fonts, and generic "AI slop".
+
+These are the same checks GitLab runs as a **pipeline** when you open a merge request (Step 4), so running them now catches failures early.
+
+A green result means nothing automated was flagged, not that the design is done, so still look at it yourself. On a TFX repo, what gets checked lives in the [standards catalog](/standards/catalog); if a check flags one dimension (spacing, colour, wording), a focused pass like `/tfx:polish` or `/tfx:copy` fixes just that.
 
 ## 7. Get an adversarial review
 
