@@ -30,6 +30,10 @@
     "label": "Products",
     "slugs": ["teacher-workspace", "casesync", "glow"]
   },
+  "getting-started": {
+    "label": "Start with code",
+    "slugs": ["git-basics", "guardrails", "set-up", "decide", "build", "ship", "help"]
+  },
   "harness": {
     "label": "Harness",
     "slugs": ["install", "loop", "skills", "tools", "on-ramp"]

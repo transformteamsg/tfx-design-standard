@@ -1,0 +1,18 @@
+---
+title: What makes this safe
+description: The guardrails your engineers set up so mistakes get caught before they matter.
+status: proposed
+---
+
+You can experiment because the repo catches mistakes before they matter. If you're joining or starting a repo, work with your engineer to make sure these guardrails are in place.
+
+## The guardrails
+
+- **Checks that catch bad code**: linting, type-checking, and tests, plus a build step. Your project has a command that runs them; your engineer will tell you what it is.
+- **The same checks, run automatically on the server** every time you open a merge request, so nothing broken gets in. This is called CI (continuous integration).
+- **Limits on the AI**: an automatic block on dangerous commands (like wiping files or a database), and limits on what the AI can touch on your computer and network.
+- **Design checks**: a design harness that flags UI which breaks the design standard. On a TFX repo that's the [TFX harness](/harness/install); a DXD harness is on the way.
+
+These guardrails are what make it safe for a designer to build. Without them, ask your engineer to set them up first.
+
+Next: [Step 1: get set up](/getting-started/set-up).

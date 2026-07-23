@@ -18,6 +18,7 @@ const sectionCrumbs: Record<string, { label: string; href: string }> = {
   foundations: { label: "Foundations", href: "/foundations" },
   products: { label: "Products", href: "/products" },
   harness: { label: "Harness", href: "/harness" },
+  "getting-started": { label: "Start with code", href: "/getting-started" },
 };
 
 export async function DocPage({ doc, children }: { doc: Doc; children?: ReactNode }) {
