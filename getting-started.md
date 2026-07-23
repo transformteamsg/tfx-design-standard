@@ -15,10 +15,10 @@ Think of the codebase like a shared Figma file that is also live in production. 
 So the whole game is three things:
 
 - **Move fast on the UI** - the visual layer is where you're strong and where changes are low-risk.
-- **Stay fenced off from anything risky** - you work on your own copy, you touch only the frontend, and you never merge your own work into the shared codebase without a second pair of eyes.
+- **Stay fenced off from anything risky** - you work on your own copy, you start in the frontend (where changes are safest), and you never merge your own work into the shared codebase without a second pair of eyes.
 - **Hand the engineers a small, clean change** - the smaller and clearer your change, the faster and safer the review.
 
-**Frontend only.** You change what users see and interact with. You do *not* touch the backend (the server, the database, how data is stored). If a change seems to need backend work, that's a flag to pause and talk to an engineer, not to push ahead.
+**Start with the frontend.** The frontend is what users see and interact with - it's where you're strongest and where changes are lowest-risk, so it's the right place to begin. The backend (the server, the database, how data is stored) is riskier ground, but it's not off-limits: with a capable AI model and an engineer's support, plenty of designers work there too. The rule isn't "never touch the backend" - it's *don't wander into it by accident.* If a change turns out to need backend work, treat that as a moment to pause and bring in an engineer, then decide together whether you take it on with their help or hand it over.
 
 ---
 
@@ -61,7 +61,13 @@ You only do the heavy setup **once per machine**. After that, day-to-day is just
 You can't work on the code until you have a copy of it running on your own machine. This part is genuinely the hardest, and it's the most engineer-dependent - so **ask for help and don't assume it'll just work.** The steps differ per repo; the README and your AI assistant will fill in the specifics.
 
 1. **Get access to the repository** (the repo). An engineer adds you so you're allowed in.
-2. **Copy it to your machine** - this is called *cloning*. It downloads the whole project so you can open and run it locally.
+2. **Copy it to your machine** - this is called *cloning*, and it downloads the whole project into a folder so you can open and run it locally. Here's the exact path:
+   - On the repo's web page, find the **Code** button (blue on GitLab, green on GitHub) near the top right, and click it.
+   - Copy the clone address. You'll see two kinds: **SSH** (starts with `git@...`) and **HTTPS** (starts with `https://...`). They do the same thing - they differ only in how your machine proves it's allowed in. SSH uses a one-time key you set up; HTTPS asks for a token or password.
+   - **Which one to use, and setting up that access, is the part to do with an engineer the first time.** It's fiddly, it's team-specific, and it's the step most likely to trip you up - so don't battle it alone.
+   - Once you have the address, cloning is a single command - `git clone <the-address>` - or just ask your AI: *"clone this repo for me: &lt;paste the address&gt;"*.
+
+   > **In LangBuddy (GitLab):** the **Code** button gives you an SSH address (`git@sgts.gitlab-dedicated.com:...`) and an HTTPS one. An engineer set up my access the first time - well worth asking for.
 3. **Install and run it.** Projects need their building blocks installed before they'll start, and there are often prerequisites (specific tools or versions) first. The README usually lists these; your AI can read them and walk you through.
 4. **Get the `.env` values** - see the callout below. Without these, the app won't run.
 
@@ -162,7 +168,7 @@ Once you know what you're making, the loop is the same every time.
 
 2. **Ground the work in your design standard.** Before building, look at how the codebase already does things - reuse existing components, match the existing patterns and tokens (the colour, spacing, and type values already defined for reuse in the code - the same idea as design tokens in Figma), don't invent new styles. Matching beats improving here; a change that looks native to the codebase is easier to trust and review.
 
-3. **Build it - frontend only.** Make the change, and only the change the task needs. No drive-by "improvements" to unrelated things - they make the review harder and the risk higher.
+3. **Build it - staying in the frontend to start.** Make the change, and only the change the task needs. If it turns out to need backend work, pause and loop in an engineer (see "Start with the frontend" above) rather than pushing on alone. No drive-by "improvements" to unrelated things - they make the review harder and the risk higher.
 
 4. **Check it looks right.** Look at it at **mobile and desktop widths**, and check the **empty, loading, and error states**, not just the happy path. Half of good UI is the states people forget.
 
