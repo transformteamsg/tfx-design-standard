@@ -201,7 +201,7 @@ Starting points that work in any repo. Your assistant fills in the specifics.
 - **Make a branch:** "Make a branch for this change. Show me the git command and wait for my OK first."
 - **Reuse over invent:** "Reuse existing components and tokens. Check the ui/ and common/ folders before making anything new, and don't hardcode colours."
 - **Check the blast radius:** "Before you change a component, tell me if it's used on more than one page."
-- **Review before a human does:** "Do an adversarial code review of this change. Find anything an engineer would flag, and check it fits the codebase's conventions."
+- **Review before a human does:** "Use the code-review skill on this change (or a different model like Codex). Find anything an engineer would flag, and check it fits the codebase's conventions."
 
 **Shipping**
 - **Run the checks:** "Run the checks, the build, and the design checks if we have them, then show me the results before we commit."
