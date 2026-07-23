@@ -45,7 +45,7 @@ const nav: NavGroup[] = [
     items: [
       { href: "/getting-started", title: "Overview" },
       { href: "/getting-started/git-basics", title: "Introducing Git" },
-      { href: "/getting-started/guardrails", title: "Step 0: Set up guardrails" },
+      { href: "/getting-started/guardrails", title: "Step 0: Prep the guardrails" },
       { href: "/getting-started/set-up", title: "Step 1: Set up" },
       { href: "/getting-started/plan", title: "Step 2: Plan" },
       { href: "/getting-started/build", title: "Step 3: Build" },
