@@ -21,7 +21,7 @@ Two things worth knowing:
 
 > **One note up front.** I'm a designer, not an engineer, so treat this as the path that's worked for me, not a rulebook. Teams set things up differently, so when something touches access, setup, or safety, check the specifics with your engineers.
 
-## Step 0: Prep the guardrails
+## Step 0: Prep guardrails
 
 You can experiment because the repo catches mistakes before they matter. If you're joining or starting a repo, work with your engineer to make sure these guardrails are in place:
 
@@ -108,11 +108,15 @@ Ask your AI for the command to run the project; it can read the repo and tell yo
 
 ## Step 2: Plan
 
-**Start with the problem.** Before any code, get clear on what you're solving: a short problem statement, a design brief, and (where they apply) your measures of success. A clear problem makes every later step easier to judge.
+### Start with the problem
+
+Before any code, get clear on what you're solving: a short problem statement, a design brief, and (where they apply) your measures of success. A clear problem makes every later step easier to judge.
 
 > **Tip: track success.** If your app is wired to [PostHog](https://posthog.com), you can even set up analytics so you can see whether a build actually moves the metric, not just whether it shipped.
 
-Then decide what kind of work this is. That decides how much to plan and which tools help.
+### Pick the kind of work
+
+What kind of work this is decides how much to plan and which tools help.
 
 | Mode | What it is | Recommended approach |
 | --- | --- | --- |
@@ -120,7 +124,9 @@ Then decide what kind of work this is. That decides how much to plan and which t
 | **Revamp** | Polishing existing UI without breaking how it works | Use light plan mode, describe the changes you want, and go in small steps. |
 | **Handoff (frontend)** | A clean frontend an engineer will wire up; they mostly refactor the backend | Write a spec document so your design intent survives. How detailed depends on the work and the engineer, so ask what documentation they need. |
 
-**How much to plan is up to you.** A common rhythm: explore or prototype freely first, then write it down once the shape settles. Rigid plans early tend to fight visual exploration. These modes mirror the early phases of a design loop (intent, then a few directions, then a plan); see [The loop](/harness/loop).
+### Decide how much to plan
+
+It's your call. A common rhythm: explore or prototype freely first, then write it down once the shape settles. Rigid plans early tend to fight visual exploration. These modes mirror the early phases of a design loop (intent, then a few directions, then a plan); see [The loop](/harness/loop).
 
 ### Tools and skills
 
@@ -207,7 +213,7 @@ Errors are normal, and on your own branch they're safe. Two things to remember:
 
 ## Going further
 
-Once you're comfortable, you can hand more to a harness over time: from asking it questions, to directing one change at a time, to writing the intent and approving the plan while it builds. The [Designer on-ramp](/harness/on-ramp) lays out that path.
+A harness can take on more of this as you go: asking the questions, making changes, drafting and running a plan while you approve. It handles the mechanics, but knowing what each step does is what lets you catch the AI when it slips and push back. That's why it pays to do a few changes by hand first. The [Designer on-ramp](/harness/on-ramp) lays out how to hand off more as your judgment grows.
 
 ## Prompts you can copy
 
