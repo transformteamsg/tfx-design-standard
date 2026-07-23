@@ -97,7 +97,7 @@ Then decide what kind of work this is. That decides how much to plan and which t
 
 | Mode | What it is | Recommended approach |
 | --- | --- | --- |
-| **Prototype** | A quick build to test an idea or demo to the team | Prompt freely with mock data; rough is fine. If the idea is fuzzy, start with a grill-me interview. |
+| **Prototype** | A quick build to test an idea or demo to the team | Prompt freely with mock data; rough is fine. If the idea is fuzzy, start with a `/grill-me` interview. |
 | **Revamp** | Polishing existing UI without breaking how it works | Use light plan mode, describe the changes you want, and go in small steps. |
 | **Handoff (frontend)** | A clean frontend an engineer will wire up; they mostly refactor the backend | Write a spec document so your design intent survives. How detailed depends on the work and the engineer, so ask what documentation they need. |
 
@@ -114,9 +114,9 @@ No harness? The generic tools below do similar jobs. These are the ones I picked
 | Tool | What it does, and how to use it | Where |
 | --- | --- | --- |
 | **plan mode** | Lays out its approach before writing any code. Turn it on, describe the change, then read the plan and approve it or send it back. Honestly, your best friend. | [Claude Code feature](https://code.claude.com/docs/en/permission-modes) |
-| **grill-me** (rec. Sheen An) | Interviews you to pressure-test the idea. Run it, then answer its questions honestly; it surfaces the gaps you missed. | [mattpocock/skills](https://github.com/mattpocock/skills) |
+| **`/grill-me`** (rec. Sheen An) | Interviews you to pressure-test the idea. Run it, then answer its questions honestly; it surfaces the gaps you missed. | [mattpocock/skills](https://github.com/mattpocock/skills) |
 | **OpenSpec** (rec. Selwyn) | Turns your intent into a structured written spec. Describe the feature and it drafts a spec for you to review and refine. | [openspec.dev](https://openspec.dev) |
-| **feature-dev** (Anthropic) | Walks a feature through discovery, architecture, build, and review. Run `/feature-dev` followed by a description of what you want. | [claude.com/plugins/feature-dev](https://claude.com/plugins/feature-dev) |
+| **`/feature-dev`** (Anthropic) | Walks a feature through discovery, architecture, build, and review. Run `/feature-dev` followed by a description of what you want. | [claude.com/plugins/feature-dev](https://claude.com/plugins/feature-dev) |
 | **Compound Engineering** (rec. Wondo) | A brainstorm-to-plan-to-build-to-review flow, built so each task makes the next one easier. Kick it off with the feature and the problem. | [github.com/EveryInc/compound-engineering-plugin](https://github.com/EveryInc/compound-engineering-plugin) |
 
 All optional. Use whatever fits you or your team, or none.
@@ -157,7 +157,7 @@ Once you know what you're making, the loop is the same every time.
 
 **6. Run the checks.** Ask your AI to run the project's checks *and* its build. Run both, since the quick checks (types, formatting) can pass while the full build fails. If your team has automated design checks, run those too: they catch hardcoded colours, contrast failures, missing focus states, tiny fonts, and generic "AI slop". A green result means nothing automated was flagged, not that the design is done, so still look at it yourself. On a TFX repo, what gets checked lives in the [standards catalog](/standards/catalog). If a check flags one dimension (spacing, colour, wording), a focused pass like `/tfx:polish` or `/tfx:copy` fixes just that.
 
-**7. Get the code reviewed before a human sees it.** Ask for an *adversarial* review, a deliberately critical pass that hunts for problems. On a TFX repo, [`/tfx:critique`](/harness/skills) does this against the standard; otherwise, run Claude Code's code-review skill. Even better, have a *different* model do the review. The model that wrote the code is a poor judge of its own work, so a fresh set of eyes catches more; Codex is good for this. Either way, it cleans things up first, so your engineer's review goes faster.
+**7. Get the code reviewed before a human sees it.** Ask for an *adversarial* review, a deliberately critical pass that hunts for problems. On a TFX repo, [`/tfx:critique`](/harness/skills) does this against the standard; otherwise, run Claude Code's `/code-review` skill. Even better, have a *different* model do the review. The model that wrote the code is a poor judge of its own work, so a fresh set of eyes catches more; Codex is good for this. Either way, it cleans things up first, so your engineer's review goes faster.
 
 ## Step 4: Ship it
 
@@ -201,10 +201,10 @@ Starting points that work in any repo. Your assistant fills in the specifics.
 - **Make a branch:** "Make a branch for this change. Show me the git command and wait for my OK first."
 - **Reuse over invent:** "Reuse existing components and tokens. Check the ui/ and common/ folders before making anything new, and don't hardcode colours."
 - **Check the blast radius:** "Before you change a component, tell me if it's used on more than one page."
-- **Review before a human does:** "Use the code-review skill on this change (or a different model like Codex). Find anything an engineer would flag, and check it fits the codebase's conventions."
+- **Review before a human does:** "Use the `/code-review` skill on this change (or a different model like Codex). Find anything an engineer would flag, and check it fits the codebase's conventions."
 
 **Shipping**
-- **Run the checks:** "Run the checks, the build, and the design checks if we have them, then show me the results before we commit."
+- **Verify before committing:** "Run this repo's pre-commit checks (lint, types, tests) and its build, plus the design checks if it has them. Show me what passes and what fails before we commit."
 - **Commit and push safely:** "Stage only the files I changed, commit with a clear message, and push my branch. Confirm the commands first."
 - **Draft the MR:** "Draft an MR description from what we did, with before/after screenshots."
 - **Update your branch:** "Update my branch with the latest main. Tell me whether this repo uses rebase or merge first."
