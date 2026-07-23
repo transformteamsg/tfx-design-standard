@@ -105,16 +105,19 @@ Then decide what kind of work this is. That decides how much to plan and which t
 
 ### Tools and skills
 
-If your repo has a design harness, lean on it; its skills know the standard, so they build, review, and polish to spec. You get one skill to build or change a screen, one to review a page, and focused passes for a single dimension (copy, spacing, motion, layout, flow). See [the harness skills](/harness/skills) for the full list. (Today that's the TFX harness; a generic DXD harness of the same shape is on the way.)
+Whichever tool you use, you start the same way: tell the AI, in plain words, what you want to build and the problem it solves. Be specific; vague in, vague out.
+
+If your repo has a design harness, lean on it; its skills know the standard, so they build, review, and polish to spec. You get one skill to build or change a screen, one to review a page, and focused passes for a single dimension (copy, spacing, motion, layout, flow). You use one by typing it with a plain description of what you want (on a TFX repo, `/tfx:design a settings page for teachers`). See [the harness skills](/harness/skills) for the full list. (Today that's the TFX harness; a generic DXD harness of the same shape is on the way.)
 
 No harness? The generic tools below do similar jobs. These are the ones I picked up from the LangBuddy engineers:
 
-| Tool | What it's for | Where |
+| Tool | What it does, and how to use it | Where |
 | --- | --- | --- |
-| **plan mode** | Your AI lays out its approach before it writes any code. Honestly, plan mode is your best friend. | [Claude Code feature](https://code.claude.com/docs/en/permission-modes) |
-| **grill-me** (rec. Sheen An) | Your AI interviews you to pressure-test the idea and surface gaps. | [mattpocock/skills](https://github.com/mattpocock/skills) |
-| **OpenSpec** (rec. Selwyn) | Turns your intent into a structured written spec. | [openspec.dev](https://openspec.dev) |
-| **Compound Engineering** (rec. Wondo) | A brainstorm-to-plan-to-build-to-review flow, built so each task makes the next one easier. | [github.com/EveryInc/compound-engineering-plugin](https://github.com/EveryInc/compound-engineering-plugin) |
+| **plan mode** | Lays out its approach before writing any code. Turn it on, describe the change, then read the plan and approve it or send it back. Honestly, your best friend. | [Claude Code feature](https://code.claude.com/docs/en/permission-modes) |
+| **grill-me** (rec. Sheen An) | Interviews you to pressure-test the idea. Run it, then answer its questions honestly; it surfaces the gaps you missed. | [mattpocock/skills](https://github.com/mattpocock/skills) |
+| **OpenSpec** (rec. Selwyn) | Turns your intent into a structured written spec. Describe the feature and it drafts a spec for you to review and refine. | [openspec.dev](https://openspec.dev) |
+| **feature-dev** (Anthropic) | Walks a feature through discovery, architecture, build, and review. Run `/feature-dev` followed by a description of what you want. | [claude.com/plugins/feature-dev](https://claude.com/plugins/feature-dev) |
+| **Compound Engineering** (rec. Wondo) | A brainstorm-to-plan-to-build-to-review flow, built so each task makes the next one easier. Kick it off with the feature and the problem. | [github.com/EveryInc/compound-engineering-plugin](https://github.com/EveryInc/compound-engineering-plugin) |
 
 All optional. Use whatever fits you or your team, or none.
 
