@@ -61,8 +61,8 @@ const nav: NavGroup[] = [
         label: "Content",
         items: [
           { href: "/guidelines/voice-tone", title: "Voice & tone" },
-          { href: "/guidelines/grammar-mechanics", title: "Grammar & mechanics" },
           { href: "/guidelines/ui-text", title: "UI text" },
+          { href: "/guidelines/grammar-mechanics", title: "Grammar & mechanics" },
           { href: "/guidelines/text-patterns", title: "Components & text patterns" },
           { href: "/guidelines/naming", title: "Naming" },
         ],
