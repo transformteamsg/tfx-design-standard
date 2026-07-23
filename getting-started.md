@@ -14,13 +14,23 @@ You can make UI changes to a live product without writing code from scratch. Ins
 
 Two things worth knowing:
 
-- **Your machine vs the shared server.** Your own computer holds your private copy. Anything you do there (including a live preview at `localhost`) is yours alone until you share it. The shared server (usually GitLab, sometimes GitHub) is what the whole team sees. Keep the two apart in your head and most of what follows makes sense.
+- **Your computer vs the shared server.** Your own computer holds your private copy. Anything you do there (including a live preview at `localhost`) is yours alone until you push it up to the shared server. The shared server (usually GitLab, sometimes GitHub) is what the whole team sees. Keep the two apart in your head and most of what follows makes sense.
 - **Any assistant works.** The steps are the same whether you use Claude Code, Codex, or another. Only the interface differs.
   - What I reach for: Claude Code (the desktop app, on Opus) to build, and Codex for a second opinion on code review.
-  - Your project may have named shortcuts (slash-commands or "skills") for common jobs like planning or design-checking. Ask your team what yours has.
   - The steps also flex to your tech stack and your team's way of working, so check locally wherever something varies.
 
 > **One note up front.** I'm a designer, not an engineer, so treat this as the path that's worked for me, not a rulebook. Teams set things up differently, so when something touches access, setup, or safety, check the specifics with your engineers.
+
+## What makes this safe: guardrails
+
+You can experiment because the repo is set up to catch mistakes before they matter. Engineers put these guardrails in place:
+
+- **Linting and type-checks** (like `yarn pre-commit`), **tests**, and a **build check** catch broken or off-standard code.
+- **CI** re-runs all of them on every merge request, so nothing merges red.
+- **AI command guardrails**: a hook blocks dangerous commands (like `rm -rf` or `DROP DATABASE`), and a sandbox limits what the AI can reach on your network and disk.
+- **Design checks**: a design harness flags off-standard UI. On a TFX repo that's the [TFX harness](/harness/install); a DxD harness is on the way.
+
+If you join a repo without these, ask an engineer to set them up first. They are what make it safe for a designer to build.
 
 ## How do I do it?
 
@@ -51,23 +61,25 @@ That's the whole vocabulary. Your AI can run all of these for you; knowing what 
 
 You do this once, when you first join a repo. It's the most engineer-dependent part, so it's the best place to ask for help. Everyone starts by asking.
 
-**What you need on your machine.** You have three ways to run your AI assistant:
+### Set up your AI tools
 
-- **Claude Code desktop app** (easiest) - a standalone app, no code editor needed.
-- **Claude Code in the terminal** - the command-line version.
+You have three ways to run your AI assistant:
+
+- **Claude Code desktop app** (easiest) - a standalone app, no code editor needed. Needs a personal Claude subscription.
+- **Claude Code in the terminal** - the command-line version. Runs on API credits, which at GovTech are provided (check your team for the current allowance).
 - **A code editor** like VS Code or Cursor, with the [Claude Code extension](https://code.claude.com/docs/en/vs-code).
 
-Whichever you pick, getting your machine ready (the app or editor, plus a few tools the project needs) is a one-time setup an engineer can walk you through. To do it yourself, Claude Code's [setup guide](https://code.claude.com/docs/en/setup) covers it.
+Whichever you pick, getting your machine ready (the app or editor, plus a few tools the project needs) is a one-time setup an engineer can walk you through. To do it yourself, Claude Code's [setup guide](https://code.claude.com/docs/en/setup) covers it. Some repos also ship a design harness you install once; on a TFX repo, see [Install](/harness/install).
 
-Then, for the repo itself:
+### Get the repo onto your computer
 
 **1. Get access.** An engineer adds you to the repo (usually on GitLab, sometimes GitHub) so you're allowed in.
 
-**2. Clone it to your machine.** Cloning downloads the code. On the repo's web page, click the **Code** button and copy the address. As a beginner, pick the **HTTPS** address (it starts with `https://`). You sign in once, and on a Mac your Keychain remembers it, so it stays invisible after that. (SSH, the `git@…` address, is an alternative some teams prefer.) Access setup is the trickiest step, so if you're unsure, ask an engineer to set it up with you. Then cloning is one command (`git clone [address]`), or you can ask your AI to do it.
+**2. Clone it to your machine.** Cloning downloads the code. On the repo's web page, click the **Code** button and copy the address. As a beginner, pick the **HTTPS** address (it starts with `https://`). You sign in once, and on a Mac your Keychain remembers it, so it stays invisible after that. (SSH, the `git@…` address, is an alternative some teams prefer.) Access setup can be confusing the first time, so if you're unsure, ask an engineer to set it up with you. Then cloning is one command (`git clone [address]`), or you can ask your AI to do it.
 
-> **Keep your access safe.** Your login is personal. Never share it, and never use a teammate's. Keep it where it belongs (your Keychain, or a protected key), and never put a token or key into a commit, an AI prompt, Slack, or email. If one ever leaks, tell an engineer so they can replace it. Good support means an engineer helps you set up your own access, never hands you theirs.
+> **Keep your access safe.** Your login is personal. Never share it, and never use a teammate's. Keep it where it belongs (your Keychain, or a protected key), and never put a token or key into a commit, an AI prompt, Slack, or email.
 
-**3. Get the `.env` values.** A `.env` file (short for *environment*) holds the app's settings and secret keys, like the database address or an API key. The repo leaves these out on purpose, so a fresh clone doesn't include them. An engineer sends you the real values through a secure channel (a password manager or vault, not plain Slack), and you paste them into your own local `.env`. Without them, the app won't start. If it crashes on launch with errors about missing keys or config, you're probably missing `.env` values, so ask your engineer.
+**3. Get the `.env` values from your engineer.** A `.env` file holds the app's settings and secret keys (like the database address or an API key), kept out of the repo on purpose. Your engineer sends the real values through a secure channel (a password manager or vault, not plain Slack); paste them into your local `.env`. Without them, the app won't start.
 
 **4. See it running (your preview).** Ask your AI or an engineer how to start the project. Your AI can read the repo and give you the exact command. Once it's running, the app opens in your browser at an address like `http://localhost:5173`. That's your **preview**: your own copy of the app, running on your computer, where you see and click your changes.
 
@@ -75,24 +87,32 @@ Then, for the repo itself:
 
 ## Step 2: Decide what you're making
 
-Before any code, get clear on what kind of work this is. That decides how much to plan and which tools help.
+**Start with the problem.** Before any code, get clear on what you're solving: a short problem statement, a design brief, and (where they apply) your measures of success. A clear problem makes every later step easier to judge.
+
+> **Tip: track success.** If your app is wired to [PostHog](https://posthog.com), set up analytics so you can see whether a build actually moves the metric, not just whether it shipped.
+
+Then decide what kind of work this is. That decides how much to plan and which tools help.
 
 | Mode | What it is | Recommended approach |
 | --- | --- | --- |
 | **Prototype** | A quick build to test an idea or demo to the team | Prompt freely with mock data; rough is fine. If the idea is fuzzy, start with a grill-me interview. |
 | **Revamp** | Polishing existing UI without breaking how it works | Explore against the current screens in small steps. A light plan-mode pass is usually enough. |
-| **Handoff** | A clean version an engineer will build on, with real backend work | Write a short spec first (spec-driven), for example with OpenSpec, so your intent survives the handoff. |
+| **Handoff (frontend)** | A clean frontend an engineer will wire up; they mostly refactor the backend | Write a short spec so your intent survives. How detailed depends on the work and the engineer, so ask what documentation they need. |
 
-**How much to plan is up to you.** A common rhythm: explore or prototype freely first, then write it down once the shape settles. Rigid plans early tend to fight visual exploration.
+**How much to plan is up to you.** A common rhythm: explore or prototype freely first, then write it down once the shape settles. Rigid plans early tend to fight visual exploration. These modes mirror the early phases of a design loop (intent, then a few directions, then a plan); see [The loop](/harness/loop).
 
-The tools named above, from light to heavier:
+### Tools and skills
+
+If your repo has a design harness, its skills fit best because they already know the standard. On a TFX repo, [the harness skills](/harness/skills) cover the main jobs: `/tfx:design` builds or changes a screen, `/tfx:critique` reviews one, and focused passes (`/tfx:copy`, `/tfx:polish`, `/tfx:motion`, `/tfx:flow`, `/tfx:layout`) fix one thing at a time.
+
+Generic tools work too. These are the ones I picked up from the LangBuddy engineers:
 
 | Tool | What it's for | Where |
 | --- | --- | --- |
-| **plan mode** | Your AI lays out its approach before it writes any code. Reach for it when you move from exploring to building. | [Claude Code feature](https://code.claude.com/docs/en/permission-modes) |
-| **grill-me** | Your AI interviews you to pressure-test the idea and surface gaps. Good while you're still shaping it. | [mattpocock/skills](https://github.com/mattpocock/skills) |
-| **OpenSpec** | Turns your intent into a structured written spec. | [openspec.dev](https://openspec.dev) |
-| **Compound Engineering** | A brainstorm-to-plan-to-build-to-review flow. Works with Claude Code, Cursor, Codex, and more. | [github.com/EveryInc/compound-engineering-plugin](https://github.com/EveryInc/compound-engineering-plugin) |
+| **plan mode** | Your AI lays out its approach before it writes any code. | [Claude Code feature](https://code.claude.com/docs/en/permission-modes) |
+| **grill-me** (rec. Sheen An) | Your AI interviews you to pressure-test the idea and surface gaps. | [mattpocock/skills](https://github.com/mattpocock/skills) |
+| **OpenSpec** (rec. Selwyn, ESTL) | Turns your intent into a structured written spec. | [openspec.dev](https://openspec.dev) |
+| **Compound Engineering** (rec. Wondo) | A brainstorm-to-plan-to-build-to-review flow, built so each task makes the next one easier. | [github.com/EveryInc/compound-engineering-plugin](https://github.com/EveryInc/compound-engineering-plugin) |
 
 All optional. Use whatever fits you or your team, or none.
 
@@ -101,6 +121,8 @@ All optional. Use whatever fits you or your team, or none.
 ## Step 3: Build your change
 
 Once you know what you're making, the loop is the same every time.
+
+> **If your repo has a design harness, it runs the build, check, and review phases for you.** On a TFX repo, `/tfx:design` runs a [six-phase loop](/harness/loop) that stops twice for you: you approve the plan before any code is written, and you decide any waivers at the end. A separate evaluator grades the result, so the builder never marks its own homework. You still make the branch and open the merge request yourself. No harness yet? Drive the same steps by hand, below.
 
 **1. Make a branch.** Pull the latest shared code first (the shared branch is usually called `main`), then make your branch off it, so you build on the current version. Have your AI show you the exact git command and wait for your OK before it runs. Git actions are worth a quick double-check.
 
@@ -124,11 +146,9 @@ Once you know what you're making, the loop is the same every time.
 
 > To see the mobile width, open your browser's dev tools (right-click the page and choose Inspect) and click the phone/tablet icon for device view. Or just drag the window narrower.
 
-**6. Run the checks.** Ask your AI to run the project's checks *and* its build. Run both, since the quick checks (types, formatting) can pass while the full build fails. If your team has automated design checks (a "harness"), run those too: they catch hardcoded colours, contrast failures, missing focus states, tiny fonts, and generic "AI slop". A green result means nothing automated was flagged, not that the design is done, so still look at it yourself.
+**6. Run the checks.** Ask your AI to run the project's checks *and* its build. Run both, since the quick checks (types, formatting) can pass while the full build fails. If your team has automated design checks, run those too: they catch hardcoded colours, contrast failures, missing focus states, tiny fonts, and generic "AI slop". A green result means nothing automated was flagged, not that the design is done, so still look at it yourself. On a TFX repo, what gets checked lives in the [standards catalog](/standards/catalog).
 
-> A harness might be a command your AI runs, or a named skill your team has. Ask what yours is and how to run it.
-
-**7. Have your AI review its own work.** Before a human sees it, ask your AI for an *adversarial* review (a deliberately critical pass), or run Claude Code's code-review skill. It catches rough edges and confirms the change fits the codebase's conventions, so your engineer's review goes faster. A second model like Codex catches even more, because it reviews the code independently.
+**7. Have your AI review its own work.** Before a human sees it, ask your AI for an *adversarial* review, a deliberately critical pass. On a TFX repo, [`/tfx:critique`](/harness/skills) does this against the standard; otherwise, run Claude Code's code-review skill. It catches rough edges and confirms the change fits the codebase's conventions, so your engineer's review goes faster. A second model like Codex catches even more, because it reviews the code independently.
 
 ## Step 4: Ship it
 
@@ -154,6 +174,10 @@ Errors are normal, and on your own branch they're safe. Two things to remember:
 
 - **You can't break anything permanently.** Nothing you do is shared until it's reviewed and merged, so your own branch is a safe place to experiment. Worst case, you undo it.
 - **When you hit an error, hand it to your AI.** Copy the red text, paste it in, and ask your AI to explain what's wrong and fix it. Reading errors is a skill you pick up fast, and your AI is good at it.
+
+## Going further
+
+Once you're comfortable, you can hand more to a harness over time: from asking it questions, to directing one change at a time, to writing the intent and approving the plan while it builds. The [Designer on-ramp](/harness/on-ramp) lays out that path.
 
 ## Prompts you can copy
 
@@ -183,3 +207,5 @@ Starting points that work in any repo. Your assistant fills in the specifics.
 ---
 
 *A living starting point. When your team does something differently, especially around setup, access, and secrets, trust your engineers over this guide, and help improve it.*
+
+*Thanks to the LangBuddy engineers who taught me most of this.*
