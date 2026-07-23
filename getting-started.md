@@ -105,7 +105,17 @@ Then decide what kind of work this is. That decides how much to plan and which t
 
 ### Tools and skills
 
-If your repo has a design harness, its skills fit best because they already know the standard. On a TFX repo, [the harness skills](/harness/skills) cover the main jobs: `/tfx:design` builds or changes a screen, `/tfx:critique` reviews one, and focused passes (`/tfx:copy`, `/tfx:polish`, `/tfx:motion`, `/tfx:flow`, `/tfx:layout`) fix one thing at a time.
+If your repo has a design harness, its skills fit best because they already know the standard. On a TFX repo, [the harness skills](/harness/skills) each own a job:
+
+- `/tfx:start` - get oriented, or let it route you when you're not sure which skill fits.
+- `/tfx:setup` - set up your machine or onboard a repo (once).
+- `/tfx:design` - build a new screen or change an existing one; runs the full six-phase loop.
+- `/tfx:critique` - hear what's wrong with a page before changing it, with ranked fixes.
+- `/tfx:copy` · `/tfx:polish` · `/tfx:motion` · `/tfx:flow` · `/tfx:layout` - fix one dimension at a time (wording · spacing, type, colour · motion · multi-step flows · layout).
+- `/tfx:standards` - ask whether a rule applies, or whether you can waive it.
+- `/tfx:feedback` - tell the team the harness itself confused you.
+
+Rule of thumb: when you can name the problem, reach for the focused pass; when you can't, `/tfx:critique` finds it for you.
 
 Generic tools work too. These are the ones I picked up from the LangBuddy engineers:
 
@@ -150,9 +160,11 @@ Once you know what you're making, the loop is the same every time.
 
 > To see the mobile width, open your browser's dev tools (right-click the page and choose Inspect) and click the phone/tablet icon for device view. Or just drag the window narrower.
 
-**6. Run the checks.** Ask your AI to run the project's checks *and* its build. Run both, since the quick checks (types, formatting) can pass while the full build fails. If your team has automated design checks, run those too: they catch hardcoded colours, contrast failures, missing focus states, tiny fonts, and generic "AI slop". A green result means nothing automated was flagged, not that the design is done, so still look at it yourself. On a TFX repo, what gets checked lives in the [standards catalog](/standards/catalog).
+> **Let your AI drive the browser.** [Claude in Chrome](https://claude.com/claude-for-chrome) can open your preview, click through the states, and resize for mobile, so it catches visual issues without you doing every click yourself.
 
-**7. Have your AI review its own work.** Before a human sees it, ask your AI for an *adversarial* review, a deliberately critical pass. On a TFX repo, [`/tfx:critique`](/harness/skills) does this against the standard; otherwise, run Claude Code's code-review skill. It catches rough edges and confirms the change fits the codebase's conventions, so your engineer's review goes faster. A second model like Codex catches even more, because it reviews the code independently.
+**6. Run the checks.** Ask your AI to run the project's checks *and* its build. Run both, since the quick checks (types, formatting) can pass while the full build fails. If your team has automated design checks, run those too: they catch hardcoded colours, contrast failures, missing focus states, tiny fonts, and generic "AI slop". A green result means nothing automated was flagged, not that the design is done, so still look at it yourself. On a TFX repo, what gets checked lives in the [standards catalog](/standards/catalog). If a check flags one dimension (spacing, colour, wording), a focused pass like `/tfx:polish` or `/tfx:copy` fixes just that.
+
+**7. Get the code reviewed before a human sees it.** Ask for an *adversarial* review, a deliberately critical pass that hunts for problems. On a TFX repo, [`/tfx:critique`](/harness/skills) does this against the standard; otherwise, run Claude Code's code-review skill. Even better, have a *different* model do the review. The model that wrote the code is a poor judge of its own work, so a fresh set of eyes catches more; Codex is good for this. Either way, it cleans things up first, so your engineer's review goes faster.
 
 ## Step 4: Ship it
 
