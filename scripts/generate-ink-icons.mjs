@@ -42,6 +42,13 @@ const TOPIC_ICONS = {
   "harness/skills": "layers",
   "harness/tools": "square-terminal",
   "harness/on-ramp": "trending-up",
+  "getting-started/git-basics": "git-branch",
+  "getting-started/guardrails": "shield-check",
+  "getting-started/set-up": "wrench",
+  "getting-started/plan": "map",
+  "getting-started/build": "hammer",
+  "getting-started/ship": "rocket",
+  "getting-started/help": "life-buoy",
   "governance/governance": "git-branch",
 };
 

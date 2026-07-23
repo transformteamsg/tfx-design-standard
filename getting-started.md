@@ -21,14 +21,14 @@ Two things worth knowing:
 
 > **One note up front.** I'm a designer, not an engineer, so treat this as the path that's worked for me, not a rulebook. Teams set things up differently, so when something touches access, setup, or safety, check the specifics with your engineers.
 
-## What makes this safe: guardrails
+## Step 0: Set up guardrails
 
 You can experiment because the repo catches mistakes before they matter. If you're joining or starting a repo, work with your engineer to make sure these guardrails are in place:
 
-- **Checks that catch bad code**: linting, type-checking, and tests, plus a build step. Your project has a command that runs them; your engineer will tell you what it is.
-- **The same checks, run automatically on the server** every time you open a merge request, so nothing broken gets in. This is called CI (continuous integration).
-- **Limits on the AI**: an automatic block on dangerous commands (like wiping files or a database), and limits on what the AI can touch on your computer and network.
-- **Design checks**: a design harness that flags UI which breaks the design standard. On a TFX repo that's the [TFX harness](/harness/install); a DXD harness is on the way.
+- **Checks that catch bad code.** Linting, type-checking, and tests, plus a build step. Your project has a command that runs them; your engineer will tell you what it is.
+- **A pipeline that runs those checks for you.** On GitLab, every merge request kicks off a *pipeline*: the same checks, run automatically on the server. Each check is a *job*; if a job fails, the pipeline turns red and nothing broken gets in. (This is what people mean by CI, or continuous integration. GitHub calls it Actions.)
+- **Limits on the AI.** An automatic block on dangerous commands, like wiping files or a database. It also limits what the AI can touch on your computer and network.
+- **Design checks.** A design harness that flags UI which breaks the design standard. On a TFX repo that's the [TFX harness](/harness/install); a DXD harness is on the way.
 
 These guardrails are what make it safe for a designer to build. Without them, ask your engineer to set them up first.
 
@@ -36,14 +36,14 @@ These guardrails are what make it safe for a designer to build. Without them, as
 
 Four steps, start to finish:
 
-1. [Get set up](#step-1-get-set-up) - get the code onto your computer and running (once).
-2. [Decide what you're making](#step-2-decide-what-youre-making) - prototype, revamp, or handoff, and how much to plan.
-3. [Build your change](#step-3-build-your-change) - scan the codebase, build, and check it looks right.
-4. [Ship it](#step-4-ship-it) - open a merge request, get it reviewed, and merge it.
+1. [Set up](#step-1-set-up) - get the code onto your computer and running (once).
+2. [Plan](#step-2-plan) - prototype, revamp, or handoff, and how much to plan.
+3. [Build](#step-3-build) - scan the codebase, build, and check it looks right.
+4. [Ship](#step-4-ship) - open a merge request, get it reviewed, and merge it.
 
 A copy-paste prompt list is at the end.
 
-## Introduction to Git
+## Introducing Git
 
 Git is the tool teams use to work on the same code without overwriting each other's work. You'll hear these words. Here's what each one means:
 
@@ -57,7 +57,7 @@ Git is the tool teams use to work on the same code without overwriting each othe
 
 That's the whole vocabulary. Your AI can run all of these for you; knowing what they mean just lets you tell when something looks off.
 
-## Step 1: Get set up
+## Step 1: Set up
 
 You do this once, when you first join a repo. It's the most engineer-dependent part, so it's the best place to ask for help. Everyone starts by asking.
 
@@ -87,7 +87,7 @@ Whichever you pick, getting your computer ready (the app or editor, plus a few t
 
 > **About the preview:** you start it fresh each work session. If it stops on its own, that's normal; just ask your AI to start it again. Some apps need other pieces running too, like a database. Getting those going the first time is something an engineer helps with during setup. After that, it's the same start command each session.
 
-## Step 2: Decide what you're making
+## Step 2: Plan
 
 **Start with the problem.** Before any code, get clear on what you're solving: a short problem statement, a design brief, and (where they apply) your measures of success. A clear problem makes every later step easier to judge.
 
@@ -123,7 +123,7 @@ All optional. Use whatever fits you or your team, or none.
 
 > **Tip: add reference images.** Give your AI a screenshot, a Figma frame, or a screen you admire from another app. Images convey the look you want faster than words.
 
-## Step 3: Build your change
+## Step 3: Build
 
 Once you know what you're making, the loop is the same every time.
 
@@ -155,11 +155,11 @@ Once you know what you're making, the loop is the same every time.
 
 > **Let your AI drive the browser.** [Claude in Chrome](https://claude.com/claude-for-chrome) can open your preview, click through the states, and resize for mobile, so it catches visual issues without you doing every click yourself.
 
-**6. Run the checks.** Ask your AI to run the project's checks *and* its build. Run both, since the quick checks (types, formatting) can pass while the full build fails. If your team has automated design checks, run those too: they catch hardcoded colours, contrast failures, missing focus states, tiny fonts, and generic "AI slop". A green result means nothing automated was flagged, not that the design is done, so still look at it yourself. On a TFX repo, what gets checked lives in the [standards catalog](/standards/catalog). If a check flags one dimension (spacing, colour, wording), a focused pass like `/tfx:polish` or `/tfx:copy` fixes just that.
+**6. Run the checks.** Ask your AI to run the project's checks *and* its build. Run both, since the quick checks (types, formatting) can pass while the full build fails. These are the same checks GitLab runs as a **pipeline** when you open a merge request (Step 4), so running them now catches failures early. If your team has automated design checks, run those too: they catch hardcoded colours, contrast failures, missing focus states, tiny fonts, and generic "AI slop". A green result means nothing automated was flagged, not that the design is done, so still look at it yourself. On a TFX repo, what gets checked lives in the [standards catalog](/standards/catalog). If a check flags one dimension (spacing, colour, wording), a focused pass like `/tfx:polish` or `/tfx:copy` fixes just that.
 
 **7. Get the code reviewed before a human sees it.** Ask for an *adversarial* review, a deliberately critical pass that hunts for problems. On a TFX repo, [`/tfx:critique`](/harness/skills) does this against the standard; otherwise, run Claude Code's `/code-review` skill. Even better, have a *different* model do the review. The model that wrote the code is a poor judge of its own work, so a fresh set of eyes catches more; Codex is good for this. Either way, it cleans things up first, so your engineer's review goes faster.
 
-## Step 4: Ship it
+## Step 4: Ship
 
 A merge request is how your change gets reviewed and added into the shared code. Your AI can do the mechanics. Here's what's happening, so you can follow along.
 
@@ -169,7 +169,7 @@ A merge request is how your change gets reviewed and added into the shared code.
 
 **2. Open the merge request.** Set the target to `main`, add a reviewer (an engineer or your lead), and create it. Then write a short description of what changed, plus before/after screenshots. Ask your AI to draft it from what you did, then tidy it.
 
-**3. Watch the checks go green.** When you open the MR, the server automatically re-runs the same checks and build from Step 3 (the CI mentioned earlier). If something fails, open the failed step, read the error (your AI can help), fix it, and push again. The MR updates itself.
+**3. Watch the pipeline go green.** When you open the merge request, GitLab runs the **pipeline**: the same checks and build from Step 3, automatically on the server. Each check is a **job**; if a job fails, open it, read the error (your AI can help), fix it, and push again. The pipeline re-runs and the MR updates itself. (This is CI, or continuous integration; GitHub calls it Actions.)
 
 **4. Get it reviewed and merged.** Your reviewer may ask for changes; make them and push again. Once approved, it's merged in.
 
@@ -195,25 +195,37 @@ Once you're comfortable, you can hand more to a harness over time: from asking i
 Starting points that work in any repo. Your assistant fills in the specifics.
 
 **Getting set up**
-- **Understand the project:** "What's the tech stack here, and how do I install, run, and build this project?"
-- **Clone it:** "Clone this repo for me: [paste the address]."
+
+| What it does | Prompt |
+| --- | --- |
+| Understand the project | "What's the tech stack here, and how do I install, run, and build this project?" |
+| Clone it | "Clone this repo for me: [paste the address]." |
 
 **Building**
-- **Learn the codebase first:** "Before writing anything, read this codebase and its design tokens, then follow how it already does things."
-- **Make a branch:** "Make a branch for this change. Show me the git command and wait for my OK first."
-- **Reuse over invent:** "Reuse existing components and tokens. Check the ui/ and common/ folders before making anything new, and don't hardcode colours."
-- **Check the blast radius:** "Before you change a component, tell me if it's used on more than one page."
-- **Review before a human does:** "Use the `/code-review` skill on this change (or a different model like Codex). Find anything an engineer would flag, and check it fits the codebase's conventions."
+
+| What it does | Prompt |
+| --- | --- |
+| Learn the codebase first | "Before writing anything, read this codebase and its design tokens, then follow how it already does things." |
+| Make a branch | "Make a branch for this change. Show me the git command and wait for my OK first." |
+| Reuse over invent | "Reuse existing components and tokens. Check the ui/ and common/ folders before making anything new, and don't hardcode colours." |
+| Check the blast radius | "Before you change a component, tell me if it's used on more than one page." |
+| Review before a human does | "Use the /code-review skill on this change (or a different model like Codex). Find anything an engineer would flag, and check it fits the codebase's conventions." |
 
 **Shipping**
-- **Verify your change:** "Run the project's checks (lint, types, tests) and its build, plus the design checks if it has them. Show me what passes and what fails."
-- **Commit and push safely:** "Stage only the files I changed, commit with a clear message, and push my branch. Confirm the commands first."
-- **Draft the MR:** "Draft an MR description from what we did, with before/after screenshots."
-- **Update your branch:** "Update my branch with the latest main. Tell me whether this repo uses rebase or merge first."
+
+| What it does | Prompt |
+| --- | --- |
+| Verify your change | "Run the project's checks (lint, types, tests) and its build, plus the design checks if it has them. Show me what passes and what fails." |
+| Commit and push safely | "Stage only the files I changed, commit with a clear message, and push my branch. Confirm the commands first." |
+| Draft the MR | "Draft an MR description from what we did, with before/after screenshots." |
+| Update your branch | "Update my branch with the latest main. Tell me whether this repo uses rebase or merge first." |
 
 **When stuck**
-- **Fix a failed check:** "This check failed. Read the error and tell me what's wrong and how to fix it."
-- **Restart the preview:** "The preview stopped. Can you start it again?"
+
+| What it does | Prompt |
+| --- | --- |
+| Fix a failed check | "This check failed. Read the error and tell me what's wrong and how to fix it." |
+| Restart the preview | "The preview stopped. Can you start it again?" |
 
 ---
 

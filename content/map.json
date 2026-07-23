@@ -32,7 +32,7 @@
   },
   "getting-started": {
     "label": "Start with code",
-    "slugs": ["git-basics", "guardrails", "set-up", "decide", "build", "ship", "help"]
+    "slugs": ["git-basics", "guardrails", "set-up", "plan", "build", "ship", "help"]
   },
   "harness": {
     "label": "Harness",
