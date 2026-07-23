@@ -165,6 +165,8 @@ A merge request is how your change gets reviewed and added into the shared code.
 
 **1. Commit and push.** Write a short, clear commit message, and stage only the files you meant to change. A quick `git status` first shows what's included, so nothing stray gets committed. **Never push to `main`.** Always push your own branch.
 
+> Many repos run some checks automatically at a Git hook, on commit or on push (LangBuddy runs lint and types on push). If the hook fails, it blocks you, so running the checks yourself first saves a round-trip. The build and tests usually run in CI.
+
 **2. Open the merge request.** Set the target to `main`, add a reviewer (an engineer or your lead), and create it. Then write a short description of what changed, plus before/after screenshots. Ask your AI to draft it from what you did, then tidy it.
 
 **3. Watch the checks go green.** When you open the MR, the server automatically re-runs the same checks and build from Step 3 (the CI mentioned earlier). If something fails, open the failed step, read the error (your AI can help), fix it, and push again. The MR updates itself.
@@ -204,7 +206,7 @@ Starting points that work in any repo. Your assistant fills in the specifics.
 - **Review before a human does:** "Use the `/code-review` skill on this change (or a different model like Codex). Find anything an engineer would flag, and check it fits the codebase's conventions."
 
 **Shipping**
-- **Verify before committing:** "Run this repo's pre-commit checks (lint, types, tests) and its build, plus the design checks if it has them. Show me what passes and what fails before we commit."
+- **Verify your change:** "Run the project's checks (lint, types, tests) and its build, plus the design checks if it has them. Show me what passes and what fails."
 - **Commit and push safely:** "Stage only the files I changed, commit with a clear message, and push my branch. Confirm the commands first."
 - **Draft the MR:** "Draft an MR description from what we did, with before/after screenshots."
 - **Update your branch:** "Update my branch with the latest main. Tell me whether this repo uses rebase or merge first."
