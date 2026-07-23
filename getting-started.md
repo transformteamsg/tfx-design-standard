@@ -51,7 +51,13 @@ That's the whole vocabulary. Your AI can run all of these for you; knowing what 
 
 You do this once, when you first join a repo. It's the most engineer-dependent part, so it's the best place to ask for help. Everyone starts by asking.
 
-**What you need on your machine.** You'll work in a code editor (like VS Code or Cursor) with an AI coding assistant running inside it. Getting your machine ready (the editor, the assistant, and a few tools the project needs) is a one-time setup an engineer can walk you through. To set up the assistant yourself, Claude Code's setup guide covers it: [code.claude.com/docs/en/setup](https://code.claude.com/docs/en/setup).
+**What you need on your machine.** You have three ways to run your AI assistant:
+
+- **Claude Code desktop app** (easiest) - a standalone app, no code editor needed.
+- **Claude Code in the terminal** - the command-line version.
+- **A code editor** like VS Code or Cursor, with the [Claude Code extension](https://code.claude.com/docs/en/vs-code).
+
+Whichever you pick, getting your machine ready (the app or editor, plus a few tools the project needs) is a one-time setup an engineer can walk you through. To do it yourself, Claude Code's [setup guide](https://code.claude.com/docs/en/setup) covers it.
 
 Then, for the repo itself:
 
