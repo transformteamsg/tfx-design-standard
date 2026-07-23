@@ -97,7 +97,7 @@ Once you know what you're making, the loop is the same every time.
 
 > *"Before writing anything, read this codebase - the setup file, a few existing components, and the design tokens or guidelines - and follow how this project already does things."*
 
-> You don't have to do this from scratch every session. Many projects keep a `CLAUDE.md` file (or similar) that your AI reads automatically at the start of each session, so it's already oriented. If yours has one, you're set; if not, ask your AI to save what it learned into a `CLAUDE.md` so next time it starts up to speed.
+> You don't have to re-orient from scratch every session. Many codebases already keep a `CLAUDE.md` file (or similar) that your AI reads automatically at the start of each session, so it starts oriented. If yours has one, lean on it - it's a shared team file, so read from it rather than writing your own notes into it.
 
 **3. Match what's already there.** Reuse beats invent - a change that looks native is easier to trust and review.
 
