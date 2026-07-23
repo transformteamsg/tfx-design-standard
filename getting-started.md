@@ -21,7 +21,7 @@ Two things worth knowing:
 
 > **One note up front.** I'm a designer, not an engineer, so treat this as the path that's worked for me, not a rulebook. Teams set things up differently, so when something touches access, setup, or safety, check the specifics with your engineers.
 
-## Step 0: Set up guardrails
+## Step 0: Prep the guardrails
 
 You can experiment because the repo catches mistakes before they matter. If you're joining or starting a repo, work with your engineer to make sure these guardrails are in place:
 
@@ -61,7 +61,7 @@ That's the whole vocabulary. Your AI can run all of these for you; knowing what 
 
 You do this once, when you first join a repo. It's the most engineer-dependent part, so it's the best place to ask for help. Everyone starts by asking.
 
-### Set up your AI tools
+### AI tools
 
 You have three ways to run your AI assistant:
 
@@ -73,19 +73,38 @@ You sign in with a Claude account. The desktop app uses a personal subscription 
 
 Whichever you pick, getting your computer ready (the app or editor, plus a few tools the project needs) is a one-time setup an engineer can walk you through. To do it yourself, Claude Code's [setup guide](https://code.claude.com/docs/en/setup) covers it. Some repos also ship a design harness you install once; on a TFX repo, see [Install](/harness/install).
 
-### Get the repo onto your computer
+### Product repo
 
-**1. Get access.** An engineer adds you to the repo (usually on GitLab, sometimes GitHub) so you're allowed in.
+Most of this happens once. The first time, ask an engineer to walk through it with you.
 
-**2. Clone it to your computer.** Cloning downloads the code. On the repo's web page, click the **Code** button and copy the address. As a beginner, pick the **HTTPS** address (it starts with `https://`). You sign in once, and on a Mac your Keychain remembers it (Windows and Linux have credential helpers too), so it stays invisible after that. (SSH, the `git@…` address, is an alternative some teams prefer.) Access setup can be confusing the first time, so if you're unsure, ask an engineer to set it up with you. Then cloning is one command (`git clone [address]`), or you can ask your AI to do it.
+#### 1. Get access
 
-> **Keep your access safe.** Your login is personal. Never share it, and never use a teammate's. Keep it where it belongs (your Keychain, or a protected key), and never put a token or key into a commit, an AI prompt, Slack, or email.
+An engineer adds you to the repo (usually GitLab, sometimes GitHub) so you're allowed in.
 
-**3. Get the `.env` values from your engineer.** A `.env` file holds the app's settings and secret keys (like the database address or an API key), kept out of the repo on purpose. Your engineer sends the real values through a secure channel (a password manager or vault, not plain Slack); paste them into your local `.env`. Without them, the app won't start.
+#### 2. Clone it
 
-**4. See it running (your preview).** Ask your AI or an engineer how to start the project. Your AI can read the repo and give you the exact command. Once it's running, the app opens in your browser at an address like `http://localhost:5173`. That's your **preview**: your own copy of the app, running on your computer, where you see and click your changes.
+Cloning downloads the code to your computer.
 
-> **About the preview:** you start it fresh each work session. If it stops on its own, that's normal; just ask your AI to start it again. Some apps need other pieces running too, like a database. Getting those going the first time is something an engineer helps with during setup. After that, it's the same start command each session.
+- On the repo's web page, click **Code** and copy the **HTTPS** address (it starts with `https://`).
+- Run `git clone [address]`, or ask your AI to do it.
+- You sign in once; your computer remembers it after that (Keychain on a Mac, credential helpers on Windows and Linux). SSH, the `git@…` address, is an alternative some teams prefer.
+
+> **Keep your access safe.** Your login is personal, so never share it or use a teammate's. Never put a token or key into a commit, an AI prompt, Slack, or email.
+
+#### 3. Get the `.env` values
+
+A `.env` file holds the app's settings and secret keys, like a database address or an API key, kept out of the repo on purpose.
+
+- Your engineer sends the real values through a secure channel, like a password manager or vault, not plain Slack.
+- Paste them into your local `.env`. Without them, the app won't start.
+
+#### 4. Start the preview
+
+Ask your AI for the command to run the project; it can read the repo and tell you exactly.
+
+- The app opens in your browser at an address like `http://localhost:5173`. That's your **preview**: your own copy, where you see and click your changes.
+- Start it fresh each session. If it stops, that's normal; just ask your AI to start it again.
+- Some apps need other pieces too, like a database; an engineer helps set those up the first time.
 
 ## Step 2: Plan
 
