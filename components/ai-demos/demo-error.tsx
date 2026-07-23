@@ -5,18 +5,48 @@ import {
   Message,
   MessageContent,
 } from "@/components/ai-elements/message";
+import {
+  Alert,
+  AlertTitle,
+  AlertDescription,
+  AlertAction,
+} from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
+import { AlertCircle } from "lucide-react";
 import { DemoFrame } from "./demo-frame";
+import { useReplay } from "./use-replay";
 
-/* Illustrates CNT-1 failure anatomy: what happened / what it means / what to
-   do next — styled as a calm inline notice, not a red alarm. No ML or model
-   language anywhere. A ghost "Try again" button satisfies the "next step"
-   requirement while keeping the tone boring-safe. */
+/* Illustrates CNT-1 failure anatomy - what happened, reassurance, what to do
+   next - rendered through the shadcn Alert component so it looks native.
+   Default variant keeps AlertDescription in muted-foreground (readable).
+   The AlertCircle icon carries the semantic colour only - not the whole Alert.
+   Action row is a plain wrapper div outside AlertDescription so Button
+   stays at its default size="sm" variant="outline" without overrides.
+   "Try again" runs a short mock retry: spinner -> resolves to a success Alert. */
+
+type RetryState = "idle" | "retrying" | "resolved";
+
 export const DemoError = () => {
-  const [retried, setRetried] = useState(false);
+  const [retryState, setRetryState] = useState<RetryState>("idle");
+  const { ref } = useReplay({ steps: 1, stepMs: 400 });
+
+  const handleRetry = () => {
+    setRetryState("retrying");
+    setTimeout(() => {
+      setRetryState("resolved");
+    }, 1800);
+  };
+
+  const handleReset = () => {
+    setRetryState("idle");
+  };
 
   return (
-    <DemoFrame caption={["Message", "error state (CNT-1 anatomy)"]}>
+    <DemoFrame
+      caption={["Alert", "AlertTitle", "AlertDescription", "AlertAction", "Button"]}
+      rootRef={ref}
+    >
       <div className="flex flex-col gap-3">
         <Message from="user">
           <MessageContent>
@@ -25,37 +55,43 @@ export const DemoError = () => {
         </Message>
 
         <Message from="assistant">
-          {/* CNT-1 anatomy: what happened / what it means / what to do next */}
-          <div
-            role="status"
-            className="rounded-md border border-warning-muted bg-warning-subtle px-4 py-3"
-          >
-            <p className="text-sm text-warning">
-              CaseSync records didn&apos;t load.
-            </p>
-            <p className="mt-1 text-xs text-muted-foreground">
-              Your draft is safe &mdash; nothing was sent.
-            </p>
-            <div className="mt-3 flex items-center gap-3">
-              {!retried ? (
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="h-7 px-3 text-xs"
-                  onClick={() => setRetried(true)}
+          {retryState === "resolved" ? (
+            <Alert>
+              <AlertCircle className="text-success" aria-hidden="true" />
+              <AlertTitle>Records loaded</AlertTitle>
+              <AlertDescription>
+                CaseSync records for 5A are ready.{" "}
+                <button
+                  type="button"
+                  onClick={handleReset}
+                  className="underline underline-offset-2 hover:no-underline"
                 >
-                  Try again
-                </Button>
-              ) : (
-                <span className="text-xs text-muted-foreground">
-                  Retrying&hellip;
-                </span>
-              )}
-              <span className="text-xs text-muted-foreground">
-                or open the records directly in CaseSync.
-              </span>
-            </div>
-          </div>
+                  Reset demo
+                </button>
+              </AlertDescription>
+            </Alert>
+          ) : (
+            <Alert>
+              <AlertCircle className="text-destructive" aria-hidden="true" />
+              <AlertTitle>CaseSync records did not load</AlertTitle>
+              <AlertDescription>
+                Your draft is safe - nothing was sent.
+                Or open the records directly in CaseSync.
+              </AlertDescription>
+              <AlertAction>
+                {retryState === "retrying" ? (
+                  <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <Spinner className="size-3" aria-hidden="true" />
+                    Retrying...
+                  </span>
+                ) : (
+                  <Button size="sm" variant="outline" onClick={handleRetry}>
+                    Try again
+                  </Button>
+                )}
+              </AlertAction>
+            </Alert>
+          )}
         </Message>
       </div>
     </DemoFrame>

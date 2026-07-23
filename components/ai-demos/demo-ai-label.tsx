@@ -1,84 +1,72 @@
 "use client";
 
 import { useState } from "react";
-import { Sparkles, RotateCcw, X } from "lucide-react";
+import { Sparkles, RotateCcw } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { DemoFrame } from "./demo-frame";
+import { useReplay } from "./use-replay";
 
-/* Illustrates a TFX-native AI label pattern inspired by Carbon's AI label.
-   - AI-generated content carries a small "AI" badge.
-   - Clicking the badge opens an explainability popover (Base UI Portal,
-     so it is never clipped by overflow-hidden containers).
-   - Toggling "I've edited this" swaps the badge to a "Revert to AI" affordance.
-   This pattern is NOT an AI Elements component — it is designed for TFX
-   surfaces where teachers edit AI-drafted content (reports, notes, plans). */
+/* Illustrates a TFX-native AI label pattern.
+   - AI-generated content carries a shadcn Badge (variant="secondary") labelled "AI".
+   - Clicking the badge opens a shadcn Popover for explainability.
+   - Editing the textarea swaps the badge to a "Revert to AI draft" Button.
+   Badge has NO className overrides - secondary variant at default size.
+   Button (revert) is size="sm" variant="outline" with NO className overrides.
+   PopoverContent is at default width (w-72 from the component itself).
+   PopoverTrigger wraps the Badge directly - no extra className on Trigger. */
+
 export function DemoAiLabel() {
-  const [popoverOpen, setPopoverOpen] = useState(false);
   const [edited, setEdited] = useState(false);
+  const { ref } = useReplay({ steps: 1, stepMs: 300 });
 
   return (
     <DemoFrame
-      caption={[
-        "AI label (TFX pattern)",
-        "— inspired by Carbon AI label",
-        "— not an AI Elements component",
-      ]}
+      caption={["Badge", "Popover", "PopoverContent", "Button"]}
+      rootRef={ref}
     >
       <div className="flex flex-col gap-4">
-        {/* Content block with AI label */}
-        <div className="mb-2 flex items-center justify-between">
+        {/* Header row */}
+        <div className="flex items-center justify-between">
           <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
             End-of-term comment
           </span>
 
-          {/* AI / Edited badge */}
+          {/* AI badge / edited state */}
           <div className="flex items-center gap-2">
             {edited ? (
-              /* Edited state: offer to revert */
-              <button
-                type="button"
+              <Button
+                size="sm"
+                variant="outline"
                 onClick={() => setEdited(false)}
-                className="flex items-center gap-1.5 rounded-md border border-border bg-muted px-2 py-1 text-xs font-medium text-muted-foreground transition-colors hover:border-border-strong hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue)"
               >
-                <RotateCcw size={11} aria-hidden="true" />
+                <RotateCcw aria-hidden="true" />
                 Revert to AI draft
-              </button>
+              </Button>
             ) : (
-              /* AI label: triggers explainability popover via Base UI Portal
-                 — renders outside figure so it is never clipped */
-              <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
-                <PopoverTrigger
-                  aria-label="About this AI-generated content"
-                  className="flex items-center gap-1 rounded-md border border-border bg-muted px-2 py-1 text-xs font-semibold text-muted-foreground transition-colors hover:border-border-strong hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue)"
-                >
-                  <Sparkles size={11} aria-hidden="true" />
-                  AI
+              <Popover>
+                <PopoverTrigger aria-label="About this AI-generated content">
+                  <Badge variant="secondary">
+                    <Sparkles aria-hidden="true" />
+                    AI
+                  </Badge>
                 </PopoverTrigger>
 
-                <PopoverContent side="bottom" align="end" sideOffset={6}>
-                  <div className="flex items-start justify-between gap-2">
-                    <p className="text-sm font-semibold text-foreground">
-                      About this draft
-                    </p>
-                    <button
-                      type="button"
-                      aria-label="Close"
-                      onClick={() => setPopoverOpen(false)}
-                      className="text-muted-foreground hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue)"
-                    >
-                      <X size={14} aria-hidden="true" />
-                    </button>
-                  </div>
+                <PopoverContent side="bottom" align="end">
+                  <p className="text-sm font-semibold text-foreground">
+                    About this draft
+                  </p>
 
                   <dl className="mt-3 space-y-2 text-xs">
                     <div>
                       <dt className="font-medium text-muted-foreground">Generated from</dt>
                       <dd className="mt-0.5 text-foreground">
-                        Running records and attendance (Term 2, weeks 1–9)
+                        Running records and attendance (Term 2, weeks 1-9)
                       </dd>
                     </div>
                     <div>

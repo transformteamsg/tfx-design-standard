@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useReducer, useRef, useState } from "react";
+import type { RefObject } from "react";
 
 export interface UseReplayOptions {
   /** Number of discrete animation steps (0 = not started, N = final state). */
@@ -21,6 +22,8 @@ export interface UseReplayResult {
   replay: () => void;
   /** True when prefers-reduced-motion is active. Animation is skipped. */
   reduced: boolean;
+  /** Attach to the element that should trigger the animation when scrolled into view. */
+  ref: RefObject<HTMLElement | null>;
 }
 
 const getStepMs = (stepMs: number | number[] | undefined, index: number): number => {
@@ -49,16 +52,24 @@ export function useReplay({
   const [step, setStep] = useState(0);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const observerRef = useRef<IntersectionObserver | null>(null);
-  const containerRef = useRef<Element | null>(null);
+  const ref = useRef<HTMLElement | null>(null);
   const hasStartedRef = useRef(false);
+
+  // Latest options live in a ref so runSequence stays referentially stable.
+  // Demos pass array literals for stepMs, which change identity every render;
+  // without this the observer effect re-armed on every render, re-fired while
+  // the demo was still in view, and the animation looped until scrolled past.
+  const optsRef = useRef({ steps, stepMs, reduced });
+  optsRef.current = { steps, stepMs, reduced };
 
   // Run animation sequence
   const runSequence = useCallback(() => {
+    const { steps: s, stepMs: ms, reduced: r } = optsRef.current;
     if (timerRef.current) clearTimeout(timerRef.current);
 
-    if (reduced) {
+    if (r) {
       // Jump straight to final state
-      setStep(steps);
+      setStep(s);
       return;
     }
 
@@ -66,8 +77,8 @@ export function useReplay({
 
     let current = 0;
     const schedule = () => {
-      if (current >= steps) return;
-      const delay = getStepMs(stepMs, current);
+      if (current >= s) return;
+      const delay = getStepMs(ms, current);
       timerRef.current = setTimeout(() => {
         current++;
         setStep(current);
@@ -75,12 +86,12 @@ export function useReplay({
       }, delay);
     };
     schedule();
-  }, [reduced, steps, stepMs, token]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
-  // Start on mount via IntersectionObserver, fall back to immediate
+  // Arm once per mount and once per replay() (token bump). hasStartedRef is
+  // only reset by replay(), never here - so the sequence plays exactly once
+  // when the element first enters the viewport, then again only on Replay.
   useEffect(() => {
-    hasStartedRef.current = false;
-
     const start = () => {
       if (hasStartedRef.current) return;
       hasStartedRef.current = true;
@@ -92,8 +103,13 @@ export function useReplay({
       return;
     }
 
-    // Observe <body> as a proxy when we have no specific element ref
-    const target = containerRef.current ?? document.body;
+    const target = ref.current;
+    if (!target) {
+      // Ref not yet attached - start immediately
+      start();
+      return;
+    }
+
     observerRef.current = new IntersectionObserver(
       (entries) => {
         if (entries.some((e) => e.isIntersecting)) {
@@ -101,7 +117,7 @@ export function useReplay({
           observerRef.current?.disconnect();
         }
       },
-      { threshold: 0.1 }
+      { threshold: 0.25 }
     );
     observerRef.current.observe(target);
 
@@ -113,6 +129,7 @@ export function useReplay({
 
   const replay = useCallback(() => {
     if (timerRef.current) clearTimeout(timerRef.current);
+    hasStartedRef.current = false;
     restart();
   }, []);
 
@@ -121,5 +138,6 @@ export function useReplay({
     progress: steps > 0 ? step / steps : 0,
     replay,
     reduced,
+    ref,
   };
 }

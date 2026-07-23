@@ -20,12 +20,12 @@
       "web-interface",
       "data-viz",
       "illustration",
-      "product-icons"
+      "product-icons",
+      "ai",
+      "ai-patterns",
+      "ai-components",
+      "ai-prompts"
     ]
-  },
-  "ai": {
-    "label": "AI",
-    "slugs": ["ai-interactions", "conversation-ux", "prompt-engineering", "components"]
   },
   "foundations": {
     "label": "Foundations",

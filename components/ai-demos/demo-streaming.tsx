@@ -1,5 +1,7 @@
 "use client";
 
+import { useCallback, useEffect, useRef, useState } from "react";
+import type { ChatStatus, UIMessageChunk } from "ai";
 import { Message, MessageContent, MessageResponse } from "@/components/ai-elements/message";
 import { Shimmer } from "@/components/ai-elements/shimmer";
 import {
@@ -10,52 +12,131 @@ import {
 } from "@/components/ai-elements/prompt-input";
 import { DemoFrame } from "./demo-frame";
 import { ChatShell, ChatShellMessages, ChatShellInput } from "./chat-shell";
+import { MockChatTransport } from "./mock-chat";
 import { useReplay } from "./use-replay";
 
-/* step 0 = nothing yet
-   step 1 = partial text streaming
-   step 2 = text complete, shimmer still visible
-   step 3 = done (shimmer gone, submit returns to ready) */
-const STEP_MS = [0, 2200, 1000, 800];
+/* The fixed prompt that drives the streaming demo. "haven't submitted" hits
+   the mock's "below / band" keyword path, streaming the three-student list. */
+const DEMO_QUESTION = "Which students in 5A haven't submitted their reading log this week?";
 
-const PARTIAL_TEXT =
-  "Checking attendance and submission records for Class 5A…\n\nThree students have not yet submitted:";
-const FULL_TEXT =
-  "Checking attendance and submission records for Class 5A…\n\nThree students have not yet submitted:\n\n- Lena K.\n- Marcus T.\n- Priya S.";
-
-/* Illustrates the streaming state: partial assistant message + shimmer above,
-   and a PromptInputSubmit locked in stop state (square icon, aria-label "Stop")
-   so teachers can interrupt at any moment. The stop control is visible from the
-   first token — not hidden or disabled. */
+/* Illustrates the streaming state: a partial assistant message with a Shimmer
+   status line above, and a PromptInputSubmit locked in stop mode (square icon,
+   aria-label "Stop") so teachers can interrupt at any moment.
+   Stop actually aborts the stream; Replay restarts it from scratch. */
 export const DemoStreaming = () => {
-  const { step, replay } = useReplay({ steps: 3, stepMs: STEP_MS });
+  const [streamedText, setStreamedText] = useState("");
+  const [status, setStatus] = useState<ChatStatus>("ready");
+  const abortRef = useRef<AbortController | null>(null);
+  const transportRef = useRef<MockChatTransport>(new MockChatTransport());
 
-  const isStreaming = step < 3;
-  const text = step === 0 ? "" : step < 3 ? PARTIAL_TEXT : FULL_TEXT;
+  /* useReplay drives: (1) scroll-entrance via rootRef/IntersectionObserver,
+     (2) Replay button via the onReplay callback.
+     steps: 1 means step goes 0 -> 1 once the element enters the viewport.
+     Calling replay() resets step to 0 then back to 1, re-triggering the
+     useEffect below. */
+  const { step, replay, ref: rootRef } = useReplay({ steps: 1, stepMs: [400] });
+
+  const startStream = useCallback(async () => {
+    abortRef.current?.abort();
+    setStreamedText("");
+    setStatus("submitted");
+
+    const ac = new AbortController();
+    abortRef.current = ac;
+
+    let stream: ReadableStream<UIMessageChunk>;
+    try {
+      stream = await transportRef.current.sendMessages({
+        trigger: "submit-message",
+        chatId: "demo-streaming",
+        messages: [
+          {
+            id: "u-1",
+            role: "user",
+            parts: [{ type: "text", text: DEMO_QUESTION }],
+            metadata: {},
+          },
+        ],
+        abortSignal: ac.signal,
+        body: { webSearch: false },
+      });
+    } catch {
+      if (!ac.signal.aborted) setStatus("error");
+      return;
+    }
+
+    setStatus("streaming");
+
+    const reader = stream.getReader();
+    try {
+      while (true) {
+        const { done, value: chunk } = await reader.read();
+        if (done || ac.signal.aborted) break;
+        if (chunk.type === "text-delta") {
+          setStreamedText((prev) => prev + chunk.delta);
+        }
+      }
+    } catch {
+      /* aborted cleanly */
+    } finally {
+      reader.releaseLock();
+    }
+
+    /* Only mark ready if NOT aborted - stop leaves the partial text visible. */
+    if (!ac.signal.aborted) {
+      setStatus("ready");
+    }
+    abortRef.current = null;
+  }, []);
+
+  /* Auto-start when the demo enters the viewport (step: 0 -> 1).
+     Replay also increments step (via useReplay's internal token -> 0 -> 1),
+     so this effect fires on both entrance and Replay. */
+  useEffect(() => {
+    if (step >= 1) {
+      void startStream();
+    }
+  }, [step, startStream]);
+
+  const stop = useCallback(() => {
+    abortRef.current?.abort();
+    setStatus("ready");
+  }, []);
+
+  /* Replay: abort any running stream, reset visible text, then let useReplay
+     cycle its step so the effect above re-fires startStream. */
+  const handleReplay = useCallback(() => {
+    stop();
+    setStreamedText("");
+    replay();
+  }, [stop, replay]);
+
+  const isStreaming = status === "submitted" || status === "streaming";
 
   return (
     <DemoFrame
       bleed
-      caption={["MessageResponse", "Shimmer", "PromptInput (stop state)", "PromptInputSubmit"]}
-      onReplay={replay}
+      caption={["MessageResponse", "Shimmer", "PromptInput", "PromptInputSubmit"]}
+      onReplay={handleReplay}
+      rootRef={rootRef}
     >
       <ChatShell>
         <ChatShellMessages>
           <Message from="user">
             <MessageContent>
-              Which students in 5A haven&apos;t submitted their reading log this week?
+              {DEMO_QUESTION}
             </MessageContent>
           </Message>
 
-          {step > 0 && (
+          {(streamedText || isStreaming) && (
             <Message from="assistant">
-              <MessageResponse isAnimating={step === 1}>
-                {text}
+              <MessageResponse isAnimating={status === "streaming"}>
+                {streamedText}
               </MessageResponse>
               {isStreaming && (
                 <div className="mt-2 pl-1">
-                  <Shimmer as="p" className="text-sm text-muted-foreground">
-                    Retrieving final record from CaseSync…
+                  <Shimmer as="p">
+                    Retrieving final record from CaseSync...
                   </Shimmer>
                 </div>
               )}
@@ -63,18 +144,16 @@ export const DemoStreaming = () => {
           )}
         </ChatShellMessages>
 
-        {/* Input is locked in stop state for the duration of streaming.
-            The square icon and aria-label="Stop" make the affordance unambiguous. */}
         <ChatShellInput>
           <PromptInput onSubmit={() => {}}>
             <PromptInputTextarea
               disabled={isStreaming}
-              placeholder={isStreaming ? "Waiting for response…" : "Ask about your class…"}
-              aria-label={isStreaming ? "Prompt — disabled while streaming" : "Prompt"}
+              placeholder={isStreaming ? "Waiting for response..." : "Ask about your class..."}
+              aria-label={isStreaming ? "Prompt - disabled while streaming" : "Prompt"}
             />
             <PromptInputFooter>
               {isStreaming ? (
-                <PromptInputSubmit status="streaming" onStop={replay} />
+                <PromptInputSubmit status="streaming" onStop={stop} />
               ) : (
                 <PromptInputSubmit />
               )}

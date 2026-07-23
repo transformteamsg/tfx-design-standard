@@ -1,0 +1,54 @@
+---
+title: Overview
+description: Where to start when you add AI to a Teacher & School product.
+status: proposed
+---
+
+> Reference: [Google PAIR Guidebook](https://pair.withgoogle.com/guidebook/), [Microsoft HAX Toolkit](https://www.microsoft.com/en-us/haxtoolkit/library/), [IBM Carbon for AI](https://carbondesignsystem.com/guidelines/carbon-for-ai/), [Vercel AI Elements](https://elements.ai-sdk.dev/). The rules here are distilled from these and adapted to TFX products.
+
+This page is for any designer adding AI to a product.
+Hold onto three principles, then jump to the use case that fits what you are building.
+
+## Three principles that always apply
+
+Good AI does less work for the teacher, not more.
+These three principles hold everywhere.
+
+**Fit it to the task.**
+Use the lightest AI that fits, and often that is none.
+A suggestion beats a chatbot when you already know what the teacher wants.
+
+**Make it honest.**
+Mark what the AI wrote, show where it came from, and say how sure it is.
+
+<DemoAiLabel />
+
+**Keep the teacher in control.**
+The teacher edits, approves, and can undo.
+Nothing that sends, files, or changes a record happens without a clear yes.
+
+<DemoConfirmation />
+
+## What are you building?
+
+Find your situation, then open [AI patterns](/guidelines/ai-patterns) for how to build it.
+
+| You are building | The pattern |
+| --- | --- |
+| A hint or next step, inline | [Suggestions and next steps](/guidelines/ai-patterns#suggestions-and-next-steps) |
+| A first draft of a field or note | [Generating content](/guidelines/ai-patterns#generating-content) |
+| A short version of a long thing | [Summarising and transforming content](/guidelines/ai-patterns#summarising-and-transforming-content) |
+| An answer from records or documents | [Answering questions from your data](/guidelines/ai-patterns#answering-questions-from-your-data) |
+| A label, score, or flag on a record | [Classifying and flagging](/guidelines/ai-patterns#classifying-and-flagging) |
+| An action taken on the teacher's behalf | [Agents that take action](/guidelines/ai-patterns#agents-that-take-action) |
+| An open-ended chat | [Conversations](/guidelines/ai-patterns#conversations) |
+
+## How these pages fit together
+
+- **Overview** - the three principles, and which use case fits your situation.
+- **[AI patterns](/guidelines/ai-patterns)** - what to build and how it should behave.
+- **[Using components](/guidelines/ai-components)** - the AI Elements pieces you build it with.
+- **[Writing prompts](/guidelines/ai-prompts)** - how to write the assistant's instructions.
+
+AI patterns is the behaviour; Using components is the pieces.
+Start with the pattern, then pick the components it needs.

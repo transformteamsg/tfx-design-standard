@@ -1,0 +1,58 @@
+---
+title: Using components
+description: The AI Elements pieces you reach for when building an AI feature in TFX.
+status: proposed
+---
+
+> Reference: [Vercel AI Elements](https://elements.ai-sdk.dev/), [Google PAIR Guidebook](https://pair.withgoogle.com/guidebook/), [Microsoft HAX Toolkit](https://www.microsoft.com/en-us/haxtoolkit/library/), [IBM Carbon for AI](https://carbondesignsystem.com/guidelines/carbon-for-ai/).
+
+This page is for designers who have chosen a use case and now need to know which components build it.
+[AI patterns](/guidelines/ai-patterns) is the behaviour and the design decision - this page is the actual pieces.
+
+---
+
+## What each component does
+
+Each component is a copy-paste install from [elements.ai-sdk.dev](https://elements.ai-sdk.dev/components/).
+They sit on shadcn defaults and inherit TFX tokens.
+Your coding agent can install and compose them with the [AI Elements skill](https://elements.ai-sdk.dev/docs/skill), so you do not wire them by hand.
+This page adds the value on top: which component serves which pattern, and how it behaves in a TFX product.
+
+| Component | What it does | Use case it serves |
+| --- | --- | --- |
+| [AI Label](https://elements.ai-sdk.dev/components/ai-label) | Marks content as AI-generated | All use cases |
+| [Confidence](https://elements.ai-sdk.dev/components/confidence) | Shows how sure the AI is | [Classifying and flagging](/guidelines/ai-patterns#classifying-and-flagging), [Summarising and transforming content](/guidelines/ai-patterns#summarising-and-transforming-content) |
+| [Suggestion](https://elements.ai-sdk.dev/components/suggestion) | Chip or card for a next step or prompt | [Suggestions and next steps](/guidelines/ai-patterns#suggestions-and-next-steps) |
+| [Shimmer](https://elements.ai-sdk.dev/components/shimmer) | Animated skeleton while AI content generates | All use cases |
+| [Loader](https://elements.ai-sdk.dev/components/loader) | Lighter loading indicator for short waits | All use cases |
+| [Sources](https://elements.ai-sdk.dev/components/sources) | Source list at the end of a grounded response | [Summarising and transforming content](/guidelines/ai-patterns#summarising-and-transforming-content), [Answering questions from your data](/guidelines/ai-patterns#answering-questions-from-your-data) |
+| [Inline Citation](https://elements.ai-sdk.dev/components/inline-citation) | Superscript citation inside a response | [Summarising and transforming content](/guidelines/ai-patterns#summarising-and-transforming-content), [Answering questions from your data](/guidelines/ai-patterns#answering-questions-from-your-data) |
+| [Feedback](https://elements.ai-sdk.dev/components/feedback) | Thumbs up/down on a response | [Generating content](/guidelines/ai-patterns#generating-content), [Classifying and flagging](/guidelines/ai-patterns#classifying-and-flagging) |
+| [Clarify](https://elements.ai-sdk.dev/components/clarify) | Follow-up question before the AI proceeds | [Answering questions from your data](/guidelines/ai-patterns#answering-questions-from-your-data), [Agents that take action](/guidelines/ai-patterns#agents-that-take-action) |
+| [Confirmation](https://elements.ai-sdk.dev/components/confirmation) | Approve or deny gate before a consequential action | [Agents that take action](/guidelines/ai-patterns#agents-that-take-action) |
+| [Plan](https://elements.ai-sdk.dev/components/plan) | Ordered list of steps the agent intends to run | [Agents that take action](/guidelines/ai-patterns#agents-that-take-action) |
+| [Task](https://elements.ai-sdk.dev/components/task) | A single step in a plan, showing progress | [Agents that take action](/guidelines/ai-patterns#agents-that-take-action) |
+| [Checkpoint](https://elements.ai-sdk.dev/components/checkpoint) | Named save point in a long agent flow | [Agents that take action](/guidelines/ai-patterns#agents-that-take-action) |
+| [Reasoning](https://elements.ai-sdk.dev/components/reasoning) | Collapsible trace of the model's thinking | [Agents that take action](/guidelines/ai-patterns#agents-that-take-action), [Conversations](/guidelines/ai-patterns#conversations) |
+| [Prompt Input](https://elements.ai-sdk.dev/components/prompt-input) | Text input with send and attach | [Suggestions and next steps](/guidelines/ai-patterns#suggestions-and-next-steps), [Conversations](/guidelines/ai-patterns#conversations) |
+| [Conversation](https://elements.ai-sdk.dev/components/conversation) | Full chat thread - outer container for all turns | [Conversations](/guidelines/ai-patterns#conversations) |
+| [Message](https://elements.ai-sdk.dev/components/message) | A single user or assistant turn | [Conversations](/guidelines/ai-patterns#conversations) |
+| [Attachments](https://elements.ai-sdk.dev/components/attachments) | File or document strip below the input | [Answering questions from your data](/guidelines/ai-patterns#answering-questions-from-your-data), [Conversations](/guidelines/ai-patterns#conversations) |
+| [Empty State](https://elements.ai-sdk.dev/components/empty-state) | Prompt that helps the teacher start | [Conversations](/guidelines/ai-patterns#conversations) |
+| [Error](https://elements.ai-sdk.dev/components/error) | Clear message when the AI fails | All use cases |
+
+**Reasoning vs Chain of Thought** - use [Reasoning](https://elements.ai-sdk.dev/components/reasoning) for most cases.
+[Chain of Thought](https://elements.ai-sdk.dev/components/chain-of-thought) is for when the full step-by-step is itself the point - for example, a worked maths problem the teacher reviews.
+Both serve [Agents that take action](/guidelines/ai-patterns#agents-that-take-action).
+
+Voice, workflow-canvas, and code components exist for future needs and are not covered here.
+
+---
+
+## A full chatbot, built from these pieces
+
+<DemoChatbot />
+
+---
+
+See [AI patterns](/guidelines/ai-patterns) for behaviour rules and [Overview](/guidelines/ai) to pick the right use case for your situation.

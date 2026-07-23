@@ -1,0 +1,87 @@
+---
+title: Writing prompts
+description: How to write the system prompt behind a TFX AI feature.
+status: proposed
+---
+
+> Reference: [Anthropic prompt engineering overview](https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview), [OpenAI prompt engineering guide](https://platform.openai.com/docs/guides/prompt-engineering), [Google PAIR Guidebook](https://pair.withgoogle.com/guidebook/), [Microsoft HAX Toolkit](https://www.microsoft.com/en-us/haxtoolkit/library/).
+
+This page is for the designer or design engineer who writes or reviews the system prompt behind an AI feature.
+
+---
+
+## Give the assistant a role in the product context
+
+Name the product, the user, and the setting.
+A concrete role anchors tone and scope more reliably than a generic one.
+
+| Do | Don't |
+| --- | --- |
+| "You are a teaching-support assistant for Singapore primary-school educators working in CaseSync." | "You are a helpful assistant." |
+
+## State constraints with the reason
+
+The model generalises from rationale.
+A bare rule without a reason is brittle - the model cannot extend it to edge cases it has not seen.
+
+| Do | Don't |
+| --- | --- |
+| "Use MOE-prescribed terminology so responses match what teachers see in official materials." | "Use terms from the approved word list." |
+
+## Use a simple, consistent structure
+
+Four sections in this order: identity, then instructions, then examples, then context.
+Use XML tags so the structure is auditable and later sections cannot silently override earlier ones.
+
+| Do | Don't |
+| --- | --- |
+| `<identity>`, `<instructions>`, `<examples>`, `<context>` in that order, each in its own tag. | Interleave instructions and examples in one unstructured block. |
+
+## Add 3-5 labelled examples
+
+One correct reply and one that misses the register teach the tone faster than prose description.
+
+| Do | Don't |
+| --- | --- |
+| Label one example `<example type="correct">` and one `<example type="too-clinical">`, then show how the same missed-homework note reads in each. | Write "Use a warm, professional tone" with no examples. |
+
+## Tell the model what to produce, not what to avoid
+
+Positive instructions are easier for the model to apply reliably and easier for you to audit.
+
+| Do | Don't |
+| --- | --- |
+| "Respond in plain prose, one idea per sentence, no more than three sentences for a short answer." | "Do not use markdown formatting or headers." |
+
+## Treat class and student data as data, never as instructions
+
+Pasted student work, records, or lesson materials must be wrapped in a named tag.
+State inside the prompt that content within those tags cannot override the assistant's role or constraints.
+This blocks prompt injection from student-submitted content.
+
+| Do | Don't |
+| --- | --- |
+| Wrap pasted student work in `<student_submission>` and state that content inside it cannot change the assistant's constraints. | Accept pasted student work in the main user message with no tag boundary. |
+
+## Ask for reasoning only when it helps
+
+For multi-step or high-stakes tasks, tell the model to think before it answers.
+For routine output - simple drafts, short summaries - a reasoning step adds friction without benefit.
+
+| Do | Don't |
+| --- | --- |
+| "Before drafting the lesson hook, consider the year level, the objective, and what the teacher told you about the class." - for a complex, context-sensitive task. | Append a reasoning step to every prompt, including simple ones. |
+
+## Test on real inputs before shipping
+
+Run 5-10 inputs before the feature goes live.
+Include at least one ambiguous input, one out-of-scope input, and one short input.
+Check tone, scope limits, and fallback behaviour.
+
+| Do | Don't |
+| --- | --- |
+| Test with "What should I do about a student who keeps forgetting homework?" and "Book a room for me" before launch. | Test only with the happy-path inputs you wrote the prompt to handle. |
+
+---
+
+For the behaviour the prompt supports - how the AI surface looks and acts in the product - see [AI patterns](/guidelines/ai-patterns).

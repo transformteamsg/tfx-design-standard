@@ -17,3 +17,4 @@ export { DemoConfidence } from "./demo-confidence";
 export { DemoFeedback } from "./demo-feedback";
 export { DemoClarify } from "./demo-clarify";
 export { DemoError } from "./demo-error";
+export { DemoChainOfThought } from "./demo-chain-of-thought";

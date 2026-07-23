@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import type { FileUIPart } from "ai";
 import {
   Attachments,
@@ -18,11 +19,13 @@ import {
   PromptInputFooter,
   PromptInputSubmit,
 } from "@/components/ai-elements/prompt-input";
+import { Button } from "@/components/ui/button";
+import { PaperclipIcon } from "lucide-react";
 import { DemoFrame } from "./demo-frame";
 
 type AttachmentData = FileUIPart & { id: string };
 
-const ATTACHMENTS: AttachmentData[] = [
+const MOCK_FILES: AttachmentData[] = [
   {
     id: "att-1",
     type: "file",
@@ -46,47 +49,39 @@ const ATTACHMENTS: AttachmentData[] = [
   },
 ];
 
-/* Illustrates Attachments in two variants:
-   - "inline" badges (compact, suits toolbar context)
-   - "list" rows in the PromptInputHeader slot (full detail + hover preview)
-   HoverCard previews are wired up to each list item. */
-export const DemoAttachments = () => (
-  <DemoFrame caption={["Attachments", "Attachment", "AttachmentPreview", "AttachmentInfo", "AttachmentRemove", "AttachmentHoverCard"]}>
-    <div className="flex flex-col gap-6">
-      {/* Inline variant — compact badges */}
-      <div className="flex flex-col gap-2">
-        <p className="text-xs font-medium text-muted-foreground">Inline badges</p>
-        <Attachments variant="inline">
-          {ATTACHMENTS.map((data) => (
-            <AttachmentHoverCard key={data.id}>
-              <AttachmentHoverCardTrigger>
-                <Attachment data={data}>
-                  <AttachmentPreview />
-                  <AttachmentInfo />
-                  <AttachmentRemove />
-                </Attachment>
-              </AttachmentHoverCardTrigger>
-              <AttachmentHoverCardContent>
-                <div className="text-xs text-foreground">{data.filename}</div>
-                <div className="text-xs text-muted-foreground">{data.mediaType}</div>
-              </AttachmentHoverCardContent>
-            </AttachmentHoverCard>
-          ))}
-        </Attachments>
-      </div>
+/* Illustrates Attachments in the "list" variant inside PromptInputHeader.
+   The attach button cycles through the mock file pool so visitors can add files
+   one by one; each file's remove button dismisses it from the list. */
+export const DemoAttachments = () => {
+  const [attached, setAttached] = useState<AttachmentData[]>([MOCK_FILES[0]]);
 
-      {/* List variant inside PromptInputHeader */}
-      <div className="flex flex-col gap-2">
-        <p className="text-xs font-medium text-muted-foreground">List rows in PromptInputHeader — hover for preview</p>
-        <PromptInput onSubmit={() => {}}>
+  const remove = (id: string) =>
+    setAttached((prev) => prev.filter((f) => f.id !== id));
+
+  const attach = () => {
+    const next = MOCK_FILES.find((f) => !attached.some((a) => a.id === f.id));
+    if (next) setAttached((prev) => [...prev, next]);
+  };
+
+  const canAttach = attached.length < MOCK_FILES.length;
+
+  return (
+    <DemoFrame
+      caption={["Attachments", "Attachment", "AttachmentPreview", "AttachmentInfo", "AttachmentRemove", "AttachmentHoverCard", "PromptInput"]}
+    >
+      <PromptInput onSubmit={() => {}}>
+        {attached.length > 0 && (
           <PromptInputHeader>
             <Attachments variant="list">
-              {ATTACHMENTS.map((data) => (
+              {attached.map((data) => (
                 <AttachmentHoverCard key={data.id}>
                   <AttachmentHoverCardTrigger>
-                    <Attachment data={data}>
+                    <Attachment
+                      data={data}
+                      onRemove={() => remove(data.id)}
+                    >
                       <AttachmentPreview />
-                      <AttachmentInfo />
+                      <AttachmentInfo showMediaType />
                       <AttachmentRemove />
                     </Attachment>
                   </AttachmentHoverCardTrigger>
@@ -98,12 +93,23 @@ export const DemoAttachments = () => (
               ))}
             </Attachments>
           </PromptInputHeader>
-          <PromptInputTextarea placeholder="Ask about these records…" />
-          <PromptInputFooter>
-            <PromptInputSubmit />
-          </PromptInputFooter>
-        </PromptInput>
-      </div>
-    </div>
-  </DemoFrame>
-);
+        )}
+        <PromptInputTextarea placeholder="Ask about these records…" />
+        <PromptInputFooter>
+          {canAttach && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon-sm"
+              aria-label="Attach file"
+              onClick={attach}
+            >
+              <PaperclipIcon size={16} aria-hidden="true" />
+            </Button>
+          )}
+          <PromptInputSubmit />
+        </PromptInputFooter>
+      </PromptInput>
+    </DemoFrame>
+  );
+};

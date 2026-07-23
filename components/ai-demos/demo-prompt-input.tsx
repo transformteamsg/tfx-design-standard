@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import type { FileUIPart } from "ai";
+import { useCallback, useEffect, useRef, useState } from "react";
+import type { ChatStatus, FileUIPart, UIMessageChunk } from "ai";
 import {
   Attachments,
   Attachment,
@@ -26,10 +26,12 @@ import { Suggestion, Suggestions } from "@/components/ai-elements/suggestion";
 import { Paperclip } from "lucide-react";
 import { DemoFrame } from "./demo-frame";
 import { ChatShell, ChatShellMessages, ChatShellInput } from "./chat-shell";
+import { MockChatTransport } from "./mock-chat";
+import { useReplay } from "./use-replay";
 
-/* Static teacher-realistic attachment so the "what it can read" affordance
-   is visible — a running-records PDF already loaded into the input strip. */
-const ATTACHED_FILE: FileUIPart & { id: string } = {
+/* Demo attachment - a teacher's running records PDF. Toggled in/out by the
+   Attach button so the affordance (attach + remove) is visible. */
+const DEMO_FILE: FileUIPart & { id: string } = {
   id: "att-1",
   type: "file",
   mediaType: "application/pdf",
@@ -39,65 +41,159 @@ const ATTACHED_FILE: FileUIPart & { id: string } = {
 
 const SUGGESTIONS = [
   "Draft a reading report",
-  "Flag students below band 2",
+  "Flag students below Band 2",
   "Summarise this week",
 ] as const;
 
-/* Canned reply shown after the first submission — keeps the demo
-   self-contained with no network calls. */
-const CANNED_REPLY =
-  "Got it. I'll look at the running records and summarise the key patterns for you.";
+/* Canned fallback shown while streaming - the mock returns a real streamed
+   response when a chip or custom message is submitted. */
 
-/* Illustrates PromptInput + Suggestion + an attached-file state.
+/* Illustrates PromptInput + Suggestion + attachments.
    Anatomy: Suggestions render as siblings ABOVE the PromptInput.
-   Attachments render inside the PromptInputHeader slot (above the textarea).
-   On submit, the prompt appears as a user bubble and a canned assistant reply
-   appears below — showing the mini-thread pattern. */
+   Attachments render inside the PromptInputHeader slot.
+   On submit/chip, the user bubble appears and the assistant reply streams word-by-word. */
 export function DemoPromptInput() {
-  const [submitted, setSubmitted] = useState<string | null>(null);
+  const [userText, setUserText] = useState<string | null>(null);
+  const [streamedReply, setStreamedReply] = useState("");
+  const [status, setStatus] = useState<ChatStatus>("ready");
+  const [showAttachment, setShowAttachment] = useState(false);
+  const abortRef = useRef<AbortController | null>(null);
+  const transportRef = useRef<MockChatTransport>(new MockChatTransport());
 
-  function handleSubmit({ text }: { text: string }) {
-    if (text.trim()) {
-      setSubmitted(text.trim());
+  /* Scroll-entrance: demo auto-shows the attachment chip to illustrate the
+     affordance before the user does anything. */
+  const { step, replay, ref: rootRef } = useReplay({ steps: 1, stepMs: [500] });
+
+  /* Show the attachment chip when the demo enters the viewport. */
+  useEffect(() => {
+    if (step >= 1) {
+      setShowAttachment(true);
     }
-  }
+  }, [step]);
+
+  const handleReplay = useCallback(() => {
+    abortRef.current?.abort();
+    setUserText(null);
+    setStreamedReply("");
+    setStatus("ready");
+    setShowAttachment(false);
+    replay();
+  }, [replay]);
+
+  const streamReply = useCallback(async (prompt: string) => {
+    abortRef.current?.abort();
+    setStreamedReply("");
+    setStatus("submitted");
+
+    const ac = new AbortController();
+    abortRef.current = ac;
+
+    let stream: ReadableStream<UIMessageChunk>;
+    try {
+      stream = await transportRef.current.sendMessages({
+        trigger: "submit-message",
+        chatId: "demo-prompt-input",
+        messages: [
+          {
+            id: "u-1",
+            role: "user",
+            parts: [{ type: "text", text: prompt }],
+            metadata: {},
+          },
+        ],
+        abortSignal: ac.signal,
+        body: { webSearch: false },
+      });
+    } catch {
+      if (!ac.signal.aborted) setStatus("error");
+      return;
+    }
+
+    setStatus("streaming");
+
+    const reader = stream.getReader();
+    try {
+      while (true) {
+        const { done, value: chunk } = await reader.read();
+        if (done || ac.signal.aborted) break;
+        if (chunk.type === "text-delta") {
+          setStreamedReply((prev) => prev + chunk.delta);
+        }
+      }
+    } catch {
+      /* aborted cleanly */
+    } finally {
+      reader.releaseLock();
+    }
+
+    if (!ac.signal.aborted) setStatus("ready");
+    abortRef.current = null;
+  }, []);
+
+  const sendMessage = useCallback(
+    async (text: string) => {
+      if (!text.trim()) return;
+      setUserText(text.trim());
+      setStreamedReply("");
+      setShowAttachment(false);
+      await streamReply(text.trim());
+    },
+    [streamReply]
+  );
+
+  const isStreaming = status === "submitted" || status === "streaming";
+  const hasResponse = userText !== null;
 
   return (
-    <DemoFrame bleed caption={["PromptInput", "PromptInputHeader", "Suggestion", "Attachments", "Message"]}>
+    <DemoFrame
+      bleed
+      onReplay={handleReplay}
+      rootRef={rootRef}
+      caption={["PromptInput", "PromptInputHeader", "Suggestion", "Attachments", "Message"]}
+    >
       <ChatShell>
-        {/* Mini thread — visible after first submission */}
-        {submitted && (
+        {/* Mini thread - visible after first submission */}
+        {hasResponse && (
           <ChatShellMessages>
             <Message from="user">
-              <MessageContent>{submitted}</MessageContent>
+              <MessageContent>{userText}</MessageContent>
             </Message>
             <Message from="assistant">
-              <MessageResponse>{CANNED_REPLY}</MessageResponse>
+              <MessageResponse isAnimating={isStreaming}>
+                {streamedReply}
+              </MessageResponse>
             </Message>
           </ChatShellMessages>
         )}
 
-        {/* Divider only once a thread sits above the input. */}
-        <ChatShellInput divider={submitted !== null}>
+        <ChatShellInput divider={hasResponse}>
           {/* Suggestion chips render outside / above the PromptInput */}
-          {!submitted && (
-            <Suggestions className="mb-2">
-              {SUGGESTIONS.map((s) => (
-                <Suggestion
-                  key={s}
-                  suggestion={s}
-                  onClick={() => setSubmitted(s)}
-                />
-              ))}
-            </Suggestions>
+          {!hasResponse && (
+            <div className="mb-2">
+              <Suggestions>
+                {SUGGESTIONS.map((s) => (
+                  <Suggestion
+                    key={s}
+                    suggestion={s}
+                    onClick={(text) => { void sendMessage(text); }}
+                  />
+                ))}
+              </Suggestions>
+            </div>
           )}
 
-          <PromptInput onSubmit={handleSubmit}>
-            {/* Attachments go in the header slot — above the textarea */}
-            {!submitted && (
+          <PromptInput
+            onSubmit={({ text }) => { void sendMessage(text.trim()); }}
+          >
+            {/* Attachments go in the header slot - above the textarea.
+                Visible when attach button is toggled on or after scroll-entrance. */}
+            {showAttachment && (
               <PromptInputHeader>
                 <Attachments variant="list">
-                  <Attachment data={ATTACHED_FILE}>
+                  <Attachment
+                    data={DEMO_FILE}
+                    onRemove={() => setShowAttachment(false)}
+                  >
                     <AttachmentPreview />
                     <AttachmentInfo />
                     <AttachmentRemove />
@@ -106,18 +202,27 @@ export function DemoPromptInput() {
               </PromptInputHeader>
             )}
 
-            <PromptInputTextarea placeholder="Ask about a student, class, or report…" />
+            <PromptInputTextarea
+              disabled={isStreaming}
+              placeholder={isStreaming ? "Waiting for response..." : "Ask about a student, class, or report..."}
+              aria-label={isStreaming ? "Prompt - disabled while streaming" : "Prompt"}
+            />
 
             <PromptInputFooter>
-              {/* Attach affordance — labelled for screen readers (A11Y-2).
-                  No tooltip prop: the tooltip trigger renders its own <button>,
-                  nesting buttons and breaking hydration on this Base UI stack. */}
-              <PromptInputButton aria-label="Attach file">
+              {/* Attach toggle - clicking shows the attachment chip; removing
+                  via the chip's X button hides it again (visual only). */}
+              <PromptInputButton
+                type="button"
+                variant={showAttachment ? "default" : "ghost"}
+                aria-pressed={showAttachment}
+                aria-label="Attach file"
+                onClick={() => setShowAttachment((v) => !v)}
+              >
                 <Paperclip className="size-4" aria-hidden="true" />
                 <span className="text-xs">Attach</span>
               </PromptInputButton>
 
-              <PromptInputSubmit />
+              <PromptInputSubmit status={status} />
             </PromptInputFooter>
           </PromptInput>
         </ChatShellInput>

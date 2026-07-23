@@ -78,10 +78,10 @@ still required (L1; no waiver path without a human approver).
 **Component recipes:** `recipes.md` (this directory) — install commands, anatomy,
 props, pattern, and hand-built fallback guidance for the twelve key components.
 
-**Human-readable guidelines:** `content/ai/ai-interactions.mdx`,
-`content/ai/conversation-ux.mdx`,
-`content/ai/prompt-engineering.mdx`, and
-`content/ai/components.mdx` present these rules for designers.
+**Human-readable guidelines:** `content/guidelines/ai.mdx`,
+`content/guidelines/ai-patterns.mdx`,
+`content/guidelines/ai-components.mdx`, and
+`content/guidelines/ai-prompts.mdx` present these rules for designers.
 This skill is canonical for the routing table and rules; those pages follow it.
 
 **Candidate catalog controls:** CNV-1 (stoppable streaming), CNV-2 (confirmation for

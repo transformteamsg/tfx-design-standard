@@ -172,7 +172,14 @@ export class MockChatTransport {
       typeof window !== "undefined" &&
       window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    const response = matchResponse(options.messages);
+    const matched = matchResponse(options.messages);
+    /* Web search gates citations: the real perplexity/sonar model returns
+       sources only when search is on, so the mock mirrors that — Sources
+       appear only when the caller passes body.webSearch. */
+    const webSearch = options.body?.webSearch === true;
+    const response: CannedResponse = webSearch
+      ? matched
+      : { ...matched, sources: undefined };
     const signal = options.abortSignal ?? new AbortController().signal;
 
     /* Small initial delay to mimic network round-trip */

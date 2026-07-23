@@ -68,21 +68,20 @@ const nav: NavGroup[] = [
           { href: "/guidelines/naming", title: "Naming" },
         ],
       },
+      {
+        label: "AI",
+        items: [
+          { href: "/guidelines/ai", title: "Overview" },
+          { href: "/guidelines/ai-patterns", title: "AI patterns" },
+          { href: "/guidelines/ai-components", title: "Using components" },
+          { href: "/guidelines/ai-prompts", title: "Writing prompts" },
+        ],
+      },
       { href: "/guidelines/interaction", title: "Interaction" },
       { href: "/guidelines/web-interface", title: "Web interface" },
       { href: "/guidelines/data-viz", title: "Data visualization" },
       { href: "/guidelines/illustration", title: "Illustration" },
       { href: "/guidelines/product-icons", title: "Product icons" },
-    ],
-  },
-  {
-    label: "AI",
-    href: "/ai",
-    items: [
-      { href: "/ai/ai-interactions", title: "AI interactions" },
-      { href: "/ai/conversation-ux", title: "Conversation UX" },
-      { href: "/ai/prompt-engineering", title: "Prompt engineering" },
-      { href: "/ai/components", title: "Components" },
     ],
   },
   {

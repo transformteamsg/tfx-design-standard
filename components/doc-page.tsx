@@ -8,26 +8,32 @@ import { Breadcrumb } from "@/components/breadcrumb";
 import { PageActions } from "@/components/page-actions";
 import { ToolCard, type Tool } from "@/components/tool-card";
 import { heading } from "@/components/mdx";
-import {
-  DemoChatbot,
-  DemoConversation,
-  DemoStreaming,
-  DemoSources,
-  DemoInlineCitation,
-  DemoConfirmation,
-  DemoTask,
-  DemoPlan,
-  DemoCheckpoint,
-  DemoAttachments,
-  DemoReasoning,
-  DemoPromptInput,
-  DemoAiLabel,
-  DemoEmptyState,
-  DemoConfidence,
-  DemoFeedback,
-  DemoClarify,
-  DemoError,
-} from "@/components/ai-demos";
+import dynamic from "next/dynamic";
+
+/* Demos are heavy client components (streamdown + shiki-wasm + mermaid). Loading
+   them lazily per-file means a page only pulls the demo chunks it actually
+   renders — demo-free pages (e.g. /principles) no longer drag in the whole AI
+   graph, which was the source of dev-nav lag. Import each demo's own file, not
+   the barrel (the barrel would re-bundle everything and defeat the split). */
+const DemoChatbot = dynamic(() => import("@/components/ai-demos/demo-chatbot").then((m) => ({ default: m.DemoChatbot })));
+const DemoConversation = dynamic(() => import("@/components/ai-demos/demo-conversation").then((m) => ({ default: m.DemoConversation })));
+const DemoStreaming = dynamic(() => import("@/components/ai-demos/demo-streaming").then((m) => ({ default: m.DemoStreaming })));
+const DemoSources = dynamic(() => import("@/components/ai-demos/demo-sources").then((m) => ({ default: m.DemoSources })));
+const DemoInlineCitation = dynamic(() => import("@/components/ai-demos/demo-inline-citation").then((m) => ({ default: m.DemoInlineCitation })));
+const DemoConfirmation = dynamic(() => import("@/components/ai-demos/demo-confirmation").then((m) => ({ default: m.DemoConfirmation })));
+const DemoTask = dynamic(() => import("@/components/ai-demos/demo-task").then((m) => ({ default: m.DemoTask })));
+const DemoPlan = dynamic(() => import("@/components/ai-demos/demo-plan").then((m) => ({ default: m.DemoPlan })));
+const DemoCheckpoint = dynamic(() => import("@/components/ai-demos/demo-checkpoint").then((m) => ({ default: m.DemoCheckpoint })));
+const DemoAttachments = dynamic(() => import("@/components/ai-demos/demo-attachments").then((m) => ({ default: m.DemoAttachments })));
+const DemoReasoning = dynamic(() => import("@/components/ai-demos/demo-reasoning").then((m) => ({ default: m.DemoReasoning })));
+const DemoChainOfThought = dynamic(() => import("@/components/ai-demos/demo-chain-of-thought").then((m) => ({ default: m.DemoChainOfThought })));
+const DemoPromptInput = dynamic(() => import("@/components/ai-demos/demo-prompt-input").then((m) => ({ default: m.DemoPromptInput })));
+const DemoAiLabel = dynamic(() => import("@/components/ai-demos/demo-ai-label").then((m) => ({ default: m.DemoAiLabel })));
+const DemoEmptyState = dynamic(() => import("@/components/ai-demos/demo-empty-state").then((m) => ({ default: m.DemoEmptyState })));
+const DemoConfidence = dynamic(() => import("@/components/ai-demos/demo-confidence").then((m) => ({ default: m.DemoConfidence })));
+const DemoFeedback = dynamic(() => import("@/components/ai-demos/demo-feedback").then((m) => ({ default: m.DemoFeedback })));
+const DemoClarify = dynamic(() => import("@/components/ai-demos/demo-clarify").then((m) => ({ default: m.DemoClarify })));
+const DemoError = dynamic(() => import("@/components/ai-demos/demo-error").then((m) => ({ default: m.DemoError })));
 
 /* Sections whose docs live at /{section}/{slug} and get a breadcrumb back to
    the section root. Single-doc sections (governance) and start pages don't. */
@@ -39,6 +45,48 @@ const sectionCrumbs: Record<string, { label: string; href: string }> = {
   products: { label: "Products", href: "/products" },
   harness: { label: "Harness", href: "/harness" },
 };
+
+/* MDX component map, built once at module scope so it isn't rebuilt per render. */
+const MDX_COMPONENTS = {
+  h2: heading("h2"),
+  h3: heading("h3"),
+  DemoChatbot,
+  DemoConversation,
+  DemoStreaming,
+  DemoSources,
+  DemoInlineCitation,
+  DemoConfirmation,
+  DemoTask,
+  DemoPlan,
+  DemoCheckpoint,
+  DemoAttachments,
+  DemoReasoning,
+  DemoChainOfThought,
+  DemoPromptInput,
+  DemoAiLabel,
+  DemoEmptyState,
+  DemoConfidence,
+  DemoFeedback,
+  DemoClarify,
+  DemoError,
+};
+
+/* Compiled-MDX memo. compileMDX runs at request time, so without this every
+   navigation recompiles the same source — the main dev-nav lag. Keyed by the
+   raw MDX string, the compiled tree is reused across navigations in a warm
+   server. Editing a doc changes the source -> new key -> recompiles. */
+const mdxMemo = new Map<string, ReactNode>();
+async function compileDoc(source: string): Promise<ReactNode> {
+  const hit = mdxMemo.get(source);
+  if (hit) return hit;
+  const { content } = await compileMDX({
+    source,
+    components: MDX_COMPONENTS,
+    options: { mdxOptions: { remarkPlugins: [remarkGfm] } },
+  });
+  mdxMemo.set(source, content);
+  return content;
+}
 
 export async function DocPage({ doc, children }: { doc: Doc; children?: ReactNode }) {
   const crumb = sectionCrumbs[doc.section];
@@ -52,33 +100,7 @@ export async function DocPage({ doc, children }: { doc: Doc; children?: ReactNod
   let rendered: ReactNode = null;
   let rawFallback = false;
   try {
-    const { content } = await compileMDX({
-      source: doc.content,
-      components: {
-        h2: heading("h2"),
-        h3: heading("h3"),
-        DemoChatbot,
-        DemoConversation,
-        DemoStreaming,
-        DemoSources,
-        DemoInlineCitation,
-        DemoConfirmation,
-        DemoTask,
-        DemoPlan,
-        DemoCheckpoint,
-        DemoAttachments,
-        DemoReasoning,
-        DemoPromptInput,
-        DemoAiLabel,
-        DemoEmptyState,
-        DemoConfidence,
-        DemoFeedback,
-        DemoClarify,
-        DemoError,
-      },
-      options: { mdxOptions: { remarkPlugins: [remarkGfm] } },
-    });
-    rendered = content;
+    rendered = await compileDoc(doc.content);
   } catch {
     rawFallback = true;
   }

@@ -167,28 +167,37 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: "Inter Variable", system-ui, sans-serif;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
 }
 
-h1, h2, h3, h4 { font-family: "Plus Jakarta Sans Variable", system-ui, sans-serif; letter-spacing: -0.01em; }
+h1, h2 { font-family: "Plus Jakarta Sans Variable", system-ui, sans-serif; letter-spacing: -0.01em; }
 
-/* prose defaults for MDX */
+/* prose defaults for MDX.
+   Every rule is scoped with :not(.not-prose *) so any subtree marked `not-prose`
+   (the DemoFrame figure and the AI Elements components, which all self-guard with
+   not-prose) is fully excluded and renders at its true shadcn/AI-Elements default.
+   Without this, these hand-written descendant rules bled prose margins, line-height,
+   colour, code and link styles into every embedded component. `.not-prose` also
+   resets the inherited container line-height (1.6 -> 1.5) for the isolated subtree. */
 .prose { max-width: 70ch; line-height: 1.6; font-size: 16px; }
-.prose h1 { font-size: 32px; font-weight: 600; margin: 0 0 16px; }
-.prose h2 { font-size: 24px; font-weight: 600; margin: 40px 0 12px; }
-.prose h3 { font-size: 20px; font-weight: 600; margin: 28px 0 8px; }
-.prose p { margin: 0 0 14px; color: var(--prose-body); }
-.prose ul, .prose ol { margin: 0 0 14px; padding-left: 20px; color: var(--prose-body); }
-.prose ul { list-style: disc; }
-.prose ol { list-style: decimal; }
-.prose ul ul { list-style: circle; margin-top: 4px; margin-bottom: 0; }
-.prose li { margin-bottom: 4px; }
-.prose table { width: 100%; border-collapse: collapse; font-size: 14px; margin: 16px 0 20px; }
-.prose th { text-align: left; font-weight: 600; padding: 8px 12px; border-bottom: 2px solid var(--border); }
-.prose td { padding: 8px 12px; border-bottom: 1px solid var(--border); vertical-align: top; color: var(--prose-body); }
-.prose code { background: var(--muted); border: 1px solid var(--border); border-radius: 4px; padding: 1px 4px; font-size: 0.875em; }
-.prose pre { background: var(--foreground); color: var(--background); border-radius: 8px; padding: 14px 16px; overflow-x: auto; margin: 0 0 16px; }
-.prose pre code { background: none; border: none; color: inherit; padding: 0; }
-.prose blockquote { border-left: 3px solid var(--tw-blue); padding-left: 16px; color: var(--muted-foreground); margin: 0 0 14px; }
-.prose a { color: var(--tw-blue); text-decoration: underline; text-underline-offset: 2px; }
-.prose strong { color: var(--foreground); font-weight: 600; }
+.not-prose { line-height: 1.5; }
+.prose :where(h3, h4):not(.not-prose *) { font-family: "Plus Jakarta Sans Variable", system-ui, sans-serif; letter-spacing: -0.01em; }
+.prose h1:not(.not-prose *) { font-size: 32px; font-weight: 600; margin: 0 0 16px; }
+.prose h2:not(.not-prose *) { font-size: 24px; font-weight: 600; margin: 40px 0 12px; }
+.prose h3:not(.not-prose *) { font-size: 20px; font-weight: 600; margin: 28px 0 8px; }
+.prose p:not(.not-prose *) { margin: 0 0 14px; color: var(--prose-body); }
+.prose :where(ul, ol):not(.not-prose *) { margin: 0 0 14px; padding-left: 20px; color: var(--prose-body); }
+.prose ul:not(.not-prose *) { list-style: disc; }
+.prose ol:not(.not-prose *) { list-style: decimal; }
+.prose ul ul:not(.not-prose *) { list-style: circle; margin-top: 4px; margin-bottom: 0; }
+.prose li:not(.not-prose *) { margin-bottom: 4px; }
+.prose table:not(.not-prose *) { width: 100%; border-collapse: collapse; font-size: 14px; margin: 16px 0 20px; }
+.prose th:not(.not-prose *) { text-align: left; font-weight: 600; padding: 8px 12px; border-bottom: 2px solid var(--border); }
+.prose td:not(.not-prose *) { padding: 8px 12px; border-bottom: 1px solid var(--border); vertical-align: top; color: var(--prose-body); }
+.prose code:not(.not-prose *) { background: var(--muted); border: 1px solid var(--border); border-radius: 4px; padding: 1px 4px; font-size: 0.875em; }
+.prose pre:not(.not-prose *) { background: var(--foreground); color: var(--background); border-radius: 8px; padding: 14px 16px; overflow-x: auto; margin: 0 0 16px; }
+.prose pre code:not(.not-prose *) { background: none; border: none; color: inherit; padding: 0; }
+.prose blockquote:not(.not-prose *) { border-left: 3px solid var(--tw-blue); padding-left: 16px; color: var(--muted-foreground); margin: 0 0 14px; }
+.prose a:not(.not-prose *) { color: var(--tw-blue); text-decoration: underline; text-underline-offset: 2px; }
+.prose strong:not(.not-prose *) { color: var(--foreground); font-weight: 600; }

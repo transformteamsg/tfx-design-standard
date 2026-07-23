@@ -261,5 +261,5 @@ If you upgrade AI Elements, reapply this patch or the `tooltip` prop breaks hydr
 
 ## Component reference
 
-Human-readable component reference with routing guidance: `content/ai/components.mdx`.
+Human-readable component reference with routing guidance: `content/guidelines/ai-components.mdx`.
 Tables map each AI Elements component to the TFX routing table and list relevant TFX surfaces.

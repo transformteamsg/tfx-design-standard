@@ -310,3 +310,66 @@ Status: proposed.
 **Cross-links updated:** all internal links from `/guidelines/ai-design`, `/guidelines/conversation-design`, and `/guidelines/prompt-engineering` replaced with the new `/ai/` paths inside the moved MDX files.
 
 **Harness pointers updated:** `harness/.claude/skills/ai/SKILL.md` Pointers section updated to the four new `content/ai/` paths; `harness/.claude/skills/ai/recipes.md` has a new "Component reference" section pointing to `content/ai/components.mdx`.
+
+## Phase 10 update (2026-07-16)
+
+**Phase 9 reverted: AI is back UNDER Guidelines, and the content was re-segmented and rewritten.**
+The top-level `/ai` section was promoted in Phase 9; the design lead asked for it to return under Guidelines (as a subgroup, like Content), and for a blind-pass MECE re-segmentation grounded in the reference links (Google PAIR primary).
+
+**New MECE segmentation - 4 pages, big-picture first.** The old 4 pages (ai-interactions, conversation-ux, prompt-engineering, components) had overlap (principles + routing + rules all on ai-interactions). The new set:
+
+| Slug | Title | Owns |
+|---|---|---|
+| `ai-principles` | Principles | Overarching commitments (the "why"). No routing table, no component tables. |
+| `ai-patterns` | Patterns | The routing table + per-feature-type detail (inline suggestion, draft, summarisation, Q&A, agent, classification, transcription) + most demos. |
+| `ai-conversation` | Conversation design | When conversation is warranted + designing good conversations + prompt-engineering (old conversation-ux + prompt-engineering merged). |
+| `ai-components` | AI components | The AI Elements catalogue reference + flagship demo. |
+
+Conversation stops being a silo: it is one surface in Patterns, with its deep-dive on the Conversation design page.
+
+**Files:** `content/ai/*.mdx` and `app/ai/` (page.tsx, [slug]/page.tsx) deleted; new `content/guidelines/ai-{principles,patterns,conversation,components}.mdx` created. `content/map.json` moved the ai slugs into `guidelines.slugs` and removed the `"ai"` section. `components/sidebar.tsx` removed the top-level AI group and added an "AI" NavSubGroup under Guidelines (mirrors "Content"). Harness pointers in `harness/.claude/skills/ai/SKILL.md` and `recipes.md` repointed to the new `content/guidelines/ai-*` paths. Old `/ai/*` routes now 404; no dead `/ai/` internal links remain.
+
+**Written by 4 parallel agents** off a shared brief (one page each), then stitched and cross-linked. Voice/mechanics held: content-lint clean (CNT-3/5/6, SLP-9), no em dashes, second person, each sentence on its own line.
+
+**Evaluator verdict: pass-with-findings, then fixed.** The `tfx-design-evaluator` confirmed the MECE structure (each page owns its job, no gaps), designer usefulness, voice, and cross-links, and flagged one blocking defect: `ai-patterns.mdx` linked six proposed-control ids (AID-1/AID-2/CNV-1/CNV-2) that do not exist in `catalog.yaml`, so `/standards/catalog/<id>` 404'd; plus four imprecise PAIR chapter URLs. Both fixed - the proposed-control links were demoted to plain "(proposed)" text (they await ratchet approval), and the PAIR URLs corrected to their specific `/chapter/<name>/` anchors. Re-checked clean.
+
+**Accompanying non-content fixes in the same session (separate concern):** dev-nav lag was fixed by lazy-loading the AI demos in `components/doc-page.tsx` (`next/dynamic` per file) so demo-free pages stop bundling the streamdown/shiki/mermaid graph. Several demo alignment nits were also fixed: `sources.tsx` block `<p>` to `<span>` + `text-primary` to `text-muted-foreground`; confidence/error demo spacing to the shadcn scale; the reasoning demo now renders content at rest; and a new `demo-chain-of-thought.tsx` was added. These are UI/perf, not content, but landed together.
+
+## Phase 11 update (2026-07-16)
+
+The design lead previewed Phase 10 and pushed back hard: the copy was too long, too dense, jargon in the titles (control IDs), no shared mental model, and the pages did not tell you which one to open for a situation. Plus the site still felt laggy, the reasoning component (and others) looked misaligned, and demos showed no motion. Full second pass:
+
+**Lag (top priority) - genuinely fixed.** The earlier `next/dynamic` split was not enough; MDX was still recompiled at request time on every navigation, and dev ran on webpack. Fixes: dev now runs on **Turbopack** (`next dev --turbopack`), `compileMDX` is wrapped in a module-level memo keyed by the MDX source (`components/doc-page.tsx`), and `getDoc` is wrapped in React `cache()`. Warm navigation dropped from "a few seconds" to ~0.11-0.23s. A module-level `MockChatTransport` singleton was moved into `DemoChatbot` to stop Fast Refresh full reloads.
+
+**Component alignment - systematic pass.** The block-element-in-a-flex-row bug was across many AI Elements components, not just reasoning. Fixed `reasoning.tsx` and `task.tsx` trigger labels (`<p>` -> `<span>`); scoped the bare global `h1,h2,h3,h4` display-font rule in `app/globals.css` to `h1,h2` global + `.prose h3,.prose h4` (with `font-display` restored on the two bare overview-page `h3`s), so AI Elements component headings render in the body font like the real components.
+
+**Demo motion - now visible.** `use-replay.ts` was observing `document.body` (always visible), firing every animation on page load while off-screen. It now returns a ref that `DemoFrame` attaches to its `<figure>` (`rootRef`), so each demo animates once as it scrolls into view. Reduced-motion guard kept.
+
+**Caption clutter removed.** Stripped meta chips (`- inspired by Carbon AI label`, `- not an AI Elements component`, `(TFX pattern)`, `(CNT-1 anatomy)`, `(stop state)`) from the demo `caption` arrays; only real component names show.
+
+**Content - rewritten to 4 short, layman, sentence-case tabs** around one mental model: **fit it to the task -> make it honest -> keep the teacher in control.**
+
+| Slug | Tab | Owns |
+|---|---|---|
+| `ai` | Overview | The landing: the mental model + a "what are you building?" router + a "how these pages fit together" map. |
+| `ai-patterns` | AI patterns | The design/behaviour layer: one section per situation (inline suggestion, generated draft, summary, answering questions, agent actions, conversation), each with rules + a demo. Chat UX lives here. |
+| `ai-components` | Using components | The parts layer: the AI Elements toolbox, each mapped to a pattern. |
+| `ai-prompts` | Writing prompts | System-prompt authoring only. |
+
+The patterns-vs-components line ("AI patterns is the behaviour; Using components is the pieces") is stated in the copy, not just the plan. Old `ai-principles.mdx` + `ai-conversation.mdx` deleted; `ai-patterns` + `ai-components` fully rewritten; `ai.mdx` + `ai-prompts.mdx` new. `map.json` + `sidebar.tsx` + the `ai` skill pointers updated. Word counts cut to ~315 / 617 / 440 / 633 (from ~950-1850). Written by 3 parallel agents (Overview authored directly for the spine) off a shared brief carrying the voice bar from OPINIONS.md / VOICE.md.
+
+**Evaluator verdict: PASS (no blocking or advisory findings).** `tfx-design-evaluator`: content-lint clean; mental model threads through; MECE with the patterns/components line explicit; every Overview router anchor resolves to a real `##` heading; openers + reciprocal cross-links present; no em dashes, no control IDs in headings, sentence case, British spelling; no dead links. One non-defect observation: a couple of `ai-prompts.mdx` Do/Don't cells run long. Live routing verified in-browser (all `/guidelines/ai*` 200, old `/guidelines/ai-principles` 404); reasoning demo confirmed aligned and animating on scroll; captions confirmed clean.
+
+## Phase 12 update (2026-07-16)
+
+The design lead previewed Phase 11 and pushed back: the AI Elements components still looked off (spacing / alignment / typography) even though the originals are fine; only some demos animated; the hand-rolled ones (especially the error state) "looked horrible because they don't use existing components"; and headings like "The one idea" / "All the pieces together" were too abstract. She wants every demo to emulate a real, polished AI product, to copy the AI Elements example pages, and to lean on the `ai-elements` skill rather than reinvent.
+
+**Root cause found (the crux):** TFX's `.prose` rules in `app/globals.css` are hand-written **descendant selectors** (`.prose p`, `.prose h3`, `.prose code`, `.prose a`...), and **`.not-prose` was never defined** (TFX does not use the Tailwind typography plugin). Every AI Elements component and `DemoFrame` guards itself with `not-prose`, but the class matched nothing, so it did nothing. Since every demo renders inside `<article className="prose">`, the prose margins, `line-height: 1.6`, `--prose-body` colour, code backgrounds, and blue underlined links **bled into the components**. That is why they looked off in TFX but fine on the AI Elements site. **Fix:** every `.prose <el>` rule is now scoped `:not(.not-prose *)`, plus `.not-prose { line-height: 1.5 }` and `body { line-height: 1.5 }`. `not-prose` now truly isolates, so all 20 demos render at their true shadcn/AI-Elements default - one change, no padding touched, brand fonts kept.
+
+**Every demo rebuilt live (maximal), via 4 parallel Sonnet agents** off a shared craft brief drawn from the AI Elements example pages (chatbot / v0 / workflow / ide): streaming ~40-80ms/word, stop from the first token, reasoning auto-open/close, clickable suggestions that stream a reply, typeable prompt inputs, approve/deny that changes state, task/plan/checkpoint steps that advance, expandable sources, attach/remove, thumbs -> acknowledgement, and entrance-on-scroll via the `use-replay` ref -> `DemoFrame rootRef` - all mock, no network, reduced-motion respected.
+
+**Hand-rolled demos rebuilt on shadcn primitives:** `demo-error` -> shadcn `Alert` + `Button` + `Spinner` with a working retry (the "error state looks horrible" fix - it now reads as a native product alert); `demo-confidence` -> `Badge` + token dot, click-to-cycle; `demo-ai-label` -> `Badge` + `Popover` explainability. No hand-rolled markup remains where a real component exists.
+
+**Headings** made descriptive and layman: "The one idea" -> "Three rules that always apply"; "Components" -> "What each component does"; "All the pieces together" -> "A full chatbot, built from these pieces". **The `ai-elements` skill is surfaced** on Using components (a coding agent installs and composes via it; the TFX pages add the pattern mapping and TFX adaptation on top - not reinvented).
+
+**Verify:** `tsc --noEmit` clean across all rebuilt demos; content-lint clean; dev on Turbopack. In-browser: the error demo confirmed rendering through real `Alert`/`AlertTitle`/`AlertDescription`/`Button`; reasoning and other demos confirmed animating on scroll; typography/spacing clean after the `not-prose` fix. A stray `ai-examples-study.md` left by an explore subagent was removed. (A full `tfx-design-evaluator` pass on the interactive demos was not run read-only; the verification rests on tsc + live in-browser checks + the real-component captions.)

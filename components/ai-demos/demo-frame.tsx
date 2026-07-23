@@ -1,6 +1,6 @@
 "use client";
 
-import type { ReactNode } from "react";
+import type { ReactNode, RefObject } from "react";
 import { RotateCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -19,14 +19,16 @@ export function DemoFrame({
   caption,
   onReplay,
   bleed = false,
+  rootRef,
 }: {
   children: ReactNode;
   caption?: string[];
   onReplay?: () => void;
   bleed?: boolean;
+  rootRef?: RefObject<HTMLElement | null>;
 }) {
   return (
-    <figure className="not-prose my-8 rounded-lg border border-border bg-surface">
+    <figure ref={rootRef as RefObject<HTMLElement> | undefined} className="not-prose my-8 rounded-lg border border-border bg-surface">
       {/* Live demo label + optional replay */}
       <div className="flex items-center gap-2 rounded-t-lg border-b border-border px-4 py-2.5">
         <span

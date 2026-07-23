@@ -93,14 +93,14 @@ export default function Overview() {
       <h2 className="mt-14 font-display text-[20px] font-semibold">Three readers, one standard</h2>
       <div className="mt-5 grid gap-8 sm:grid-cols-3">
         <div>
-          <h3 className="text-[16px] font-semibold">Humans</h3>
+          <h3 className="font-display text-[16px] font-semibold">Humans</h3>
           <p className="mt-1.5 text-[14px] leading-[1.6] text-muted-foreground">
             Browse the sections above. Principles and guidelines are written for judgement
             calls only a person can make.
           </p>
         </div>
         <div>
-          <h3 className="text-[16px] font-semibold">Humans → machines</h3>
+          <h3 className="font-display text-[16px] font-semibold">Humans → machines</h3>
           <p className="mt-1.5 text-[14px] leading-[1.6] text-muted-foreground">
             <Link href="/harness/skills" className="text-tw-blue underline underline-offset-2">
               Skills
@@ -109,7 +109,7 @@ export default function Overview() {
           </p>
         </div>
         <div>
-          <h3 className="text-[16px] font-semibold">Machines</h3>
+          <h3 className="font-display text-[16px] font-semibold">Machines</h3>
           <p className="mt-1.5 text-[14px] leading-[1.6] text-muted-foreground">
             <Link href="/for-agents" className="text-tw-blue underline underline-offset-2">
               For agents

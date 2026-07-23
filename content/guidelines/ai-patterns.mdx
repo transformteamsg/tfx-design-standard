@@ -1,0 +1,103 @@
+---
+title: AI patterns
+description: What to build for each AI use case, and how it should behave.
+status: proposed
+---
+
+> Reference: [The Shape of AI](https://www.shapeof.ai/), [Google PAIR Guidebook](https://pair.withgoogle.com/guidebook/), [Microsoft HAX Toolkit](https://www.microsoft.com/en-us/haxtoolkit/library/), [IBM Carbon for AI](https://carbondesignsystem.com/guidelines/carbon-for-ai/), [Vercel AI Elements](https://elements.ai-sdk.dev/). The rules here are distilled from these and adapted to TFX products.
+
+This page is for designers who have picked a use case from the [Overview](/guidelines/ai) and want to know how to build it.
+
+## Suggestions and next steps
+
+The AI proposes a small next action - think autocomplete, a next-step chip, or a field pre-filled from existing context.
+Use this when the teacher is mid-task and a single nudge would help without breaking their flow.
+
+- Fit the suggestion inside the existing flow - no modal, no panel.
+- Make it dismissible; the teacher should never feel forced.
+- Remove it once the teacher acts or types past it.
+
+<DemoPromptInput />
+
+## Generating content
+
+The AI writes a first draft the teacher owns - a case note, end-of-term comment, or goal statement.
+The teacher edits and submits; the AI never finalises on their behalf.
+
+- Mark AI content where it appears. Remove the label once the teacher edits the field.
+- Show certainty in plain words - high, medium, or low - not as a percentage.
+- Stream from the first token, with a visible stop control throughout.
+
+<DemoAiLabel />
+
+<DemoStreaming />
+
+## Summarising and transforming content
+
+The AI distils or reshapes long material - a term of records into one paragraph, or notes into a parent update.
+Use this when the teacher needs orientation or a new format, not the full source text.
+
+- Keep the summary beside the source so the teacher can check any claim without navigating away.
+- Every factual statement must be traceable to its source passage. Leave out what cannot be sourced.
+
+<DemoSources />
+
+## Answering questions from your data
+
+The teacher asks about a bounded set of records or documents and gets a cited answer.
+Examples: student records, a submitted piece of writing, or an uploaded assessment.
+[Google PAIR](https://pair.withgoogle.com/guidebook/patterns) calls this "grounded Q&A."
+
+- Cite the passage the answer drew from.
+- Ask the teacher to clarify when intent or scope is unclear; do not guess and proceed.
+
+<DemoInlineCitation />
+
+<DemoClarify />
+
+## Classifying and flagging
+
+The AI labels, scores, or flags records - reading bands, students who may need a check-in, submissions that look incomplete.
+
+| Do | Don't |
+| --- | --- |
+| Mark what the AI classified and where | Present a flag without attribution |
+| Show confidence in plain words | Use raw probability scores |
+| Acknowledge corrections at the point they are given | Ignore feedback and re-flag the same record |
+
+<DemoConfidence />
+
+<DemoFeedback />
+
+## Agents that take action
+
+The AI completes a whole task on the teacher's behalf - filing a referral, updating a record, scheduling, or sending a notification.
+The highest-stakes use case. [Microsoft HAX](https://www.microsoft.com/en-us/haxtoolkit/library/) requires explicit consent before any consequential action.
+
+- Show the full plan before any step runs. Let the teacher remove or reorder steps.
+- Require an explicit yes before anything that sends, files, or changes a record. Name the record, field, and proposed value - never a bare "Confirm?".
+- During execution, show which step is running and pause at anything unexpected.
+- Expose the agent's working as a collapsible chain, labelled as working - not a guarantee.
+
+<DemoConfirmation />
+
+<DemoTask />
+
+<DemoChainOfThought />
+
+## Conversations
+
+Open-ended chat is the last resort when a task genuinely cannot be scoped in advance.
+An embedded, task-specific control beats a chat panel when the job is known ahead of time.
+
+- Bound the scope. Tell the teacher what the assistant can see and what it cannot, before they ask something outside that scope.
+- Error copy says what did not work and what to do next. No model or technical terminology in user-visible text.
+
+<DemoChatbot />
+
+<DemoError />
+
+---
+
+For the components that build these patterns, see [Using components](/guidelines/ai-components).
+For how to write the assistant's instructions, see [Writing prompts](/guidelines/ai-prompts).

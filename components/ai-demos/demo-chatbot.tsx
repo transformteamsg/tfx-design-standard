@@ -1,8 +1,8 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { ChatStatus, UIMessage, UIMessageChunk } from "ai";
-import { BotMessageSquare } from "lucide-react";
+import { BotMessageSquare, CheckIcon, CopyIcon, GlobeIcon, RefreshCcwIcon } from "lucide-react";
 import {
   Conversation,
   ConversationContent,
@@ -13,6 +13,8 @@ import {
   Message,
   MessageContent,
   MessageResponse,
+  MessageActions,
+  MessageAction,
 } from "@/components/ai-elements/message";
 import {
   Reasoning,
@@ -31,15 +33,24 @@ import {
 } from "@/components/ai-elements/suggestion";
 import {
   PromptInput,
+  PromptInputBody,
   PromptInputTextarea,
   PromptInputFooter,
+  PromptInputTools,
+  PromptInputButton,
   PromptInputSubmit,
-  PromptInputSelect,
-  PromptInputSelectTrigger,
-  PromptInputSelectContent,
-  PromptInputSelectItem,
-  PromptInputSelectValue,
 } from "@/components/ai-elements/prompt-input";
+import {
+  ModelSelector,
+  ModelSelectorContent,
+  ModelSelectorEmpty,
+  ModelSelectorGroup,
+  ModelSelectorInput,
+  ModelSelectorItem,
+  ModelSelectorList,
+  ModelSelectorTrigger,
+} from "@/components/ai-elements/model-selector";
+import { Loader } from "@/components/ai-elements/loader";
 import { DemoFrame } from "./demo-frame";
 import {
   ChatShell,
@@ -48,9 +59,7 @@ import {
   chatScrollClass,
 } from "./chat-shell";
 import { MockChatTransport } from "./mock-chat";
-
-/* Singleton transport per component tree — one abort scope per demo mount. */
-const transport = new MockChatTransport();
+import { useReplay } from "./use-replay";
 
 const SUGGESTIONS = [
   "Summarise Ahmad's reading progress",
@@ -82,117 +91,171 @@ interface LocalMessage {
  * Model picker is visual-only. Height is content-driven (max-h + scroll).   */
 export function DemoChatbot() {
   const [model, setModel] = useState<string>("assist");
+  const [webSearch, setWebSearch] = useState(false);
   const [messages, setMessages] = useState<LocalMessage[]>([]);
   const [status, setStatus] = useState<ChatStatus>("ready");
   const abortRef = useRef<AbortController | null>(null);
   const msgCounter = useRef(0);
+  const transportRef = useRef<MockChatTransport>(new MockChatTransport());
+
+  /* Scroll-into-view entrance: when the demo scrolls into view (step goes to 1),
+     auto-send the first suggestion so the empty state animates to life. */
+  const { step: replayStep, replay, ref: rootRef } = useReplay({ steps: 1, stepMs: [800] });
+  const autoStarted = useRef(false);
 
   const stop = useCallback(() => {
     abortRef.current?.abort();
   }, []);
 
-  const sendMessage = useCallback(async (content: string) => {
-    if (!content.trim()) return;
+  /* Streams one assistant turn for the given history. Shared by send and
+     regenerate so the streaming logic lives in a single place. */
+  const streamAssistant = useCallback(
+    async (history: LocalMessage[]) => {
+      const asstMsgId = `a-${++msgCounter.current}`;
+      setStatus("submitted");
 
-    /* Build a UIMessage list for the transport (it expects the full history). */
-    const userMsgId = `u-${++msgCounter.current}`;
-    const asstMsgId = `a-${++msgCounter.current}`;
+      const historyForTransport: UIMessage[] = history.map((m) => ({
+        id: m.id,
+        role: m.role,
+        parts: m.parts as UIMessage["parts"],
+        metadata: {},
+      }));
 
-    const userMsg: LocalMessage = {
-      id: userMsgId,
-      role: "user",
-      parts: [{ type: "text", text: content, state: "done" }],
-    };
+      const ac = new AbortController();
+      abortRef.current = ac;
 
-    setMessages((prev) => [...prev, userMsg]);
-    setStatus("submitted");
-
-    /* The transport expects UIMessage[] — our LocalMessage is compatible
-       because we only use the parts it reads (role + text parts). */
-    const historyForTransport: UIMessage[] = [...messages, userMsg].map((m) => ({
-      id: m.id,
-      role: m.role,
-      parts: m.parts as UIMessage["parts"],
-      metadata: {},
-    }));
-
-    const ac = new AbortController();
-    abortRef.current = ac;
-
-    let stream: ReadableStream<UIMessageChunk>;
-    try {
-      stream = await transport.sendMessages({
-        trigger: "submit-message",
-        chatId: "demo",
-        messages: historyForTransport,
-        abortSignal: ac.signal,
-      });
-    } catch {
-      setStatus("error");
-      return;
-    }
-
-    /* Seed the assistant message slot so it appears immediately. */
-    setMessages((prev) => [
-      ...prev,
-      { id: asstMsgId, role: "assistant", parts: [] },
-    ]);
-    setStatus("streaming");
-
-    /* Read chunks and fold them into the assistant message's parts. */
-    const reader = stream.getReader();
-    try {
-      while (true) {
-        const { done, value: chunk } = await reader.read();
-        if (done || ac.signal.aborted) break;
-
-        setMessages((prev) =>
-          prev.map((msg) => {
-            if (msg.id !== asstMsgId) return msg;
-            return { ...msg, parts: applyChunk(msg.parts, chunk) };
-          })
-        );
+      let stream: ReadableStream<UIMessageChunk>;
+      try {
+        stream = await transportRef.current.sendMessages({
+          trigger: "submit-message",
+          chatId: "demo",
+          messages: historyForTransport,
+          abortSignal: ac.signal,
+          /* Model + web-search are visual toggles; the mock reads webSearch to
+             decide whether to return Sources (mirrors perplexity/sonar). */
+          body: { model, webSearch },
+        });
+      } catch {
+        setStatus("error");
+        return;
       }
-    } catch {
-      /* aborted or stream error — leave whatever we have */
-    } finally {
-      reader.releaseLock();
+
+      /* Seed the assistant message slot so it appears immediately. */
+      setMessages((prev) => [
+        ...prev,
+        { id: asstMsgId, role: "assistant", parts: [] },
+      ]);
+      setStatus("streaming");
+
+      /* Read chunks and fold them into the assistant message's parts. */
+      const reader = stream.getReader();
+      try {
+        while (true) {
+          const { done, value: chunk } = await reader.read();
+          if (done || ac.signal.aborted) break;
+
+          setMessages((prev) =>
+            prev.map((msg) =>
+              msg.id === asstMsgId
+                ? { ...msg, parts: applyChunk(msg.parts, chunk) }
+                : msg
+            )
+          );
+        }
+      } catch {
+        /* aborted or stream error — leave whatever we have */
+      } finally {
+        reader.releaseLock();
+      }
+
+      /* Mark all streaming parts as done. */
+      setMessages((prev) =>
+        prev.map((msg) => {
+          if (msg.id !== asstMsgId) return msg;
+          return {
+            ...msg,
+            parts: msg.parts.map((p) =>
+              p.type === "text" || p.type === "reasoning"
+                ? { ...p, state: "done" as const }
+                : p
+            ),
+          };
+        })
+      );
+
+      setStatus("ready");
+      abortRef.current = null;
+    },
+    [model, webSearch]
+  );
+
+  const sendMessage = useCallback(
+    async (content: string) => {
+      if (!content.trim()) return;
+      const userMsg: LocalMessage = {
+        id: `u-${++msgCounter.current}`,
+        role: "user",
+        parts: [{ type: "text", text: content, state: "done" }],
+      };
+      const next = [...messages, userMsg];
+      setMessages(next);
+      await streamAssistant(next);
+    },
+    [messages, streamAssistant]
+  );
+
+  /* Retry: drop the trailing assistant turn and regenerate from the last
+     user message — the mock re-streams a fresh reply. */
+  const regenerate = useCallback(async () => {
+    const lastUserIdx = messages.map((m) => m.role).lastIndexOf("user");
+    if (lastUserIdx === -1) return;
+    const trimmed = messages.slice(0, lastUserIdx + 1);
+    setMessages(trimmed);
+    await streamAssistant(trimmed);
+  }, [messages, streamAssistant]);
+
+  /* When the demo scrolls into view for the first time, auto-send the first
+     suggestion so the empty state animates to life. Guard with autoStarted so
+     replay() from the header button does NOT re-trigger the auto-send. */
+  useEffect(() => {
+    if (replayStep >= 1 && messages.length === 0 && !autoStarted.current) {
+      autoStarted.current = true;
+      void sendMessage(SUGGESTIONS[0]);
     }
+  }, [replayStep, messages.length, sendMessage]);
 
-    /* Mark all streaming parts as done. */
-    setMessages((prev) =>
-      prev.map((msg) => {
-        if (msg.id !== asstMsgId) return msg;
-        return {
-          ...msg,
-          parts: msg.parts.map((p) =>
-            p.type === "text" || p.type === "reasoning"
-              ? { ...p, state: "done" as const }
-              : p
-          ),
-        };
-      })
-    );
-
-    setStatus(ac.signal.aborted ? "ready" : "ready");
-    abortRef.current = null;
-  }, [messages]);
+  /* Reset the auto-start guard when the user manually hits Replay so the next
+     scroll-in-view can trigger again cleanly. */
+  const handleReplay = useCallback(() => {
+    autoStarted.current = false;
+    setMessages([]);
+    setStatus("ready");
+    abortRef.current?.abort();
+    replay();
+  }, [replay]);
 
   const isStreaming = status === "submitted" || status === "streaming";
+  const lastMessageId = messages[messages.length - 1]?.id;
 
   return (
     <DemoFrame
       bleed
+      onReplay={handleReplay}
+      rootRef={rootRef}
       caption={[
         "Conversation",
         "ConversationEmptyState",
         "Message",
         "MessageResponse",
+        "MessageActions",
         "Reasoning",
         "Sources",
+        "Loader",
         "PromptInput",
+        "PromptInputTools",
+        "PromptInputButton",
+        "ModelSelector",
         "Suggestion",
-        "PromptInputSelect",
       ]}
     >
       {/* DemoFrame figure is the surface — no inner bordered box (SLP-4).
@@ -207,7 +270,7 @@ export function DemoChatbot() {
               <ConversationEmptyState
                 icon={<BotMessageSquare className="size-8" aria-hidden="true" />}
                 title="Ask TFX Assist"
-                description="Get summaries, flag students, or draft comments — all from your class data."
+                description="Get summaries, flag students, or draft comments - all from your class data."
               />
             ) : (
               messages.map((msg) => {
@@ -270,10 +333,31 @@ export function DemoChatbot() {
                         {textPart.text}
                       </MessageResponse>
                     )}
+
+                    {/* Copy / Retry — on the last completed assistant turn only */}
+                    {msg.id === lastMessageId &&
+                      !isStreaming &&
+                      textPart?.type === "text" &&
+                      textPart.state === "done" && (
+                        <MessageActions>
+                          <MessageAction onClick={() => { void regenerate(); }} label="Retry">
+                            <RefreshCcwIcon className="size-3" aria-hidden="true" />
+                          </MessageAction>
+                          <MessageAction
+                            onClick={() => navigator.clipboard.writeText(textPart.text)}
+                            label="Copy"
+                          >
+                            <CopyIcon className="size-3" aria-hidden="true" />
+                          </MessageAction>
+                        </MessageActions>
+                      )}
                   </Message>
                 );
               })
             )}
+
+            {/* Pending indicator — shows in the window before the first token */}
+            {status === "submitted" && <Loader />}
           </ConversationContent>
           <ConversationScrollButton />
         </Conversation>
@@ -282,15 +366,17 @@ export function DemoChatbot() {
         <ChatShellInput>
           {/* Suggestion chips — only shown before the first message */}
           {messages.length === 0 && (
-            <Suggestions className="mb-2">
-              {SUGGESTIONS.map((s) => (
-                <Suggestion
-                  key={s}
-                  suggestion={s}
-                  onClick={() => { void sendMessage(s); }}
-                />
-              ))}
-            </Suggestions>
+            <div className="mb-2">
+              <Suggestions>
+                {SUGGESTIONS.map((s) => (
+                  <Suggestion
+                    key={s}
+                    suggestion={s}
+                    onClick={() => { void sendMessage(s); }}
+                  />
+                ))}
+              </Suggestions>
+            </div>
           )}
 
           <PromptInput
@@ -298,26 +384,60 @@ export function DemoChatbot() {
               void sendMessage(msg.text.trim());
             }}
           >
-            <PromptInputTextarea
-              disabled={isStreaming}
-              placeholder={isStreaming ? "Waiting for response…" : "Ask about your class…"}
-              aria-label={isStreaming ? "Prompt — disabled while streaming" : "Prompt"}
-            />
+            <PromptInputBody>
+              <PromptInputTextarea
+                disabled={isStreaming}
+                placeholder={isStreaming ? "Waiting for response…" : "Ask about your class…"}
+                aria-label={isStreaming ? "Prompt - disabled while streaming" : "Prompt"}
+              />
+            </PromptInputBody>
 
             <PromptInputFooter>
-              {/* Model picker — visual only, not wired to transport */}
-              <PromptInputSelect value={model} onValueChange={(v) => setModel(String(v))}>
-                <PromptInputSelectTrigger aria-label="Select model">
-                  <PromptInputSelectValue />
-                </PromptInputSelectTrigger>
-                <PromptInputSelectContent>
-                  {MODELS.map((m) => (
-                    <PromptInputSelectItem key={m.value} value={m.value}>
-                      {m.label}
-                    </PromptInputSelectItem>
-                  ))}
-                </PromptInputSelectContent>
-              </PromptInputSelect>
+              <PromptInputTools>
+                {/* Web-search toggle — when on, replies cite Sources (mirrors
+                    a search-enabled model). Off by default. */}
+                <PromptInputButton
+                  type="button"
+                  variant={webSearch ? "default" : "ghost"}
+                  aria-pressed={webSearch}
+                  aria-label="Toggle web search"
+                  onClick={() => setWebSearch((v) => !v)}
+                >
+                  <GlobeIcon className="size-4" aria-hidden="true" />
+                  <span className="text-xs">Search</span>
+                </PromptInputButton>
+
+                {/* Model picker — visual only, not wired to transport */}
+                <ModelSelector>
+                  <ModelSelectorTrigger
+                    render={
+                      <PromptInputButton type="button" aria-label="Select model">
+                        <span>{MODELS.find((m) => m.value === model)?.label}</span>
+                      </PromptInputButton>
+                    }
+                  />
+                  <ModelSelectorContent title="Select model">
+                    <ModelSelectorInput placeholder="Search models…" />
+                    <ModelSelectorList>
+                      <ModelSelectorEmpty>No model found.</ModelSelectorEmpty>
+                      <ModelSelectorGroup heading="TFX models">
+                        {MODELS.map((m) => (
+                          <ModelSelectorItem
+                            key={m.value}
+                            value={m.value}
+                            onSelect={() => setModel(m.value)}
+                          >
+                            <span className="flex-1 truncate text-left">{m.label}</span>
+                            {model === m.value && (
+                              <CheckIcon className="size-4" aria-hidden="true" />
+                            )}
+                          </ModelSelectorItem>
+                        ))}
+                      </ModelSelectorGroup>
+                    </ModelSelectorList>
+                  </ModelSelectorContent>
+                </ModelSelector>
+              </PromptInputTools>
 
               {/* Submit / stop — status drives the icon automatically */}
               <PromptInputSubmit status={status} onStop={stop} />

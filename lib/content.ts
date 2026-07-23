@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { cache } from "react";
 import matter from "gray-matter";
 
 const CONTENT_DIR = path.join(process.cwd(), "content");
@@ -16,7 +17,9 @@ export type Doc = {
   content: string;
 };
 
-export function getDoc(section: string, slug: string): Doc | null {
+/* cache() dedupes reads within a render pass (the route and listDocs both read
+   the same file), so a doc is parsed once per request rather than repeatedly. */
+export const getDoc = cache((section: string, slug: string): Doc | null => {
   const file = path.join(CONTENT_DIR, section, `${slug}.mdx`);
   if (!fs.existsSync(file)) return null;
   const { data, content } = matter(fs.readFileSync(file, "utf8"));
@@ -31,7 +34,7 @@ export function getDoc(section: string, slug: string): Doc | null {
     data,
     content,
   };
-}
+});
 
 export function listDocs(section: string): Doc[] {
   const dir = path.join(CONTENT_DIR, section);
