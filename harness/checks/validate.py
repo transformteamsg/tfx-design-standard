@@ -668,6 +668,159 @@ def skill_sync_errors(repo_root, catalog_by_id, xref_re):
     return errors
 
 
+# ── Copy-skill ↔ guideline parity (VOICE / TONE / UITEXT) ────────────────────────
+# The copy skill (.claude/skills/copy/SKILL.md) inlines the voice-attributes and
+# tone-by-context tables and the draft-phase editing sequence; the website guidelines
+# restate them for human readers. Source = the plugin-shipped skill; consumers = the
+# website mdx under content/guidelines/, which live OUTSIDE harness/ (one level up, like
+# package.json in wiring_parity_errors) — so these are website-optional sub-checks that
+# return clean when the site tree is absent (the harness ships standalone as a plugin).
+# MDX (next-mdx-remote + remark-gfm, MDX v3) rejects raw <!-- --> HTML comments, so the
+# consumer markers use the JSX-expression comment {/* … */}; the skill keeps <!-- -->.
+
+
+def extract_sync_block_any(text, name):
+    """
+    Like extract_sync_block, but also recognizes the MDX comment form
+    {/* tfx-sync:NAME … */} … {/* /tfx-sync:NAME */}. Tries the HTML form first
+    (plain-markdown sources), then the MDX form (website consumers). Returns the
+    inner span, or None if neither form is present / closed.
+    """
+    html = extract_sync_block(text, name)
+    if html is not None:
+        return html
+    pattern = (r"\{/\* tfx-sync:" + re.escape(name) + r"\b.*?\*/\}"
+               r"(.*?)\{/\* /tfx-sync:" + re.escape(name) + r" \*/\}")
+    match = re.search(pattern, text, re.DOTALL)
+    return match.group(1) if match else None
+
+
+def _normalize_table_rows(span):
+    """
+    Markdown table body of a span as a set of normalized cell tuples. Skips the
+    header separator row (all dashes/colons). Reduces markdown links [text](url)
+    to their text, collapses whitespace, and lowercases — so the skill's plain
+    `(CMP-2)` and the guideline's `([CMP-2](/…))` compare equal.
+    """
+    rows = set()
+    for line in span.splitlines():
+        line = line.strip()
+        if not line.startswith("|"):
+            continue
+        cells = [c.strip() for c in line.strip("|").split("|")]
+        if cells and all(re.fullmatch(r":?-+:?", c) for c in cells if c):
+            continue  # separator row
+        norm = tuple(
+            re.sub(r"\s+", " ", re.sub(r"\[([^\]]+)\]\([^)]+\)", r"\1", c)).strip().lower()
+            for c in cells
+        )
+        rows.add(norm)
+    return rows
+
+
+def _editing_step_names(span):
+    """Lowercased lead words of a numbered step list: `**Draft.**` → `draft`."""
+    return {m.group(1).lower() for m in re.finditer(r"\*\*([A-Za-z]+)\.\*\*", span)}
+
+
+def _section_heading_words(span):
+    """Set of lowercased words from `## N. Heading` lines in a span."""
+    words = set()
+    for m in re.finditer(r"^#{2,3}\s+\d+\.\s*(.+)$", span, re.MULTILINE):
+        words.update(re.findall(r"[a-z]+", m.group(1).lower()))
+    return words
+
+
+def _table_parity_errors(repo_root, name, tag, consumer_rel):
+    """
+    Shared engine for [VOICE-SYNC] / [TONE-SYNC]: the skill's marked table
+    (source) must equal the website guideline's marked table (consumer) as
+    normalized row sets. Website-optional — a missing guideline file returns
+    clean. A missing source or consumer marker is an error.
+    """
+    errors = []
+    skill_path = os.path.join(repo_root, ".claude", "skills", "copy", "SKILL.md")
+    consumer_path = os.path.join(os.path.dirname(repo_root), consumer_rel)
+
+    if not os.path.isfile(skill_path):
+        return errors
+    with open(skill_path) as fh:
+        src_span = extract_sync_block_any(fh.read(), name)
+    if src_span is None:
+        errors.append(
+            f"ERROR .claude/skills/copy/SKILL.md [{tag}]: missing tfx-sync:{name} source markers")
+        return errors
+
+    if not os.path.isfile(consumer_path):
+        return errors  # website tree absent — nothing to compare
+    with open(consumer_path) as fh:
+        con_span = extract_sync_block_any(fh.read(), name)
+    if con_span is None:
+        errors.append(f"ERROR {consumer_rel} [{tag}]: missing tfx-sync:{name} consumer markers")
+        return errors
+
+    src_rows = _normalize_table_rows(src_span)
+    con_rows = _normalize_table_rows(con_span)
+    if src_rows != con_rows:
+        errors.append(
+            f"ERROR {consumer_rel} [{tag}]: table rows differ from the copy skill — "
+            f"only in skill: {sorted(src_rows - con_rows)}; "
+            f"only in guideline: {sorted(con_rows - src_rows)}"
+        )
+    return errors
+
+
+def voice_parity_errors(repo_root):
+    """[VOICE-SYNC] copy skill's voice-attributes table == voice-tone.mdx's."""
+    return _table_parity_errors(repo_root, "voice-attributes", "VOICE-SYNC",
+                                "content/guidelines/voice-tone.mdx")
+
+
+def tone_parity_errors(repo_root):
+    """[TONE-SYNC] copy skill's tone-by-context table == voice-tone.mdx's."""
+    return _table_parity_errors(repo_root, "tone-context", "TONE-SYNC",
+                                "content/guidelines/voice-tone.mdx")
+
+
+def uitext_parity_errors(repo_root):
+    """
+    [UITEXT-SYNC] Every draft-phase step name in the copy skill's editing
+    sequence must appear as a word in a ui-text.mdx section heading — a SUBSET,
+    not equality: the skill's step 6 'Check' deliberately collapses ui-text
+    sections 6–11 (human-reviewed, not parity-checked). Website-optional.
+    """
+    errors = []
+    skill_path = os.path.join(repo_root, ".claude", "skills", "copy", "SKILL.md")
+    consumer_rel = "content/guidelines/ui-text.mdx"
+    consumer_path = os.path.join(os.path.dirname(repo_root), consumer_rel)
+
+    if not os.path.isfile(skill_path):
+        return errors
+    with open(skill_path) as fh:
+        src_span = extract_sync_block_any(fh.read(), "uitext-sequence")
+    if src_span is None:
+        errors.append(
+            "ERROR .claude/skills/copy/SKILL.md [UITEXT-SYNC]: missing "
+            "tfx-sync:uitext-sequence source markers")
+        return errors
+
+    if not os.path.isfile(consumer_path):
+        return errors
+    with open(consumer_path) as fh:
+        con_span = extract_sync_block_any(fh.read(), "uitext-sequence")
+    if con_span is None:
+        errors.append(f"ERROR {consumer_rel} [UITEXT-SYNC]: missing tfx-sync:uitext-sequence consumer markers")
+        return errors
+
+    missing = _editing_step_names(src_span) - _section_heading_words(con_span)
+    if missing:
+        errors.append(
+            f"ERROR {consumer_rel} [UITEXT-SYNC]: copy-skill step name(s) "
+            f"{{{', '.join(sorted(missing))}}} not found in any ui-text.mdx section heading"
+        )
+    return errors
+
+
 def collect_errors(repo_root, _return_count=False):
     """
     Run all of Steps 1–7 against `repo_root` and return a list of error
@@ -906,6 +1059,9 @@ def collect_errors(repo_root, _return_count=False):
     errors.extend(wiring_parity_errors(repo_root, catalog_by_id))
     errors.extend(skill_sync_errors(repo_root, catalog_by_id, xref_re))
     errors.extend(lay_parity_errors(repo_root, catalog_by_id, xref_re))
+    errors.extend(voice_parity_errors(repo_root))
+    errors.extend(tone_parity_errors(repo_root))
+    errors.extend(uitext_parity_errors(repo_root))
 
     return result(len(catalog_by_id))
 
@@ -1402,6 +1558,108 @@ def run_self_test():
                      "dead entry")
     finally:
         shutil.rmtree(skillsync_tmp, ignore_errors=True)
+
+    # ── [VOICE-SYNC] / [TONE-SYNC] / [UITEXT-SYNC] cases ─────────────────────
+    # Lay out a synthetic repo: harness/.claude/skills/copy/SKILL.md (source,
+    # <!-- --> markers) and content/guidelines/*.mdx one level up (consumers,
+    # {/* */} markers) — mirroring the real placement so the helpers' top_root
+    # resolution and website-absent bail-out are exercised for real.
+    copy_tmp = tempfile.mkdtemp(prefix="validate-selftest-copysync-")
+    try:
+        harness_dir = os.path.join(copy_tmp, "harness")
+        skill_dir = os.path.join(harness_dir, ".claude", "skills", "copy")
+        os.makedirs(skill_dir)
+        skill_path = os.path.join(skill_dir, "SKILL.md")
+        guide_dir = os.path.join(copy_tmp, "content", "guidelines")
+        os.makedirs(guide_dir)
+        voice_path = os.path.join(guide_dir, "voice-tone.mdx")
+        uitext_path = os.path.join(guide_dir, "ui-text.mdx")
+
+        skill_md = (
+            "<!-- tfx-sync:voice-attributes source -->\n"
+            "| We are | We are not |\n|---|---|\n"
+            "| Clear but not cold | Robotic or detached |\n"
+            "<!-- /tfx-sync:voice-attributes -->\n\n"
+            "<!-- tfx-sync:tone-context source -->\n"
+            "| Context | Tone | Direction |\n|---|---|---|\n"
+            "| Destructive action | Sober, precise | Plain consequences, no drama (CMP-2) |\n"
+            "<!-- /tfx-sync:tone-context -->\n\n"
+            "<!-- tfx-sync:uitext-sequence source -->\n"
+            "1. **Draft.** a\n2. **Purposeful.** b\n3. **Concise.** c\n"
+            "4. **Conversational.** d\n5. **Clear.** e\n"
+            "<!-- /tfx-sync:uitext-sequence -->\n"
+        )
+        with open(skill_path, "w") as fh:
+            fh.write(skill_md)
+
+        # Consumer voice-tone.mdx: identical rows; the tone cell wraps CMP-2 in a
+        # markdown link, which normalization must reduce to bare CMP-2.
+        good_voice_mdx = (
+            "{/* tfx-sync:voice-attributes */}\n"
+            "| We are | We are not |\n| --- | --- |\n"
+            "| Clear but not cold | Robotic or detached |\n"
+            "{/* /tfx-sync:voice-attributes */}\n\n"
+            "{/* tfx-sync:tone-context */}\n"
+            "| Context | Tone | Direction |\n| --- | --- | --- |\n"
+            "| Destructive action | Sober, precise | Plain consequences, no drama "
+            "([CMP-2](/standards/catalog/cmp-2)) |\n"
+            "{/* /tfx-sync:tone-context */}\n"
+        )
+        good_uitext_mdx = (
+            "{/* tfx-sync:uitext-sequence */}\n"
+            "## 1. Clarify the context, then draft\n"
+            "## 2. Edit to be purposeful\n"
+            "## 3. Edit to be concise\n"
+            "## 4. Edit to be conversational\n"
+            "## 5. Edit to be clear\n"
+            "{/* /tfx-sync:uitext-sequence */}\n"
+            "## 6. Check consistency\n"
+        )
+        with open(voice_path, "w") as fh:
+            fh.write(good_voice_mdx)
+        with open(uitext_path, "w") as fh:
+            fh.write(good_uitext_mdx)
+
+        # Clean baselines (CMP-2 link normalizes; subset holds).
+        assert_clean("voice-sync clean", voice_parity_errors(harness_dir))
+        assert_clean("tone-sync clean (CMP-2 link normalizes)",
+                     tone_parity_errors(harness_dir))
+        assert_clean("uitext-sync clean subset", uitext_parity_errors(harness_dir))
+
+        # Drift: alter one consumer voice row → [VOICE-SYNC].
+        with open(voice_path, "w") as fh:
+            fh.write(good_voice_mdx.replace("Robotic or detached", "Cold and mechanical"))
+        assert_error("voice-sync drift", voice_parity_errors(harness_dir), "[VOICE-SYNC]")
+        with open(voice_path, "w") as fh:
+            fh.write(good_voice_mdx)
+
+        # Drift: drop a step name from the ui-text headings → [UITEXT-SYNC].
+        with open(uitext_path, "w") as fh:
+            fh.write(good_uitext_mdx.replace("## 5. Edit to be clear\n", ""))
+        assert_error("uitext-sync missing step",
+                     uitext_parity_errors(harness_dir), "[UITEXT-SYNC]")
+        with open(uitext_path, "w") as fh:
+            fh.write(good_uitext_mdx)
+
+        # Missing consumer markers → error.
+        with open(voice_path, "w") as fh:
+            fh.write("no markers here")
+        assert_error("voice-sync missing consumer markers",
+                     voice_parity_errors(harness_dir),
+                     "missing tfx-sync:voice-attributes consumer markers")
+        with open(voice_path, "w") as fh:
+            fh.write(good_voice_mdx)
+
+        # Website tree absent → all three bail out clean.
+        shutil.rmtree(os.path.join(copy_tmp, "content"))
+        assert_clean("voice-sync website-absent bail-out",
+                     voice_parity_errors(harness_dir))
+        assert_clean("tone-sync website-absent bail-out",
+                     tone_parity_errors(harness_dir))
+        assert_clean("uitext-sync website-absent bail-out",
+                     uitext_parity_errors(harness_dir))
+    finally:
+        shutil.rmtree(copy_tmp, ignore_errors=True)
 
     # ── Filesystem integration case for collect_errors ───────────────────────
 
