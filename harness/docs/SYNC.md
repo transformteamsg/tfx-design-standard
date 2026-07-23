@@ -40,6 +40,10 @@ restatement registers itself with the check instead of free-floating.
 - The close marker is always bare: `<!-- /tfx-sync:NAME -->`.
 - A block may be inline (open and close on the same logical line, as in `slp-9.md` and
   the `copy` skill summary) or own its lines (as in the two L0 lists).
+- **MDX consumers use the JSX-expression comment** `{/* tfx-sync:NAME … */}` … `{/* /tfx-sync:NAME */}`
+  instead — MDX (next-mdx-remote + remark-gfm) rejects raw `<!-- -->` HTML comments. The
+  skill sources stay `<!-- -->`; `extract_sync_block_any` in `validate.py` reads either
+  form. Both are invisible in the rendered page.
 
 ## Registered blocks
 
@@ -51,6 +55,9 @@ restatement registers itself with the check instead of free-floating.
 | `wiring` | catalog `enforced: script\|partial` + `script:` fields | `package.json` prebuild, `.github/workflows/ci.yml` | `[WIRING-SYNC]` | every claimed script runs in prebuild or CI, or is on the `WIRING_EXEMPT` list in `validate.py` with a reason; a listed exemption whose script no longer exists or is no longer claimed is also an error |
 | `skill-sync` | catalog id set | `.claude/skills/**/*.md`, `.claude/agents/*.md` | `[SKILL-SYNC]` | skill-ids ⊆ catalog (no ghost ids); catalog ⊆ skill-ids ∪ `SKILL_WIRING_GRANDFATHERED` in `validate.py` (no silent orphans) — a grandfathered id no longer a catalog id is a dead-entry error |
 | `count-sync` | catalog control count; `.claude/skills/*/SKILL.md` dir count; `checks/*.py` minus `validate.py`/`checklib.py` count | `README.md`, `docs/index.html` | `[COUNT-SYNC]` | every "`<N> controls`", "`<N> skills`", "`<N> check scripts`", or "`<N> checks built`" claim **==** its live count — no markers, the claim's own wording is the trigger |
+| `voice-attributes` | `.claude/skills/copy/SKILL.md` "we are / we are not" table | `content/guidelines/voice-tone.mdx` | `[VOICE-SYNC]` | normalized table row set **==** source. Website-optional (consumer outside `harness/`) |
+| `tone-context` | `.claude/skills/copy/SKILL.md` tone-by-context table | `content/guidelines/voice-tone.mdx` | `[TONE-SYNC]` | normalized row set **==** source; markdown links reduced to bare id (`[CMP-2](…)` → `CMP-2`). Website-optional |
+| `uitext-sequence` | `.claude/skills/copy/SKILL.md` editing steps 1–5 | `content/guidelines/ui-text.mdx` | `[UITEXT-SYNC]` | source step names **⊆** guideline §1–5 heading words (**subset**: the skill's step 6 "Check" collapses ui-text §6–11, human-reviewed). Website-optional |
 
 ### Normalization
 
@@ -82,11 +89,12 @@ website point at it rather than restating it.
 |---|---|---|---|
 | Voice/tone/naming guidance | catalog controls CNT-1/2/3 + SLP-9 (+ detail files) | `copy` skill (applies); `content/guidelines/voice-tone.mdx` + `naming.mdx` (present) | pointers (skill + docs link the controls); SLP-9 word list parity-checked (see `tfx-sync:slp9-buzzwords`) |
 
-A voice/tone **table** parity check is deferred: the voice-attribute and tone-by-context
-tables are duplicated between the skill and `voice-tone.mdx`, but the drift cost is low
-and pointers suffice for v1. The skill's tables are canonical. If they drift in practice,
-add a `tfx-sync:voice-attributes` block (source = the plugin-shipped skill) and a
-website-optional sub-check.
+The voice-attribute and tone-by-context tables are now parity-checked (`tfx-sync:voice-attributes`
+→ `[VOICE-SYNC]`, `tfx-sync:tone-context` → `[TONE-SYNC]`), and the UI-text editing sequence
+by `tfx-sync:uitext-sequence` → `[UITEXT-SYNC]` (a subset check — see the table above).
+Source = the plugin-shipped skill; the `voice-tone.mdx` / `ui-text.mdx` tables and headings
+are website-optional consumers. The per-product tone register (`idn-3.md`) stays a pointer
++ human-review row for now (its own file defers the check).
 
 Automated parity (the `tfx-sync` checks above) is the floor; a periodic human parity review — `docs/reviews/` — covers what the checks can't (twin fidelity, table equivalence, guideline deference). See `docs/reviews/README.md`.
 
