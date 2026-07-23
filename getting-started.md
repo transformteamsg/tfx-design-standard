@@ -1,4 +1,4 @@
-# Getting started: making frontend changes in an existing codebase
+# Getting started: making changes in an existing codebase
 
 A short guide for designers who want to make UI changes in a live product with an AI coding assistant, then ship them yourself while an engineer reviews.
 
@@ -98,7 +98,7 @@ Then decide what kind of work this is. That decides how much to plan and which t
 | Mode | What it is | Recommended approach |
 | --- | --- | --- |
 | **Prototype** | A quick build to test an idea or demo to the team | Prompt freely with mock data; rough is fine. If the idea is fuzzy, start with a grill-me interview. |
-| **Revamp** | Polishing existing UI without breaking how it works | Explore against the current screens in small steps. A light plan-mode pass is usually enough. |
+| **Revamp** | Polishing existing UI without breaking how it works | Use light plan mode, describe the changes you want, and go in small steps. |
 | **Handoff (frontend)** | A clean frontend an engineer will wire up; they mostly refactor the backend | Write a spec document so your design intent survives. How detailed depends on the work and the engineer, so ask what documentation they need. |
 
 **How much to plan is up to you.** A common rhythm: explore or prototype freely first, then write it down once the shape settles. Rigid plans early tend to fight visual exploration. These modes mirror the early phases of a design loop (intent, then a few directions, then a plan); see [The loop](/harness/loop).
@@ -111,7 +111,7 @@ Generic tools work too. These are the ones I picked up from the LangBuddy engine
 
 | Tool | What it's for | Where |
 | --- | --- | --- |
-| **plan mode** | Your AI lays out its approach before it writes any code. | [Claude Code feature](https://code.claude.com/docs/en/permission-modes) |
+| **plan mode** | Your AI lays out its approach before it writes any code. Honestly, plan mode is your best friend. | [Claude Code feature](https://code.claude.com/docs/en/permission-modes) |
 | **grill-me** (rec. Sheen An) | Your AI interviews you to pressure-test the idea and surface gaps. | [mattpocock/skills](https://github.com/mattpocock/skills) |
 | **OpenSpec** (rec. Selwyn, ESTL) | Turns your intent into a structured written spec. | [openspec.dev](https://openspec.dev) |
 | **Compound Engineering** (rec. Wondo) | A brainstorm-to-plan-to-build-to-review flow, built so each task makes the next one easier. | [github.com/EveryInc/compound-engineering-plugin](https://github.com/EveryInc/compound-engineering-plugin) |
@@ -141,6 +141,8 @@ Once you know what you're making, the loop is the same every time.
 - **Reuse components.** Have your AI check for an existing component before it builds a new one. The `ui/` and `common/` folders are where shared pieces usually live. Only make something new if you'll reuse it in a few places.
 - **Use the existing tokens.** Colours, spacing, and corner radius should come from the values the project already defines. These are the same idea as design tokens in Figma. They usually live as CSS variables in a file like `src/index.css` or `app/globals.css`. (If your project uses shadcn, those values are generated at [ui.shadcn.com](https://ui.shadcn.com) and pasted into that file.) No hardcoded hex, no random pixel values. (These tokens are unrelated to the sign-in token from Step 1.)
 - **Watch shared components.** A component used on more than one page changes everywhere when you edit it. Ask your AI to flag that before you touch it, so you don't restyle other screens by accident.
+
+> **Keep an eye on the basics yourself.** AI is good, but it lapses. Every so often it will hardcode a colour, skip a token, or reinvent a component that already exists. Knowing the best practices (use tokens, reuse what's there) is what lets you catch the slip. You can't fully outsource judgment.
 
 **4. Build only what the task needs.** Skip unrelated "improvements"; they make the review harder. Pause to ask an engineer if the AI wants to install a new dependency, edit files outside the frontend folder (like `backend/`), touch a lot of files at once, or do something you don't understand.
 
@@ -174,7 +176,7 @@ A merge request is how your change gets reviewed and added into the shared code.
 
 Errors are normal, and on your own branch they're safe. Two things to remember:
 
-- **You can't break anything permanently.** Nothing you do is shared until it's reviewed and merged, so your own branch is a safe place to experiment. Worst case, you undo it.
+- **You can't break anything permanently.** Nothing you do is shared until it's reviewed and merged, so your own branch is a safe place to experiment. Worst case, you undo it. Git forgives.
 - **When you hit an error, hand it to your AI.** Copy the red text, paste it in, and ask your AI to explain what's wrong and fix it. Reading errors is a skill you pick up fast, and your AI is good at it.
 
 ## Going further
