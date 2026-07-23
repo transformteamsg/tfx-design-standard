@@ -23,20 +23,20 @@ Two things worth knowing:
 
 ## What makes this safe: guardrails
 
-You can experiment because the repo is set up to catch mistakes before they matter. Engineers put these guardrails in place:
+You can experiment because the repo catches mistakes before they matter. If you're joining or starting a repo, work with your engineer to make sure these guardrails are in place:
 
-- **Linting and type-checks** (like `yarn pre-commit`), **tests**, and a **build check** catch broken or off-standard code.
-- **CI** re-runs all of them on every merge request, so nothing merges red.
-- **AI command guardrails**: a hook blocks dangerous commands (like `rm -rf` or `DROP DATABASE`), and a sandbox limits what the AI can reach on your network and disk.
-- **Design checks**: a design harness flags off-standard UI. On a TFX repo that's the [TFX harness](/harness/install); a DxD harness is on the way.
+- **Checks that catch bad code**: linting, type-checking, and tests, plus a build step. Your project has a command that runs them; your engineer will tell you what it is.
+- **The same checks, run automatically on the server** every time you open a merge request, so nothing broken gets in. This is called CI (continuous integration).
+- **Limits on the AI**: an automatic block on dangerous commands (like wiping files or a database), and limits on what the AI can touch on your computer and network.
+- **Design checks**: a design harness that flags UI which breaks the design standard. On a TFX repo that's the [TFX harness](/harness/install); a DXD harness is on the way.
 
-If you join a repo without these, ask an engineer to set them up first. They are what make it safe for a designer to build.
+These guardrails are what make it safe for a designer to build. Without them, ask your engineer to set them up first.
 
 ## How do I do it?
 
 Four steps, start to finish:
 
-1. [Get set up](#step-1-get-set-up) - get the code onto your machine and running (once).
+1. [Get set up](#step-1-get-set-up) - get the code onto your computer and running (once).
 2. [Decide what you're making](#step-2-decide-what-youre-making) - prototype, revamp, or handoff, and how much to plan.
 3. [Build your change](#step-3-build-your-change) - scan the codebase, build, and check it looks right.
 4. [Ship it](#step-4-ship-it) - open a merge request, get it reviewed, and merge it.
@@ -65,17 +65,19 @@ You do this once, when you first join a repo. It's the most engineer-dependent p
 
 You have three ways to run your AI assistant:
 
-- **Claude Code desktop app** (easiest) - a standalone app, no code editor needed. Needs a personal Claude subscription.
-- **Claude Code in the terminal** - the command-line version. Runs on API credits, which at GovTech are provided (check your team for the current allowance).
+- **Claude Code desktop app** (easiest) - a standalone app, no code editor needed.
+- **Claude Code in the terminal** - the command-line version.
 - **A code editor** like VS Code or Cursor, with the [Claude Code extension](https://code.claude.com/docs/en/vs-code).
 
-Whichever you pick, getting your machine ready (the app or editor, plus a few tools the project needs) is a one-time setup an engineer can walk you through. To do it yourself, Claude Code's [setup guide](https://code.claude.com/docs/en/setup) covers it. Some repos also ship a design harness you install once; on a TFX repo, see [Install](/harness/install).
+You sign in with a Claude account. The desktop app uses a personal subscription (Pro or Max); to use GovTech's provided API credits, use the terminal or an editor.
+
+Whichever you pick, getting your computer ready (the app or editor, plus a few tools the project needs) is a one-time setup an engineer can walk you through. To do it yourself, Claude Code's [setup guide](https://code.claude.com/docs/en/setup) covers it. Some repos also ship a design harness you install once; on a TFX repo, see [Install](/harness/install).
 
 ### Get the repo onto your computer
 
 **1. Get access.** An engineer adds you to the repo (usually on GitLab, sometimes GitHub) so you're allowed in.
 
-**2. Clone it to your machine.** Cloning downloads the code. On the repo's web page, click the **Code** button and copy the address. As a beginner, pick the **HTTPS** address (it starts with `https://`). You sign in once, and on a Mac your Keychain remembers it, so it stays invisible after that. (SSH, the `git@…` address, is an alternative some teams prefer.) Access setup can be confusing the first time, so if you're unsure, ask an engineer to set it up with you. Then cloning is one command (`git clone [address]`), or you can ask your AI to do it.
+**2. Clone it to your computer.** Cloning downloads the code. On the repo's web page, click the **Code** button and copy the address. As a beginner, pick the **HTTPS** address (it starts with `https://`). You sign in once, and on a Mac your Keychain remembers it (Windows and Linux have credential helpers too), so it stays invisible after that. (SSH, the `git@…` address, is an alternative some teams prefer.) Access setup can be confusing the first time, so if you're unsure, ask an engineer to set it up with you. Then cloning is one command (`git clone [address]`), or you can ask your AI to do it.
 
 > **Keep your access safe.** Your login is personal. Never share it, and never use a teammate's. Keep it where it belongs (your Keychain, or a protected key), and never put a token or key into a commit, an AI prompt, Slack, or email.
 
@@ -97,7 +99,7 @@ Then decide what kind of work this is. That decides how much to plan and which t
 | --- | --- | --- |
 | **Prototype** | A quick build to test an idea or demo to the team | Prompt freely with mock data; rough is fine. If the idea is fuzzy, start with a grill-me interview. |
 | **Revamp** | Polishing existing UI without breaking how it works | Explore against the current screens in small steps. A light plan-mode pass is usually enough. |
-| **Handoff (frontend)** | A clean frontend an engineer will wire up; they mostly refactor the backend | Write a short spec so your intent survives. How detailed depends on the work and the engineer, so ask what documentation they need. |
+| **Handoff (frontend)** | A clean frontend an engineer will wire up; they mostly refactor the backend | Write a spec document so your design intent survives. How detailed depends on the work and the engineer, so ask what documentation they need. |
 
 **How much to plan is up to you.** A common rhythm: explore or prototype freely first, then write it down once the shape settles. Rigid plans early tend to fight visual exploration. These modes mirror the early phases of a design loop (intent, then a few directions, then a plan); see [The loop](/harness/loop).
 
@@ -158,7 +160,7 @@ A merge request is how your change gets reviewed and added into the shared code.
 
 **2. Open the merge request.** Set the target to `main`, add a reviewer (an engineer or your lead), and create it. Then write a short description of what changed, plus before/after screenshots. Ask your AI to draft it from what you did, then tidy it.
 
-**3. Watch the checks go green.** When you open the MR, the server automatically re-runs the same checks and build from Step 3. Teams call this **CI** (continuous integration). If something fails, open the failed step, read the error (your AI can help), fix it, and push again. The MR updates itself.
+**3. Watch the checks go green.** When you open the MR, the server automatically re-runs the same checks and build from Step 3 (the CI mentioned earlier). If something fails, open the failed step, read the error (your AI can help), fix it, and push again. The MR updates itself.
 
 **4. Get it reviewed and merged.** Your reviewer may ask for changes; make them and push again. Once approved, it's merged in.
 
