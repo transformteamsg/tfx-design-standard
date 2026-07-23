@@ -1,19 +1,19 @@
-# Getting started: making frontend changes in a real codebase
+# Getting started: making frontend changes in an existing codebase
 
-A short guide for designers who want to make real UI changes in a live product with an AI coding assistant - and ship them yourself, with an engineer reviewing along the way.
+A short guide for designers who want to make UI changes in a live product with an AI coding assistant - and ship them yourself, with an engineer reviewing along the way.
 
 ## Introduction
 
-You can make real UI changes to a live product without writing code from scratch. What you need instead is to understand *what each step does and why* - that's what keeps you safe. So this guide stays plain and explains the "why" as it goes.
+You can make UI changes to a live product without writing code from scratch. What you need instead is to understand *what each step does and why* - that's what keeps you safe. So this guide stays plain and explains the "why" as it goes.
 
-**The mindset.** Think of the codebase like a shared Figma file that's also live for real users. So the game is simple: **work on your own copy, start with the frontend, keep each change small, and let a second pair of eyes check it before anything goes live.**
+**The mindset.** Think of the codebase like a shared Figma file that's also live for its users. So the game is simple: **work on your own copy, start with the frontend, keep each change small, and let a second pair of eyes check it before anything goes live.**
 
 **Frontend-first, not frontend-only.** The frontend - what users see and click - is where you're strongest and where changes are safest, so it's the right place to begin. The backend (the server and database) is riskier ground, but not off-limits: with a good AI model and an engineer's help, plenty of designers work there too. The one rule: *don't wander into it by accident.* If a change turns out to need backend work, pause and bring in an engineer.
 
 Two things worth knowing:
 
 - **Your machine vs the shared server.** Your own computer holds your private copy - anything you do there (including a live preview at `localhost`) is yours alone until you share it. The shared server (usually **GitLab**, sometimes GitHub) is what the whole team sees. Keeping these separate in your head explains most of what follows.
-- **Any assistant works.** This guide says "your AI assistant" on purpose. It works whether you use Claude Code (desktop app or terminal), Codex, or another - the interface differs, the process is the same. Your project may also have named shortcuts (slash-commands or "skills") for common jobs like planning or design-checking, so ask your team what yours has. And the process is flexible to your **tech stack** and your team's **way of working** - so wherever something varies by team, check with your engineers.
+- **Any assistant works.** This guide says "your AI assistant" on purpose - it works whether you use Claude Code, Codex, or another, and the interface differs but the process is the same. What we reach for: **Claude Code** (the desktop app, on Opus) for building, and **Codex** for a second opinion on code review. Your project may also have named shortcuts (slash-commands or "skills") for common jobs like planning or design-checking, so ask your team what yours has. The process also flexes to your **tech stack** and your team's **way of working**, so wherever something varies, check with your engineers.
 
 > **One standing note, so we only say it once.** We're designers, not software engineers - this is the process that's worked for us, written for designers new to it. Every team sets things up differently, so when something is about *access, setup, or safety*, treat it as a starting map and check the specifics with your engineers.
 
@@ -56,7 +56,7 @@ Then, for the repo itself:
 
 > **Keep your access safe.** Your login is **personal - never share it, and never use a teammate's.** Keep it where it belongs (your Keychain, or a protected key), and never put a token or key into a commit, an AI prompt, Slack, or email. If one ever leaks, tell an engineer so it can be replaced. Good support means an engineer helps you set up *your own* access, never hands you theirs.
 
-**3. Get the `.env` values.** A `.env` file (short for *environment*) holds the app's settings and secret keys - things like the database address or an API key. These are kept *out* of the repo on purpose, so a fresh clone doesn't include them. An engineer sends you the real values through a secure channel (a password manager or vault, not plain Slack), and you paste them into your own local `.env`. **Without them the app won't run** - if it crashes on start with errors about missing keys or config, you're probably missing `.env` values, so ask your engineer.
+**3. Get the `.env` values.** A `.env` file (short for *environment*) holds the app's settings and secret keys - things like the database address or an API key. These are kept *out* of the repo on purpose, so a fresh clone doesn't include them. An engineer sends you the actual values through a secure channel (a password manager or vault, not plain Slack), and you paste them into your own local `.env`. **Without them the app won't run** - if it crashes on start with errors about missing keys or config, you're probably missing `.env` values, so ask your engineer.
 
 **4. See it running (your preview).** Ask your AI or an engineer how to start the project - your AI can read the repo and give you the exact command. Once it's running, the app opens in your browser at an address like `http://localhost:5173`. That's your **preview**: your own copy of the app, running on your computer, where you'll see and click your changes.
 
@@ -68,17 +68,17 @@ Before any code, get clear on *what kind of work this is*. It shapes how careful
 
 | Mode | What it is | How polished |
 | --- | --- | --- |
-| **Prototype** | A quick build to test an idea or demo to the team | Rough is fine - mock data, main flow only. It just needs to look real. |
-| **Handoff** | A clean version an engineer will build on - use it when there's real backend work to be done | Tidy and conventional, and it needs a short spec so your intent survives the handoff. |
+| **Prototype** | A quick build to test an idea or demo to the team | Rough is fine - mock data, main flow only. It just needs to look convincing. |
+| **Handoff** | A clean version an engineer will build on - use it when there's significant backend work to be done | Tidy and conventional, and it needs a short spec so your intent survives the handoff. |
 | **Revamp** | Polishing existing UI without breaking how it works | Careful - improve the look without disturbing the wiring underneath. |
 
-**How much to plan is up to you** - designers and teams work differently, so treat this as a suggestion, not a rule. What many find helps: **explore loosely first, then plan the real build.** Don't lock a rigid plan before you've tried things - for visual work, that fights your creativity. Explore or prototype freely (no plan mode yet), and once the shape stops moving, use what you learned to plan the actual implementation.
+**How much to plan is up to you** - designers and teams work differently, so treat this as a suggestion, not a rule. What many find helps: **explore loosely first, then plan the actual build.** Don't lock a rigid plan before you've tried things - for visual work, that fights your creativity. Explore or prototype freely (no plan mode yet), and once the shape stops moving, use what you learned to plan the actual implementation.
 
 A few optional tools you might reach for, from light to heavier:
 
 | Tool | What it's for | Where |
 | --- | --- | --- |
-| **plan mode** | Your AI lays out its approach before it writes any code. Reach for it when you move from exploring to the real build. | [Claude Code feature](https://code.claude.com/docs/en/permission-modes) |
+| **plan mode** | Your AI lays out its approach before it writes any code. Reach for it when you move from exploring to the actual build. | [Claude Code feature](https://code.claude.com/docs/en/permission-modes) |
 | **grill-me** | Your AI interviews you to pressure-test the idea and surface gaps. Good while you're still shaping it. | [mattpocock/skills](https://github.com/mattpocock/skills) |
 | **OpenSpec** | Turns your intent into a structured written spec. | [openspec.dev](https://openspec.dev) |
 | **Compound Engineering** | A brainstorm to plan to build to review flow. Works with Claude Code, Cursor, Codex, and more. | [github.com/EveryInc/compound-engineering-plugin](https://github.com/EveryInc/compound-engineering-plugin) |
@@ -97,6 +97,8 @@ Once you know what you're making, the loop is the same every time.
 
 > *"Before writing anything, read this codebase - the setup file, a few existing components, and the design tokens or guidelines - and follow how this project already does things."*
 
+> You don't have to do this from scratch every session. Many projects keep a `CLAUDE.md` file (or similar) that your AI reads automatically at the start of each session, so it's already oriented. If yours has one, you're set; if not, ask your AI to save what it learned into a `CLAUDE.md` so next time it starts up to speed.
+
 **3. Match what's already there.** Reuse beats invent - a change that looks native is easier to trust and review.
 
 - **Reuse components.** Have your AI check for an existing component before building a new one - the `ui/` and `common/` folders are where shared pieces usually live. Only make something new if it'll be reused in a few places.
@@ -111,6 +113,8 @@ Once you know what you're making, the loop is the same every time.
 
 > A harness might be a command your AI runs, or a named skill your team has. Ask what yours is and how to run it.
 
+**7. Have your AI review its own work.** Before a human sees it, ask your AI for an *adversarial* review - or run Claude Code's **code-review** skill - to catch rough edges and confirm the change fits the codebase's conventions. This cleans it up before your engineer's review, so theirs goes faster. A second model (like Codex) reviewing catches even more, since it comes at the code fresh.
+
 ## Step 4: Ship it
 
 A merge request is how your change gets reviewed and added into the shared code. Your AI can do the mechanics - here's what's happening so you can follow along.
@@ -123,7 +127,7 @@ A merge request is how your change gets reviewed and added into the shared code.
 
 **4. Get it reviewed and merged.** Your reviewer may ask for changes; make them and push again. Once approved, it's merged in.
 
-> Once merged, many teams auto-deploy the change to a staging site (a safe copy for checking things before real users see them). Whether yours does, and where, is set per project - check how yours works.
+> Once merged, many teams auto-deploy the change to a staging site (a safe copy for checking things before your users see them). Whether yours does, and where, is set per project - check how yours works.
 
 **Keeping your branch fresh.** While you work, others merge into `main`, so your branch can fall behind. Before merging, update it by pulling in the latest `main` - there are two techniques for this, *rebase* and *merge* (not the same "merge" as your MR being merged in). Teams have a preference, so ask which yours uses and let your AI handle the command. If two people changed the same lines you'll get a **merge conflict** - don't guess, ask your AI to help, then re-run the checks.
 
@@ -149,7 +153,7 @@ Starting points that work in any repo - your assistant fills in the specifics.
 - "Make a branch for this change - show me the git command and wait for my OK first."
 - "Reuse existing components and tokens - check the ui/ and common/ folders before making anything new, and don't hardcode colours."
 - "Before you change a component, tell me if it's used on more than one page."
-- "Show me this at mobile and desktop, and the empty, loading, and error states."
+- "Do an adversarial code review of this change - find anything an engineer would flag, and check it fits the codebase's conventions."
 
 **Shipping**
 - "Run the checks and the build - and the design checks if we have them - then show me the results before we commit."
