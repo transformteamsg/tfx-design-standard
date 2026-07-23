@@ -100,7 +100,7 @@ Once you know what you're making, the loop is the same every time.
 **3. Match what's already there.** Reuse beats invent - a change that looks native is easier to trust and review.
 
 - **Reuse components.** Have your AI check for an existing component before building a new one - the `ui/` and `common/` folders are where shared pieces usually live. Only make something new if it'll be reused in a few places.
-- **Use the existing tokens.** Colours, spacing, and corner radius should come from the values the project already defines (often in a file like `src/index.css`) - the same idea as design tokens in Figma. No hardcoded hex, no random pixel values. (These are unrelated to the sign-in token from Step 1.)
+- **Use the existing tokens.** Colours, spacing, and corner radius should come from the values the project already defines - the same idea as design tokens in Figma. They usually live as CSS variables in a file like `src/index.css` or `app/globals.css` (if your project uses shadcn, those values are generated at [ui.shadcn.com](https://ui.shadcn.com) and pasted into that file). No hardcoded hex, no random pixel values. (These are unrelated to the sign-in token from Step 1.)
 - **Watch shared components.** If a component is used on more than one page, changing it changes it *everywhere*. Ask your AI to flag that before you touch it, so you don't restyle other screens by accident.
 
 **4. Build only what the task needs.** No drive-by "improvements" to unrelated things - they make the review harder. And **pause and ask an engineer** if the AI wants to install a new dependency, edit files outside the frontend folder (like `backend/`), touch a lot of files at once, or do something you don't understand.
