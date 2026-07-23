@@ -5,9 +5,9 @@ type Item = { kind: "do" | "dont"; text: string };
 export function DoDont({ items }: { items: Item[] }) {
   return (
     <figure className="my-8 overflow-hidden rounded-lg border border-border bg-surface">
-      <ul className="divide-y divide-border">
+      <ul className="m-0 list-none divide-y divide-border p-0">
         {items.map((it, i) => (
-          <li key={i} className="flex items-start gap-3 px-4 py-3">
+          <li key={i} className="mb-0 flex items-start gap-3 px-4 py-3">
             <span
               className={`mt-0.5 inline-block shrink-0 rounded-full border px-2 py-0.5 text-xs font-medium ${
                 it.kind === "do"

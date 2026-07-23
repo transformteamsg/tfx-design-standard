@@ -172,7 +172,16 @@ Once you know what you're making, the loop is the same every time.
 
 > **Keep an eye on the basics yourself.** AI is good, but it lapses. Every so often it will hardcode a colour, skip a token, or reinvent a component that already exists. Knowing the best practices (use tokens, reuse what's there) is what lets you catch the slip. You can't fully outsource judgment.
 
-**4. Build only what the task needs.** Skip unrelated "improvements"; they make the review harder. Pause to ask an engineer if the AI wants to install a new dependency, edit files outside the frontend folder (like `backend/`), touch a lot of files at once, or do something you don't understand.
+**4. Build only what the task needs.** Keep the change focused. Skip unrelated "improvements", even tempting ones; they make it harder to review and to undo.
+
+Some moves are higher-stakes and worth a closer look. Read carefully when the AI wants to:
+
+- install a new dependency
+- edit files outside the frontend folder (like `backend/`)
+- touch a lot of files at once
+- do something you don't understand
+
+None of these are off-limits, and most turn out fine. They're just the moments to slow down, understand what's happening, and loop in an engineer if it's outside your area or you're unsure.
 
 **5. Check it in your preview.** Look at your change in the running app at `localhost`, at mobile and desktop widths, and in every state: **empty** (no data yet), **loading** (while it fetches), and **error** (when it fails). Those three states are where UI usually breaks, and they're easy to forget.
 
@@ -180,7 +189,14 @@ Once you know what you're making, the loop is the same every time.
 
 > **Let your AI drive the browser.** [Claude in Chrome](https://claude.com/claude-for-chrome) can open your preview, click through the states, and resize for mobile, so it catches visual issues without you doing every click yourself.
 
-**6. Run the checks.** Ask your AI to run the project's checks *and* its build. Run both, since the quick checks (types, formatting) can pass while the full build fails. These are the same checks GitLab runs as a **pipeline** when you open a merge request (Step 4), so running them now catches failures early. If your team has automated design checks, run those too: they catch hardcoded colours, contrast failures, missing focus states, tiny fonts, and generic "AI slop". A green result means nothing automated was flagged, not that the design is done, so still look at it yourself. On a TFX repo, what gets checked lives in the [standards catalog](/standards/catalog). If a check flags one dimension (spacing, colour, wording), a focused pass like `/tfx:polish` or `/tfx:copy` fixes just that.
+**6. Run the checks.** Ask your AI to run two things. Run both, since the quick checks can pass while the full build still fails:
+
+- **Code checks** - types, formatting, and tests, plus the build step.
+- **Design checks**, if your team has them - they catch hardcoded colours, contrast failures, missing focus states, tiny fonts, and generic "AI slop".
+
+These are the same checks GitLab runs as a **pipeline** when you open a merge request (Step 4), so running them now catches failures early.
+
+A green result means nothing automated was flagged, not that the design is done, so still look at it yourself. On a TFX repo, what gets checked lives in the [standards catalog](/standards/catalog); if a check flags one dimension (spacing, colour, wording), a focused pass like `/tfx:polish` or `/tfx:copy` fixes just that.
 
 **7. Get the code reviewed before a human sees it.** Ask for an *adversarial* review, a deliberately critical pass that hunts for problems. On a TFX repo, [`/tfx:critique`](/harness/skills) does this against the standard; otherwise, run Claude Code's `/code-review` skill. Even better, have a *different* model do the review. The model that wrote the code is a poor judge of its own work, so a fresh set of eyes catches more; Codex is good for this. Either way, it cleans things up first, so your engineer's review goes faster.
 
