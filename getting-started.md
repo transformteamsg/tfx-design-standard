@@ -13,9 +13,9 @@ You can make UI changes to a live product without writing code from scratch. Wha
 Two things worth knowing:
 
 - **Your machine vs the shared server.** Your own computer holds your private copy - anything you do there (including a live preview at `localhost`) is yours alone until you share it. The shared server (usually **GitLab**, sometimes GitHub) is what the whole team sees. Keeping these separate in your head explains most of what follows.
-- **Any assistant works.** This guide says "your AI assistant" on purpose - it works whether you use Claude Code, Codex, or another, and the interface differs but the process is the same. What we reach for: **Claude Code** (the desktop app, on Opus) for building, and **Codex** for a second opinion on code review. Your project may also have named shortcuts (slash-commands or "skills") for common jobs like planning or design-checking, so ask your team what yours has. The process also flexes to your **tech stack** and your team's **way of working**, so wherever something varies, check with your engineers.
+- **Any assistant works.** This guide says "your AI assistant" on purpose - it works whether you use Claude Code, Codex, or another, and the interface differs but the process is the same. What I reach for: **Claude Code** (the desktop app, on Opus) for building, and **Codex** for a second opinion on code review. Your project may also have named shortcuts (slash-commands or "skills") for common jobs like planning or design-checking, so ask your team what yours has. The process also flexes to your **tech stack** and your team's **way of working**, so wherever something varies, check with your engineers.
 
-> **One standing note, so we only say it once.** We're designers, not software engineers - this is the process that's worked for us, written for designers new to it. Every team sets things up differently, so when something is about *access, setup, or safety*, treat it as a starting map and check the specifics with your engineers.
+> **One note up front.** I'm a designer, not an engineer, so treat this as the path that's worked for me, not gospel. Teams set things up differently, so when something touches *access, setup, or safety*, check the specifics with your engineers.
 
 ## How do I do it?
 
@@ -108,6 +108,8 @@ Once you know what you're making, the loop is the same every time.
 **4. Build only what the task needs.** No drive-by "improvements" to unrelated things - they make the review harder. And **pause and ask an engineer** if the AI wants to install a new dependency, edit files outside the frontend folder (like `backend/`), touch a lot of files at once, or do something you don't understand.
 
 **5. Check it in your preview.** Look at your change in the running app at `localhost` - at **mobile and desktop widths**, and in every state, not just the main flow: **empty** (no data yet), **loading** (while it fetches), and **error** (when it fails). Half of good UI is the states people forget.
+
+> To see the mobile width, open your browser's dev tools (right-click the page and choose Inspect) and click the phone/tablet icon for device view - or just drag the window narrower.
 
 **6. Run the checks.** Ask your AI to run the project's checks *and* its build - run both, since the quick checks (types, formatting) can pass while the full build fails. If your team has automated **design** checks (a "harness"), run those too: they catch hardcoded colours, contrast failures, missing focus states, tiny fonts, and generic "AI slop." A green result means nothing automated was flagged, not that the design is done - so still look at it yourself.
 
