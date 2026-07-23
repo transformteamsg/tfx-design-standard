@@ -4,13 +4,13 @@ A short guide for designers who want to make real UI changes in a live product w
 
 ## Introduction
 
-You can make real changes to a live product without writing code from scratch. What you need is to understand *what each step does and why* - that understanding is what keeps you safe, and it's what makes the whole thing click. So this guide stays plain, and explains the "why" as it goes.
+You can make real UI changes to a live product without writing code from scratch. What you need instead is to understand *what each step does and why* - that's what keeps you safe. So this guide stays plain and explains the "why" as it goes.
 
 **The mindset.** Think of the codebase like a shared Figma file that's also live for real users. So the game is simple: **work on your own copy, start with the frontend, keep each change small, and let a second pair of eyes check it before anything goes live.**
 
-**Frontend-first, not frontend-only.** The frontend - what users see and click - is where you're strongest and where changes are safest, so it's the right place to begin. The backend (the server and database) is riskier ground, but not off-limits: with a good AI model and an engineer's help, plenty of designers work there too. The rule is just *don't wander into it by accident* - if a change turns out to need backend work, pause and bring in an engineer.
+**Frontend-first, not frontend-only.** The frontend - what users see and click - is where you're strongest and where changes are safest, so it's the right place to begin. The backend (the server and database) is riskier ground, but not off-limits: with a good AI model and an engineer's help, plenty of designers work there too. The one rule: *don't wander into it by accident.* If a change turns out to need backend work, pause and bring in an engineer.
 
-Two things worth knowing up front:
+Two things worth knowing:
 
 - **Your machine vs the shared server.** Your own computer holds your private copy - anything you do there (including a live preview at `localhost`) is yours alone until you share it. The shared server (usually **GitLab**, sometimes GitHub) is what the whole team sees. Keeping these separate in your head explains most of what follows.
 - **Any assistant works.** This guide says "your AI assistant" on purpose. It works whether you use Claude Code (desktop app or terminal), Codex, or another - the interface differs, the process is the same. Your project may also have named shortcuts (slash-commands or "skills") for common jobs like planning or design-checking, so ask your team what yours has. And the process is flexible to your **tech stack** and your team's **way of working** - so wherever something varies by team, check with your engineers.
@@ -72,7 +72,7 @@ Before any code, get clear on *what kind of work this is*. It shapes how careful
 | **Handoff** | A clean version an engineer will build on - use it when there's real backend work to be done | Tidy and conventional, and it needs a short spec so your intent survives the handoff. |
 | **Revamp** | Polishing existing UI without breaking how it works | Careful - improve the look without disturbing the wiring underneath. |
 
-**How much to plan is up to you** - designers and teams work differently here, so treat this as a suggestion, not a rule. What many find helps: **explore loosely first, then plan the real build.** For visual work, don't lock a rigid plan before you've tried things - it fights your creativity. Explore or prototype freely first (no plan mode yet), and once the shape stops moving, use what you learned as the reference to plan the actual implementation.
+**How much to plan is up to you** - designers and teams work differently, so treat this as a suggestion, not a rule. What many find helps: **explore loosely first, then plan the real build.** Don't lock a rigid plan before you've tried things - for visual work, that fights your creativity. Explore or prototype freely (no plan mode yet), and once the shape stops moving, use what you learned to plan the actual implementation.
 
 A few optional tools you might reach for, from light to heavier:
 
@@ -127,7 +127,7 @@ A merge request is how your change gets reviewed and added into the shared code.
 
 **Keeping your branch fresh.** While you work, others merge into `main`, so your branch can fall behind. Before merging, update it by pulling in the latest `main` - there are two techniques for this, *rebase* and *merge* (not the same "merge" as your MR being merged in). Teams have a preference, so ask which yours uses and let your AI handle the command. If two people changed the same lines you'll get a **merge conflict** - don't guess, ask your AI to help, then re-run the checks.
 
-> **The one habit that pays off most:** as you build, jot down the decisions - what this is for, what states it covers, and anything the backend will need. That's the checklist your reviewer verifies against, and it's how your intent reaches the engineer instead of getting lost.
+> **A habit worth building:** as you build, jot down the decisions - what this is for, what states it covers, and anything the backend will need. That's the checklist your reviewer verifies against, and it's how your intent reaches the engineer instead of getting lost.
 
 ## When something breaks
 
