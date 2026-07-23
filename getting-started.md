@@ -91,7 +91,7 @@ Whichever you pick, getting your computer ready (the app or editor, plus a few t
 
 **Start with the problem.** Before any code, get clear on what you're solving: a short problem statement, a design brief, and (where they apply) your measures of success. A clear problem makes every later step easier to judge.
 
-> **Tip: track success.** If your app is wired to [PostHog](https://posthog.com), set up analytics so you can see whether a build actually moves the metric, not just whether it shipped.
+> **Tip: track success.** If your app is wired to [PostHog](https://posthog.com), you can even set up analytics so you can see whether a build actually moves the metric, not just whether it shipped.
 
 Then decide what kind of work this is. That decides how much to plan and which tools help.
 
@@ -105,25 +105,15 @@ Then decide what kind of work this is. That decides how much to plan and which t
 
 ### Tools and skills
 
-If your repo has a design harness, its skills fit best because they already know the standard. On a TFX repo, [the harness skills](/harness/skills) each own a job:
+If your repo has a design harness, lean on it; its skills know the standard, so they build, review, and polish to spec. You get one skill to build or change a screen, one to review a page, and focused passes for a single dimension (copy, spacing, motion, layout, flow). See [the harness skills](/harness/skills) for the full list. (Today that's the TFX harness; a generic DXD harness of the same shape is on the way.)
 
-- `/tfx:start` - get oriented, or let it route you when you're not sure which skill fits.
-- `/tfx:setup` - set up your machine or onboard a repo (once).
-- `/tfx:design` - build a new screen or change an existing one; runs the full six-phase loop.
-- `/tfx:critique` - hear what's wrong with a page before changing it, with ranked fixes.
-- `/tfx:copy` · `/tfx:polish` · `/tfx:motion` · `/tfx:flow` · `/tfx:layout` - fix one dimension at a time (wording · spacing, type, colour · motion · multi-step flows · layout).
-- `/tfx:standards` - ask whether a rule applies, or whether you can waive it.
-- `/tfx:feedback` - tell the team the harness itself confused you.
-
-Rule of thumb: when you can name the problem, reach for the focused pass; when you can't, `/tfx:critique` finds it for you.
-
-Generic tools work too. These are the ones I picked up from the LangBuddy engineers:
+No harness? The generic tools below do similar jobs. These are the ones I picked up from the LangBuddy engineers:
 
 | Tool | What it's for | Where |
 | --- | --- | --- |
 | **plan mode** | Your AI lays out its approach before it writes any code. Honestly, plan mode is your best friend. | [Claude Code feature](https://code.claude.com/docs/en/permission-modes) |
 | **grill-me** (rec. Sheen An) | Your AI interviews you to pressure-test the idea and surface gaps. | [mattpocock/skills](https://github.com/mattpocock/skills) |
-| **OpenSpec** (rec. Selwyn, ESTL) | Turns your intent into a structured written spec. | [openspec.dev](https://openspec.dev) |
+| **OpenSpec** (rec. Selwyn) | Turns your intent into a structured written spec. | [openspec.dev](https://openspec.dev) |
 | **Compound Engineering** (rec. Wondo) | A brainstorm-to-plan-to-build-to-review flow, built so each task makes the next one easier. | [github.com/EveryInc/compound-engineering-plugin](https://github.com/EveryInc/compound-engineering-plugin) |
 
 All optional. Use whatever fits you or your team, or none.
@@ -134,7 +124,7 @@ All optional. Use whatever fits you or your team, or none.
 
 Once you know what you're making, the loop is the same every time.
 
-> **If your repo has a design harness, it runs the build, check, and review phases for you.** On a TFX repo, `/tfx:design` runs a [six-phase loop](/harness/loop) that stops twice for you: you approve the plan before any code is written, and you decide any waivers at the end. A separate evaluator grades the result, so the builder never marks its own homework. You still make the branch and open the merge request yourself. No harness yet? Drive the same steps by hand, below.
+> **If your repo has a design harness, it runs the build, check, and review phases for you.** It builds to the standard, stops for your approval before and after, and has a separate reviewer grade the result (on a TFX repo, that's `/tfx:design` and its [six-phase loop](/harness/loop)). You still make the branch and open the merge request yourself. No harness yet? Drive the steps by hand below; honestly, doing it manually first is the best way to learn what's actually going on.
 
 **1. Make a branch.** Pull the latest shared code first (the shared branch is usually called `main`), then make your branch off it, so you build on the current version. Have your AI show you the exact git command and wait for your OK before it runs. Git actions are worth a quick double-check.
 
@@ -200,25 +190,25 @@ Once you're comfortable, you can hand more to a harness over time: from asking i
 Starting points that work in any repo. Your assistant fills in the specifics.
 
 **Getting set up**
-- "What's the tech stack here, and how do I install, run, and build this project?"
-- "Clone this repo for me: [paste the address]."
+- **Understand the project:** "What's the tech stack here, and how do I install, run, and build this project?"
+- **Clone it:** "Clone this repo for me: [paste the address]."
 
 **Building**
-- "Before writing anything, read this codebase and its design tokens, then follow how it already does things."
-- "Make a branch for this change. Show me the git command and wait for my OK first."
-- "Reuse existing components and tokens. Check the ui/ and common/ folders before making anything new, and don't hardcode colours."
-- "Before you change a component, tell me if it's used on more than one page."
-- "Do an adversarial code review of this change. Find anything an engineer would flag, and check it fits the codebase's conventions."
+- **Learn the codebase first:** "Before writing anything, read this codebase and its design tokens, then follow how it already does things."
+- **Make a branch:** "Make a branch for this change. Show me the git command and wait for my OK first."
+- **Reuse over invent:** "Reuse existing components and tokens. Check the ui/ and common/ folders before making anything new, and don't hardcode colours."
+- **Check the blast radius:** "Before you change a component, tell me if it's used on more than one page."
+- **Review before a human does:** "Do an adversarial code review of this change. Find anything an engineer would flag, and check it fits the codebase's conventions."
 
 **Shipping**
-- "Run the checks, the build, and the design checks if we have them, then show me the results before we commit."
-- "Stage only the files I changed, commit with a clear message, and push my branch. Confirm the commands first."
-- "Draft an MR description from what we did, with before/after screenshots."
-- "Update my branch with the latest main. Tell me whether this repo uses rebase or merge first."
+- **Run the checks:** "Run the checks, the build, and the design checks if we have them, then show me the results before we commit."
+- **Commit and push safely:** "Stage only the files I changed, commit with a clear message, and push my branch. Confirm the commands first."
+- **Draft the MR:** "Draft an MR description from what we did, with before/after screenshots."
+- **Update your branch:** "Update my branch with the latest main. Tell me whether this repo uses rebase or merge first."
 
 **When stuck**
-- "This check failed. Read the error and tell me what's wrong and how to fix it."
-- "The preview stopped. Can you start it again?"
+- **Fix a failed check:** "This check failed. Read the error and tell me what's wrong and how to fix it."
+- **Restart the preview:** "The preview stopped. Can you start it again?"
 
 ---
 
