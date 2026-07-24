@@ -9,7 +9,7 @@ import type { ReactNode } from "react";
    corner clip; rows are grouped, not carded (SLP-11). */
 export function Checklist({ children }: { children?: ReactNode }) {
   return (
-    <figure className="my-8 overflow-hidden rounded-lg border border-border bg-surface">
+    <figure className="mb-5 mt-4 overflow-hidden rounded-lg border border-border bg-surface">
       <ul className="m-0 list-none divide-y divide-border p-0">{children}</ul>
     </figure>
   );
