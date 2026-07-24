@@ -284,5 +284,3 @@ Starting points that work in any repo. Your assistant fills in the specifics.
 ---
 
 *A living starting point. When your team does something differently, especially around setup, access, and secrets, trust your engineers over this guide, and help improve it.*
-
-*Thanks to the LangBuddy engineers who taught me most of this.*
