@@ -134,7 +134,7 @@ Whichever tool you use, you start the same way: tell the AI, in plain words, wha
 
 **Got a design harness? Lean on it.** Its skills know the standard, so they build, review, and polish to spec. On a TFX repo you type it plainly - `/tfx:design a settings page for teachers` - and see [the harness skills](/harness/skills) for the full set. (That's the product-specific TFX harness; a generic DXD one is on the way.)
 
-No harness? The generic tools below do similar jobs. These are the ones I picked up from the LangBuddy engineers:
+No harness? The generic tools below do similar jobs, but the AI still needs slightly more babysitting. These are the ones I picked up from the LangBuddy engineers:
 
 | Tool | What it does, and how to use it | Where |
 | --- | --- | --- |
@@ -178,6 +178,8 @@ A few more habits worth keeping:
 - **Handle data safely.** Ask your AI to shape incoming data at the boundary and never assume a response is there, so a missing value doesn't blank the screen.
 - **Keep spacing on the grid.** Use the project's spacing steps (often an 8px grid), not arbitrary pixel values.
 - **Let elements size to their content** instead of forcing fixed widths.
+
+**No conventions yet?** A fresh or inconsistent codebase may have nothing to match. Set them yourself - pick your tokens and patterns and keep to them - or lean on a design harness, which brings the standard with it.
 
 > **Keep an eye on the basics yourself.** AI is good, but it lapses. Every so often it will hardcode a colour, skip a token, or reinvent a component that already exists. Knowing the best practices (use tokens, reuse what's there) is what lets you catch the slip. You can't fully outsource judgment.
 
