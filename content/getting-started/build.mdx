@@ -25,18 +25,15 @@ Reuse what's there before building new. A change that looks like it belongs is e
 <DoDont items={[
   { kind: "do", text: "Reuse an existing component before building a new one; the ui/ and common/ folders are where shared pieces usually live." },
   { kind: "do", text: "Use the values the project already defines for colour, spacing, and radius (its design tokens, usually CSS variables in a file like src/index.css or app/globals.css)." },
+  { kind: "do", text: "Match the words already in the codebase; use the terms it already uses (say 'publish mission', not a phrase you invented), so flows stay consistent." },
+  { kind: "do", text: "When you remove UI, have your AI clear the code behind it too, so no dead bits or filler comments pile up." },
+  { kind: "do", text: "Have your AI shape incoming data at the boundary and never assume a response is there, so a missing value can't blank the screen." },
+  { kind: "do", text: "Keep spacing on the project's grid (often 8px), not arbitrary pixel values." },
   { kind: "dont", text: "Hardcode a hex colour or a random pixel value when a token exists." },
   { kind: "dont", text: "Edit a component used on more than one page without checking what else uses it; it changes everywhere at once." },
+  { kind: "dont", text: "Add a new tool or dependency for something the project can already do." },
+  { kind: "dont", text: "Force fixed widths; let elements size to their content." },
 ]} />
-
-A few more habits worth keeping:
-
-- **Match the words already in the codebase.** Use the terms the project already uses (say "publish mission", not a new phrase you invented), so flows stay consistent.
-- **Don't add a new tool for something the project can already do.** Reach for a new dependency only when nothing built in covers it.
-- **Leave it clean.** When you remove UI, have your AI remove the code behind it too, so no dead bits or filler comments pile up.
-- **Handle data safely.** Ask your AI to shape incoming data at the boundary and never assume a response is there, so a missing value doesn't blank the screen.
-- **Keep spacing on the grid.** Use the project's spacing steps (often an 8px grid), not arbitrary pixel values.
-- **Let elements size to their content** instead of forcing fixed widths.
 
 > **Keep an eye on the basics yourself.** AI is good, but it lapses. Every so often it will hardcode a colour, skip a token, or reinvent a component that already exists. Knowing the best practices (use tokens, reuse what's there) is what lets you catch the slip. You can't fully outsource judgment.
 
