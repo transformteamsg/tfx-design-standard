@@ -1,4 +1,5 @@
 import {
+  ArrowDownToLine,
   ArrowUpFromLine,
   Copy,
   FolderGit2,
@@ -6,23 +7,28 @@ import {
   GitCommitHorizontal,
   GitMerge,
   GitPullRequest,
+  MessageSquare,
+  Undo2,
   type LucideIcon,
 } from "lucide-react";
 import type { ReactNode } from "react";
 
-/* Glossary - a rowed card that pairs a Lucide icon with a term + definition, so
-   a vocabulary list reads visually instead of as a flat table. Each Term takes
-   MDX children (so **bold** and links render) and an `icon` key mapped to a
-   Lucide glyph rendered at the standard 20px / stroke 2 / currentColor. Shares
-   Checklist's card + divided-row structure. */
+/* Glossary - a rowed card that pairs a Lucide icon with a short line of text (a
+   term, a habit, a step), so a list reads visually instead of as a flat table.
+   Each Term takes MDX children (so **bold** and links render) and an `icon` key
+   mapped to a Lucide glyph rendered at the standard 20px / stroke 2 /
+   currentColor. Shares Checklist's card + divided-row structure. */
 const ICONS: Record<string, LucideIcon> = {
   "folder-git-2": FolderGit2,
   copy: Copy,
   "git-branch": GitBranch,
   "git-commit-horizontal": GitCommitHorizontal,
   "arrow-up-from-line": ArrowUpFromLine,
+  "arrow-down-to-line": ArrowDownToLine,
   "git-pull-request": GitPullRequest,
   "git-merge": GitMerge,
+  "message-square": MessageSquare,
+  "undo-2": Undo2,
 };
 
 export function Glossary({ children }: { children?: ReactNode }) {
