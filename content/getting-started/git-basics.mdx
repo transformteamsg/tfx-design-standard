@@ -30,4 +30,35 @@ Git is the tool teams use to work on the same code without overwriting each othe
 
 That's the whole vocabulary. Your AI can run all of these for you; knowing what they mean just lets you tell when something looks off.
 
+## Good habits
+
+A few habits keep you safe and make your work easy to follow:
+
+<Glossary>
+
+<Term icon="arrow-down-to-line">**Pull the latest first.** Before you start, grab everyone's newest changes so you're not building on an old version.</Term>
+
+<Term icon="git-branch">**Work on a branch, never on `main`.** Your branch is a safe copy; `main` stays stable for the whole team.</Term>
+
+<Term icon="git-commit-horizontal">**Commit small and often.** Save little checkpoints as you go, not one big dump at the end - small commits are easy to undo.</Term>
+
+<Term icon="message-square">**Write clear commit messages.** One line saying what changed, so a teammate gets it without opening the files.</Term>
+
+<Term icon="undo-2">**Don't panic.** Git almost never loses work; nearly anything can be recovered, so a confusing moment is rarely a real problem.</Term>
+
+</Glossary>
+
+## The everyday rhythm
+
+Once you're set up, most days follow the same shape:
+
+1. **Pull** the latest `main` so you start current.
+2. **Branch** off it for your change.
+3. **Build**, committing small checkpoints as you go.
+4. **Push** your branch up.
+5. Open a **merge request** and get it reviewed.
+6. Once approved, it's **merged** in.
+
+[Step 3: Build](/getting-started/build) and [Step 4: Ship](/getting-started/ship) walk through each of these.
+
 Next: [Step 0: Prep guardrails](/getting-started/guardrails).

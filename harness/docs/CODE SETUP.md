@@ -57,6 +57,29 @@ Git is the tool teams use to work on the same code without overwriting each othe
 
 That's the whole vocabulary. Your AI can run all of these for you; knowing what they mean just lets you tell when something looks off.
 
+## Good habits
+
+A few habits keep you safe and make your work easy to follow:
+
+- **Pull the latest first.** Before you start, grab everyone's newest changes so you're not building on an old version.
+- **Work on a branch, never on `main`.** Your branch is a safe copy; `main` stays stable for the whole team.
+- **Commit small and often.** Save little checkpoints as you go, not one big dump at the end - small commits are easy to undo.
+- **Write clear commit messages.** One line saying what changed, so a teammate gets it without opening the files.
+- **Don't panic.** Git almost never loses work; nearly anything can be recovered, so a confusing moment is rarely a real problem.
+
+## The everyday rhythm
+
+Once you're set up, most days follow the same shape:
+
+1. **Pull** the latest `main` so you start current.
+2. **Branch** off it for your change.
+3. **Build**, committing small checkpoints as you go.
+4. **Push** your branch up.
+5. Open a **merge request** and get it reviewed.
+6. Once approved, it's **merged** in.
+
+[Step 3: Build](/getting-started/build) and [Step 4: Ship](/getting-started/ship) walk through each of these.
+
 ## Step 1: Set up
 
 You do this once, when you first join a repo. It's the most engineer-dependent part, so it's the best place to ask for help. Everyone starts by asking.
