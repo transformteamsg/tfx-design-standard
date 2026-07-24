@@ -114,7 +114,7 @@ Before any code, get clear on what you're solving: a short problem statement, a 
 
 > **Tip: track success.** If your app is wired to [PostHog](https://posthog.com), you can even set up analytics so you can see whether a build actually moves the metric, not just whether it shipped.
 
-### Pick the kind of work
+### Pick your mode
 
 What kind of work this is decides how much to plan and which tools help.
 
@@ -132,7 +132,7 @@ It's your call. A common rhythm: explore or prototype freely first, then write i
 
 Whichever tool you use, you start the same way: tell the AI, in plain words, what you want to build and the problem it solves. Be specific; vague in, vague out.
 
-If your repo has a design harness, lean on it; its skills know the standard, so they build, review, and polish to spec. You get one skill to build or change a screen, one to review a page, and focused passes for a single dimension (copy, spacing, motion, layout, flow). You use one by typing it with a plain description of what you want (on a TFX repo, `/tfx:design a settings page for teachers`). See [the harness skills](/harness/skills) for the full list. (Today that's the TFX harness; a generic DXD harness of the same shape is on the way.)
+**Got a design harness? Lean on it.** Its skills know the standard, so they build, review, and polish to spec. On a TFX repo you type it plainly - `/tfx:design a settings page for teachers` - and see [the harness skills](/harness/skills) for the full set. (That's the product-specific TFX harness; a generic DXD one is on the way.)
 
 No harness? The generic tools below do similar jobs. These are the ones I picked up from the LangBuddy engineers:
 
