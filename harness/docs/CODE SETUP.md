@@ -122,7 +122,7 @@ What kind of work this is decides how much to plan and which tools help.
 | --- | --- | --- |
 | **Prototype** | A quick build to test an idea or demo to the team | Prompt freely with mock data; rough is fine. If the idea is fuzzy, start with a `/grill-me` interview. |
 | **Revamp** | Polishing existing UI without breaking how it works | Use light plan mode, describe the changes you want, and go in small steps. |
-| **Handoff (frontend)** | A clean frontend an engineer will wire up; they mostly refactor the backend | Write a spec document so your design intent survives. How detailed depends on the work and the engineer, so ask what documentation they need. |
+| **Handoff (frontend)** | A clean frontend an engineer will wire up; they mostly refactor the backend | Write a spec so your design intent survives; OpenSpec or `/ce-plan` (Compound Engineering) can draft one. How detailed depends on the work and the engineer, so ask what documentation they need. |
 
 ### Decide how much to plan
 
@@ -164,13 +164,24 @@ Once you know what you're making, the loop is the same every time.
 
 > You don't have to re-orient from scratch every session. Many codebases keep a `CLAUDE.md` file (or similar) that your AI reads automatically when a session starts, so it begins oriented. If yours has one, lean on it. It's a shared team file, so read from it rather than writing your own notes into it.
 
-**3. Match what's already there.** Reuse what's there before building new. A change that looks like it belongs is easier to trust and review.
+**3. Follow the codebase's conventions.** Reuse what's there before building new. A change that looks like it belongs is easier to trust and review.
 
 - **Reuse components.** Have your AI check for an existing component before it builds a new one. The `ui/` and `common/` folders are where shared pieces usually live. Only make something new if you'll reuse it in a few places.
 - **Use the existing tokens.** Colours, spacing, and corner radius should come from the values the project already defines. These are the same idea as design tokens in Figma. They usually live as CSS variables in a file like `src/index.css` or `app/globals.css`. (If your project uses shadcn, those values are generated at [ui.shadcn.com](https://ui.shadcn.com) and pasted into that file.) No hardcoded hex, no random pixel values. (These tokens are unrelated to the sign-in token from Step 1.)
 - **Watch shared components.** A component used on more than one page changes everywhere when you edit it. Ask your AI to flag that before you touch it, so you don't restyle other screens by accident.
 
+A few more habits worth keeping:
+
+- **Match the words already in the codebase.** Use the terms the project already uses (say "publish mission", not a new phrase you invented), so flows stay consistent.
+- **Don't add a new tool for something the project can already do.** Reach for a new dependency only when nothing built in covers it.
+- **Leave it clean.** When you remove UI, have your AI remove the code behind it too, so no dead bits or filler comments pile up.
+- **Handle data safely.** Ask your AI to shape incoming data at the boundary and never assume a response is there, so a missing value doesn't blank the screen.
+- **Keep spacing on the grid.** Use the project's spacing steps (often an 8px grid), not arbitrary pixel values.
+- **Let elements size to their content** instead of forcing fixed widths.
+
 > **Keep an eye on the basics yourself.** AI is good, but it lapses. Every so often it will hardcode a colour, skip a token, or reinvent a component that already exists. Knowing the best practices (use tokens, reuse what's there) is what lets you catch the slip. You can't fully outsource judgment.
+
+*These are habits I picked up from engineers and from building with AI, not hard rules. Add to them or correct them as you learn your own codebase.*
 
 **4. Build only what the task needs.** Keep the change focused. Skip unrelated "improvements", even tempting ones; they make it harder to review and to undo.
 
