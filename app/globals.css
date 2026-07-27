@@ -56,6 +56,7 @@
   --sec-foundations: #12a594;  /* Radix teal-9 — shared material */
   --sec-products: #00a2c7;     /* Radix cyan-9 — the three identities */
   --sec-harness: #ad7f58;      /* Radix brown-9 — the working strap */
+  --sec-getting-started: #5b5bd6; /* Radix iris-9 — the hands-on on-ramp */
   --sec-governance: #60646c;   /* Radix slate-11 — neutral stewardship */
 
   --radius: 0.5rem;
@@ -220,4 +221,8 @@ h1, h2, h3, h4 { font-family: "Plus Jakarta Sans Variable", system-ui, sans-seri
   .prose blockquote { border-left: 3px solid var(--tw-blue); padding-left: 16px; color: var(--muted-foreground); margin: 0 0 14px; }
   .prose a { color: var(--tw-blue); text-decoration: underline; text-underline-offset: 2px; }
   .prose strong { color: var(--foreground); font-weight: 600; }
+  /* Preflight gives hr 0 margin, so a `---` inherits its neighbours' asymmetric
+     gaps (e.g. 20px above from a table, 0 below from a paragraph). Give it its
+     own symmetric breathing room. */
+  .prose hr { margin: 32px 0; border: 0; border-top: 1px solid var(--border); }
 }

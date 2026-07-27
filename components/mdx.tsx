@@ -13,6 +13,8 @@ import { IconSet } from "@/components/foundations/icon-set";
 import { BrandIconSet } from "@/components/foundations/brand-icon-set";
 import { CodeBlock } from "@/components/code-block";
 import { DoDont } from "@/components/foundations/do-dont";
+import { Checklist, Check } from "@/components/foundations/checklist";
+import { Glossary, Term } from "@/components/foundations/glossary";
 
 export function textOf(node: ReactNode): string {
   if (typeof node === "string" || typeof node === "number") return String(node);
@@ -50,6 +52,10 @@ export const mdxComponents = {
   pre: Pre,
   CodeBlock,
   DoDont,
+  Checklist,
+  Check,
+  Glossary,
+  Term,
   MotionScale,
   OrbitLoop,
   ColorRamp,

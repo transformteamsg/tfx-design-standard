@@ -33,11 +33,24 @@ const leafHrefs = (items: NavItem[]): string[] =>
 
 const nav: NavGroup[] = [
   {
-    label: "Start",
+    label: "Get oriented",
     items: [
       { href: "/overview", title: "Overview" },
       { href: "/how-to-read", title: "How to read this" },
       { href: "/for-agents", title: "For agents" },
+    ],
+  },
+  {
+    label: "Start with code",
+    items: [
+      { href: "/getting-started", title: "Overview" },
+      { href: "/getting-started/git-basics", title: "Introducing Git" },
+      { href: "/getting-started/guardrails", title: "Step 0: Prep guardrails" },
+      { href: "/getting-started/set-up", title: "Step 1: Set up" },
+      { href: "/getting-started/plan", title: "Step 2: Plan" },
+      { href: "/getting-started/build", title: "Step 3: Build" },
+      { href: "/getting-started/ship", title: "Step 4: Ship" },
+      { href: "/getting-started/help", title: "Help & prompts" },
     ],
   },
   {

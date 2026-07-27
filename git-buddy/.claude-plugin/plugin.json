@@ -1,0 +1,10 @@
+{
+  "name": "git-buddy",
+  "description": "Gitty (🦔) - a friendly, geeky git buddy for designers who design in code. Guides you at any step, soft on jargon, sharp on safety.",
+  "version": "0.1.0",
+  "author": {
+    "name": "TransformX, GovTech Singapore"
+  },
+  "keywords": ["git", "designers", "beginner", "onboarding", "workflow"],
+  "skills": "./skills/"
+}
