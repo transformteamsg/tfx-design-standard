@@ -93,6 +93,7 @@ design-harness/
     ├── ONBOARDING.md          # adopting the harness in a product repo
     ├── UPDATING.md            # plugin update steps + auto-update setting
     ├── harness-feedback.md    # running log of feedback on the harness itself
+    ├── external-harness-learnings.md  # what other design harnesses teach, filed by control category
     ├── decisions/             # one design decision record per page/change
     ├── loop-run/              # end-to-end loop run transcripts/evidence
     ├── reviews/               # standalone review writeups
