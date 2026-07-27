@@ -458,7 +458,11 @@ Three contributions.
   applied to Hangul. TFX has no typesetting control for Chinese, Malay or Tamil,
   even though Singapore school surfaces can carry all three. Whether that is a
   gap depends on whether TFX products render non-Latin text today, which this
-  review did not establish. Worth asking before it becomes a live problem.
+  review did not establish. Written up in
+  `catalog-changes/typ-multilingual-typesetting.md`, where following the thread
+  surfaced a sharper problem: TYP-1's two approved faces cover neither Chinese
+  nor Tamil, so a surface rendering either script falls back to a system font
+  silently and `type-scan` raises nothing.
 
 ### 6.4 Colour and tokens (COL, TOK)
 
@@ -517,10 +521,27 @@ stays that way.
 
 ## 8. What happens next
 
-Nothing in this document is approved. In recommended order:
+Nothing in this document is approved. Two items are written up as full proposal
+records for the team to read and decide on:
+
+- `catalog-changes/slp-staleness-axis.md` — G7, the staleness axis for the
+  anti-slop category. Three parts: an optional `reviewed` field, a review
+  cadence with a path for removing a control, and a rewording of SLP-1's
+  `fails_when` so that avoiding the named hues is not enough to pass.
+- `catalog-changes/typ-multilingual-typesetting.md` — the §6.3 open question.
+  It turned out to be more than an open question: TYP-1 allows only Plus
+  Jakarta Sans and Inter, neither covers Chinese or Tamil, so any surface
+  rendering those scripts today is silently falling back to a system font with
+  no finding raised. Blocked on one factual question the team can answer in a
+  sentence.
+
+Neither record touches `standards/`, per the ratchet's evidence-first step.
+
+In recommended order:
 
 1. **G7 first** (§5.6): add a staleness axis to SLP controls. Smallest change,
-   and it protects the other ten.
+   and it protects the other ten. Specified in
+   `catalog-changes/slp-staleness-axis.md`.
 2. **`slop-scan` for SLP-2 and SLP-3** (§5.5): two triggers with no definitional
    change needed, which would take the category from zero scripts to two and
    test the trigger format before the harder ones.
