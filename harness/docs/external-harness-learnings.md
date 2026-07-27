@@ -452,17 +452,17 @@ Three contributions.
   `unscaled-radius-scale` after treating radius as hygiene rather than a scale
   discipline. TFX's TOK-3, with its peer-radius-consistency clause, already
   covers it. TFX is ahead.
-- **Open question, not a candidate.** slopslap carries four Korean typesetting
-  tells gated on the presence of Korean text: fallback-font jumps, missing
-  `word-break: keep-all`, untuned Hangul letter-spacing, and an English type scale
-  applied to Hangul. TFX has no typesetting control for Chinese, Malay or Tamil,
-  even though Singapore school surfaces can carry all three. Whether that is a
-  gap depends on whether TFX products render non-Latin text today, which this
-  review did not establish. Written up in
-  `catalog-changes/typ-multilingual-typesetting.md`, where following the thread
-  surfaced a sharper problem: TYP-1's two approved faces cover neither Chinese
-  nor Tamil, so a surface rendering either script falls back to a system font
-  silently and `type-scan` raises nothing.
+- **Asked and closed.** slopslap carries four Korean typesetting tells gated on
+  the presence of Korean text: fallback-font jumps, missing `word-break:
+  keep-all`, untuned Hangul letter-spacing, and an English type scale applied to
+  Hangul. TFX has no equivalent for Chinese, Malay or Tamil, and whether that is
+  a gap turned on one fact this review could not establish. Written up in
+  `catalog-changes/typ-multilingual-typesetting.md` and **rejected on 2026-07-28**:
+  TFX product surfaces are English only, so TYP-1's two approved faces cover
+  everything rendered and the conflict the record describes does not exist today.
+  The record stays on file with its reactivation triggers, because the pattern it
+  documents (script-gated checking, and TYP-1's scoped-registration exception
+  format) outlives the rejected control.
 
 ### 6.4 Colour and tokens (COL, TOK)
 
@@ -521,19 +521,18 @@ stays that way.
 
 ## 8. What happens next
 
-Nothing in this document is approved. Two items are written up as full proposal
-records for the team to read and decide on:
+Nothing in this document is approved. Two items were written up as full
+proposal records, and one is already closed:
 
-- `catalog-changes/slp-staleness-axis.md` — G7, the staleness axis for the
-  anti-slop category. Three parts: an optional `reviewed` field, a review
+- `catalog-changes/slp-staleness-axis.md` — **open.** G7, the staleness axis for
+  the anti-slop category. Three parts: an optional `reviewed` field, a review
   cadence with a path for removing a control, and a rewording of SLP-1's
   `fails_when` so that avoiding the named hues is not enough to pass.
-- `catalog-changes/typ-multilingual-typesetting.md` — the §6.3 open question.
-  It turned out to be more than an open question: TYP-1 allows only Plus
-  Jakarta Sans and Inter, neither covers Chinese or Tamil, so any surface
-  rendering those scripts today is silently falling back to a system font with
-  no finding raised. Blocked on one factual question the team can answer in a
-  sentence.
+- `catalog-changes/typ-multilingual-typesetting.md` — **rejected 2026-07-28.**
+  TFX product surfaces are English only, so the TYP-1 conflict the record
+  describes is conditional and does not arise. The record keeps its analysis and
+  three reactivation triggers, the quietest being a Chinese or Tamil name
+  arriving through a data field on an otherwise English surface.
 
 Neither record touches `standards/`, per the ratchet's evidence-first step.
 

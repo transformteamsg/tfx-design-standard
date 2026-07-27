@@ -1,15 +1,55 @@
 # Proposal: typesetting for non-Latin scripts, gated on the script being present
 
 **Date:** 2026-07-27 · **Change type:** TYP-1 clause extension, plus a candidate new TYP
-control (id assigned at approval) · **Status:** PROPOSAL, not yet committed to the
-catalog. Pending design-lead interest before any file under `standards/` is touched, per
-`CONTRIBUTING.md` step (a). **Blocked on one factual question** (§The blocking question).
+control (id assigned at approval) · **Status:** `[rejected — TFX product surfaces render
+English only; no Chinese or Tamil text today and none planned — 2026-07-28]`
 
 **Provenance:** external review of `vibedesignlab/slopslap` (MIT, read at `6b5dae1`).
 Filed as the open question in `docs/external-harness-learnings.md` §6.3. The learning
 comes from **slopslap**; the SLS review contributed nothing here.
 
-**Nothing in `standards/` has changed.** No control, no tier, no waiver.
+**Nothing in `standards/` has changed.** No control, no tier, no waiver. The rejection
+leaves TYP-1 exactly as it stands.
+
+## Outcome
+
+The blocking question below was answered on 2026-07-28: **TFX product surfaces are
+English only.** No surface renders Chinese or Tamil text today and none is planned.
+
+Under the decision tree in §The blocking question, that answer is the first branch:
+reject both parts. A pre-emptive control has no evidence behind it, and the ratchet rule
+holds. The latent conflict in TYP-1 described below is **conditional and does not exist
+today** — with English-only content, Plus Jakarta Sans and Inter cover everything
+rendered, so there is nothing to fall back from.
+
+Answered by the harness owner as a product-scope fact, not as a design-lead ruling on the
+control's merit. The analysis stays on file because the answer can change.
+
+### Reactivation triggers
+
+Reopen this record at Part A, before the first affected surface ships, if any of these
+become true:
+
+1. A product surface starts rendering Chinese or Tamil in its UI, content or data.
+2. **Person and place names entered by schools.** The most likely first carrier, and the
+   quietest: an English UI can still receive a student or parent name in Chinese or Tamil
+   script through a data field. Nothing in the current stack would raise a finding, and
+   the result renders in whatever face the device supplies. Worth a look the next time
+   someone audits a name-bearing surface, and not a reason to hold this proposal open.
+3. A parent-facing message composer ships, where a school authors the text.
+
+### Not rejected: the pattern behind it
+
+Two things in this record are worth keeping even though the control is not:
+
+- **Script-gated checking.** slopslap's precondition — evaluate only when the script is
+  actually present in the content — is the mechanism that makes a locale-specific control
+  safe to add to a mostly-English portfolio. Reusable for any future content-conditional
+  control.
+- **TYP-1's registration pattern.** Part A is a copy of how the Glow wordmark exception
+  was handled: register the exception in a scoped table rather than waive it per surface.
+  That pattern already works and is worth reaching for the next time TYP-1 meets a
+  legitimate exception.
 
 ## What the external source has
 
@@ -122,6 +162,9 @@ constraint and belongs in the decision, not hidden in a footnote.
 
 ## The blocking question
 
+> **Answered 2026-07-28: no. English only, none planned.** First branch below applies.
+> See §Outcome.
+
 **Does any TFX product surface render Chinese or Tamil text today?** This review did not
 establish it, and the answer decides the outcome:
 
@@ -160,6 +203,9 @@ before the team spends time on the wording.
 
 ## Re-audit scope
 
+> Not triggered. The proposal was rejected before any clause changed, so no record needs
+> re-auditing. Kept for whoever reopens this under a reactivation trigger.
+
 `python3 checks/reaudit-scope.py TYP-1` reports six records directly in scope for a
 TYP-1 clause change, and zero same-category candidates:
 
@@ -197,6 +243,7 @@ answered.
 
 ---
 
-**Status:** PROPOSAL, blocked on the factual question above. Nothing under `standards/`
-has been created or edited. Catalog remains at 70 controls;
-`python3 checks/validate.py` passes unchanged.
+**Status:** `[rejected — TFX product surfaces render English only; no Chinese or Tamil
+text today and none planned — 2026-07-28]`. Nothing under `standards/` was created or
+edited, and the re-audit scope below was therefore never triggered. Catalog remains at
+70 controls; `python3 checks/validate.py` passes unchanged.
