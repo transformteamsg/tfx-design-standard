@@ -1,0 +1,1705 @@
+<!doctype html>
+<html lang="en-SG">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="An evidence-led comparison of the SLS builder skills and TFX design harness across abstraction, evaluation, scalability, and governance.">
+  <title>SLS and TFX design harnesses — comparison briefing</title>
+  <script>
+    try {
+      const savedTheme = localStorage.getItem("tfx-comparison-theme");
+      if (savedTheme === "light" || savedTheme === "dark") {
+        document.documentElement.dataset.theme = savedTheme;
+      }
+    } catch (_) {}
+  </script>
+  <style>
+    :root {
+      color-scheme: light;
+      --page: #fafafa;
+      --surface: #ffffff;
+      --ink: #18181b;
+      --body: #3f3f46;
+      --muted: #67676f;
+      --line: #e4e4e7;
+      --line-strong: #a1a1aa;
+      --soft: #f4f4f5;
+      --accent: #0064ff;
+      --accent-soft: #e8f0ff;
+      --accent-ink: #0045b3;
+      --on-accent: #ffffff;
+      --positive: #2a7e3b;
+      --positive-soft: #eaf6ed;
+      --caution: #8a5300;
+      --caution-soft: #fff5dd;
+      --shadow: 0 1px 2px rgba(24, 24, 27, 0.04), 0 12px 32px rgba(24, 24, 27, 0.06);
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --measure: 68ch;
+      --sans: "Inter", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --display: "Plus Jakarta Sans", "Inter", ui-sans-serif, system-ui, sans-serif;
+      --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        color-scheme: dark;
+        --page: #0e1014;
+        --surface: #15181e;
+        --ink: #f4f4f5;
+        --body: #d4d4d8;
+        --muted: #a1a1aa;
+        --line: #2b3038;
+        --line-strong: #525866;
+        --soft: #1c2027;
+        --accent: #78aaff;
+        --accent-soft: #142542;
+        --accent-ink: #a9c8ff;
+        --positive: #72d18b;
+        --positive-soft: #14271b;
+        --caution: #f2b84b;
+        --caution-soft: #2a210f;
+        --shadow: 0 1px 2px rgba(0, 0, 0, 0.28), 0 12px 32px rgba(0, 0, 0, 0.22);
+      }
+    }
+
+    :root[data-theme="light"] {
+      color-scheme: light;
+      --page: #fafafa;
+      --surface: #ffffff;
+      --ink: #18181b;
+      --body: #3f3f46;
+      --muted: #67676f;
+      --line: #e4e4e7;
+      --line-strong: #a1a1aa;
+      --soft: #f4f4f5;
+      --accent: #0064ff;
+      --accent-soft: #e8f0ff;
+      --accent-ink: #0045b3;
+      --positive: #2a7e3b;
+      --positive-soft: #eaf6ed;
+      --caution: #8a5300;
+      --caution-soft: #fff5dd;
+      --shadow: 0 1px 2px rgba(24, 24, 27, 0.04), 0 12px 32px rgba(24, 24, 27, 0.06);
+    }
+
+    :root[data-theme="dark"] {
+      color-scheme: dark;
+      --page: #0e1014;
+      --surface: #15181e;
+      --ink: #f4f4f5;
+      --body: #d4d4d8;
+      --muted: #a1a1aa;
+      --line: #2b3038;
+      --line-strong: #525866;
+      --soft: #1c2027;
+      --accent: #78aaff;
+      --accent-soft: #142542;
+      --accent-ink: #a9c8ff;
+      --positive: #72d18b;
+      --positive-soft: #14271b;
+      --caution: #f2b84b;
+      --caution-soft: #2a210f;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.28), 0 12px 32px rgba(0, 0, 0, 0.22);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-padding-top: 80px;
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      html {
+        scroll-behavior: smooth;
+      }
+    }
+
+    body {
+      margin: 0;
+      background: var(--page);
+      color: var(--body);
+      font-family: var(--sans);
+      font-size: 16px;
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    a {
+      color: var(--accent-ink);
+      text-decoration-thickness: 1px;
+      text-underline-offset: 3px;
+    }
+
+    a:hover {
+      color: var(--accent);
+    }
+
+    a:focus-visible,
+    button:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    .skip-link {
+      position: fixed;
+      top: 8px;
+      left: 8px;
+      z-index: 100;
+      transform: translateY(-160%);
+      border: 1px solid var(--line-strong);
+      border-radius: var(--radius-md);
+      background: var(--surface);
+      color: var(--ink);
+      padding: 8px 12px;
+      box-shadow: var(--shadow);
+    }
+
+    .skip-link:focus {
+      transform: translateY(0);
+    }
+
+    .reading-progress {
+      position: fixed;
+      inset: 0 auto auto 0;
+      z-index: 90;
+      width: 0;
+      height: 3px;
+      background: var(--accent);
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      border-bottom: 1px solid var(--line);
+      background: color-mix(in srgb, var(--page) 92%, transparent);
+      backdrop-filter: blur(14px);
+    }
+
+    .topbar__inner {
+      width: min(1120px, calc(100% - 40px));
+      min-height: 64px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--ink);
+      font-family: var(--display);
+      font-size: 14px;
+      font-weight: 650;
+      text-decoration: none;
+    }
+
+    .brand__mark {
+      width: 28px;
+      height: 28px;
+      display: grid;
+      place-items: center;
+      border-radius: 8px;
+      background: var(--accent);
+      color: var(--on-accent);
+      font-family: var(--display);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: -0.04em;
+    }
+
+    .topbar__actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .utility-button,
+    .copy-button {
+      min-height: 40px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      background: var(--surface);
+      color: var(--body);
+      padding: 8px 12px;
+      cursor: pointer;
+      transition: border-color 150ms ease, color 150ms ease, background 150ms ease;
+    }
+
+    .utility-button:hover,
+    .copy-button:hover {
+      border-color: var(--line-strong);
+      color: var(--ink);
+      background: var(--soft);
+    }
+
+    .page {
+      width: min(1120px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: clamp(40px, 7vw, 88px) 0 96px;
+    }
+
+    .hero {
+      max-width: 920px;
+    }
+
+    .eyebrow {
+      margin: 0 0 14px;
+      color: var(--accent-ink);
+      font-size: 14px;
+      font-weight: 650;
+      letter-spacing: 0.04em;
+    }
+
+    h1,
+    h2,
+    h3 {
+      color: var(--ink);
+      font-family: var(--display);
+      letter-spacing: -0.02em;
+      text-wrap: balance;
+    }
+
+    h1 {
+      max-width: 16ch;
+      margin: 0;
+      font-size: clamp(36px, 6vw, 60px);
+      font-weight: 650;
+      line-height: 1.06;
+    }
+
+    .hero__lede {
+      max-width: 62ch;
+      margin: 24px 0 0;
+      color: var(--muted);
+      font-size: clamp(18px, 2.2vw, 20px);
+      line-height: 1.5;
+    }
+
+    .hero__lede strong {
+      color: var(--ink);
+      font-weight: 650;
+    }
+
+    .verdict-strip {
+      margin-top: 32px;
+      padding: 16px 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 24px;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .verdict {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--body);
+      font-size: 14px;
+    }
+
+    .verdict::before {
+      width: 8px;
+      height: 8px;
+      flex: none;
+      border-radius: 50%;
+      background: var(--accent);
+      content: "";
+    }
+
+    .verdict--tfx::before {
+      background: var(--positive);
+    }
+
+    .verdict--shared::before {
+      background: var(--caution);
+    }
+
+    .verdict strong {
+      color: var(--ink);
+      font-weight: 650;
+    }
+
+    .method-note {
+      max-width: var(--measure);
+      margin: 16px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .section {
+      margin-top: clamp(64px, 9vw, 104px);
+      padding-top: 20px;
+      border-top: 2px solid var(--ink);
+    }
+
+    .section__head {
+      display: grid;
+      grid-template-columns: minmax(180px, 0.42fr) minmax(0, 1fr);
+      gap: 32px;
+      align-items: start;
+      margin-bottom: 32px;
+    }
+
+    .section__index {
+      margin: 4px 0 0;
+      color: var(--accent-ink);
+      font-family: var(--mono);
+      font-size: 14px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: clamp(24px, 3vw, 30px);
+      font-weight: 650;
+      line-height: 1.2;
+    }
+
+    .section__intro {
+      max-width: var(--measure);
+      margin: 12px 0 0;
+      color: var(--muted);
+    }
+
+    .layers {
+      display: grid;
+      grid-template-columns: 1fr 140px 1fr;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .layer {
+      padding: 28px 0;
+    }
+
+    .layer:first-child {
+      padding-right: 32px;
+    }
+
+    .layer:last-child {
+      padding-left: 32px;
+    }
+
+    .layer__label {
+      margin: 0 0 8px;
+      color: var(--accent-ink);
+      font-family: var(--mono);
+      font-size: 14px;
+    }
+
+    .layer h3 {
+      margin: 0 0 8px;
+      font-size: 20px;
+      font-weight: 650;
+    }
+
+    .layer p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .layer ul {
+      margin: 16px 0 0;
+      padding-left: 20px;
+    }
+
+    .layer li {
+      margin-top: 8px;
+      color: var(--body);
+      font-size: 14px;
+    }
+
+    .bridge {
+      min-width: 0;
+      display: grid;
+      place-items: center;
+      border-right: 1px solid var(--line);
+      border-left: 1px solid var(--line);
+      background: var(--soft);
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .bridge span {
+      max-width: 10ch;
+      font-family: var(--mono);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .proof-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      border-top: 1px solid var(--line);
+      border-left: 1px solid var(--line);
+    }
+
+    .proof-cell {
+      min-width: 0;
+      padding: 24px;
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .proof-cell__axis {
+      margin: 0 0 12px;
+      color: var(--accent-ink);
+      font-family: var(--mono);
+      font-size: 14px;
+    }
+
+    .proof-cell h3 {
+      margin: 0 0 8px;
+      font-size: 18px;
+      font-weight: 650;
+    }
+
+    .proof-cell p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .proof-cell ul {
+      margin: 14px 0 0;
+      padding-left: 20px;
+    }
+
+    .proof-cell li {
+      margin-top: 6px;
+      font-size: 14px;
+    }
+
+    .proof-cell--sls {
+      box-shadow: inset 3px 0 0 var(--accent);
+    }
+
+    .proof-cell--tfx {
+      box-shadow: inset 3px 0 0 var(--positive);
+    }
+
+    .comparison-wrap {
+      overflow-x: auto;
+      border-bottom: 1px solid var(--line-strong);
+    }
+
+    .comparison {
+      width: 100%;
+      min-width: 820px;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+
+    .comparison th,
+    .comparison td {
+      padding: 16px;
+      border-top: 1px solid var(--line);
+      vertical-align: top;
+      text-align: left;
+    }
+
+    .comparison th {
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .comparison th:first-child,
+    .comparison td:first-child {
+      padding-left: 0;
+    }
+
+    .comparison th:last-child,
+    .comparison td:last-child {
+      padding-right: 0;
+    }
+
+    .comparison td {
+      color: var(--body);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .comparison td:first-child {
+      color: var(--ink);
+      font-family: var(--display);
+      font-size: 16px;
+      font-weight: 650;
+    }
+
+    .comparison strong {
+      color: var(--ink);
+      font-weight: 650;
+    }
+
+    .read {
+      display: inline-block;
+      border-radius: var(--radius-sm);
+      padding: 4px 8px;
+      font-size: 14px;
+      font-weight: 650;
+      line-height: 1.4;
+    }
+
+    .read--sls {
+      background: var(--accent-soft);
+      color: var(--accent-ink);
+    }
+
+    .read--tfx {
+      background: var(--positive-soft);
+      color: var(--positive);
+    }
+
+    .read--split {
+      background: var(--caution-soft);
+      color: var(--caution);
+    }
+
+    .paired-read {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+    }
+
+    .paired-read__item {
+      padding-top: 20px;
+      border-top: 1px solid var(--line);
+    }
+
+    .paired-read__item h3 {
+      margin: 0 0 10px;
+      font-size: 20px;
+      font-weight: 650;
+    }
+
+    .paired-read__item p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .paired-read__item ul {
+      margin: 16px 0 0;
+      padding-left: 20px;
+    }
+
+    .paired-read__item li {
+      margin-top: 10px;
+    }
+
+    .callout {
+      max-width: 880px;
+      margin-top: 28px;
+      padding: 20px 24px;
+      border-left: 2px solid var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .callout p {
+      margin: 0;
+      color: var(--body);
+    }
+
+    .callout strong {
+      color: var(--ink);
+    }
+
+    .prose {
+      max-width: var(--measure);
+    }
+
+    .prose p {
+      margin: 0 0 16px;
+    }
+
+    .prose strong {
+      color: var(--ink);
+    }
+
+    .ownership {
+      border-top: 1px solid var(--line);
+    }
+
+    .ownership__row {
+      display: grid;
+      grid-template-columns: minmax(160px, 0.34fr) minmax(0, 1fr);
+      gap: 32px;
+      padding: 20px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .ownership__row h3 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 650;
+    }
+
+    .ownership__row p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .architecture {
+      margin-bottom: 36px;
+    }
+
+    .architecture__core {
+      padding: 24px;
+      border: 1px solid var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .architecture__label {
+      margin: 0 0 8px;
+      color: var(--accent-ink);
+      font-family: var(--mono);
+      font-size: 14px;
+    }
+
+    .architecture h3 {
+      margin: 0 0 6px;
+      font-size: 20px;
+      font-weight: 650;
+    }
+
+    .architecture p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .architecture__connector {
+      min-height: 56px;
+      display: grid;
+      place-items: center;
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 14px;
+    }
+
+    .architecture__connector span {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .architecture__connector span::before,
+    .architecture__connector span::after {
+      width: 32px;
+      height: 1px;
+      background: var(--line-strong);
+      content: "";
+    }
+
+    .architecture__adapters {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      border-top: 1px solid var(--line);
+      border-left: 1px solid var(--line);
+    }
+
+    .architecture__adapter {
+      padding: 20px;
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .architecture__adapter h3 {
+      font-size: 16px;
+    }
+
+    .architecture__adapter p {
+      font-size: 14px;
+    }
+
+    .next-steps {
+      margin: 40px 0 0;
+      padding: 0;
+      list-style: none;
+      counter-reset: steps;
+      border-top: 1px solid var(--line);
+    }
+
+    .next-step {
+      counter-increment: steps;
+      display: grid;
+      grid-template-columns: 48px minmax(0, 1fr) auto;
+      gap: 20px;
+      align-items: start;
+      padding: 20px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .next-step::before {
+      content: counter(steps, decimal-leading-zero);
+      color: var(--accent-ink);
+      font-family: var(--mono);
+      font-size: 14px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .next-step h3 {
+      margin: -4px 0 4px;
+      font-size: 16px;
+      font-weight: 650;
+    }
+
+    .next-step p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .effort {
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 14px;
+      white-space: nowrap;
+    }
+
+    .outreach {
+      position: relative;
+      max-width: 880px;
+      margin: 0;
+      padding: 32px 80px 32px 32px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+
+    .outreach p {
+      margin: 0;
+      color: var(--body);
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    .copy-button {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      font-size: 14px;
+    }
+
+    .copy-status {
+      min-height: 24px;
+      margin: 10px 0 0;
+      color: var(--positive);
+      font-size: 14px;
+    }
+
+    .sources {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 40px;
+    }
+
+    .source-group h3 {
+      margin: 0 0 12px;
+      font-size: 16px;
+      font-weight: 650;
+    }
+
+    .source-group ul {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .source-group li {
+      padding: 8px 0;
+      border-bottom: 1px solid var(--line);
+      font-size: 14px;
+    }
+
+    .source-group a {
+      display: inline-block;
+    }
+
+    .source-group p {
+      margin: 0 0 12px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .footer {
+      margin-top: 64px;
+      padding-top: 20px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .hero {
+        animation: enter 300ms cubic-bezier(0.215, 0.61, 0.355, 1) both;
+      }
+
+      .section {
+        animation: enter 300ms cubic-bezier(0.215, 0.61, 0.355, 1) both;
+        animation-delay: 80ms;
+      }
+
+      @keyframes enter {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    }
+
+    @media (max-width: 760px) {
+      .topbar__inner,
+      .page {
+        width: min(100% - 32px, 1120px);
+      }
+
+      .topbar__inner {
+        min-height: 60px;
+      }
+
+      .brand span:last-child {
+        display: none;
+      }
+
+      .utility-button {
+        min-height: 40px;
+        padding-inline: 10px;
+        font-size: 14px;
+      }
+
+      .section__head {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+
+      .layers {
+        grid-template-columns: 1fr;
+      }
+
+      .layer:first-child,
+      .layer:last-child {
+        padding: 24px 0;
+      }
+
+      .bridge {
+        min-height: 56px;
+        border: 0;
+        border-top: 1px solid var(--line);
+        border-bottom: 1px solid var(--line);
+      }
+
+      .bridge span {
+        max-width: none;
+      }
+
+      .comparison-wrap {
+        overflow: visible;
+        border-bottom: 0;
+      }
+
+      .comparison {
+        min-width: 0;
+      }
+
+      .comparison thead {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+
+      .comparison,
+      .comparison tbody,
+      .comparison tr,
+      .comparison td {
+        display: block;
+        width: 100%;
+      }
+
+      .comparison tr {
+        padding: 20px 0;
+        border-top: 1px solid var(--line);
+      }
+
+      .comparison td,
+      .comparison td:first-child,
+      .comparison td:last-child {
+        padding: 8px 0 0;
+        border: 0;
+      }
+
+      .comparison td:first-child {
+        padding-top: 0;
+        font-size: 18px;
+      }
+
+      .comparison td:not(:first-child)::before {
+        display: block;
+        margin-bottom: 2px;
+        color: var(--muted);
+        content: attr(data-label);
+        font-family: var(--mono);
+        font-size: 14px;
+      }
+
+      .paired-read,
+      .proof-grid,
+      .architecture__adapters,
+      .sources {
+        grid-template-columns: 1fr;
+        gap: 28px;
+      }
+
+      .proof-grid,
+      .architecture__adapters {
+        gap: 0;
+      }
+
+      .ownership__row {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+
+      .next-step {
+        grid-template-columns: 36px minmax(0, 1fr);
+      }
+
+      .effort {
+        grid-column: 2;
+      }
+
+      .outreach {
+        padding: 64px 20px 24px;
+      }
+
+      .copy-button {
+        top: 16px;
+        right: auto;
+        left: 20px;
+      }
+
+      .footer {
+        flex-direction: column;
+      }
+    }
+
+    @media (max-width: 420px) {
+      h1 {
+        font-size: 36px;
+      }
+
+      .page {
+        padding-top: 40px;
+      }
+
+      .topbar__actions {
+        gap: 4px;
+      }
+
+      .utility-button {
+        font-size: 14px;
+      }
+    }
+
+    @media print {
+      :root,
+      :root[data-theme="dark"] {
+        color-scheme: light;
+        --page: #ffffff;
+        --surface: #ffffff;
+        --ink: #000000;
+        --body: #27272a;
+        --muted: #52525b;
+        --line: #d4d4d8;
+        --line-strong: #71717a;
+        --soft: #f4f4f5;
+        --accent: #005ad9;
+        --accent-soft: #edf4ff;
+        --accent-ink: #003f9e;
+        --positive: #226832;
+        --positive-soft: #edf8ef;
+        --caution: #714400;
+        --caution-soft: #fff7e4;
+        --shadow: none;
+      }
+
+      .topbar,
+      .reading-progress,
+      .copy-button,
+      .copy-status {
+        display: none;
+      }
+
+      .page {
+        width: 100%;
+        padding: 24px 0;
+      }
+
+      .section {
+        margin-top: 48px;
+        break-inside: avoid;
+      }
+
+      .comparison-wrap {
+        overflow: visible;
+      }
+
+      .comparison {
+        min-width: 0;
+      }
+
+      a {
+        color: inherit;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="reading-progress" id="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#main">Skip to comparison</a>
+
+  <header class="topbar">
+    <div class="topbar__inner">
+      <a class="brand" href="#main" aria-label="TFX harness comparison, back to top">
+        <span class="brand__mark" aria-hidden="true">tf</span>
+        <span>TFX design harness / standards</span>
+      </a>
+      <div class="topbar__actions">
+        <button class="utility-button" id="theme-button" type="button" aria-label="Switch colour theme">Theme</button>
+        <button class="utility-button" type="button" onclick="window.print()">Print / PDF</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="page" id="main">
+    <article>
+      <header class="hero">
+        <p class="eyebrow">Internal architecture comparison · revised 27 July 2026</p>
+        <h1>Same ambition, different abstraction.</h1>
+        <p class="hero__lede">
+          SLS turns one repository’s design-system facts into a
+          <strong>deterministic production workflow</strong>. TFX turns portfolio design intent into
+          <strong>portable controls, visual evidence and informed judgement</strong>.
+          SLS is deeper locally today; TFX is broader across products. The best outcome combines them.
+        </p>
+
+        <div class="verdict-strip" aria-label="Executive verdict">
+          <span class="verdict"><strong>SLS strength:</strong> repository conformance</span>
+          <span class="verdict verdict--tfx"><strong>TFX strength:</strong> portable design quality</span>
+          <span class="verdict verdict--shared"><strong>Recommendation:</strong> shared intent, explicit local bindings</span>
+        </div>
+
+        <p class="method-note">
+          Based on the public SLS knowledgebase and Storybook, the current TFX Design Standard repository,
+          and the 27 July design-team discussion. The meeting informs the interpretation; published artefacts
+          remain the evidence for technical claims. The private SLS source and live skill files were not reviewed.
+        </p>
+      </header>
+
+      <section class="section" id="distinction">
+        <div class="section__head">
+          <p class="section__index">01 / The distinction</p>
+          <div>
+            <h2>The difference is where the rule lives</h2>
+            <p class="section__intro">
+              Both systems can guide an agent from request to working UI. Their current centres of gravity
+              sit at different abstraction levels.
+            </p>
+          </div>
+        </div>
+
+        <div class="layers" aria-label="TFX and SLS sources of truth">
+          <div class="layer">
+            <p class="layer__label">Concept and portfolio layer</p>
+            <h3>TFX source of truth: the control catalog</h3>
+            <p>States the outcome, severity, scope and verification mode. Product manifests supply local facts.</p>
+            <ul>
+              <li>Portable across products, audiences and surface types</li>
+              <li>Design spans accessibility, layout, content, motion, identity and flow</li>
+              <li>Deterministic, judgement and hybrid verification</li>
+              <li>Visual journey evidence and an independent evaluator</li>
+            </ul>
+          </div>
+
+          <div class="bridge" aria-hidden="true">
+            <span>Portable intent ↔ local facts</span>
+          </div>
+
+          <div class="layer">
+            <p class="layer__label">Implementation and repository layer</p>
+            <h3>SLS source of truth: the working system</h3>
+            <p>Reads SLS tokens, components, commands and delivery paths, then repeats the current workflow reliably.</p>
+            <ul>
+              <li>Direct edits to real token and component packages</li>
+              <li>Concrete Storybook and application previews</li>
+              <li>Tests, snapshots, visual regression and green gates</li>
+              <li>Merge-request environments and production exclusion</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="callout">
+          <p>
+            <strong>A useful shorthand:</strong> SLS primarily asks, “Did the result conform to this
+            implementation?” TFX primarily asks, “Did this rendered journey satisfy the intended
+            experience and shared controls?” Both systems contain some of the other mode.
+          </p>
+        </div>
+      </section>
+
+      <section class="section" id="evaluation">
+        <div class="section__head">
+          <p class="section__index">02 / How quality is proved</p>
+          <div>
+            <h2>One checks conformance; one judges the journey</h2>
+            <p class="section__intro">
+              This is not a choice between code checks and visual judgement. A mature harness needs both,
+              applied to the right object.
+            </p>
+          </div>
+        </div>
+
+        <div class="proof-grid" aria-label="Quality proof across implementation and intent">
+          <article class="proof-cell proof-cell--sls">
+            <p class="proof-cell__axis">Implementation × deterministic</p>
+            <h3>SLS is strongest here</h3>
+            <p>The repository can answer precise questions because its packages and commands are known.</p>
+            <ul>
+              <li>Token and component conformance</li>
+              <li>Stories, tests and builds</li>
+              <li>Current green-gate checks</li>
+            </ul>
+          </article>
+          <article class="proof-cell proof-cell--sls">
+            <p class="proof-cell__axis">Implementation × visual</p>
+            <h3>SLS also renders the work</h3>
+            <p>Storybook, snapshots, previews and visual regression catch failures that source inspection misses.</p>
+          </article>
+          <article class="proof-cell proof-cell--tfx">
+            <p class="proof-cell__axis">Portable control × deterministic</p>
+            <h3>TFX establishes the floor</h3>
+            <p>Scripts and scanners run first. L0 blocks; L1 failures return the agent to implementation.</p>
+          </article>
+          <article class="proof-cell proof-cell--tfx">
+            <p class="proof-cell__axis">Portable intent × judgement</p>
+            <h3>TFX is strongest here</h3>
+            <p>The agent captures widths, states and the recovery path. A separate evaluator grades the rendered journey against the sprint contract.</p>
+          </article>
+        </div>
+
+        <div class="callout">
+          <p>
+            <strong>Important correction to the meeting shorthand:</strong> in TFX, tier and check type are
+            separate axes. L0, L1 and L2 describe enforcement and waiver strength. Deterministic, judgement
+            and hybrid describe how a control is verified. TFX can therefore carry an L1 judgement control
+            or an L2 deterministic control.
+          </p>
+        </div>
+      </section>
+
+      <section class="section" id="scorecard">
+        <div class="section__head">
+          <p class="section__index">03 / Scorecard</p>
+          <div>
+            <h2>Better, worse or similar?</h2>
+            <p class="section__intro">
+              The answer depends on the unit of success. SLS optimises for one repository’s correctness;
+              TFX optimises for design quality that survives across products and ways of working.
+            </p>
+          </div>
+        </div>
+
+        <div class="comparison-wrap">
+          <table class="comparison">
+            <colgroup>
+              <col style="width: 18%">
+              <col style="width: 31%">
+              <col style="width: 31%">
+              <col style="width: 20%">
+            </colgroup>
+            <thead>
+              <tr>
+                <th scope="col">Area</th>
+                <th scope="col">SLS</th>
+                <th scope="col">TFX</th>
+                <th scope="col">Read</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Source of truth</td>
+                <td data-label="SLS">The published knowledgebase, design-system tokens, components and repository workflow.</td>
+                <td data-label="TFX">One normative control catalog, filtered by product, audience, phase and surface; local manifests resolve implementation facts.</td>
+                <td data-label="Read"><span class="read read--split">Different layer</span><br>SLS is concrete; TFX is portable.</td>
+              </tr>
+              <tr>
+                <td>Local delivery</td>
+                <td data-label="SLS">DTCG tokens, a live component library, Storybook, previews, snapshots and repository-specific commands.</td>
+                <td data-label="TFX">Portable skills and controls, but no bundled product component library or equivalent local preview pipeline.</td>
+                <td data-label="Read"><span class="read read--sls">SLS stronger</span><br>For shipping inside SLS.</td>
+              </tr>
+              <tr>
+                <td>Visual and journey reasoning</td>
+                <td data-label="SLS">Uses previews, snapshots and rendered confirmation. The published skills remain centred on design-system implementation.</td>
+                <td data-label="TFX">Captures the current state, maps the whole flow, requires widths, states and recovery evidence, then uses an independent evaluator.</td>
+                <td data-label="Read"><span class="read read--tfx">TFX stronger</span><br>For contextual design judgement.</td>
+              </tr>
+              <tr>
+                <td>Design breadth</td>
+                <td data-label="SLS">The wider knowledgebase covers product, design and engineering, but the design skills reviewed operationalise design mainly through tokens and components.</td>
+                <td data-label="TFX">The catalog and domain skills cover accessibility, layout, content, copy, motion, identity, components and flow.</td>
+                <td data-label="Read"><span class="read read--tfx">TFX stronger today</span><br>Across design disciplines.</td>
+              </tr>
+              <tr>
+                <td>Enforcement</td>
+                <td data-label="SLS">Deep repository validation: token use, stories, tests, builds and visual regression. The local pipeline is cohesive.</td>
+                <td data-label="TFX">70 typed, tiered and scoped controls. Current coverage: 4 fully scripted, 18 partial, 30 manual and 18 evaluator.</td>
+                <td data-label="Read"><span class="read read--split">Split</span><br>SLS is deeper locally; TFX is broader and exposes its gaps.</td>
+              </tr>
+              <tr>
+                <td>Scalability</td>
+                <td data-label="SLS">Can expand to more skills and design concerns, but each additional repository needs implementation knowledge and local maintenance.</td>
+                <td data-label="TFX">Adds controls and domain skills once, then scopes them across TFX products and audiences through product context. Other domains fork and diverge rather than sharing runtime profiles.</td>
+                <td data-label="Read"><span class="read read--tfx">TFX stronger today</span><br>For cross-product reuse.</td>
+              </tr>
+              <tr>
+                <td>Evals</td>
+                <td data-label="SLS">Strong A/B method: with-skill versus baseline, repeated runs, variance and cost. It is not mandatory or CI-enforced, and no results are published.</td>
+                <td data-label="TFX">67 routing cases, 3 golden tasks, record audits, and 6 recorded evaluator runs at 6/6 recall with no invented blockers.</td>
+                <td data-label="Read"><span class="read read--split">Complementary</span><br>Use their method with our evidence.</td>
+              </tr>
+              <tr>
+                <td>Governance</td>
+                <td data-label="SLS">Reviewed local configuration, pinned commands, merge requests and conditional decision capture.</td>
+                <td data-label="TFX">Versioned controls, tiered waivers, product and audience scope, independent evaluation and ratchet records.</td>
+                <td data-label="Read"><span class="read read--tfx">TFX stronger</span><br>As shared design governance.</td>
+              </tr>
+              <tr>
+                <td>Documentation</td>
+                <td data-label="SLS">Search, dark mode, generated navigation, edit links and previous / next. Clean reflow at 320px.</td>
+                <td data-label="TFX">Stronger identity, maturity status, Markdown views, agent endpoints and an interactive control catalog.</td>
+                <td data-label="Read"><span class="read read--split">Split</span><br>SLS browses better; TFX explains the standard better.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section" id="scalability">
+        <div class="section__head">
+          <p class="section__index">04 / Scalability</p>
+          <div>
+            <h2>Both can scale. They scale in different directions.</h2>
+            <p class="section__intro">
+              The fair comparison is what each architecture reuses today, not a claim about either team’s
+              theoretical ceiling.
+            </p>
+          </div>
+        </div>
+
+        <div class="paired-read">
+          <div class="paired-read__item">
+            <h3>SLS scales through local certainty</h3>
+            <p>It can add packages, commands, domain guidance and skills while preserving exact repository behaviour.</p>
+            <ul>
+              <li>Fastest route to reliable SLS implementation</li>
+              <li>High confidence when the correct answer already exists in code</li>
+              <li>Can extend beyond components if its knowledgebase and skills expand</li>
+              <li>Risk: shared design rules become duplicated local policy</li>
+            </ul>
+          </div>
+          <div class="paired-read__item">
+            <h3>TFX scales through portable intent</h3>
+            <p>It can add domain skills against one catalog, then calibrate them through product and audience scope.</p>
+            <ul>
+              <li>Reuse across different products and maturity levels</li>
+              <li>Deterministic floors coexist with model and human judgement</li>
+              <li>Design disciplines can grow without creating new rulebooks</li>
+              <li>Risk: abstract controls stay manual or drift from local code</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="callout">
+          <p>
+            <strong>Revised verdict:</strong> TFX has the stronger cross-product scalability model today.
+            SLS is not inherently unscalable; its present architecture simply optimises for a different
+            direction. A minimal TFX repository binding closes the local execution gap without turning
+            either system into a generic division framework.
+          </p>
+        </div>
+      </section>
+
+      <section class="section" id="surface">
+        <div class="section__head">
+          <p class="section__index">05 / Published surface</p>
+          <div>
+            <h2>SLS feels more finished; TFX explains more of design</h2>
+            <p class="section__intro">
+              Both use a restrained three-rail documentation shell and both reflow without page-level
+              horizontal overflow at 320px.
+            </p>
+          </div>
+        </div>
+
+        <div class="paired-read">
+          <div class="paired-read__item">
+            <h3>What SLS does well</h3>
+            <ul>
+              <li>Familiar navigation, search and on-page wayfinding.</li>
+              <li>Calm density, disciplined alignment and very little decorative chrome.</li>
+              <li>Concrete paths from guidance to packages, Storybook and skills.</li>
+              <li>A published surface with no obvious unfinished UI.</li>
+            </ul>
+          </div>
+          <div class="paired-read__item">
+            <h3>What TFX does well</h3>
+            <ul>
+              <li>A more distinctive visual and editorial identity.</li>
+              <li>Clear maturity signals: proposed versus settled.</li>
+              <li>Human and machine views generated from the same sources.</li>
+              <li>A richer information architecture across principles, standards, guidelines, products and governance.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="callout">
+          <p>
+            <strong>Current TFX polish debt:</strong> the local Harness landing still exposes an
+            “Illustration slot” placeholder and clips card descriptions. That makes the SLS publication
+            feel more production-ready, even though the detailed TFX pages and underlying content model are stronger.
+          </p>
+        </div>
+      </section>
+
+      <section class="section" id="lineage">
+        <div class="section__head">
+          <p class="section__index">06 / Lineage</p>
+          <div>
+            <h2>Visible influence, substantial independent implementation</h2>
+            <p class="section__intro">
+              Acknowledging an input does not diminish the work that followed. That is the most credible
+              and constructive position.
+            </p>
+          </div>
+        </div>
+
+        <div class="paired-read">
+          <div class="paired-read__item">
+            <h3>What plausibly travelled</h3>
+            <ul>
+              <li>Skills encode repeatable design workflows.</li>
+              <li>Ambiguity is resolved before code.</li>
+              <li>A quality gate runs through iteration.</li>
+              <li>Humans confirm rendered output.</li>
+              <li>Anti-patterns, evals and durable decisions are first-class artefacts.</li>
+            </ul>
+          </div>
+          <div class="paired-read__item">
+            <h3>What is clearly SLS work</h3>
+            <ul>
+              <li>SLS documents a former <code>@sls/builder</code> package, so some lineage predates this exchange.</li>
+              <li>The token, component, Storybook, CI-preview and build-flag mechanics are deeply SLS-specific.</li>
+              <li>Distinctive TFX mechanisms are absent: control tiers, waivers, divergence, ratchet and an independent evaluator.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="callout">
+          <p>
+            <strong>Fair conclusion:</strong> the shared TFX work likely influenced the direction or framing;
+            SLS then built a meaningful repo-native implementation. It is reasonable to ask for a heads-up,
+            reciprocal links and acknowledgement of inputs without claiming ownership of every underlying idea.
+          </p>
+        </div>
+      </section>
+
+      <section class="section" id="risk">
+        <div class="section__head">
+          <p class="section__index">07 / The real risk</p>
+          <div>
+            <h2>The risk is ownership ambiguity, not multiple harnesses</h2>
+            <p class="section__intro">
+              Product and engineering teams can keep their own orchestration. The unresolved question is
+              which layer owns design quality.
+            </p>
+          </div>
+        </div>
+
+        <div class="prose">
+          <p>
+            SLS describes its quality gate as the authoritative quality standard for UI work in its repository.
+            TFX is designed around one shared control catalog across products. If both define overlapping design
+            rules without a mapping, teams will eventually receive two answers to the same question.
+          </p>
+          <p>
+            The failure mode is predictable: duplicated controls, incompatible waivers, conflicting evaluator verdicts,
+            repeated investment and surprise publications that erode trust. None of this requires merging codebases.
+          </p>
+          <p>
+            The relationship should be explicit:
+            <strong>TFX keeps its portable design intent and quality loop; SLS keeps its repo-native implementation.</strong>
+            Where the systems overlap, they should map controls and evidence explicitly. Other domains can
+            fork the TFX work and diverge rather than depending on one shared runtime.
+          </p>
+        </div>
+      </section>
+
+      <section class="section" id="model">
+        <div class="section__head">
+          <p class="section__index">08 / Proposed model</p>
+          <div>
+            <h2>Shared design intent, explicit repository boundaries</h2>
+            <p class="section__intro">
+              Keep TFX design quality portable within the TFX portfolio. Let SLS and each TFX product own
+              the implementation facts needed to make their local workflows real.
+            </p>
+          </div>
+        </div>
+
+        <div class="architecture" aria-label="Proposed design harness ownership boundaries">
+          <div class="architecture__core">
+            <p class="architecture__label">Shared design-quality core</p>
+            <h3>TFX controls, skills, visual evidence, evaluator and governance</h3>
+            <p>Defines what must travel across products and how design judgement becomes auditable.</p>
+          </div>
+          <div class="architecture__connector" aria-hidden="true">
+            <span>connected through explicit mappings</span>
+          </div>
+          <div class="architecture__adapters">
+            <div class="architecture__adapter">
+              <h3>SLS implementation</h3>
+              <p>SLS tokens, components, Storybook, commands, CI gates and previews remain SLS-owned.</p>
+            </div>
+            <div class="architecture__adapter">
+              <h3>TFX repository binding</h3>
+              <p>A minimal TFX-only declaration of product roots, approved checks, local routes and states.</p>
+            </div>
+            <div class="architecture__adapter">
+              <h3>Other domains</h3>
+              <p>Fork the TFX standard when useful, then own their controls and product workflow independently.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="ownership">
+          <div class="ownership__row">
+            <h3>TFX design layer</h3>
+            <p>Portfolio controls, principles, domain skills, the intent-preserving loop, evaluator rubric, waivers and governance.</p>
+          </div>
+          <div class="ownership__row">
+            <h3>TFX repository binding</h3>
+            <p>Execution facts only: product roots, approved package scripts, local preview routes and evidence capture. It cannot redefine controls.</p>
+          </div>
+          <div class="ownership__row">
+            <h3>Product harness</h3>
+            <p>Engineering orchestration, source edits, tests, builds, deployment controls and product-specific sequencing.</p>
+          </div>
+          <div class="ownership__row">
+            <h3>Joint interface</h3>
+            <p>Control mapping, evidence format, local extensions and a route for product failures to feed the TFX ratchet.</p>
+          </div>
+        </div>
+
+        <ol class="next-steps" aria-label="Recommended next steps">
+          <li class="next-step">
+            <div>
+              <h3>Hold one architecture and governance sync</h3>
+              <p>Bring SLS and the design-skill owners together to agree what is normative, mapped and locally owned.</p>
+            </div>
+            <span class="effort">High impact · small</span>
+          </li>
+          <li class="next-step">
+            <div>
+              <h3>Stress-test both systems on the same brief</h3>
+              <p>Compare repo conformance, design-intent recall, journey coverage, visual quality, time and cost.</p>
+            </div>
+            <span class="effort">High impact · medium</span>
+          </li>
+          <li class="next-step">
+            <div>
+              <h3>Crosswalk the SLS quality gate to TFX controls</h3>
+              <p>Keep SLS-only checks as named extensions instead of silently creating a second catalog.</p>
+            </div>
+            <span class="effort">High impact · medium</span>
+          </li>
+          <li class="next-step">
+            <div>
+              <h3>Agree attribution and socialisation norms</h3>
+              <p>Add reciprocal links, acknowledge material inputs and give one another a heads-up before publishing overlapping work.</p>
+            </div>
+            <span class="effort">Medium impact · small</span>
+          </li>
+          <li class="next-step">
+            <div>
+              <h3>Borrow the strongest SLS mechanics upstream</h3>
+              <p>Prioritise a minimal TFX repository binding, preview-first work, stale-gate invalidation and isolated A/B skill evals.</p>
+            </div>
+            <span class="effort">High impact · medium</span>
+          </li>
+        </ol>
+      </section>
+
+      <section class="section" id="outreach-section">
+        <div class="section__head">
+          <p class="section__index">09 / Suggested outreach</p>
+          <div>
+            <h2>Start with the architecture, then address the process</h2>
+            <p class="section__intro">
+              The work is useful. The conversation can be direct about the missing heads-up while creating
+              a concrete path to collaborate.
+            </p>
+          </div>
+        </div>
+
+        <blockquote class="outreach">
+          <button class="copy-button" id="copy-button" type="button" aria-describedby="copy-status">Copy message</button>
+          <p id="outreach-text">Thanks for sharing the SLS builder work. The repository integration, preview workflow and deterministic checks are genuinely strong. I was surprised to see it published without a heads-up because I had shared the TFX harness as an input. I do not think we need to merge the implementations or compete over one harness. I would like us to make the relationship between them explicit. TFX can keep its portable design controls, visual quality loop and evaluator, while SLS keeps its repository-native components and delivery tooling. Where the systems overlap, we can map controls and use compatible evidence rather than create two answers to the same design question. We could test that model by running the same brief through both systems and crosswalking the results. I would also appreciate reciprocal links, acknowledgement of material inputs and a shared norm for socialising overlapping work before publication. Could we hold a short architecture session with the relevant design and engineering owners?</p>
+        </blockquote>
+        <p class="copy-status" id="copy-status" role="status" aria-live="polite"></p>
+      </section>
+
+      <section class="section" id="sources">
+        <div class="section__head">
+          <p class="section__index">10 / Sources</p>
+          <div>
+            <h2>Primary evidence</h2>
+            <p class="section__intro">
+              Technical claims come from published documentation and repository artefacts. The meeting note
+              contributes team interpretation and proposed organisational direction.
+            </p>
+          </div>
+        </div>
+
+        <div class="sources">
+          <div class="source-group">
+            <h3>SLS</h3>
+            <ul>
+              <li><a href="https://sls-68b879.sgts.gitlab-dedicated.site/design/design-system/">Design System index ↗</a></li>
+              <li><a href="https://sls-68b879.sgts.gitlab-dedicated.site/ai/design/builder-skills-architecture">Builder skills architecture ↗</a></li>
+              <li><a href="https://sls-68b879.sgts.gitlab-dedicated.site/design/design-system/quality-gate">Quality Gate ↗</a></li>
+              <li><a href="https://sls-68b879.sgts.gitlab-dedicated.site/ai/design/web-prototype">web-prototype architecture ↗</a></li>
+              <li><a href="https://sls-68b879.sgts.gitlab-dedicated.site/ai/evals/skills">Skill evals ↗</a></li>
+              <li><a href="https://p01--storybook--j6n2md76y6zy.skmm8r--govpaas.code.run/">Storybook ↗</a></li>
+            </ul>
+          </div>
+          <div class="source-group">
+            <h3>TFX</h3>
+            <ul>
+              <li><a href="https://github.com/transformteamsg/tfx-design-standard/blob/main/harness/README.md">Harness architecture ↗</a></li>
+              <li><a href="https://github.com/transformteamsg/tfx-design-standard/blob/main/harness/standards/catalog.yaml">Control catalog ↗</a></li>
+              <li><a href="https://github.com/transformteamsg/tfx-design-standard/blob/main/harness/.claude/skills/design/SKILL.md">Design loop ↗</a></li>
+              <li><a href="https://github.com/transformteamsg/tfx-design-standard/blob/main/harness/checks/README.md">Enforcement coverage ↗</a></li>
+              <li><a href="https://github.com/transformteamsg/tfx-design-standard/blob/main/harness/evals/README.md">Eval system ↗</a></li>
+              <li><a href="https://github.com/transformteamsg/tfx-design-standard/blob/main/harness/plans/074-repository-binding-fresh-gates-and-skill-evals.md">Plan 074: repository binding, fresh evidence and causal evals ↗</a></li>
+            </ul>
+          </div>
+          <div class="source-group">
+            <h3>Internal context</h3>
+            <p>Used for the abstraction, scalability and alignment framing, not as evidence of undocumented SLS behaviour.</p>
+            <ul>
+              <li><a href="https://notes.granola.ai/t/f53980e8-90cb-449b-a66b-c81d921f1da2-008umkv4">Meeting summary ↗</a></li>
+              <li><a href="https://notes.granola.ai/t/ee26bd05-834b-43cd-8356-f635ee5077d8">Meeting transcript ↗</a></li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    </article>
+
+    <footer class="footer">
+      <span>Prepared for the TFX design harness / standards team</span>
+      <span>Evidence checked 27 July 2026 · Singapore</span>
+    </footer>
+  </main>
+
+  <script>
+    const root = document.documentElement;
+    const themeButton = document.getElementById("theme-button");
+    const progress = document.getElementById("reading-progress");
+    const copyButton = document.getElementById("copy-button");
+    const copyStatus = document.getElementById("copy-status");
+    const outreachText = document.getElementById("outreach-text");
+
+    function resolvedTheme() {
+      if (root.dataset.theme) return root.dataset.theme;
+      return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    }
+
+    function setTheme(theme) {
+      root.dataset.theme = theme;
+      themeButton.textContent = theme === "dark" ? "Light theme" : "Dark theme";
+      themeButton.setAttribute("aria-label", `Switch to ${theme === "dark" ? "light" : "dark"} theme`);
+      try {
+        localStorage.setItem("tfx-comparison-theme", theme);
+      } catch (_) {}
+    }
+
+    setTheme(resolvedTheme());
+
+    themeButton.addEventListener("click", () => {
+      setTheme(resolvedTheme() === "dark" ? "light" : "dark");
+    });
+
+    let progressFrame = null;
+    function updateProgress() {
+      const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+      const ratio = scrollable > 0 ? Math.min(1, Math.max(0, window.scrollY / scrollable)) : 0;
+      progress.style.width = `${ratio * 100}%`;
+      progressFrame = null;
+    }
+
+    window.addEventListener("scroll", () => {
+      if (progressFrame === null) {
+        progressFrame = window.requestAnimationFrame(updateProgress);
+      }
+    }, { passive: true });
+    updateProgress();
+
+    copyButton.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(outreachText.textContent.trim());
+        copyStatus.textContent = "Message copied.";
+        copyButton.textContent = "Copied";
+      } catch (_) {
+        const selection = window.getSelection();
+        const range = document.createRange();
+        range.selectNodeContents(outreachText);
+        selection.removeAllRanges();
+        selection.addRange(range);
+        copyStatus.textContent = "Message selected. Copy it with your keyboard.";
+      }
+      window.setTimeout(() => {
+        copyButton.textContent = "Copy message";
+        copyStatus.textContent = "";
+      }, 2400);
+    });
+  </script>
+</body>
+</html>
