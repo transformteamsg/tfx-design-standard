@@ -28,6 +28,7 @@ const TOPIC_ICONS = {
   "foundations/spacing-radius": "ruler",
   "foundations/iconography": "shapes",
   "foundations/tokens": "braces",
+  "research/research-brief": "notebook-pen",
   /* Products keep the family signature: ink squircle frame + script letter
      (letter is drawn by the component, not generated here). */
   "products/teacher-workspace": "squircle",

@@ -100,6 +100,11 @@ const nav: NavGroup[] = [
     ],
   },
   {
+    label: "Research",
+    href: "/research",
+    items: [{ href: "/research/research-brief", title: "Research brief" }],
+  },
+  {
     label: "Products",
     href: "/products",
     items: [

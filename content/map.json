@@ -26,6 +26,10 @@
     "label": "Foundations",
     "slugs": ["colour", "typography", "spacing-radius", "iconography", "motion", "tokens"]
   },
+  "research": {
+    "label": "Research",
+    "slugs": ["research-brief"]
+  },
   "products": {
     "label": "Products",
     "slugs": ["teacher-workspace", "casesync", "glow"]
