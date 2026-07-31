@@ -35,7 +35,7 @@ export function DemoFrame({
           aria-hidden="true"
           className="inline-block h-2 w-2 rounded-full bg-success-9 opacity-80"
         />
-        <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+        <span className="text-xs font-semibold text-muted-foreground">
           Live pattern demo
         </span>
         {onReplay && (

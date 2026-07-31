@@ -140,6 +140,10 @@ def load_type_scale(path=CATALOG_PATH):
 ALLOWED_FONT_TOKENS = (
     "plus jakarta sans", "inter", "font-display", "font-body", "font-sans",
     "--font-display", "--font-body", "var(--font-display)", "var(--font-body)",
+    # Code is the one sanctioned exception to the two-brand-face rule: character
+    # alignment carries meaning in code blocks and file paths. Mapped to the
+    # --font-mono token in app/globals.css; for code only, never prose or chrome.
+    "font-mono", "--font-mono", "var(--font-mono)",
     "inherit", "initial", "unset",
 )
 # Generic CSS family keywords that are not a "typeface" choice.

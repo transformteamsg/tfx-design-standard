@@ -168,6 +168,12 @@
   --radius-xl: calc(var(--radius) + 4px);
   --font-display: "Plus Jakarta Sans Variable", system-ui, sans-serif;
   --font-body: "Inter Variable", system-ui, sans-serif;
+  /* Code needs a monospaced face: character alignment carries meaning in code
+     blocks, token counts, and file paths, which a proportional face destroys.
+     TYP-1 otherwise allows only the two brand faces, so this is the single
+     sanctioned exception - a system mono stack, used for code only, never for
+     prose or UI chrome. */
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 }
 
 /* Default border colour for the shadcn/ui components (Base UI): their borders set

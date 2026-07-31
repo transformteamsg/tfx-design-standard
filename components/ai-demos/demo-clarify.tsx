@@ -33,7 +33,7 @@ export const DemoClarify = () => {
         {/* Assistant scoping question */}
         <Message from="assistant">
           <MessageResponse>
-            Two groups match "parents" - which do you mean?
+            Two groups match &quot;parents&quot; - which do you mean?
           </MessageResponse>
           {chosen === null && (
             <div className="mt-3">

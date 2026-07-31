@@ -33,7 +33,7 @@ export function DemoAiLabel() {
       <div className="flex flex-col gap-4">
         {/* Header row */}
         <div className="flex items-center justify-between">
-          <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+          <span className="text-xs font-semibold text-muted-foreground">
             End-of-term comment
           </span>
 

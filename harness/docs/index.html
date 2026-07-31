@@ -324,7 +324,7 @@ td code { white-space: normal; overflow-wrap: break-word; }
 <div class="pill-row">
   <span class="pill pill--accent">The harness</span>
   <span class="pill">70 controls</span>
-  <span class="pill">11 skills + 1 agent</span>
+  <span class="pill">12 skills + 1 agent</span>
   <span class="pill">10 check scripts + validator</span>
 </div>
 
@@ -352,7 +352,7 @@ shipped UI.</p>
 <p>The harness ships as a Claude Code plugin. In a product repo (TW, CaseSync, Glow):</p>
 <pre><code>/plugin marketplace add transformteamsg/tfx-design-standard
 /plugin install tfx@tfx</code></pre>
-<p>This installs the 11 skills, the <code>evaluator</code> subagent (which carries its own
+<p>This installs the 12 skills, the <code>evaluator</code> subagent (which carries its own
 review procedure), and the control catalog —
 the catalog ships with the plugin, not with the product repo. Working on the harness itself? Open a
 Claude Code session in this repository; skills load from <code>.claude/skills/</code> automatically.</p>
@@ -374,7 +374,7 @@ Claude Code session in this repository; skills load from <code>.claude/skills/</
   </tr>
   <tr>
     <td><strong>Harness</strong><br><span style="font-size:12px;color:var(--text-muted)">how the agent works</span></td>
-    <td>11 skills (probabilistic — the agent applies them with judgment): routing and setup, the design loop, critique, five focused passes, catalog mechanics, and feedback</td>
+    <td>12 skills (probabilistic — the agent applies them with judgment): routing and setup, the design loop, critique, five focused passes, AI and conversation design, catalog mechanics, and feedback</td>
     <td><code>.claude/skills/</code></td>
   </tr>
   <tr>
@@ -650,7 +650,7 @@ waivers with approvers, the verbatim evaluator verdict, and any control proposal
   <tr><th style="width:16%">Stage</th><th>Contents</th></tr>
   <tr>
     <td><strong>V0+ — now</strong></td>
-    <td>68-control catalog · 11 skills + evaluator agent · catalog validator + 10 check scripts built · the loop piloted end-to-end twice with real evaluator verdicts; both runs fed controls back into the catalog. Testable today: ask a session in this repo to design a page.</td>
+    <td>68-control catalog · 12 skills + evaluator agent · catalog validator + 10 check scripts built · the loop piloted end-to-end twice with real evaluator verdicts; both runs fed controls back into the catalog. Testable today: ask a session in this repo to design a page.</td>
   </tr>
   <tr>
     <td><strong>V1 — next</strong></td>
