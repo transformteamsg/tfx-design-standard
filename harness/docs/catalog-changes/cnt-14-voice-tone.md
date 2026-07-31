@@ -1,22 +1,23 @@
 # Proposed control: CNT-14 (voice quality + tone-fit — the CNT family's fourteenth slot)
 
 **Date:** 2026-07-10 · **Change type:** new control via ratchet (no tier change to any
-existing control) · **Status:** PROPOSAL, pending design-lead approval (Reza Ilmi).
+existing control) · **Status:** APPROVED (design-lead verbal sign-off, 2026-07-22) —
+now settled; the source guideline moved to `content/guidelines/voice-tone.mdx`.
 
 Committed to the catalog as a proposal at **CNT-14**, **L2**, **judgment**,
 `phase: [implement, verify]`, `applies_to: [content]`, `waiver: rationale`, with the
 `fails_when` bullets below carried into the catalog entry and `controls/cnt-14.md`. No
-`enforced:`/`script:` keys — judgment controls omit them (cf. CNT-7). The
-`# CNT-14 ratchet PROPOSAL 2026-07-10` comment header sits above the entry until
-approval; do not mark it settled.
+`enforced:`/`script:` keys — judgment controls omit them (cf. CNT-7). On the
+2026-07-22 sign-off the ratchet-proposal comment header was updated to record the
+approval date.
 
 This record lives in `docs/catalog-changes/` per the plan-053 placement rule. Source
-guideline: `content/guidelines/voice-tone-proposed.mdx` (`status: proposed`) — the
-control and the guideline settle together on approval.
+guideline: `content/guidelines/voice-tone.mdx` (`status: settled`) — the control and
+the guideline settled together on approval.
 
 ## Why this is a control candidate
 
-The voice & tone guideline (`content/guidelines/voice-tone-proposed.mdx`) describes the
+The voice & tone guideline (`content/guidelines/voice-tone.mdx`) describes the
 TFX voice — **Kind Utility**, the voice attributes (Clear / Thoughtful / Approachable
 with a "we are / we are not" table), and a tone-by-context table (success, error,
 onboarding, destructive, empty state, permission). No control enforced any of it.

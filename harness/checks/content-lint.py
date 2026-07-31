@@ -88,9 +88,23 @@ Exit 0 and print nothing (or SELF-TEST OK) on success.
 Exit 1 with ERROR lines on any violation.
 """
 
+import importlib.util
 import os
 import re
 import sys
+
+_CHECKS_DIR = os.path.dirname(os.path.abspath(__file__))
+
+
+def _load_checklib():
+    path = os.path.join(_CHECKS_DIR, "checklib.py")
+    spec = importlib.util.spec_from_file_location("_tfx_checklib", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+checklib = _load_checklib()
 
 # ── Target extensions ──────────────────────────────────────────────────────────
 # Same UI source set as a11y-static.py, plus .mdx (the content corpus this check
@@ -596,13 +610,11 @@ def check_file(filepath, lists=None, phrase_res=None, word_res=None, device_re=N
         line = raw_line.rstrip("\n")
 
         def emit(ctl_id, found, suggest):
-            errors.append(
-                f"ERROR {rel}:{lineno} [{ctl_id}] {found} — suggest: {suggest}"
-            )
+            errors.append(checklib.emit_error(rel, lineno, ctl_id, found, suggest))
 
         # ── Strip comments so comment text is not flagged ─────────────────────
-        scan_line = _strip_block_comments(line, in_block_comment)
-        in_block_comment = _ends_in_block_comment(line, in_block_comment)
+        scan_line = checklib.strip_block_comments(line, in_block_comment)
+        in_block_comment = checklib.ends_in_block_comment(line, in_block_comment)
         scan_line = re.sub(r"<!--.*?-->", "", scan_line)
         if is_code:
             scan_line = re.sub(r"//.*$", "", scan_line)
@@ -661,6 +673,10 @@ def check_file(filepath, lists=None, phrase_res=None, word_res=None, device_re=N
             else:
                 # Treat the whole prose line as text for sentence-length.
                 prose = re.sub(r"`[^`]*`", "", scan_line)  # drop inline code
+                # Strip list/blockquote markers so anchored checks (CNT-6
+                # openers, CNT-1) see the sentence start: "- ", "* ", "+ ",
+                # "1. ", "> " — repeated for nested "> - " forms.
+                prose = re.sub(r"^(?:\s*(?:[-*+]|\d{1,3}[.)]|>)\s+)+", "", prose)
                 _check_cnt3_text(prose, emit)
                 _check_cnt1_text(prose.strip(), line, lineno, lines, emit)
                 _check_cnt5_text(prose, emit, device_re)
@@ -813,49 +829,6 @@ def _check_cnt1_text(text, raw_line, lineno, all_lines, emit):
                  "tell the teacher what happened and what to do next")
 
 
-def _strip_block_comments(line, in_comment):
-    """Replace /* ... */ block-comment spans with nothing. Mirrors a11y-static."""
-    result = []
-    i = 0
-    n = len(line)
-    while i < n:
-        if in_comment:
-            end = line.find("*/", i)
-            if end == -1:
-                break
-            i = end + 2
-            in_comment = False
-        else:
-            start = line.find("/*", i)
-            if start == -1:
-                result.append(line[i:])
-                break
-            result.append(line[i:start])
-            i = start + 2
-            in_comment = True
-    return "".join(result)
-
-
-def _ends_in_block_comment(line, in_comment):
-    """Return True if `line` ends inside a /* ... */ block comment."""
-    i = 0
-    n = len(line)
-    while i < n:
-        if in_comment:
-            end = line.find("*/", i)
-            if end == -1:
-                return True
-            i = end + 2
-            in_comment = False
-        else:
-            start = line.find("/*", i)
-            if start == -1:
-                return False
-            i = start + 2
-            in_comment = True
-    return in_comment
-
-
 def scan_paths(paths):
     """Walk the given paths and collect all violations. Prints the fallback NOTE
     once if the SLP-9 lists could not be read from slp-9.md."""
@@ -884,25 +857,14 @@ def scan_paths(paths):
     cnt13_res = _build_cnt13_res(cnt13_lists)
 
     all_errors = []
-    for p in paths:
-        if os.path.isfile(p):
-            all_errors.extend(
-                check_file(p, lists, phrase_res, word_res, device_re, cnt6_res,
-                           cnt13_res))
-        elif os.path.isdir(p):
-            for root, dirs, files in os.walk(p):
-                dirs[:] = [d for d in dirs if not d.startswith(".")]
-                for fname in sorted(files):
-                    ext = os.path.splitext(fname)[1].lower()
-                    if ext in TARGET_EXTENSIONS:
-                        all_errors.extend(
-                            check_file(os.path.join(root, fname),
-                                       lists, phrase_res, word_res, device_re,
-                                       cnt6_res, cnt13_res)
-                        )
+    for kind, val in checklib.iter_target_files(paths, TARGET_EXTENSIONS):
+        if kind == "missing":
+            print(f"ERROR content-lint: path not found: {val}")
+            all_errors.append(f"ERROR content-lint: path not found: {val}")
         else:
-            print(f"ERROR content-lint: path not found: {p}")
-            all_errors.append(f"ERROR content-lint: path not found: {p}")
+            all_errors.extend(
+                check_file(val, lists, phrase_res, word_res, device_re, cnt6_res,
+                           cnt13_res))
     return all_errors
 
 
@@ -1135,6 +1097,31 @@ def run_self_test():
     assert_clean(
         "CNT-6: opener/filler examples in inline code are not flagged",
         "- Empty openers (e.g. `There is`) and filler (e.g. `just`, `really`)",
+        ".mdx",
+    )
+    assert_violations(
+        "CNT-6: empty opener behind a bullet marker",
+        "- There is a problem with your form.",
+        ".mdx", ["CNT-6"],
+    )
+    assert_violations(
+        "CNT-6: empty opener behind a blockquote marker",
+        "> There is a delay.",
+        ".mdx", ["CNT-6"],
+    )
+    assert_violations(
+        "CNT-6: empty opener behind a numbered-list marker",
+        "1. There is one step.",
+        ".mdx", ["CNT-6"],
+    )
+    assert_clean(
+        "CNT-6: clean bulleted copy stays clean",
+        "- Choose a class to continue.",
+        ".mdx",
+    )
+    assert_clean(
+        "CNT-6: front-matter rule (---) is still skipped, not stripped into a marker",
+        "---",
         ".mdx",
     )
 

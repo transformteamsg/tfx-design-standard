@@ -60,9 +60,6 @@ CHECKS_DIR = os.path.dirname(os.path.abspath(__file__))
 CATALOG_PATH = os.path.join(REPO_ROOT, "standards", "catalog.yaml")
 DECISIONS_DIR = os.path.join(REPO_ROOT, "docs", "decisions")
 
-# Reuse a11y-static's source-file extension set so the same tree is scanned.
-TARGET_EXTENSIONS = {".css", ".html", ".jsx", ".tsx", ".js", ".ts", ".vue", ".svelte"}
-
 # Inline waiver syntax (CLAUDE.md "Always-on rules" / checks/README.md):
 #   tfx-waive <CTL-ID> reason="..."
 # Generalised to ALL control prefixes (token-audit only matches TOK/COL).
@@ -87,24 +84,31 @@ def _load_audit_record():
 _AR = _load_audit_record()
 parse_table_rows = _AR.parse_table_rows
 column_index = _AR.column_index
+
+
+# ── Reuse checklib's walker ────────────────────────────────────────────────────
+def _load_checklib():
+    path = os.path.join(CHECKS_DIR, "checklib.py")
+    spec = importlib.util.spec_from_file_location("_tfx_checklib", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+checklib = _load_checklib()
+# Reuse a11y-static's source-file extension set so the same tree is scanned.
+TARGET_EXTENSIONS = checklib.TARGET_EXTENSIONS
 split_sections = _AR.split_sections
 find_section = _AR.find_section
 
 
 # ── Step 1: collect the three inputs ──────────────────────────────────────────
 def _iter_source_files(src_paths):
-    """Yield every TARGET_EXTENSIONS file under the given files/dirs."""
-    for p in src_paths:
-        if os.path.isfile(p):
-            if os.path.splitext(p)[1].lower() in TARGET_EXTENSIONS:
-                yield p
-        elif os.path.isdir(p):
-            for root, dirs, files in os.walk(p):
-                dirs[:] = [d for d in dirs if not d.startswith(".")]
-                for fname in sorted(files):
-                    if os.path.splitext(fname)[1].lower() in TARGET_EXTENSIONS:
-                        yield os.path.join(root, fname)
-        # Silently skip non-existent paths here; main() reports them.
+    """Yield every TARGET_EXTENSIONS file under the given files/dirs.
+    Silently skips non-existent paths here; main() reports them."""
+    for kind, val in checklib.iter_target_files(src_paths, TARGET_EXTENSIONS):
+        if kind == "file":
+            yield val
 
 
 def find_inline_waivers(src_paths):
@@ -410,16 +414,7 @@ def run_self_test():
         expect_notes=[],
     )
 
-    if failures:
-        for f in failures:
-            print(f)
-        print(
-            f"SELF-TEST FAILED ({len(failures)} failures, "
-            f"{case_count} cases run)"
-        )
-        sys.exit(1)
-    print(f"SELF-TEST OK ({case_count} cases)")
-    sys.exit(0)
+    checklib.report_self_test(failures, case_count)
 
 
 # ── Entry point ────────────────────────────────────────────────────────────────

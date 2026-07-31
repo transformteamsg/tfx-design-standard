@@ -27,6 +27,8 @@ const TOPIC_ICONS = {
   "foundations/typography": "type",
   "foundations/spacing-radius": "ruler",
   "foundations/iconography": "shapes",
+  "foundations/tokens": "braces",
+  "research/research-brief": "notebook-pen",
   /* Products keep the family signature: ink squircle frame + script letter
      (letter is drawn by the component, not generated here). */
   "products/teacher-workspace": "squircle",
@@ -36,10 +38,18 @@ const TOPIC_ICONS = {
   "landing/human": "user-round",
   "landing/human-machine": "handshake",
   "landing/machine": "bot",
+  "harness/install": "download",
   "harness/loop": "refresh-cw",
   "harness/skills": "layers",
   "harness/tools": "square-terminal",
   "harness/on-ramp": "trending-up",
+  "getting-started/git-basics": "git-branch",
+  "getting-started/guardrails": "shield-check",
+  "getting-started/set-up": "wrench",
+  "getting-started/plan": "map",
+  "getting-started/build": "hammer",
+  "getting-started/ship": "rocket",
+  "getting-started/help": "life-buoy",
   "governance/governance": "git-branch",
 };
 

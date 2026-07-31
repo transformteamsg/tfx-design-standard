@@ -79,6 +79,17 @@ def _load_audit_record():
 
 
 _AR = _load_audit_record()
+
+
+def _load_checklib():
+    path = os.path.join(CHECKS_DIR, "checklib.py")
+    spec = importlib.util.spec_from_file_location("_tfx_checklib", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+checklib = _load_checklib()
 split_sections = _AR.split_sections
 find_section = _AR.find_section
 
@@ -434,16 +445,7 @@ def run_self_test():
     except FileNotFoundError:
         pass
 
-    if failures:
-        for f in failures:
-            print(f)
-        print(
-            f"SELF-TEST FAILED ({len(failures)} failures, "
-            f"{case_count} cases run)"
-        )
-        sys.exit(1)
-    print(f"SELF-TEST OK ({case_count} cases)")
-    sys.exit(0)
+    checklib.report_self_test(failures, case_count)
 
 
 # ── Entry point ────────────────────────────────────────────────────────────────

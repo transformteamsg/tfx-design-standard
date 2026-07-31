@@ -13,6 +13,7 @@ export type Control = {
   audiences?: string[];
   enforced?: "script" | "partial" | "manual" | "evaluator";
   script?: string | string[];
+  status?: "proposed";
 };
 
 type RawControl = Record<string, unknown> & { id: string };
@@ -40,6 +41,7 @@ const PUBLIC_FIELDS = [
   "audiences",
   "enforced",
   "script",
+  "status",
 ] as const;
 
 function readCatalog(): RawCatalog {
@@ -68,6 +70,7 @@ export function getCatalog(): Control[] {
       audiences: c.audiences,
       enforced: c.enforced,
       script: c.script,
+      status: c.status,
     } as Control;
   });
 }
@@ -82,6 +85,24 @@ export function getScopeMeta(): {
   return {
     products: (meta.products as Record<string, string>) ?? {},
     audiences: (meta.audiences as Record<string, string>) ?? {},
+  };
+}
+
+export type CatalogMeta = {
+  version: string;
+  updated: string;
+  waiver_syntax: string;
+};
+
+/* The narrow public metadata contract used by machine readers. Keep this
+   separate from the full meta block so adding catalog implementation details
+   never expands the reader surface by accident. */
+export function getCatalogMeta(): CatalogMeta {
+  const { meta } = readCatalog();
+  return {
+    version: meta.version as string,
+    updated: meta.updated as string,
+    waiver_syntax: meta.waiver_syntax as string,
   };
 }
 

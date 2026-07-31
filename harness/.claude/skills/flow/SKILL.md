@@ -10,8 +10,8 @@ isolation. You judge how the teacher moves through the task — entry, transitio
 interruption, and resume — and leave visual and copy craft to their own passes (NOTED
 and routed).
 
-**Dimension controls** (cite these; the catalog holds the rules — load them from
-`../../../standards/catalog.yaml`, read each `detail` file):
+**Dimension controls** (the subset for this pass; procedure and loading rules:
+../critique/pass.md):
 
 - **CMP-2** — destructive actions show consequences and offer undo/confirm (L0).
 - **CMP-3** — every async transaction has loading, success, and error states.

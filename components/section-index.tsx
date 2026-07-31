@@ -12,7 +12,7 @@ export function SectionIndex({ sectionKey }: { sectionKey: string }) {
   return (
     <div className="max-w-[760px]">
       {doc.answers && (
-        <p className="flex items-center gap-2 text-[12px] font-semibold uppercase tracking-widest text-muted-foreground">
+        <p className="flex items-center gap-2 text-sm font-semibold text-muted-foreground">
           <span
             className="h-2 w-2 rounded-full"
             style={{ background: sectionInk[sectionKey] ?? "var(--foreground)" }}
@@ -20,12 +20,12 @@ export function SectionIndex({ sectionKey }: { sectionKey: string }) {
           Answers: {doc.answers}
         </p>
       )}
-      <h1 className="mt-3 font-display text-[32px] font-semibold tracking-tight">{doc.title}</h1>
+      <h1 className="mt-3 font-display text-3xl font-semibold tracking-tight">{doc.title}</h1>
       {doc.description && (
-        <p className="mt-3 text-[18px] leading-[1.6] text-muted-foreground">{doc.description}</p>
+        <p className="mt-3 text-lg text-muted-foreground">{doc.description}</p>
       )}
       {doc.content.trim() && (
-        <div className="prose mt-4 text-[16px]">
+        <div className="prose mt-4 text-base">
           <MDXRemote source={doc.content} />
         </div>
       )}

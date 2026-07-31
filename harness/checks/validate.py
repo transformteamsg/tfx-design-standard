@@ -10,17 +10,33 @@ Validates standards/catalog.yaml for internal consistency:
      controls must carry one. meta.categories covers every ID prefix.
   6. Reverse check: every standards/controls/*.md frontmatter matches catalog.
   7. Cross-reference sweep: every control ID mentioned in prose exists in catalog.
-  8. tfx-sync parity: [L0-SYNC], [SLP9-SYNC], and [COUNT-SYNC] (every "<N> controls"
+  8. tfx-sync parity: [L0-SYNC], [SLP9-SYNC], [COUNT-SYNC] (every "<N> controls"
      claim in README.md or docs/index.html must equal the catalog's actual
-     control count).
+     control count), [WIRING-SYNC] (enforced:script|partial claims actually run
+     in prebuild/CI or are exempted), and [SKILL-SYNC] (every catalog id is
+     wired into >=1 skill/agent file or grandfathered; no ghost ids in skills).
 Exit 0 and print "OK: <n> controls valid" on success.
 Exit 1 and print "ERROR <location>: <message>" lines on failure.
 """
 
+import importlib.util
 import json
 import os
 import re
 import sys
+
+_CHECKS_DIR = os.path.dirname(os.path.abspath(__file__))
+
+
+def _load_checklib():
+    path = os.path.join(_CHECKS_DIR, "checklib.py")
+    spec = importlib.util.spec_from_file_location("_tfx_checklib", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+checklib = _load_checklib()
 
 try:
     import yaml
@@ -62,6 +78,7 @@ def load_schema_bits(repo_root):
         "allowed_products": set(schema["products"]),
         "allowed_audiences": set(schema["audiences"]),
         "allowed_enforced": set(schema["enforced"]),
+        "allowed_status": set(schema["status"]),
         "control_id_re": re.compile(rf"^({prefixes})-\d+$"),
         "xref_re": re.compile(rf"\b({prefixes})-\d+\b"),
     }
@@ -174,6 +191,14 @@ def validate_control(control, idx, schema_bits):
     if enforced == "evaluator" and check not in ("judgment", "hybrid"):
         err(loc, f"enforced 'evaluator' is only valid on check 'judgment' or 'hybrid' — got '{check}'")
 
+    # 2e. Optional status field — 'proposed' marks a control pending
+    # design-lead approval. Absence means settled; 'settled' is never
+    # written explicitly.
+    allowed_status = schema_bits["allowed_status"]
+    status = control.get("status")
+    if status is not None and status not in allowed_status:
+        err(loc, f"invalid status '{status}' — allowed: {sorted(allowed_status)} (absence means settled)")
+
     # 3. Tier→waiver pairing
     if tier in tier_waiver and waiver is not None:
         expected_waiver = tier_waiver[tier]
@@ -253,15 +278,16 @@ def tokenize_buzzwords(span):
 
 def l0_parity_errors(repo_root, catalog_by_id, xref_re):
     """
-    [L0-SYNC] Each inline 'Non-negotiables (L0)' list (CLAUDE.md and the
-    design skill's SKILL.md) must equal the catalog's tier:L0 set. Missing
-    markers are an error. Set comparison, so prose/order around the IDs is free.
+    [L0-SYNC] Each marked L0 consumer must equal the catalog's tier:L0 set.
+    Missing markers are an error. Set comparison, so prose/order around the IDs
+    is free.
     """
     errors = []
     source = {cid for cid, c in catalog_by_id.items() if c.get("tier") == "L0"}
     consumers = [
         os.path.join(repo_root, "CLAUDE.md"),
         os.path.join(repo_root, ".claude", "skills", "design", "SKILL.md"),
+        os.path.join(repo_root, "checks", "detect.py"),
     ]
     for fpath in consumers:
         if not os.path.isfile(fpath):
@@ -278,6 +304,39 @@ def l0_parity_errors(repo_root, catalog_by_id, xref_re):
             errors.append(
                 f"ERROR {rel} [L0-SYNC]: inline L0 list {{{', '.join(sorted(inline))}}} "
                 f"!= catalog L0 set {{{', '.join(sorted(source))}}}"
+            )
+    return errors
+
+
+def lay_parity_errors(repo_root, catalog_by_id, xref_re):
+    """
+    [LAY-SYNC] Each inline layout-controls list (the design skill's SKILL.md, the
+    evaluator agent's Layout grading paragraph, the layout skill's control subset)
+    must equal the catalog's LAY-* id set. Missing markers are an error. Set
+    comparison, so prose/order/detail around the IDs is free.
+    """
+    errors = []
+    source = {cid for cid in catalog_by_id if cid.startswith("LAY-")}
+    consumers = [
+        os.path.join(repo_root, ".claude", "skills", "design", "SKILL.md"),
+        os.path.join(repo_root, ".claude", "agents", "evaluator.md"),
+        os.path.join(repo_root, ".claude", "skills", "layout", "SKILL.md"),
+    ]
+    for fpath in consumers:
+        if not os.path.isfile(fpath):
+            continue
+        rel = os.path.relpath(fpath, repo_root)
+        with open(fpath) as fh:
+            text = fh.read()
+        span = extract_sync_block(text, "lay-controls")
+        if span is None:
+            errors.append(f"ERROR {rel} [LAY-SYNC]: missing tfx-sync:lay-controls markers")
+            continue
+        inline = {m.group(0) for m in xref_re.finditer(span)}
+        if inline != source:
+            errors.append(
+                f"ERROR {rel} [LAY-SYNC]: inline LAY list {{{', '.join(sorted(inline))}}} "
+                f"!= catalog LAY set {{{', '.join(sorted(source))}}}"
             )
     return errors
 
@@ -342,14 +401,76 @@ def slp9_parity_errors(repo_root):
 COUNT_SYNC_PATHS = ("README.md", "docs/index.html")
 
 
-def count_parity_errors(repo_root, catalog_count, relpaths=COUNT_SYNC_PATHS):
+def live_skills_count(repo_root):
     """
-    [COUNT-SYNC] Every "<N> controls" claim in README.md or docs/index.html
-    must equal the catalog's actual control count. Catches the class of
-    drift where a control is added/removed but a prose count is never
-    updated. A file with no count claim (or that doesn't exist) is not an
+    Number of dirs under `<repo_root>/.claude/skills` that contain a
+    `SKILL.md`. This is the "N skills" claimed in prose (the `evaluator`
+    subagent is counted separately as "+ 1 agent", never folded in).
+    """
+    skills_dir = os.path.join(repo_root, ".claude", "skills")
+    if not os.path.isdir(skills_dir):
+        return 0
+    count = 0
+    for name in os.listdir(skills_dir):
+        if os.path.isfile(os.path.join(skills_dir, name, "SKILL.md")):
+            count += 1
+    return count
+
+
+def live_checks_count(repo_root):
+    """
+    Number of check scripts under `<repo_root>/checks/*.py`, per the repo's
+    own prose convention (checks/README.md, docs/index.html): the catalog
+    validator (`validate.py`) is counted separately in prose ("the catalog
+    validator + N check scripts"), and `checklib.py` is a shared library, not
+    a check. So: check scripts = `checks/*.py` minus `validate.py` minus
+    `checklib.py`.
+    """
+    checks_dir = os.path.join(repo_root, "checks")
+    if not os.path.isdir(checks_dir):
+        return 0
+    exempt = {"validate.py", "checklib.py"}
+    return len(
+        [
+            fname
+            for fname in os.listdir(checks_dir)
+            if fname.endswith(".py") and fname not in exempt
+        ]
+    )
+
+
+def count_parity_errors(repo_root, catalog_count, relpaths=COUNT_SYNC_PATHS,
+                         skills_count=None, checks_count=None):
+    """
+    [COUNT-SYNC] Every roster-size claim in README.md or docs/index.html
+    must equal the live count it claims to describe. Catches the class of
+    drift where a control/skill/check is added or removed but a prose count
+    is never updated. A file with no claim (or that doesn't exist) is not an
     error (nothing to check).
+
+    Three claim types, each matched by its own regex and compared against
+    its own live count:
+      - "<N> controls"      vs. the catalog's actual control count
+      - "<N> skills"        vs. `live_skills_count` (dirs with a SKILL.md)
+      - "<N> check scripts" / "<N> checks built" vs. `live_checks_count`
+        (checks/*.py minus validate.py minus checklib.py)
+
+    `skills_count`/`checks_count` default to the live counts computed from
+    `repo_root`; callers (e.g. the self-test) may pass fabricated counts
+    against a fabricated tempdir tree instead.
     """
+    if skills_count is None:
+        skills_count = live_skills_count(repo_root)
+    if checks_count is None:
+        checks_count = live_checks_count(repo_root)
+
+    claim_types = (
+        (r"(\d+) controls", "controls", catalog_count, "catalog has"),
+        (r"(\d+) skills", "skills", skills_count, "stack has"),
+        (r"(\d+) check scripts", "check scripts", checks_count, "stack has"),
+        (r"(\d+) checks built", "checks built", checks_count, "stack has"),
+    )
+
     errors = []
     for relpath in relpaths:
         path = os.path.join(repo_root, relpath)
@@ -358,14 +479,345 @@ def count_parity_errors(repo_root, catalog_count, relpaths=COUNT_SYNC_PATHS):
         rel = os.path.relpath(path, repo_root)
         with open(path) as fh:
             text = fh.read()
-        seen = set()
-        for m in re.finditer(r"(\d+) controls", text):
-            n = int(m.group(1))
-            if n != catalog_count and n not in seen:
-                seen.add(n)
+        for pattern, label, live_count, verb in claim_types:
+            seen = set()
+            for m in re.finditer(pattern, text):
+                n = int(m.group(1))
+                if n != live_count and n not in seen:
+                    seen.add(n)
+                    errors.append(
+                        f"ERROR {rel} [COUNT-SYNC]: says {n} {label}, {verb} {live_count}"
+                    )
+    return errors
+
+
+# [WIRING-SYNC] scripts claimed as enforced:script|partial that are allowed to
+# run in neither prebuild nor CI, with a one-line honest reason each. Keep this
+# in sync with the "Wiring status" prose in checks/README.md.
+WIRING_EXEMPT = {
+    "checks/content-lint.py": "pre-existing CNT-3/CNT-6/SLP-9 findings in content/ — wire after cleanup",
+    "checks/contrast.py": "pre-existing A11Y-1 finding (components/ui/button.tsx) — wire after cleanup",
+    "checks/component-manifest.py": "validates a product's .tfx/component-manifest.json; this repo has none to validate",
+}
+
+
+def wiring_parity_errors(repo_root, catalog_by_id):
+    """
+    [WIRING-SYNC] Every control claiming enforced:script|partial via a
+    script: field must have that script actually running somewhere
+    (package.json prebuild, or .github/workflows/ci.yml) — unless it is on
+    the WIRING_EXEMPT list with a documented reason. Catches the class of
+    drift where a catalog control claims automated enforcement that no
+    automation delivers.
+
+    `repo_root` is this validator's own root (harness/); package.json and
+    ci.yml live one level up, at the consuming site's repo root. If neither
+    file exists there (e.g. the harness ships standalone as a plugin with no
+    consuming site checked out), there is nothing to check — return clean.
+    """
+    errors = []
+
+    # Claimed set: script path -> [(control id, effective enforced value)].
+    claimed = {}
+    for cid, control in catalog_by_id.items():
+        enforced, _ = effective_enforcement(control)
+        if enforced not in ("script", "partial"):
+            continue
+        script = control.get("script")
+        if script is None:
+            continue
+        script_list = script if isinstance(script, list) else [script]
+        for sp in script_list:
+            if isinstance(sp, str):
+                claimed.setdefault(sp, []).append((cid, enforced))
+
+    # Running set: scan package.json + ci.yml one level above repo_root.
+    top_root = os.path.dirname(repo_root)
+    consumer_paths = [
+        os.path.join(top_root, "package.json"),
+        os.path.join(top_root, ".github", "workflows", "ci.yml"),
+    ]
+    running = set()
+    any_consumer_found = False
+    for cpath in consumer_paths:
+        if not os.path.isfile(cpath):
+            continue
+        any_consumer_found = True
+        with open(cpath) as fh:
+            text = fh.read()
+        running.update(f"checks/{m.group(1)}" for m in re.finditer(r"checks/([a-z0-9-]+\.py)", text))
+
+    if not any_consumer_found:
+        return errors
+
+    for sp, claimants in sorted(claimed.items()):
+        if sp in running or sp in WIRING_EXEMPT:
+            continue
+        for cid, enforced in claimants:
+            errors.append(
+                f"ERROR standards/catalog.yaml [WIRING-SYNC]: {cid} claims "
+                f"enforced:{enforced} via {sp} but it runs in neither prebuild "
+                f"nor CI and is not exempted"
+            )
+
+    # Dead exemptions: exempted script no longer exists, or no longer claimed.
+    for sp in sorted(WIRING_EXEMPT):
+        script_abs = os.path.join(repo_root, sp)
+        if not os.path.isfile(script_abs):
+            errors.append(
+                f"ERROR harness/checks/README.md [WIRING-SYNC]: exempted script "
+                f"'{sp}' no longer exists on disk (dead exemption)"
+            )
+        elif sp not in claimed:
+            errors.append(
+                f"ERROR harness/checks/README.md [WIRING-SYNC]: exempted script "
+                f"'{sp}' is no longer claimed by any control (dead exemption)"
+            )
+
+    return errors
+
+
+# [SKILL-SYNC] catalog ids referenced by NO skill or agent file, grandfathered
+# at the introduction of this check (plan 070) — each entry names the reason
+# it is not yet wired. Additions need a reason; removals (once a control gets
+# wired) are free — shrink-only in practice.
+SKILL_WIRING_GRANDFATHERED = {
+    "A11Y-9": "title/lang check (title-lang) is planned but unbuilt (checks/README.md V1 table) — not yet named in any skill",
+    "A11Y-10": "skip-link check is planned but unbuilt (checks/README.md V1 table) — not yet named in any skill",
+    "IDN-1": "identity check (logo/lockup) is planned but unbuilt (checks/README.md V1 table) — not yet named in any skill",
+    "TYP-6": "hybrid measure (line-length) control — unwired at introduction of SKILL-SYNC — wire into layout/polish skill or justify",
+}
+
+
+def skill_sync_errors(repo_root, catalog_by_id, xref_re):
+    """
+    [SKILL-SYNC] Two guarantees over the catalog<->skill-layer boundary:
+    (a) no ghost ids — every control id mentioned anywhere under
+    `.claude/skills/**/*.md` or `.claude/agents/*.md` exists in the catalog;
+    (b) no orphan controls — every catalog id is mentioned in at least one of
+    those files, or sits on SKILL_WIRING_GRANDFATHERED with a documented
+    reason. Catches the drift class from plan 063: a control lands in the
+    catalog but no skill or agent is taught to apply it.
+
+    An allowlisted id that is no longer an orphan (someone wired it) prints a
+    NOTE (not an error) suggesting its removal from the allowlist — never
+    fails the build. An allowlisted id that is not a catalog id at all is a
+    dead entry — ERROR.
+    """
+    errors = []
+
+    consumer_dirs = [
+        os.path.join(repo_root, ".claude", "skills"),
+        os.path.join(repo_root, ".claude", "agents"),
+    ]
+
+    # Nothing to check when neither consumer dir exists at all (e.g. a
+    # synthetic/partial repo_root fixture with no .claude tree) — mirrors
+    # wiring_parity_errors' "no consumer found" bail-out.
+    if not any(os.path.isdir(d) for d in consumer_dirs):
+        return errors
+
+    consumer_files = []
+    for d in consumer_dirs:
+        if not os.path.isdir(d):
+            continue
+        for root, _dirs, fnames in os.walk(d):
+            for fname in fnames:
+                if fname.endswith(".md"):
+                    consumer_files.append(os.path.join(root, fname))
+
+    mentioned = set()
+    for fpath in sorted(consumer_files):
+        rel = os.path.relpath(fpath, repo_root)
+        with open(fpath) as fh:
+            text = fh.read()
+        for m in xref_re.finditer(text):
+            ref_id = m.group(0)
+            mentioned.add(ref_id)
+            if ref_id not in catalog_by_id:
                 errors.append(
-                    f"ERROR {rel} [COUNT-SYNC]: says {n} controls, catalog has {catalog_count}"
+                    f"ERROR {rel} [SKILL-SYNC]: names {ref_id} which is not in the catalog"
                 )
+
+    catalog_ids = set(catalog_by_id)
+    orphans = catalog_ids - mentioned
+    for cid in sorted(orphans):
+        if cid not in SKILL_WIRING_GRANDFATHERED:
+            errors.append(
+                f"ERROR standards/catalog.yaml [SKILL-SYNC]: {cid} is not "
+                f"mentioned in any skill or agent file, and is not on "
+                f"SKILL_WIRING_GRANDFATHERED"
+            )
+
+    # Grandfathered entries that have gone stale: no longer an orphan
+    # (someone wired it — NOTE, shrink the list), or no longer a catalog id
+    # at all (dead entry — ERROR).
+    for cid in sorted(SKILL_WIRING_GRANDFATHERED):
+        if cid not in catalog_ids:
+            errors.append(
+                f"ERROR checks/validate.py [SKILL-SYNC]: SKILL_WIRING_GRANDFATHERED "
+                f"entry '{cid}' is not a catalog id (dead entry)"
+            )
+        elif cid not in orphans:
+            print(
+                f"NOTE checks/validate.py [SKILL-SYNC]: {cid} is now mentioned "
+                f"in a skill/agent file — consider removing it from "
+                f"SKILL_WIRING_GRANDFATHERED"
+            )
+
+    return errors
+
+
+# ── Copy-skill ↔ guideline parity (VOICE / TONE / UITEXT) ────────────────────────
+# The copy skill (.claude/skills/copy/SKILL.md) inlines the voice-attributes and
+# tone-by-context tables and the draft-phase editing sequence; the website guidelines
+# restate them for human readers. Source = the plugin-shipped skill; consumers = the
+# website mdx under content/guidelines/, which live OUTSIDE harness/ (one level up, like
+# package.json in wiring_parity_errors) — so these are website-optional sub-checks that
+# return clean when the site tree is absent (the harness ships standalone as a plugin).
+# MDX (next-mdx-remote + remark-gfm, MDX v3) rejects raw <!-- --> HTML comments, so the
+# consumer markers use the JSX-expression comment {/* … */}; the skill keeps <!-- -->.
+
+
+def extract_sync_block_any(text, name):
+    """
+    Like extract_sync_block, but also recognizes the MDX comment form
+    {/* tfx-sync:NAME … */} … {/* /tfx-sync:NAME */}. Tries the HTML form first
+    (plain-markdown sources), then the MDX form (website consumers). Returns the
+    inner span, or None if neither form is present / closed.
+    """
+    html = extract_sync_block(text, name)
+    if html is not None:
+        return html
+    pattern = (r"\{/\* tfx-sync:" + re.escape(name) + r"\b.*?\*/\}"
+               r"(.*?)\{/\* /tfx-sync:" + re.escape(name) + r" \*/\}")
+    match = re.search(pattern, text, re.DOTALL)
+    return match.group(1) if match else None
+
+
+def _normalize_table_rows(span):
+    """
+    Markdown table body of a span as a set of normalized cell tuples. Skips the
+    header separator row (all dashes/colons). Reduces markdown links [text](url)
+    to their text, collapses whitespace, and lowercases — so the skill's plain
+    `(CMP-2)` and the guideline's `([CMP-2](/…))` compare equal.
+    """
+    rows = set()
+    for line in span.splitlines():
+        line = line.strip()
+        if not line.startswith("|"):
+            continue
+        cells = [c.strip() for c in line.strip("|").split("|")]
+        if cells and all(re.fullmatch(r":?-+:?", c) for c in cells if c):
+            continue  # separator row
+        norm = tuple(
+            re.sub(r"\s+", " ", re.sub(r"\[([^\]]+)\]\([^)]+\)", r"\1", c)).strip().lower()
+            for c in cells
+        )
+        rows.add(norm)
+    return rows
+
+
+def _editing_step_names(span):
+    """Lowercased lead words of a numbered step list: `**Draft.**` → `draft`."""
+    return {m.group(1).lower() for m in re.finditer(r"\*\*([A-Za-z]+)\.\*\*", span)}
+
+
+def _section_heading_words(span):
+    """Set of lowercased words from `## N. Heading` lines in a span."""
+    words = set()
+    for m in re.finditer(r"^#{2,3}\s+\d+\.\s*(.+)$", span, re.MULTILINE):
+        words.update(re.findall(r"[a-z]+", m.group(1).lower()))
+    return words
+
+
+def _table_parity_errors(repo_root, name, tag, consumer_rel):
+    """
+    Shared engine for [VOICE-SYNC] / [TONE-SYNC]: the skill's marked table
+    (source) must equal the website guideline's marked table (consumer) as
+    normalized row sets. Website-optional — a missing guideline file returns
+    clean. A missing source or consumer marker is an error.
+    """
+    errors = []
+    skill_path = os.path.join(repo_root, ".claude", "skills", "copy", "SKILL.md")
+    consumer_path = os.path.join(os.path.dirname(repo_root), consumer_rel)
+
+    if not os.path.isfile(skill_path):
+        return errors
+    with open(skill_path) as fh:
+        src_span = extract_sync_block_any(fh.read(), name)
+    if src_span is None:
+        errors.append(
+            f"ERROR .claude/skills/copy/SKILL.md [{tag}]: missing tfx-sync:{name} source markers")
+        return errors
+
+    if not os.path.isfile(consumer_path):
+        return errors  # website tree absent — nothing to compare
+    with open(consumer_path) as fh:
+        con_span = extract_sync_block_any(fh.read(), name)
+    if con_span is None:
+        errors.append(f"ERROR {consumer_rel} [{tag}]: missing tfx-sync:{name} consumer markers")
+        return errors
+
+    src_rows = _normalize_table_rows(src_span)
+    con_rows = _normalize_table_rows(con_span)
+    if src_rows != con_rows:
+        errors.append(
+            f"ERROR {consumer_rel} [{tag}]: table rows differ from the copy skill — "
+            f"only in skill: {sorted(src_rows - con_rows)}; "
+            f"only in guideline: {sorted(con_rows - src_rows)}"
+        )
+    return errors
+
+
+def voice_parity_errors(repo_root):
+    """[VOICE-SYNC] copy skill's voice-attributes table == voice-tone.mdx's."""
+    return _table_parity_errors(repo_root, "voice-attributes", "VOICE-SYNC",
+                                "content/guidelines/voice-tone.mdx")
+
+
+def tone_parity_errors(repo_root):
+    """[TONE-SYNC] copy skill's tone-by-context table == voice-tone.mdx's."""
+    return _table_parity_errors(repo_root, "tone-context", "TONE-SYNC",
+                                "content/guidelines/voice-tone.mdx")
+
+
+def uitext_parity_errors(repo_root):
+    """
+    [UITEXT-SYNC] Every draft-phase step name in the copy skill's editing
+    sequence must appear as a word in a ui-text.mdx section heading — a SUBSET,
+    not equality: the skill's step 6 'Check' deliberately collapses ui-text
+    sections 6–11 (human-reviewed, not parity-checked). Website-optional.
+    """
+    errors = []
+    skill_path = os.path.join(repo_root, ".claude", "skills", "copy", "SKILL.md")
+    consumer_rel = "content/guidelines/ui-text.mdx"
+    consumer_path = os.path.join(os.path.dirname(repo_root), consumer_rel)
+
+    if not os.path.isfile(skill_path):
+        return errors
+    with open(skill_path) as fh:
+        src_span = extract_sync_block_any(fh.read(), "uitext-sequence")
+    if src_span is None:
+        errors.append(
+            "ERROR .claude/skills/copy/SKILL.md [UITEXT-SYNC]: missing "
+            "tfx-sync:uitext-sequence source markers")
+        return errors
+
+    if not os.path.isfile(consumer_path):
+        return errors
+    with open(consumer_path) as fh:
+        con_span = extract_sync_block_any(fh.read(), "uitext-sequence")
+    if con_span is None:
+        errors.append(f"ERROR {consumer_rel} [UITEXT-SYNC]: missing tfx-sync:uitext-sequence consumer markers")
+        return errors
+
+    missing = _editing_step_names(src_span) - _section_heading_words(con_span)
+    if missing:
+        errors.append(
+            f"ERROR {consumer_rel} [UITEXT-SYNC]: copy-skill step name(s) "
+            f"{{{', '.join(sorted(missing))}}} not found in any ui-text.mdx section heading"
+        )
     return errors
 
 
@@ -604,6 +1056,12 @@ def collect_errors(repo_root, _return_count=False):
     errors.extend(l0_parity_errors(repo_root, catalog_by_id, xref_re))
     errors.extend(slp9_parity_errors(repo_root))
     errors.extend(count_parity_errors(repo_root, len(catalog_by_id)))
+    errors.extend(wiring_parity_errors(repo_root, catalog_by_id))
+    errors.extend(skill_sync_errors(repo_root, catalog_by_id, xref_re))
+    errors.extend(lay_parity_errors(repo_root, catalog_by_id, xref_re))
+    errors.extend(voice_parity_errors(repo_root))
+    errors.extend(tone_parity_errors(repo_root))
+    errors.extend(uitext_parity_errors(repo_root))
 
     return result(len(catalog_by_id))
 
@@ -765,6 +1223,42 @@ def run_self_test():
                  l0_errs_for_span(extract_sync_block("no markers here", "L0")),
                  "missing tfx-sync:L0 markers")
 
+    # The detector is an executable L0 consumer. A malformed fixture must be
+    # reported; this fails if its path is silently skipped by l0_parity_errors.
+    with tempfile.TemporaryDirectory() as td:
+        os.makedirs(os.path.join(td, "checks"))
+        with open(os.path.join(td, "checks", "detect.py"), "w") as fh:
+            fh.write("# no L0 marker")
+        assert_error("L0 detector consumer is not skipped",
+                     l0_parity_errors(td, {cid: {"tier": "L0"} for cid in L0_SOURCE}, xref_re),
+                     "checks/detect.py [L0-SYNC]: missing tfx-sync:L0 markers")
+
+    LAY_SOURCE = {"LAY-1", "LAY-2", "LAY-3", "LAY-4", "LAY-5", "LAY-6", "LAY-7"}
+
+    def lay_errs_for_span(span_text):
+        """Drive the LAY parity comparison against a synthetic consumer span."""
+        if span_text is None:
+            return ["ERROR scratch.md [LAY-SYNC]: missing tfx-sync:lay-controls markers"]
+        inline = {m.group(0) for m in xref_re.finditer(span_text)}
+        if inline != LAY_SOURCE:
+            return [f"ERROR scratch.md [LAY-SYNC]: inline LAY list != catalog LAY set"]
+        return []
+
+    # LAY clean: span lists exactly the seven → no error.
+    assert_clean("LAY clean span",
+                 lay_errs_for_span("LAY-1, LAY-2, LAY-3, LAY-4, LAY-5, LAY-6, LAY-7"))
+    # LAY missing an id: span omits LAY-4 → error.
+    assert_error("LAY missing control",
+                 lay_errs_for_span("LAY-1, LAY-2, LAY-3, LAY-5, LAY-6, LAY-7"), "[LAY-SYNC]")
+    # LAY extra/ghost id: span adds LAY-8 → error.
+    assert_error("LAY extra control",
+                 lay_errs_for_span("LAY-1, LAY-2, LAY-3, LAY-4, LAY-5, LAY-6, LAY-7, LAY-8"),
+                 "[LAY-SYNC]")
+    # LAY missing markers: extract_sync_block None → missing-markers error.
+    assert_error("LAY missing markers",
+                 lay_errs_for_span(extract_sync_block("no markers here", "lay-controls")),
+                 "missing tfx-sync:lay-controls markers")
+
     # Buzzword parity — drive tokenize_buzzwords + the subset/required-core rules.
     BUZZ_SOURCE = tokenize_buzzwords(
         "streamline(d), empower, supercharge, effortless(ly), seamless(ly), "
@@ -860,6 +1354,17 @@ def run_self_test():
                          dict(valid_control, enforced="script", script=42),
                          "'script' must be a string or list of strings")
 
+    # ── Status field cases ───────────────────────────────────────────────
+    # status: proposed → clean.
+    assert_control_clean("status proposed",
+                         dict(valid_control, status="proposed"))
+    # status: settled → error (absence means settled; the explicit value is invalid).
+    assert_control_error("status settled invalid",
+                         dict(valid_control, status="settled"),
+                         "invalid status 'settled'")
+    # status absent → clean (the base valid_control carries no status).
+    assert_control_clean("status absent", dict(valid_control))
+
     # ── [COUNT-SYNC] cases ─────────────────────────────────────────────────
     count_tmp = tempfile.mkdtemp(prefix="validate-selftest-count-")
     try:
@@ -895,8 +1400,266 @@ def run_self_test():
             fh.write('<span class="pill">47 controls</span>')
         assert_error("count-sync index.html mismatched count",
                      count_parity_errors(count_tmp, 48), "[COUNT-SYNC]")
+
+        # ── skills/check-scripts extension ───────────────────────────────
+        # Fabricate a skills tree (2 real skills + 1 dir with no SKILL.md,
+        # which must not count) and a checks tree (3 check scripts +
+        # validate.py + checklib.py, neither of which counts).
+        skills_dir = os.path.join(count_tmp, ".claude", "skills")
+        for skill_name in ("alpha", "beta"):
+            skill_path = os.path.join(skills_dir, skill_name)
+            os.makedirs(skill_path, exist_ok=True)
+            with open(os.path.join(skill_path, "SKILL.md"), "w") as fh:
+                fh.write("---\nname: " + skill_name + "\n---\n")
+        os.makedirs(os.path.join(skills_dir, "no-skill-md"), exist_ok=True)
+
+        checks_dir = os.path.join(count_tmp, "checks")
+        os.makedirs(checks_dir, exist_ok=True)
+        for check_name in ("one.py", "two.py", "three.py", "validate.py", "checklib.py"):
+            with open(os.path.join(checks_dir, check_name), "w") as fh:
+                fh.write("# fixture\n")
+
+        case_count += 1
+        fab_skills, fab_checks = live_skills_count(count_tmp), live_checks_count(count_tmp)
+        if (fab_skills, fab_checks) != (2, 3):
+            failures.append(
+                f"FAIL count-sync fabricated skills/checks trees: expected (2, 3) "
+                f"skills/checks — got {(fab_skills, fab_checks)}"
+            )
+
+        with open(readme_path, "w") as fh:
+            fh.write("This installs 2 skills and 3 check scripts.")
+        with open(index_path, "w") as fh:
+            fh.write('<span class="pill">48 controls</span>')
+        assert_clean("count-sync matching skills and check-scripts counts",
+                     count_parity_errors(count_tmp, 48))
+
+        with open(readme_path, "w") as fh:
+            fh.write("This installs 5 skills and 3 check scripts.")
+        assert_error("count-sync mismatched skills count",
+                     count_parity_errors(count_tmp, 48), "[COUNT-SYNC]")
+
+        with open(readme_path, "w") as fh:
+            fh.write("This installs 2 skills and 9 check scripts.")
+        assert_error("count-sync mismatched check-scripts count",
+                     count_parity_errors(count_tmp, 48), "[COUNT-SYNC]")
+
+        with open(readme_path, "w") as fh:
+            fh.write("This installs 2 skills and 3 check scripts; 7 checks built today.")
+        assert_error("count-sync mismatched checks-built count",
+                     count_parity_errors(count_tmp, 48), "[COUNT-SYNC]")
+
+        with open(readme_path, "w") as fh:
+            fh.write("No roster claim of any kind in this file at all.")
+        assert_clean("count-sync no roster claim",
+                     count_parity_errors(count_tmp, 48))
     finally:
         shutil.rmtree(count_tmp, ignore_errors=True)
+
+    # ── [WIRING-SYNC] cases ──────────────────────────────────────────────────
+    wiring_tmp = tempfile.mkdtemp(prefix="validate-selftest-wiring-")
+    try:
+        harness_dir = os.path.join(wiring_tmp, "harness")
+        checks_dir = os.path.join(harness_dir, "checks")
+        os.makedirs(checks_dir, exist_ok=True)
+        # A real-looking script file so "does the file exist" checks pass.
+        open(os.path.join(checks_dir, "widget-scan.py"), "w").close()
+        # Stub files for the real WIRING_EXEMPT scripts too, and a control
+        # claiming each, so the exemption list itself doesn't fire dead-
+        # exemption noise in the "clean" cases below (mirrors production,
+        # where each exempted script IS claimed by real catalog controls).
+        exempt_controls = {}
+        for i, sp in enumerate(WIRING_EXEMPT):
+            script_abs = os.path.join(harness_dir, sp)
+            os.makedirs(os.path.dirname(script_abs), exist_ok=True)
+            open(script_abs, "w").close()
+            cid = f"EXM-{i}"
+            exempt_controls[cid] = {"id": cid, "check": "hybrid", "enforced": "partial", "script": sp}
+
+        pkg_path = os.path.join(wiring_tmp, "package.json")
+
+        control_wired = dict(exempt_controls, **{
+            "WGT-1": {"id": "WGT-1", "check": "deterministic", "enforced": "script",
+                      "script": "checks/widget-scan.py"}
+        })
+
+        # Case: claimed + running (wired in package.json) → clean.
+        with open(pkg_path, "w") as fh:
+            fh.write('{"scripts": {"prebuild": "python3 harness/checks/widget-scan.py"}}')
+        assert_clean("wiring-sync claimed+running",
+                     wiring_parity_errors(harness_dir, control_wired))
+
+        # Case: claimed but wired nowhere, not exempted → fires.
+        with open(pkg_path, "w") as fh:
+            fh.write('{"scripts": {"prebuild": "echo nothing"}}')
+        assert_error("wiring-sync claimed+unwired+unexempted",
+                     wiring_parity_errors(harness_dir, control_wired), "[WIRING-SYNC]")
+
+        # Case: dead exemption — exempted script no longer claimed by any control.
+        assert_error("wiring-sync dead exemption (unclaimed)",
+                     wiring_parity_errors(harness_dir, {}), "dead exemption")
+    finally:
+        shutil.rmtree(wiring_tmp, ignore_errors=True)
+
+    # ── [SKILL-SYNC] cases ────────────────────────────────────────────────────
+    skillsync_tmp = tempfile.mkdtemp(prefix="validate-selftest-skillsync-")
+    try:
+        skill_dir = os.path.join(skillsync_tmp, ".claude", "skills", "x")
+        os.makedirs(skill_dir, exist_ok=True)
+        skill_path = os.path.join(skill_dir, "SKILL.md")
+
+        base_catalog = {"TOK-1": {"id": "TOK-1"}, "A11Y-1": {"id": "A11Y-1"}}
+
+        # Full fixture catalog also carries every real SKILL_WIRING_GRANDFATHERED
+        # id (mirrors production, per the WIRING_EXEMPT self-test pattern above)
+        # so the "clean" cases below don't trip the dead-entry check on the
+        # real allowlist's own entries.
+        gf_ids = sorted(SKILL_WIRING_GRANDFATHERED)
+        full_catalog = dict(base_catalog, **{cid: {"id": cid} for cid in gf_ids})
+
+        # Case 1: skill names a known catalog id, and every catalog id (incl.
+        # the real grandfathered set) is either mentioned or grandfathered →
+        # clean.
+        with open(skill_path, "w") as fh:
+            fh.write("Apply TOK-1 and A11Y-1 in every component.")
+        assert_clean("skill-sync known ids, all wired-or-grandfathered",
+                     skill_sync_errors(skillsync_tmp, full_catalog, xref_re))
+
+        # Case 2: skill names a ghost id (real prefix shape, absent from the
+        # catalog) → [SKILL-SYNC] ghost error.
+        with open(skill_path, "w") as fh:
+            fh.write("Apply TOK-1, A11Y-1, and LAY-99 in every component.")
+        assert_error("skill-sync ghost id",
+                     skill_sync_errors(skillsync_tmp, full_catalog, xref_re),
+                     "names LAY-99 which is not in the catalog")
+
+        # Case 3: catalog id absent from all skills, not grandfathered → orphan
+        # error.
+        with open(skill_path, "w") as fh:
+            fh.write("Apply TOK-1 only.")
+        assert_error("skill-sync unwired orphan",
+                     skill_sync_errors(skillsync_tmp, full_catalog, xref_re),
+                     "A11Y-1 is not mentioned in any skill or agent file")
+
+        # Case 4: grandfathered orphan (the real gf_ids, present in the catalog
+        # but named in no skill file) → clean, no error.
+        with open(skill_path, "w") as fh:
+            fh.write("Apply TOK-1 and A11Y-1 only.")
+        assert_clean("skill-sync grandfathered orphans clean",
+                     skill_sync_errors(skillsync_tmp, full_catalog, xref_re))
+
+        # Case 5: dead grandfather entry — a grandfathered id removed from the
+        # catalog (simulating "no longer a catalog id at all") → error.
+        dead_catalog = {k: v for k, v in full_catalog.items() if k != gf_ids[0]}
+        with open(skill_path, "w") as fh:
+            fh.write("Apply TOK-1 and A11Y-1 only.")
+        assert_error("skill-sync dead grandfather entry",
+                     skill_sync_errors(skillsync_tmp, dead_catalog, xref_re),
+                     "dead entry")
+    finally:
+        shutil.rmtree(skillsync_tmp, ignore_errors=True)
+
+    # ── [VOICE-SYNC] / [TONE-SYNC] / [UITEXT-SYNC] cases ─────────────────────
+    # Lay out a synthetic repo: harness/.claude/skills/copy/SKILL.md (source,
+    # <!-- --> markers) and content/guidelines/*.mdx one level up (consumers,
+    # {/* */} markers) — mirroring the real placement so the helpers' top_root
+    # resolution and website-absent bail-out are exercised for real.
+    copy_tmp = tempfile.mkdtemp(prefix="validate-selftest-copysync-")
+    try:
+        harness_dir = os.path.join(copy_tmp, "harness")
+        skill_dir = os.path.join(harness_dir, ".claude", "skills", "copy")
+        os.makedirs(skill_dir)
+        skill_path = os.path.join(skill_dir, "SKILL.md")
+        guide_dir = os.path.join(copy_tmp, "content", "guidelines")
+        os.makedirs(guide_dir)
+        voice_path = os.path.join(guide_dir, "voice-tone.mdx")
+        uitext_path = os.path.join(guide_dir, "ui-text.mdx")
+
+        skill_md = (
+            "<!-- tfx-sync:voice-attributes source -->\n"
+            "| We are | We are not |\n|---|---|\n"
+            "| Clear but not cold | Robotic or detached |\n"
+            "<!-- /tfx-sync:voice-attributes -->\n\n"
+            "<!-- tfx-sync:tone-context source -->\n"
+            "| Context | Tone | Direction |\n|---|---|---|\n"
+            "| Destructive action | Sober, precise | Plain consequences, no drama (CMP-2) |\n"
+            "<!-- /tfx-sync:tone-context -->\n\n"
+            "<!-- tfx-sync:uitext-sequence source -->\n"
+            "1. **Draft.** a\n2. **Purposeful.** b\n3. **Concise.** c\n"
+            "4. **Conversational.** d\n5. **Clear.** e\n"
+            "<!-- /tfx-sync:uitext-sequence -->\n"
+        )
+        with open(skill_path, "w") as fh:
+            fh.write(skill_md)
+
+        # Consumer voice-tone.mdx: identical rows; the tone cell wraps CMP-2 in a
+        # markdown link, which normalization must reduce to bare CMP-2.
+        good_voice_mdx = (
+            "{/* tfx-sync:voice-attributes */}\n"
+            "| We are | We are not |\n| --- | --- |\n"
+            "| Clear but not cold | Robotic or detached |\n"
+            "{/* /tfx-sync:voice-attributes */}\n\n"
+            "{/* tfx-sync:tone-context */}\n"
+            "| Context | Tone | Direction |\n| --- | --- | --- |\n"
+            "| Destructive action | Sober, precise | Plain consequences, no drama "
+            "([CMP-2](/standards/catalog/cmp-2)) |\n"
+            "{/* /tfx-sync:tone-context */}\n"
+        )
+        good_uitext_mdx = (
+            "{/* tfx-sync:uitext-sequence */}\n"
+            "## 1. Clarify the context, then draft\n"
+            "## 2. Edit to be purposeful\n"
+            "## 3. Edit to be concise\n"
+            "## 4. Edit to be conversational\n"
+            "## 5. Edit to be clear\n"
+            "{/* /tfx-sync:uitext-sequence */}\n"
+            "## 6. Check consistency\n"
+        )
+        with open(voice_path, "w") as fh:
+            fh.write(good_voice_mdx)
+        with open(uitext_path, "w") as fh:
+            fh.write(good_uitext_mdx)
+
+        # Clean baselines (CMP-2 link normalizes; subset holds).
+        assert_clean("voice-sync clean", voice_parity_errors(harness_dir))
+        assert_clean("tone-sync clean (CMP-2 link normalizes)",
+                     tone_parity_errors(harness_dir))
+        assert_clean("uitext-sync clean subset", uitext_parity_errors(harness_dir))
+
+        # Drift: alter one consumer voice row → [VOICE-SYNC].
+        with open(voice_path, "w") as fh:
+            fh.write(good_voice_mdx.replace("Robotic or detached", "Cold and mechanical"))
+        assert_error("voice-sync drift", voice_parity_errors(harness_dir), "[VOICE-SYNC]")
+        with open(voice_path, "w") as fh:
+            fh.write(good_voice_mdx)
+
+        # Drift: drop a step name from the ui-text headings → [UITEXT-SYNC].
+        with open(uitext_path, "w") as fh:
+            fh.write(good_uitext_mdx.replace("## 5. Edit to be clear\n", ""))
+        assert_error("uitext-sync missing step",
+                     uitext_parity_errors(harness_dir), "[UITEXT-SYNC]")
+        with open(uitext_path, "w") as fh:
+            fh.write(good_uitext_mdx)
+
+        # Missing consumer markers → error.
+        with open(voice_path, "w") as fh:
+            fh.write("no markers here")
+        assert_error("voice-sync missing consumer markers",
+                     voice_parity_errors(harness_dir),
+                     "missing tfx-sync:voice-attributes consumer markers")
+        with open(voice_path, "w") as fh:
+            fh.write(good_voice_mdx)
+
+        # Website tree absent → all three bail out clean.
+        shutil.rmtree(os.path.join(copy_tmp, "content"))
+        assert_clean("voice-sync website-absent bail-out",
+                     voice_parity_errors(harness_dir))
+        assert_clean("tone-sync website-absent bail-out",
+                     tone_parity_errors(harness_dir))
+        assert_clean("uitext-sync website-absent bail-out",
+                     uitext_parity_errors(harness_dir))
+    finally:
+        shutil.rmtree(copy_tmp, ignore_errors=True)
 
     # ── Filesystem integration case for collect_errors ───────────────────────
 
@@ -994,14 +1757,7 @@ def run_self_test():
         shutil.rmtree(tmp_root, ignore_errors=True)
 
     # ── Report ───────────────────────────────────────────────────────────────
-    if failures:
-        for f in failures:
-            print(f)
-        print(f"SELF-TEST FAILED ({len(failures)} failures, {case_count} cases run)")
-        sys.exit(1)
-    else:
-        print(f"SELF-TEST OK ({case_count} cases)")
-        sys.exit(0)
+    checklib.report_self_test(failures, case_count)
 
 
 # ── Coverage listing ─────────────────────────────────────────────────────────

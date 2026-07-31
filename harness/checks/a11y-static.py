@@ -62,12 +62,26 @@ Exit 0 and print nothing (or SELF-TEST OK) on success.
 Exit 1 with ERROR lines on any violation.
 """
 
+import importlib.util
 import os
 import re
 import sys
 
+_CHECKS_DIR = os.path.dirname(os.path.abspath(__file__))
+
+
+def _load_checklib():
+    path = os.path.join(_CHECKS_DIR, "checklib.py")
+    spec = importlib.util.spec_from_file_location("_tfx_checklib", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+checklib = _load_checklib()
+
 # ── Target extensions ──────────────────────────────────────────────────────────
-TARGET_EXTENSIONS = {".css", ".html", ".jsx", ".tsx", ".js", ".ts", ".vue", ".svelte"}
+TARGET_EXTENSIONS = checklib.TARGET_EXTENSIONS
 
 # ── FOCUS rule: outline removal tokens ────────────────────────────────────────
 # Tailwind classes that remove the focus outline
@@ -121,55 +135,6 @@ NAME_ICON_ONLY_RE = re.compile(
 NAME_SELF_CLOSING_RE = re.compile(r'/\s*>')
 # Visible text heuristic: after stripping tags, is there non-whitespace text?
 NAME_STRIP_TAGS_RE = re.compile(r'<[^>]+>')
-
-
-def _strip_block_comments(line, in_comment):
-    """
-    Return a version of `line` with /* ... */ block-comment spans replaced by
-    spaces.  `in_comment` is True if the previous line ended inside a block
-    comment.
-    """
-    result = []
-    i = 0
-    n = len(line)
-    while i < n:
-        if in_comment:
-            end = line.find("*/", i)
-            if end == -1:
-                break
-            else:
-                i = end + 2
-                in_comment = False
-        else:
-            start = line.find("/*", i)
-            if start == -1:
-                result.append(line[i:])
-                break
-            else:
-                result.append(line[i:start])
-                i = start + 2
-                in_comment = True
-    return "".join(result)
-
-
-def _ends_in_block_comment(line, in_comment):
-    """Return True if `line` ends inside a /* ... */ block comment."""
-    i = 0
-    n = len(line)
-    while i < n:
-        if in_comment:
-            end = line.find("*/", i)
-            if end == -1:
-                return True
-            i = end + 2
-            in_comment = False
-        else:
-            start = line.find("/*", i)
-            if start == -1:
-                return False
-            i = start + 2
-            in_comment = True
-    return in_comment
 
 
 def _check_focus_rule(scan_line):
@@ -280,13 +245,11 @@ def check_file(filepath):
         line = raw_line.rstrip("\n")
 
         def emit(ctl_id, found, suggest):
-            errors.append(
-                f"ERROR {rel}:{lineno} [{ctl_id}] {found} — suggest: {suggest}"
-            )
+            errors.append(checklib.emit_error(rel, lineno, ctl_id, found, suggest))
 
         # ── Strip comments so comment text is not flagged ─────────────────────
-        scan_line = _strip_block_comments(line, in_block_comment)
-        in_block_comment = _ends_in_block_comment(line, in_block_comment)
+        scan_line = checklib.strip_block_comments(line, in_block_comment)
+        in_block_comment = checklib.ends_in_block_comment(line, in_block_comment)
 
         # Strip HTML comments
         scan_line = re.sub(r"<!--.*?-->", "", scan_line)
@@ -327,20 +290,12 @@ def check_file(filepath):
 def scan_paths(paths):
     """Walk the given paths (files or directories) and collect all violations."""
     all_errors = []
-    for p in paths:
-        if os.path.isfile(p):
-            all_errors.extend(check_file(p))
-        elif os.path.isdir(p):
-            for root, dirs, files in os.walk(p):
-                # Skip hidden directories
-                dirs[:] = [d for d in dirs if not d.startswith(".")]
-                for fname in sorted(files):
-                    ext = os.path.splitext(fname)[1].lower()
-                    if ext in TARGET_EXTENSIONS:
-                        all_errors.extend(check_file(os.path.join(root, fname)))
+    for kind, val in checklib.iter_target_files(paths, TARGET_EXTENSIONS):
+        if kind == "missing":
+            print(f"ERROR a11y-static: path not found: {val}")
+            all_errors.append(f"ERROR a11y-static: path not found: {val}")
         else:
-            print(f"ERROR a11y-static: path not found: {p}")
-            all_errors.append(f"ERROR a11y-static: path not found: {p}")
+            all_errors.extend(check_file(val))
     return all_errors
 
 
@@ -501,14 +456,18 @@ def run_self_test():
     )
 
     # ── Report ─────────────────────────────────────────────────────────────────
-    if failures:
-        for f in failures:
-            print(f)
-        print(f"SELF-TEST FAILED ({len(failures)} failures, {case_count} cases run)")
-        sys.exit(1)
-    else:
-        print(f"SELF-TEST OK ({case_count} cases)")
-        sys.exit(0)
+    # ── Fixtures ───────────────────────────────────────────────────────────────
+    fixtures_dir = os.path.join(_CHECKS_DIR, "fixtures", "a11y-static")
+    for fname in sorted(os.listdir(fixtures_dir)):
+        case_count += 1
+        fpath = os.path.join(fixtures_dir, fname)
+        errs = check_file(fpath)
+        if "fail" in fname and not errs:
+            failures.append(f"FAIL fixture {fname}: expected >=1 ERROR — got none")
+        elif "pass" in fname and errs:
+            failures.append(f"FAIL fixture {fname}: expected 0 ERRORs — got: {errs}")
+
+    checklib.report_self_test(failures, case_count)
 
 
 # ── Entry point ────────────────────────────────────────────────────────────────

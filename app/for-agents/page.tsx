@@ -16,13 +16,13 @@ export default function Page() {
       <div className="mt-8 flex flex-wrap gap-3">
         <Link
           href="/llms.txt"
-          className="rounded-lg border border-border bg-surface px-4 py-2.5 text-[14px] font-medium hover:border-border-strong"
+          className="rounded-lg border border-border bg-surface px-4 py-2.5 text-sm font-medium hover:border-border-strong"
         >
           /llms.txt — the curated index
         </Link>
         <a
           href="/standards/catalog.yaml"
-          className="rounded-lg border border-border bg-surface px-4 py-2.5 text-[14px] font-medium hover:border-border-strong"
+          className="rounded-lg border border-border bg-surface px-4 py-2.5 text-sm font-medium hover:border-border-strong"
         >
           catalog.yaml — just the controls
         </a>

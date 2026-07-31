@@ -133,6 +133,7 @@ the surface, manual until a script exists), then read the render boundary direct
 judge whether the sanitisation guarantee holds there, not only at author/editor time.
 An in-code "schema-constrained" comment is not evidence of render-time sanitisation.
 
+<!-- tfx-sync:lay-controls -->
 **Layout grading.** Seven LAY controls are in the catalog: LAY-1 (the product's
 declared column grid and gutter scale, L2 — controls/lay-1.md; N/A where no grid is
 declared in `.tfx/design.json` `layout_system`), LAY-2 (reflow at 320 CSS px, L1 —
@@ -140,7 +141,9 @@ controls/lay-2.md), LAY-3 (page-template fit, L2 — controls/lay-3.md), LAY-4
 (body-text measure ≤ 80ch, L2 — controls/lay-4.md), LAY-5 (density fits the task,
 L2 — controls/lay-5.md), LAY-6 (edge / optical alignment, L2 — controls/lay-6.md),
 and LAY-7 (one primary focal region; visual reading order matches the task's
-priority order — the squint test, L2 — controls/lay-7.md). Apply each when in scope.
+priority order — the squint test, L2 — controls/lay-7.md).
+<!-- /tfx-sync:lay-controls -->
+Apply each when in scope.
 
 **Identity grading.** Grade IDN-3 (tone register per the calibration table in
 controls/idn-3.md) on all copy-bearing surfaces. Grade IDN-4 (no
@@ -160,7 +163,7 @@ surface with neither is a finding.
 
 **Voice quality + tone-fit (CNT-14, L2, judgment — controls/cnt-14.md).** Read the copy
 against the voice attributes (Clear / Thoughtful / Approachable) and the tone-by-context
-table in `content/guidelines/voice-tone-proposed.mdx`: name the surface's context
+table in `content/guidelines/voice-tone.mdx`: name the surface's context
 (success, error, onboarding, destructive, empty state, permission) and judge whether the
 tone fits — affirming/brief success, calm/helpful error, sober/precise destructive,
 inviting empty state. This is the *gestalt* only: a mechanical miss belongs to its own

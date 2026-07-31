@@ -13,8 +13,10 @@ export const sectionInk: Record<string, string> = {
   standards: "var(--sec-standards)",
   guidelines: "var(--sec-guidelines)",
   foundations: "var(--sec-foundations)",
+  research: "var(--sec-research)",
   products: "var(--sec-products)",
   harness: "var(--sec-harness)",
+  "getting-started": "var(--sec-getting-started)",
   governance: "var(--sec-governance)",
 };
 
@@ -118,9 +120,9 @@ export function TopicCard({ topic }: { topic: Topic }) {
       className="group block rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue)"
     >
       <Thumb ink={topic.ink} art={topicArt[topic.artKey]} />
-      <p className="mt-2.5 text-[14px] font-semibold leading-snug">{topic.title}</p>
+      <p className="mt-2.5 text-sm font-semibold leading-snug">{topic.title}</p>
       {topic.description && (
-        <p className="mt-1 line-clamp-2 text-[12px] leading-snug text-muted-foreground">
+        <p className="mt-1 line-clamp-2 text-xs leading-snug text-muted-foreground">
           {topic.description}
         </p>
       )}
@@ -137,18 +139,18 @@ export function SectionTile({ topic, tag, count }: { topic: Topic; tag?: string;
     >
       <Thumb ink={topic.ink} art={topicArt[topic.artKey]} />
       <div className="mt-3 flex items-baseline justify-between gap-3">
-        <p className="font-display text-[18px] font-semibold leading-snug">{topic.title}</p>
+        <p className="font-display text-lg font-semibold leading-snug">{topic.title}</p>
         {tag && (
-          <span className="shrink-0 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+          <span className="shrink-0 text-xs font-semibold text-muted-foreground">
             {tag}
           </span>
         )}
       </div>
       {topic.description && (
-        <p className="mt-1 text-[14px] leading-snug text-muted-foreground">{topic.description}</p>
+        <p className="mt-1 text-sm leading-snug text-muted-foreground">{topic.description}</p>
       )}
       {count !== undefined && (
-        <p className="mt-1.5 text-[12px] text-muted-foreground">
+        <p className="mt-1.5 text-xs text-muted-foreground">
           {count} {count === 1 ? "page" : "pages"}
         </p>
       )}
@@ -167,9 +169,9 @@ export function TopicRow({ topic }: { topic: Topic }) {
         <Thumb ink={topic.ink} art={topicArt[topic.artKey]} />
       </div>
       <div>
-        <p className="text-[14px] font-semibold leading-snug">{topic.title}</p>
+        <p className="text-sm font-semibold leading-snug">{topic.title}</p>
         {topic.description && (
-          <p className="mt-1 text-[12px] leading-snug text-muted-foreground">
+          <p className="mt-1 text-xs leading-snug text-muted-foreground">
             {topic.description}
           </p>
         )}

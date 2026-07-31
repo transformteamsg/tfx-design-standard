@@ -20,12 +20,12 @@ export function ToolCard({ tool }: { tool: Tool }) {
         background: "color-mix(in oklab, var(--tw-blue) 5%, var(--surface))",
       }}
     >
-      <p className="text-[11px] font-semibold uppercase tracking-widest text-tw-blue">
+      <p className="text-xs font-semibold text-tw-blue">
         Internal tool
       </p>
-      <p className="mt-1.5 font-display text-[18px] font-semibold">{tool.name}</p>
+      <p className="mt-1.5 font-display text-lg font-semibold">{tool.name}</p>
       {tool.description && (
-        <p className="mt-1 max-w-[58ch] text-[14px] leading-[1.6] text-muted-foreground">
+        <p className="mt-1 max-w-[58ch] text-sm leading-normal text-muted-foreground">
           {tool.description}
         </p>
       )}
@@ -34,7 +34,7 @@ export function ToolCard({ tool }: { tool: Tool }) {
           href={tool.href}
           target="_blank"
           rel="noreferrer"
-          className="inline-flex items-center gap-1.5 rounded-lg bg-tw-blue px-4 py-2 text-[14px] font-semibold text-white transition-colors duration-150 hover:bg-tw-blue-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue)"
+          className="inline-flex items-center gap-1.5 rounded-lg bg-tw-blue px-4 py-2 text-sm font-semibold text-white transition-colors duration-150 hover:bg-tw-blue-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue)"
         >
           Open {tool.name}
           <ArrowUpRight size={15} aria-hidden="true" />
@@ -44,7 +44,7 @@ export function ToolCard({ tool }: { tool: Tool }) {
             href={tool.repo}
             target="_blank"
             rel="noreferrer"
-            className="text-[14px] font-medium text-muted-foreground underline underline-offset-2 hover:text-foreground"
+            className="text-sm font-medium text-muted-foreground underline underline-offset-2 hover:text-foreground"
           >
             Source on GitHub
           </a>

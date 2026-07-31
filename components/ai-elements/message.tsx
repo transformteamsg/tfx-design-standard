@@ -15,7 +15,6 @@ import { cn } from "@/lib/utils";
 import { cjk } from "@streamdown/cjk";
 import { code } from "@streamdown/code";
 import { math } from "@streamdown/math";
-import { mermaid } from "@streamdown/mermaid";
 import type { UIMessage } from "ai";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import type { ComponentProps, HTMLAttributes, ReactElement } from "react";
@@ -330,7 +329,17 @@ export const MessageBranchPage = ({
 
 export type MessageResponseProps = ComponentProps<typeof Streamdown>;
 
-const streamdownPlugins = { cjk, code, math, mermaid };
+/* mermaid is deliberately omitted: @streamdown/mermaid statically imports the
+   83 MB mermaid package, which every demo importing this file then drags into
+   the dev module graph. No doc content renders mermaid diagrams. If one ever
+   does, load it via next/dynamic in a wrapper rather than at module scope.
+
+   The cast works around an upstream version skew: @streamdown/code pins shiki 3
+   while the root resolves shiki 4, so their BundledLanguage unions differ. The
+   runtime shape is identical; only the language literal union disagrees. */
+const streamdownPlugins = { cjk, code, math } as ComponentProps<
+  typeof Streamdown
+>["plugins"];
 
 export const MessageResponse = memo(
   ({ className, ...props }: MessageResponseProps) => (

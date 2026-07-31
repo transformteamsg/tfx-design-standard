@@ -9,6 +9,16 @@
       "name": "tfx",
       "source": "./harness",
       "description": "The TFX Design Standard harness: design loop, control catalog, voice & tone, and evaluator agent for Teacher & School products"
+    },
+    {
+      "name": "git-buddy",
+      "source": "./git-buddy",
+      "description": "Gitty (🦔) - a friendly git buddy for designers new to git. Walks you through branching, committing, and opening a merge request, explaining as it goes."
+    },
+    {
+      "name": "research",
+      "source": "./research",
+      "description": "Research skills for the Teacher & School portfolio — starting with the research brief, the alignment document that sets a study up before a single participant is recruited."
     }
   ]
 }

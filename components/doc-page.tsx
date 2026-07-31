@@ -7,14 +7,13 @@ import { Toc } from "@/components/toc";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { PageActions } from "@/components/page-actions";
 import { ToolCard, type Tool } from "@/components/tool-card";
-import { heading } from "@/components/mdx";
+import { mdxComponents } from "@/components/mdx";
 import dynamic from "next/dynamic";
 
-/* Demos are heavy client components (streamdown + shiki-wasm + mermaid). Loading
-   them lazily per-file means a page only pulls the demo chunks it actually
-   renders — demo-free pages (e.g. /principles) no longer drag in the whole AI
-   graph, which was the source of dev-nav lag. Import each demo's own file, not
-   the barrel (the barrel would re-bundle everything and defeat the split). */
+/* Demos are heavy client components (streamdown, motion). Loading them lazily
+   per-file keeps them out of the production bundle of demo-free pages. Import
+   each demo's own file, not the barrel (the barrel would re-bundle everything
+   and defeat the split). */
 const DemoChatbot = dynamic(() => import("@/components/ai-demos/demo-chatbot").then((m) => ({ default: m.DemoChatbot })));
 const DemoConversation = dynamic(() => import("@/components/ai-demos/demo-conversation").then((m) => ({ default: m.DemoConversation })));
 const DemoStreaming = dynamic(() => import("@/components/ai-demos/demo-streaming").then((m) => ({ default: m.DemoStreaming })));
@@ -42,14 +41,17 @@ const sectionCrumbs: Record<string, { label: string; href: string }> = {
   standards: { label: "Standards", href: "/standards" },
   guidelines: { label: "Guidelines", href: "/guidelines" },
   foundations: { label: "Foundations", href: "/foundations" },
+  research: { label: "Research", href: "/research" },
   products: { label: "Products", href: "/products" },
   harness: { label: "Harness", href: "/harness" },
+  "getting-started": { label: "Start with code", href: "/getting-started" },
 };
 
-/* MDX component map, built once at module scope so it isn't rebuilt per render. */
+/* MDX component map, built once at module scope so it isn't rebuilt per render.
+   Spreads the shared map from components/mdx (headings, CodeBlock, DoDont,
+   Checklist, the foundations specimens) and adds the AI demos on top. */
 const MDX_COMPONENTS = {
-  h2: heading("h2"),
-  h3: heading("h3"),
+  ...mdxComponents,
   DemoChatbot,
   DemoConversation,
   DemoStreaming,
@@ -82,7 +84,12 @@ async function compileDoc(source: string): Promise<ReactNode> {
   const { content } = await compileMDX({
     source,
     components: MDX_COMPONENTS,
-    options: { mdxOptions: { remarkPlugins: [remarkGfm] } },
+    // blockJS defaults to true, which strips JS expression-container
+    // attributes (e.g. `items={[...]}`) entirely — needed for DoDont's
+    // inline array prop. blockDangerousJS stays on (its default) so
+    // eval/Function/import() calls are still rejected; all doc content
+    // is first-party (content/), not user-supplied.
+    options: { mdxOptions: { remarkPlugins: [remarkGfm] }, blockJS: false },
   });
   mdxMemo.set(source, content);
   return content;
@@ -101,8 +108,12 @@ export async function DocPage({ doc, children }: { doc: Doc; children?: ReactNod
   let rawFallback = false;
   try {
     rendered = await compileDoc(doc.content);
-  } catch {
+  } catch (err) {
     rawFallback = true;
+    console.warn(
+      `[doc-page] MDX compile failed for ${doc.section}/${doc.slug} — serving raw-markdown fallback:`,
+      err instanceof Error ? err.message : err,
+    );
   }
 
   return (
@@ -113,18 +124,18 @@ export async function DocPage({ doc, children }: { doc: Doc; children?: ReactNod
         </div>
         {crumb && <Breadcrumb section={crumb} current={doc.title} />}
         {doc.status === "proposed" && (
-          <span className="mb-2 inline-block rounded-full border border-warning-muted bg-warning-subtle px-2 py-0.5 text-[11px] font-medium text-warning">
+          <span className="mb-2 inline-block rounded-full border border-warning-muted bg-warning-subtle px-2 py-0.5 text-xs font-medium text-warning">
             ⚑ Proposed — react, don&apos;t obey
           </span>
         )}
         {doc.status === "settled" && (
-          <span className="mb-2 inline-block rounded-full border border-success-muted bg-success-subtle px-2 py-0.5 text-[11px] font-medium text-success">
+          <span className="mb-2 inline-block rounded-full border border-success-muted bg-success-subtle px-2 py-0.5 text-xs font-medium text-success">
             Settled
           </span>
         )}
-        <h1 className="font-display text-[32px] font-semibold tracking-tight">{doc.title}</h1>
+        <h1 className="font-display text-3xl font-semibold tracking-tight">{doc.title}</h1>
         {doc.description && (
-          <p className="mt-3 text-[18px] leading-[1.6] text-muted-foreground">
+          <p className="mt-3 text-lg text-muted-foreground">
             {doc.description}
           </p>
         )}
@@ -133,11 +144,11 @@ export async function DocPage({ doc, children }: { doc: Doc; children?: ReactNod
         ))}
         {rawFallback ? (
           <div className="mt-8">
-            <p className="text-[14px] text-muted-foreground">
-              Showing the raw Markdown source — this doc uses a token the renderer reads as
-              markup, so it is shown verbatim below.
+            <p className="text-sm text-muted-foreground">
+              This doc contains a token the renderer reads as markup, so you are seeing the raw
+              Markdown source.
             </p>
-            <pre className="prose mt-3 overflow-x-auto whitespace-pre-wrap rounded-lg border border-border bg-surface p-4 text-[14px]">
+            <pre className="prose mt-3 overflow-x-auto whitespace-pre-wrap rounded-lg border border-border bg-surface p-4 text-sm">
               {doc.content}
             </pre>
           </div>
@@ -146,7 +157,7 @@ export async function DocPage({ doc, children }: { doc: Doc; children?: ReactNod
         )}
         {children}
       </div>
-      {headings.length >= 2 && <Toc headings={headings} />}
+      {!rawFallback && headings.length >= 2 && <Toc headings={headings} />}
     </div>
   );
 }

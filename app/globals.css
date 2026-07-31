@@ -11,7 +11,7 @@
   --background: #fafafa;
   --surface: #ffffff;
   --foreground: #18181b;
-  --muted-foreground: #71717a;
+  --muted-foreground: #67676f; /* darkened from zinc-500 #71717a to clear WCAG AA 4.5:1 on the --muted #f4f4f5 fill, not just the page bg (A11Y-1, L0) */
   --border: #e4e4e7;
   --ring: #0064ff;
 
@@ -55,11 +55,26 @@
   --sec-standards: #46a758;    /* Radix grass-9 — checkable, pass/fail */
   --sec-guidelines: #ab6400;   /* Radix amber-11 — advisory, judgement applies */
   --sec-foundations: #12a594;  /* Radix teal-9 — shared material */
+  --sec-research: #5c7c2f;     /* Radix lime-11 — evidence, distinct from the green/teal/cyan already in use */
   --sec-products: #00a2c7;     /* Radix cyan-9 — the three identities */
   --sec-harness: #ad7f58;      /* Radix brown-9 — the working strap */
+  --sec-getting-started: #5b5bd6; /* Radix iris-9 — the hands-on on-ramp */
   --sec-governance: #60646c;   /* Radix slate-11 — neutral stewardship */
 
   --radius: 0.5rem;
+
+  /* ── Motion — the only durations and easings site code may use (MOT-2, proposed).
+     Duration follows the size of the change; easing follows its direction
+     (enter/exit → out, on-screen movement → in-out, hover tint → plain ease).
+     Interface motion stays ≤300ms (MOT-1); --motion-story is for narrative
+     surfaces only — explanatory diagrams and the landing reveal — never task UI.
+     A11Y-5: every consumer provides a reduced-motion variant. ── */
+  --motion-fast: 120ms;
+  --motion-base: 200ms;
+  --motion-slow: 300ms;
+  --motion-story: 600ms;
+  --ease-out: cubic-bezier(0.215, 0.61, 0.355, 1);
+  --ease-in-out: cubic-bezier(0.645, 0.045, 0.355, 1);
 
   /* ── shadcn/ui compatibility tokens — mapped onto the brand tokens above so
      shadcn components (Base UI) render on-brand and stay TOK-1 compliant: every
@@ -87,6 +102,18 @@
   --sidebar-accent-foreground: var(--foreground);
   --sidebar-border: var(--border);
   --sidebar-ring: var(--ring);
+
+  /* ── Anti-specimen tokens — used ONLY by components/compare.tsx to draw the
+     "before" (default-AI) panel of the standards demo. Never use these in
+     product UI: they exist to be pointed at (SLP-1/SLP-2 exhibits). ── */
+  --demo-slop-grad-a: #7c3aed;
+  /* fuchsia-700, darkened from fuchsia-600 so 13px text on the gradient and
+     the gradient-clipped title both clear 4.5:1 (A11Y-1 holds even here). */
+  --demo-slop-grad-b: #a21caf;
+  --demo-slop-surface: #f5f3ff;
+  --demo-slop-ink: #4c1d95;
+  --demo-slop-border: color-mix(in oklab, var(--demo-slop-grad-a) 25%, var(--surface));
+  --demo-slop-glow: color-mix(in oklab, var(--demo-slop-grad-a) 35%, transparent);
 }
 
 @theme inline {
@@ -173,31 +200,41 @@ body {
 
 h1, h2 { font-family: "Plus Jakarta Sans Variable", system-ui, sans-serif; letter-spacing: -0.01em; }
 
-/* prose defaults for MDX.
-   Every rule is scoped with :not(.not-prose *) so any subtree marked `not-prose`
-   (the DemoFrame figure and the AI Elements components, which all self-guard with
-   not-prose) is fully excluded and renders at its true shadcn/AI-Elements default.
-   Without this, these hand-written descendant rules bled prose margins, line-height,
-   colour, code and link styles into every embedded component. `.not-prose` also
-   resets the inherited container line-height (1.6 -> 1.5) for the isolated subtree. */
-.prose { max-width: 70ch; line-height: 1.6; font-size: 16px; }
-.not-prose { line-height: 1.5; }
-.prose :where(h3, h4):not(.not-prose *) { font-family: "Plus Jakarta Sans Variable", system-ui, sans-serif; letter-spacing: -0.01em; }
-.prose h1:not(.not-prose *) { font-size: 32px; font-weight: 600; margin: 0 0 16px; }
-.prose h2:not(.not-prose *) { font-size: 24px; font-weight: 600; margin: 40px 0 12px; }
-.prose h3:not(.not-prose *) { font-size: 20px; font-weight: 600; margin: 28px 0 8px; }
-.prose p:not(.not-prose *) { margin: 0 0 14px; color: var(--prose-body); }
-.prose :where(ul, ol):not(.not-prose *) { margin: 0 0 14px; padding-left: 20px; color: var(--prose-body); }
-.prose ul:not(.not-prose *) { list-style: disc; }
-.prose ol:not(.not-prose *) { list-style: decimal; }
-.prose ul ul:not(.not-prose *) { list-style: circle; margin-top: 4px; margin-bottom: 0; }
-.prose li:not(.not-prose *) { margin-bottom: 4px; }
-.prose table:not(.not-prose *) { width: 100%; border-collapse: collapse; font-size: 14px; margin: 16px 0 20px; }
-.prose th:not(.not-prose *) { text-align: left; font-weight: 600; padding: 8px 12px; border-bottom: 2px solid var(--border); }
-.prose td:not(.not-prose *) { padding: 8px 12px; border-bottom: 1px solid var(--border); vertical-align: top; color: var(--prose-body); }
-.prose code:not(.not-prose *) { background: var(--muted); border: 1px solid var(--border); border-radius: 4px; padding: 1px 4px; font-size: 0.875em; }
-.prose pre:not(.not-prose *) { background: var(--foreground); color: var(--background); border-radius: 8px; padding: 14px 16px; overflow-x: auto; margin: 0 0 16px; }
-.prose pre code:not(.not-prose *) { background: none; border: none; color: inherit; padding: 0; }
-.prose blockquote:not(.not-prose *) { border-left: 3px solid var(--tw-blue); padding-left: 16px; color: var(--muted-foreground); margin: 0 0 14px; }
-.prose a:not(.not-prose *) { color: var(--tw-blue); text-decoration: underline; text-underline-offset: 2px; }
-.prose strong:not(.not-prose *) { color: var(--foreground); font-weight: 600; }
+/* prose defaults for MDX — layered as components so Tailwind utilities on
+   embedded UI (diagrams, figures) can override them.
+   Every rule is additionally scoped with :not(.not-prose *) so any subtree
+   marked `not-prose` (the DemoFrame figure and the AI Elements components,
+   which all self-guard with not-prose) is fully excluded and renders at its
+   true shadcn/AI-Elements default. Without this, these hand-written descendant
+   rules bled prose margins, line-height, colour, code and link styles into
+   every embedded component. `.not-prose` also resets the inherited container
+   line-height for the isolated subtree. */
+@layer components {
+  .prose { max-width: 70ch; line-height: 1.5; font-size: var(--text-base); }
+  .not-prose { line-height: 1.5; }
+  .prose :where(h3, h4):not(.not-prose *) { font-family: "Plus Jakarta Sans Variable", system-ui, sans-serif; letter-spacing: -0.01em; }
+  .prose h1:not(.not-prose *) { font-size: var(--text-3xl); font-weight: 600; margin: 0 0 16px; }
+  .prose h2:not(.not-prose *) { font-size: var(--text-2xl); font-weight: 600; margin: 40px 0 12px; }
+  .prose h3:not(.not-prose *) { font-size: var(--text-xl); font-weight: 600; margin: 28px 0 8px; }
+  .prose p:not(.not-prose *) { margin: 0 0 14px; color: var(--prose-body); }
+  .prose :where(ul, ol):not(.not-prose *) { margin: 0 0 14px; padding-left: 20px; color: var(--prose-body); }
+  .prose ul:not(.not-prose *) { list-style: disc; }
+  .prose ol:not(.not-prose *) { list-style: decimal; }
+  .prose ul ul:not(.not-prose *) { list-style: circle; margin-top: 4px; margin-bottom: 0; }
+  .prose li:not(.not-prose *) { margin-bottom: 4px; }
+  /* display:block lets a wide table scroll inside its own container instead of
+     overflowing the page at narrow widths (A11Y — no horizontal page scroll). */
+  .prose table:not(.not-prose *) { display: block; width: 100%; border-collapse: collapse; font-size: var(--text-sm); margin: 16px 0 20px; overflow-x: auto; }
+  .prose th:not(.not-prose *) { text-align: left; font-weight: 600; padding: 8px 12px; border-bottom: 2px solid var(--border); }
+  .prose td:not(.not-prose *) { padding: 8px 12px; border-bottom: 1px solid var(--border); vertical-align: top; color: var(--prose-body); }
+  .prose code:not(.not-prose *) { font-size: 0.9em; background: var(--muted); padding: 2px 6px; border-radius: 4px; overflow-wrap: anywhere; word-break: break-word; }
+  .prose pre:not(.not-prose *) { background: transparent; color: inherit; padding: 0; margin: 0; border-radius: 0; overflow-x: auto; }
+  .prose pre code:not(.not-prose *) { background: transparent; padding: 0; overflow-wrap: normal; word-break: normal; white-space: inherit; }
+  .prose blockquote:not(.not-prose *) { border-left: 3px solid var(--tw-blue); padding-left: 16px; color: var(--muted-foreground); margin: 0 0 14px; }
+  .prose a:not(.not-prose *) { color: var(--tw-blue); text-decoration: underline; text-underline-offset: 2px; }
+  .prose strong:not(.not-prose *) { color: var(--foreground); font-weight: 600; }
+  /* Preflight gives hr 0 margin, so a `---` inherits its neighbours' asymmetric
+     gaps (e.g. 20px above from a table, 0 below from a paragraph). Give it its
+     own symmetric breathing room. */
+  .prose hr:not(.not-prose *) { margin: 32px 0; border: 0; border-top: 1px solid var(--border); }
+}

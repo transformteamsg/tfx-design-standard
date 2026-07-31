@@ -33,11 +33,24 @@ const leafHrefs = (items: NavItem[]): string[] =>
 
 const nav: NavGroup[] = [
   {
-    label: "Start",
+    label: "Get oriented",
     items: [
       { href: "/overview", title: "Overview" },
       { href: "/how-to-read", title: "How to read this" },
       { href: "/for-agents", title: "For agents" },
+    ],
+  },
+  {
+    label: "Start with code",
+    items: [
+      { href: "/getting-started", title: "Overview" },
+      { href: "/getting-started/git-basics", title: "Introducing Git" },
+      { href: "/getting-started/guardrails", title: "Step 0: Prep guardrails" },
+      { href: "/getting-started/set-up", title: "Step 1: Set up" },
+      { href: "/getting-started/plan", title: "Step 2: Plan" },
+      { href: "/getting-started/build", title: "Step 3: Build" },
+      { href: "/getting-started/ship", title: "Step 4: Ship" },
+      { href: "/getting-started/help", title: "Help & prompts" },
     ],
   },
   {
@@ -61,9 +74,8 @@ const nav: NavGroup[] = [
         label: "Content",
         items: [
           { href: "/guidelines/voice-tone", title: "Voice & tone" },
-          { href: "/guidelines/voice-tone-proposed", title: "Voice & tone (proposed)" },
-          { href: "/guidelines/grammar-mechanics", title: "Grammar & mechanics" },
           { href: "/guidelines/ui-text", title: "UI text" },
+          { href: "/guidelines/grammar-mechanics", title: "Grammar & mechanics" },
           { href: "/guidelines/text-patterns", title: "Components & text patterns" },
           { href: "/guidelines/naming", title: "Naming" },
         ],
@@ -92,7 +104,14 @@ const nav: NavGroup[] = [
       { href: "/foundations/typography", title: "Typography" },
       { href: "/foundations/spacing-radius", title: "Spacing & radius" },
       { href: "/foundations/iconography", title: "Iconography" },
+      { href: "/foundations/motion", title: "Motion" },
+      { href: "/foundations/tokens", title: "Tokens" },
     ],
+  },
+  {
+    label: "Research",
+    href: "/research",
+    items: [{ href: "/research/research-brief", title: "Research brief" }],
   },
   {
     label: "Products",
@@ -107,6 +126,7 @@ const nav: NavGroup[] = [
     label: "Harness",
     href: "/harness",
     items: [
+      { href: "/harness/install", title: "Install" },
       { href: "/harness/loop", title: "The loop" },
       { href: "/harness/skills", title: "Skills" },
       { href: "/harness/tools", title: "Tools" },
@@ -116,12 +136,14 @@ const nav: NavGroup[] = [
   {
     label: "Governance",
     href: "/governance",
-    items: [{ href: "/governance", title: "How this evolves" }],
+    items: [
+      { href: "/governance", title: "How this evolves" },
+      { href: "/governance/changes", title: "Change log" },
+    ],
   },
 ];
 
-const groupLabel =
-  "px-1 py-1.5 text-[11px] font-semibold uppercase tracking-wider";
+const groupLabel = "px-1 py-1.5 text-xs font-semibold";
 
 export function AppSidebar() {
   const pathname = usePathname();

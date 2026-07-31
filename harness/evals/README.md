@@ -35,6 +35,18 @@ regression can hide in any one layer while the other two stay green.
   orchestrator/reviewer territory; record each run's score in
   `evaluator-recall/RESULTS.md` so drift is visible over time.
 
+## Command assertions
+
+Command assertions use the restricted form `python3 checks/<direct-child>.py ...`.
+The command is parsed with `shlex` first. The interpreter must be exactly
+`python3`, and the script argument must resolve from the harness repository root
+to an existing regular `.py` file whose canonical parent is exactly
+`harness/checks`. This direct-child/canonical-path contract rejects traversal,
+nested paths, missing scripts, alternate interpreters, and symlinks that escape
+`checks/`. Remaining arguments are passed as literal argv values. Shell syntax,
+pipelines, and expansion are not supported; command assertions never use a
+shell.
+
 ## Cost honesty
 
 Golden tasks 002 onwards are **full loop runs** — intent through verify, evaluator

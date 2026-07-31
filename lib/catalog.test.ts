@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { parse } from "yaml";
 import { describe, expect, it } from "vitest";
-import { getCatalog, getPublicCatalogYaml } from "./catalog";
+import { getCatalog, getCatalogMeta, getPublicCatalogYaml } from "./catalog";
 
 /* Characterization tests for the deny-by-default projection in
    lib/catalog.ts. These mirror the module's private PUBLIC_META /
@@ -32,6 +32,7 @@ const PUBLIC_FIELDS_ALLOWLIST = [
   "audiences",
   "enforced",
   "script",
+  "status",
 ];
 
 function readRawCatalog() {
@@ -124,9 +125,44 @@ describe("getPublicCatalogYaml — control projection", () => {
       }
     }
   });
+
+  it("status: proposed survives projection for exactly the two stamped proposals (MOT-2/3)", () => {
+    // CNT-5/6/7 were ratified to settled in #37; MOT-2/3 remain proposed.
+    const yaml = getPublicCatalogYaml();
+    expect(yaml.match(/status: proposed/g)?.length).toBe(2);
+
+    const projected = parse(yaml) as { controls: Record<string, unknown>[] };
+    const proposedIds = projected.controls
+      .filter((c) => c.status === "proposed")
+      .map((c) => c.id)
+      .sort();
+    expect(proposedIds).toEqual(["MOT-2", "MOT-3"]);
+  });
+});
+
+describe("getCatalogMeta — machine-reader contract", () => {
+  it("derives version, updated, and waiver syntax from source meta", () => {
+    const raw = readRawCatalog();
+    const meta = getCatalogMeta();
+    expect(meta.version).toBe(raw.meta.version);
+    expect(meta.updated).toBe(raw.meta.updated);
+    expect(meta.waiver_syntax).toBe(raw.meta.waiver_syntax);
+    expect(meta.waiver_syntax).toMatch(/^tfx-waive\b/);
+  });
 });
 
 describe("getCatalog", () => {
+  it("carries status: proposed on MOT-2/3, leaves settled controls (incl. ratified CNT-5/6/7) undefined", () => {
+    const controls = getCatalog();
+    for (const id of ["MOT-2", "MOT-3"]) {
+      expect(controls.find((c) => c.id === id)?.status).toBe("proposed");
+    }
+    // Settled controls carry no status — including CNT-5/6/7, ratified in #37.
+    for (const id of ["A11Y-1", "CNT-5", "CNT-6", "CNT-7"]) {
+      expect(controls.find((c) => c.id === id)?.status).toBeUndefined();
+    }
+  });
+
   it("returns a non-empty list of controls with a category resolved from meta.categories", () => {
     const controls = getCatalog();
     expect(controls.length).toBeGreaterThan(0);

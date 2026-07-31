@@ -28,7 +28,7 @@ export function Toc({ headings }: { headings: TocHeading[] }) {
       aria-label="On this page"
       className="sticky top-24 hidden max-h-[calc(100vh-8rem)] w-52 shrink-0 self-start overflow-y-auto xl:block"
     >
-      <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+      <p className="text-xs font-semibold text-muted-foreground">
         On this page
       </p>
       <ul className="mt-3 border-l border-border">
@@ -37,7 +37,7 @@ export function Toc({ headings }: { headings: TocHeading[] }) {
             <a
               href={`#${h.id}`}
               className={clsx(
-                "-ml-px block border-l-2 py-1 pr-2 text-[12px] leading-snug transition-colors duration-150",
+                "-ml-px block border-l-2 py-1 pr-2 text-xs leading-snug transition-colors duration-150",
                 h.depth === 3 ? "pl-6" : "pl-3",
                 active === h.id
                   ? "border-tw-blue font-medium text-tw-blue"

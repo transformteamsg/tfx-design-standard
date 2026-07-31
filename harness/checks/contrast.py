@@ -58,12 +58,26 @@ Exit 0 and print nothing (or SELF-TEST OK) on success or notes-only.
 Exit 1 with ERROR lines on any real contrast violation.
 """
 
+import importlib.util
 import os
 import re
 import sys
 
+_CHECKS_DIR = os.path.dirname(os.path.abspath(__file__))
+
+
+def _load_checklib():
+    path = os.path.join(_CHECKS_DIR, "checklib.py")
+    spec = importlib.util.spec_from_file_location("_tfx_checklib", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+checklib = _load_checklib()
+
 # ── Target extensions ──────────────────────────────────────────────────────────
-TARGET_EXTENSIONS = {".css", ".html", ".jsx", ".tsx", ".js", ".ts", ".vue", ".svelte"}
+TARGET_EXTENSIONS = checklib.TARGET_EXTENSIONS
 
 # CSS colour keywords this check resolves (kept tiny on purpose).
 CSS_KEYWORDS = {"white": "#ffffff", "black": "#000000", "transparent": None}
@@ -304,9 +318,10 @@ def _verdict_line(rel, lineno, fg_rgb, bg_rgb):
     is_error, band = _band(ratio)
     if not is_error:
         return None
-    return (f"ERROR {rel}:{lineno} [A11Y-1] text {_fmt_hex(fg_rgb)} on "
-            f"{_fmt_hex(bg_rgb)} = {ratio:.2f}:1 ({band}) — suggest: use a "
-            f"higher-contrast token (e.g. Radix step-12 for small text)")
+    return checklib.emit_error(
+        rel, lineno, "A11Y-1",
+        f"text {_fmt_hex(fg_rgb)} on {_fmt_hex(bg_rgb)} = {ratio:.2f}:1 ({band})",
+        "use a higher-contrast token (e.g. Radix step-12 for small text)")
 
 
 def _check_line(scan_line, rel, lineno, resolver):
@@ -355,41 +370,6 @@ def _check_line(scan_line, rel, lineno, resolver):
     return out
 
 
-def _strip_block_comments(line, in_comment):
-    """Replace /* … */ spans with nothing; track multi-line state."""
-    result, i, n = [], 0, len(line)
-    while i < n:
-        if in_comment:
-            end = line.find("*/", i)
-            if end == -1:
-                break
-            i, in_comment = end + 2, False
-        else:
-            start = line.find("/*", i)
-            if start == -1:
-                result.append(line[i:])
-                break
-            result.append(line[i:start])
-            i, in_comment = start + 2, True
-    return "".join(result)
-
-
-def _ends_in_block_comment(line, in_comment):
-    i, n = 0, len(line)
-    while i < n:
-        if in_comment:
-            end = line.find("*/", i)
-            if end == -1:
-                return True
-            i, in_comment = end + 2, False
-        else:
-            start = line.find("/*", i)
-            if start == -1:
-                return False
-            i, in_comment = start + 2, True
-    return in_comment
-
-
 def check_file(filepath, resolver):
     """Scan a single file; return a list of ERROR/NOTE strings."""
     out = []
@@ -406,8 +386,8 @@ def check_file(filepath, resolver):
     in_block_comment = False
     for lineno, raw_line in enumerate(lines, start=1):
         line = raw_line.rstrip("\n")
-        scan_line = _strip_block_comments(line, in_block_comment)
-        in_block_comment = _ends_in_block_comment(line, in_block_comment)
+        scan_line = checklib.strip_block_comments(line, in_block_comment)
+        in_block_comment = checklib.ends_in_block_comment(line, in_block_comment)
         scan_line = re.sub(r"<!--.*?-->", "", scan_line)
         if ext in (".js", ".ts", ".jsx", ".tsx"):
             scan_line = re.sub(r"//.*$", "", scan_line)
@@ -417,17 +397,11 @@ def check_file(filepath, resolver):
 
 def scan_paths(paths, resolver):
     all_out = []
-    for p in paths:
-        if os.path.isfile(p):
-            all_out.extend(check_file(p, resolver))
-        elif os.path.isdir(p):
-            for root, dirs, files in os.walk(p):
-                dirs[:] = [d for d in dirs if not d.startswith(".")]
-                for fname in sorted(files):
-                    if os.path.splitext(fname)[1].lower() in TARGET_EXTENSIONS:
-                        all_out.extend(check_file(os.path.join(root, fname), resolver))
+    for kind, val in checklib.iter_target_files(paths, TARGET_EXTENSIONS):
+        if kind == "missing":
+            all_out.append(f"ERROR contrast: path not found: {val}")
         else:
-            all_out.append(f"ERROR contrast: path not found: {p}")
+            all_out.extend(check_file(val, resolver))
     return all_out
 
 
@@ -598,13 +572,7 @@ def run_self_test():
         ".css",
     )
 
-    if failures:
-        for f in failures:
-            print(f)
-        print(f"SELF-TEST FAILED ({len(failures)} failures, {case_count} cases run)")
-        sys.exit(1)
-    print(f"SELF-TEST OK ({case_count} cases)")
-    sys.exit(0)
+    checklib.report_self_test(failures, case_count)
 
 
 # ── Entry point ────────────────────────────────────────────────────────────────
