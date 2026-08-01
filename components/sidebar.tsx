@@ -83,10 +83,10 @@ const nav: NavGroup[] = [
       {
         label: "AI",
         items: [
-          { href: "/guidelines/ai", title: "Overview" },
-          { href: "/guidelines/ai-patterns", title: "AI patterns" },
-          { href: "/guidelines/ai-components", title: "Using components" },
-          { href: "/guidelines/ai-prompts", title: "Writing prompts" },
+          { href: "/guidelines/ai", title: "Principles" },
+          { href: "/guidelines/ai-patterns", title: "Use cases" },
+          { href: "/guidelines/ai-components", title: "Components" },
+          { href: "/guidelines/ai-prompts", title: "Prompts" },
         ],
       },
       { href: "/guidelines/interaction", title: "Interaction" },

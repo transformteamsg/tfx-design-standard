@@ -2,8 +2,13 @@
 
 import type { UIMessage, UIMessageChunk } from "ai";
 
-/* Keyword-matched canned responses for TFX teacher scenarios.
-   Each entry has an optional reasoning block and optional sources. */
+/* Keyword-matched canned responses for a shared education assistant.
+   The four flagship chat demos each seed a different role - a teacher, a
+   parent, a student, and an administrator - so the branches below are keyed
+   on role-distinct phrases. Role branches are checked first, then the
+   teacher branches, so a general word like "reading" does not steal a
+   parent or student turn. Each entry has an optional reasoning block and
+   optional sources. */
 
 interface CannedResponse {
   reasoning?: string;
@@ -22,21 +27,67 @@ function matchResponse(messages: UIMessage[]): CannedResponse {
           .toLowerCase()
       : "";
 
-  if (text.includes("summarise") || text.includes("summarize") || text.includes("reading")) {
+  /* ── Parent branch (conversation demo): plain language, no jargon, and a
+        thing they can do at home. ── */
+  if (
+    text.includes("my daughter") ||
+    text.includes("my son") ||
+    text.includes("my child") ||
+    text.includes("at home") ||
+    text.includes("practise") ||
+    text.includes("tricky") ||
+    text.includes("finding")
+  ) {
+    return {
+      text: "She has had a strong term in reading. She is now comfortable with the texts set for her year, and reads them with good expression.\n\nThe next step is inference - working out things the text implies but does not say outright. You can help at home by pausing during a story to ask \"why do you think they did that?\" There is nothing to worry about here; this is the normal next stage.",
+    };
+  }
+
+  /* ── Student branch (streaming demo): help beats answer. The student asks
+        for the piece to be written; the assistant scaffolds instead. ── */
+  if (text.includes("write my") || text.includes("essay") || text.includes("my conclusion")) {
+    return {
+      text: "I can help you get there, but writing the conclusion for you would not be your work. Let us build it together.\n\nAnswer these three, in your own words:\n\n1. What is the one idea you most want the reader to remember about the water cycle?\n2. Which piece of evidence from your essay backs it up best?\n3. Why does it matter beyond the classroom - what does it explain about the world?\n\nDraft a sentence for each and I will help you tighten them.",
+    };
+  }
+
+  /* ── Administrator branch (prompt-input demo): ops and records, not
+        classroom teaching. ── */
+  if (
+    text.includes("enrol") ||
+    text.includes("absence") ||
+    text.includes("overdue") ||
+    text.includes("form")
+  ) {
     return {
       reasoning:
-        "The teacher asked for a reading-progress summary. I will check Term 2 guided-reading session logs, fluency assessments, and comprehension scores for Ahmad before synthesising a brief update.",
-      text: "Ahmad has made solid progress in Term 2. He moved from Band 1 to Band 2 in guided reading, completing 14 of 15 scheduled sessions. His fluency score improved from 67 to 84 words per minute, and comprehension check scores averaged 72% — up from 58% last term.\n\nHis strongest area is literal recall. Inferential questions remain a development focus, particularly when texts use unfamiliar cultural context.",
+        "This is a records request. I will check the enrolment queue and the outstanding-forms list for this intake before summarising what still needs action.",
+      text: "Three items need action for this week's intake:\n\n- **4 enrolment forms** submitted but not yet confirmed\n- **2 consent forms** overdue by more than five days\n- **1 record** with a missing date of birth, blocking confirmation\n\nRecommended next step: confirm the 4 complete forms, then chase the 2 overdue consents.",
       sources: [
         {
           sourceId: "src-1",
-          url: "https://casesync.school/records/ahmad/guided-reading-t2",
-          title: "Guided reading log — Ahmad, Term 2",
+          url: "https://school.example/admin/enrolment-queue",
+          title: "Enrolment queue - this intake",
+        },
+      ],
+    };
+  }
+
+  if (text.includes("summarise") || text.includes("summarize") || text.includes("reading")) {
+    return {
+      reasoning:
+        "The teacher asked for a reading-progress summary. I will check this term's guided-reading session logs, fluency checks, and comprehension scores for Mateo before writing a brief update.",
+      text: "Mateo has made solid progress this term. He moved from level 2 to level 3 in guided reading, completing 14 of 15 scheduled sessions. His fluency score improved from 67 to 84 words per minute, and comprehension checks averaged 72% - up from 58% last term.\n\nHis strongest area is literal recall. Inferential questions remain a development focus, particularly when texts use unfamiliar cultural context.",
+      sources: [
+        {
+          sourceId: "src-1",
+          url: "https://school.example/records/mateo/guided-reading",
+          title: "Guided reading log - Mateo, this term",
         },
         {
           sourceId: "src-2",
-          url: "https://casesync.school/assessments/ahmad/fluency-t2",
-          title: "Fluency assessment — Ahmad, Term 2",
+          url: "https://school.example/assessments/mateo/fluency",
+          title: "Fluency check - Mateo, this term",
         },
       ],
     };
@@ -45,13 +96,13 @@ function matchResponse(messages: UIMessage[]): CannedResponse {
   if (text.includes("flag") || text.includes("below") || text.includes("band")) {
     return {
       reasoning:
-        "The teacher wants students below a reading band threshold. I will cross-reference current band assignments against the Band 2 benchmark and list students who have not yet reached it.",
-      text: "Three students in Class 5A are currently reading below Band 2:\n\n- **Lena K.** — Band 1, last assessed Week 7\n- **Marcus T.** — Band 1, last assessed Week 8\n- **Priya S.** — Band 1 (provisional), assessment overdue\n\nRecommended next step: schedule targeted small-group sessions before the end-of-term checkpoint.",
+        "The teacher wants students below a reading level threshold. I will cross-reference current levels against the benchmark and list students who have not yet reached it.",
+      text: "Three students in this class are currently reading below the benchmark:\n\n- **Lucia M.** - level 2, last checked Week 7\n- **Noah T.** - level 2, last checked Week 8\n- **Aisha R.** - level 2 (provisional), check overdue\n\nRecommended next step: schedule targeted small-group sessions before the term ends.",
       sources: [
         {
           sourceId: "src-1",
-          url: "https://casesync.school/class/5a/reading-bands",
-          title: "Reading band summary — Class 5A",
+          url: "https://school.example/class/reading-levels",
+          title: "Reading level summary - this class",
         },
       ],
     };
@@ -59,12 +110,12 @@ function matchResponse(messages: UIMessage[]): CannedResponse {
 
   if (text.includes("comment") || text.includes("draft") || text.includes("report")) {
     return {
-      text: "Here is a draft end-of-term comment for Ahmad:\n\n> Ahmad has demonstrated consistent effort throughout Term 2 and is meeting year-level reading benchmarks. He shows strong literal comprehension and is growing in confidence during guided reading sessions. A focus area for Term 3 is extending his inferential thinking when working with texts that draw on unfamiliar cultural contexts.\n\nFeel free to adjust tone or add specific examples before sharing with parents.",
+      text: "Here is a draft progress note for Mateo:\n\n> Mateo has demonstrated consistent effort this term and is meeting year-level reading benchmarks. He shows strong literal comprehension and is growing in confidence during guided reading sessions. A focus area for next term is extending his inferential thinking when working with texts that draw on unfamiliar cultural contexts.\n\nFeel free to adjust tone or add specific examples before sharing with families.",
     };
   }
 
   return {
-    text: "I can help with reading progress summaries, flagging students below benchmark, or drafting end-of-term comments. What would you like to know about your class?",
+    text: "I can help with that. Could you tell me a little more about what you are looking for?",
   };
 }
 
@@ -91,7 +142,7 @@ async function* streamWords(
         reject(new DOMException("Aborted", "AbortError"));
       });
     }).catch(() => {
-      /* aborted — stop gracefully */
+      /* aborted - stop gracefully */
       return;
     });
     if (abortSignal.aborted) return;
@@ -147,7 +198,7 @@ function buildStream(
           }
         }
       } catch {
-        /* aborted or other error — close cleanly */
+        /* aborted or other error - close cleanly */
       } finally {
         controller.close();
       }
@@ -174,7 +225,7 @@ export class MockChatTransport {
 
     const matched = matchResponse(options.messages);
     /* Web search gates citations: the real perplexity/sonar model returns
-       sources only when search is on, so the mock mirrors that — Sources
+       sources only when search is on, so the mock mirrors that - Sources
        appear only when the caller passes body.webSearch. */
     const webSearch = options.body?.webSearch === true;
     const response: CannedResponse = webSearch

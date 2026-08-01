@@ -30,17 +30,17 @@ interface ChatMessage {
 }
 
 const REPLIES: Record<string, string> = {
-  "Summarise 5A this term":
-    "5A had a solid term overall. Reading bands are tracking at or above benchmark for 18 of 22 students. Writing fluency has improved across the board since the structured sentence work in weeks 3-5. Four students - Jay, Priya, Marco, and Leila - would benefit from a targeted check-in before end-of-term reports.",
-  "Draft comments for Ahmad":
-    "Ahmad has shown consistent effort in reading this term. He is meeting year-level benchmarks and has demonstrated strong literal comprehension skills. His next step is to build on inferential thinking - asking 'why' questions as he reads will help with this.",
+  "Summarise this cohort's term":
+    "This cohort had a solid term overall. Progress checks are tracking at or above benchmark for 18 of 22 learners. Attendance has improved across the board since the outreach in weeks 3-5. Four learners - Noor, Kenji, Marco, and Leila - would benefit from a targeted check-in before end-of-term reports.",
+  "Draft an enrolment update":
+    "This cohort's enrolment is steady this term: 22 active, one transfer pending, no withdrawals. Attendance has held above 90% since week 4. Next step - confirm the transfer paperwork before the term closes.",
   "Who needs a check-in?":
-    "Based on this term's records, three students are worth a check-in before reports: Jay (reading band dropped one level in week 7), Priya (only 2 running records this term - data is thin), and Marco (strong academically but three unexplained absences in weeks 6-9).",
+    "Based on this term's records, three learners are worth a check-in before reports: Noor (progress dropped one level in week 7), Kenji (only 2 progress checks this term - data is thin), and Marco (strong academically but three unexplained absences in weeks 6-9).",
 };
 
 const WORD_DELAY_MS = 55;
 
-export const DemoEmptyState = () => {
+export const DemoEmptyState = ({ title, blurb }: { title?: string; blurb?: string }) => {
   const { ref, reduced } = useReplay({ steps: 1, stepMs: 400 });
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [streamingText, setStreamingText] = useState<string | null>(null);
@@ -123,6 +123,8 @@ export const DemoEmptyState = () => {
     <DemoFrame
       caption={["ConversationEmptyState", "Suggestion", "MessageResponse"]}
       rootRef={ref}
+      title={title}
+      blurb={blurb}
     >
       <div className="flex h-[420px] flex-col overflow-hidden">
         <Conversation className="flex-1">
@@ -130,8 +132,8 @@ export const DemoEmptyState = () => {
             {!hasMessages && !isStreaming ? (
               <ConversationEmptyState
                 icon={<BookOpen className="size-6" aria-hidden="true" />}
-                title="Ask about your classes"
-                description="I can summarise records and draft comments for your classes. I can't change marks or send anything without you."
+                title="Ask about your cohort"
+                description="I can summarise records and draft enrolment updates for your cohort. I can't change records or send anything without you."
               />
             ) : (
               <div className="flex flex-col gap-3 py-2">
@@ -163,11 +165,11 @@ export const DemoEmptyState = () => {
             <div className="mb-2">
               <Suggestions>
                 <Suggestion
-                  suggestion="Summarise 5A this term"
+                  suggestion="Summarise this cohort's term"
                   onClick={handleSuggestion}
                 />
                 <Suggestion
-                  suggestion="Draft comments for Ahmad"
+                  suggestion="Draft an enrolment update"
                   onClick={handleSuggestion}
                 />
                 <Suggestion

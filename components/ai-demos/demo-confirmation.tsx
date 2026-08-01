@@ -17,7 +17,7 @@ import { useReplay } from "./use-replay";
 type ConfState = "approval-requested" | "approval-responded";
 type Approved = boolean | undefined;
 
-export const DemoConfirmation = () => {
+export const DemoConfirmation = ({ title, blurb }: { title?: string; blurb?: string }) => {
   const { replay, ref } = useReplay({ steps: 1, stepMs: [0] });
 
   const [state, setState] = useState<ConfState>("approval-requested");
@@ -25,8 +25,8 @@ export const DemoConfirmation = () => {
 
   const approval =
     approved === undefined
-      ? { id: "send-parent-summaries-v1" }
-      : { id: "send-parent-summaries-v1", approved };
+      ? { id: "share-progress-summaries-v1" }
+      : { id: "share-progress-summaries-v1", approved };
 
   const handleApprove = () => {
     setApproved(true);
@@ -57,27 +57,29 @@ export const DemoConfirmation = () => {
       ]}
       onReplay={handleReset}
       rootRef={ref}
+      title={title}
+      blurb={blurb}
     >
       <Message from="assistant">
         <MessageContent>
-          I&apos;ve drafted progress summaries for all 32 students in Class 5A. Ready to send to parents.
+          I&apos;ve drafted progress summaries for all 32 learners in this course. Ready to share with the teaching team.
         </MessageContent>
         <Confirmation approval={approval} state={state}>
-          <ConfirmationTitle>Send progress summaries to 32 parents?</ConfirmationTitle>
+          <ConfirmationTitle>Share progress summaries with the teaching team?</ConfirmationTitle>
           <ConfirmationRequest>
             <p className="text-sm text-muted-foreground">
-              One email per student will be sent to the primary contact on record.
-              Emails cannot be recalled once sent - review drafts before confirming.
+              One summary per learner will be shared with their teacher.
+              Shared summaries cannot be recalled - review drafts before confirming.
             </p>
           </ConfirmationRequest>
           <ConfirmationAccepted>
             <p className="text-sm text-success">
-              Approved - sending 32 emails now. You will receive a delivery report once complete.
+              Approved - sharing 32 summaries now. You will receive a confirmation once complete.
             </p>
           </ConfirmationAccepted>
           <ConfirmationRejected>
             <p className="text-sm text-muted-foreground">
-              Cancelled - no emails were sent. The drafts are still available if you change your mind.
+              Cancelled - nothing was shared. The drafts are still available if you change your mind.
             </p>
           </ConfirmationRejected>
           <ConfirmationActions>
@@ -85,7 +87,7 @@ export const DemoConfirmation = () => {
               Cancel
             </ConfirmationAction>
             <ConfirmationAction onClick={handleApprove}>
-              Confirm - send now
+              Confirm - share now
             </ConfirmationAction>
           </ConfirmationActions>
         </Confirmation>

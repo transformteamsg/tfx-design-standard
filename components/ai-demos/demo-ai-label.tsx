@@ -21,7 +21,7 @@ import { useReplay } from "./use-replay";
    PopoverContent is at default width (w-72 from the component itself).
    PopoverTrigger wraps the Badge directly - no extra className on Trigger. */
 
-export function DemoAiLabel() {
+export function DemoAiLabel({ title, blurb }: { title?: string; blurb?: string }) {
   const [edited, setEdited] = useState(false);
   const { ref } = useReplay({ steps: 1, stepMs: 300 });
 
@@ -29,12 +29,14 @@ export function DemoAiLabel() {
     <DemoFrame
       caption={["Badge", "Popover", "PopoverContent", "Button"]}
       rootRef={ref}
+      title={title}
+      blurb={blurb}
     >
       <div className="flex flex-col gap-4">
         {/* Header row */}
         <div className="flex items-center justify-between">
           <span className="text-xs font-semibold text-muted-foreground">
-            End-of-term comment
+            Materials recommendation
           </span>
 
           {/* AI badge / edited state */}
@@ -66,21 +68,21 @@ export function DemoAiLabel() {
                     <div>
                       <dt className="font-medium text-muted-foreground">Generated from</dt>
                       <dd className="mt-0.5 text-foreground">
-                        Running records and attendance (Term 2, weeks 1-9)
+                        Progress checks and participation data (this term, weeks 1-9)
                       </dd>
                     </div>
                     <div>
                       <dt className="font-medium text-muted-foreground">How to check it</dt>
                       <dd className="mt-0.5 text-foreground">
-                        Compare against the student&apos;s portfolio. Adjust tone or
-                        specific details before sharing with parents.
+                        Compare against the learner&apos;s portfolio. Adjust the
+                        recommendation before sharing with the teaching team.
                       </dd>
                     </div>
                   </dl>
 
                   <p className="mt-3 rounded-md bg-muted px-3 py-2 text-xs leading-snug text-muted-foreground">
-                    Always review AI-generated comments before sending to parents or
-                    entering into official records.
+                    Always review AI-generated recommendations before sharing with the
+                    teaching team or entering into course records.
                   </p>
                 </PopoverContent>
               </Popover>
@@ -91,8 +93,8 @@ export function DemoAiLabel() {
         {/* The AI-drafted text field */}
         <textarea
           rows={3}
-          defaultValue="Ahmad has shown consistent effort in reading this term. He is meeting year-level benchmarks and has demonstrated strong literal comprehension skills."
-          aria-label="End-of-term comment (AI draft)"
+          defaultValue="Kenji is ready to move into the next unit's extension materials. He is meeting year-level benchmarks and has shown strong literal comprehension in guided sessions."
+          aria-label="Materials recommendation (AI draft)"
           onChange={() => setEdited(true)}
           className="w-full resize-none rounded-md bg-transparent text-sm leading-relaxed text-foreground focus-visible:outline-none"
         />

@@ -46,7 +46,7 @@ function StatusIcon({ status }: { status: ItemStatus }) {
   );
 }
 
-export const DemoTask = () => {
+export const DemoTask = ({ title, blurb }: { title?: string; blurb?: string }) => {
   const { step, replay, ref } = useReplay({ steps: 4, stepMs: STEP_MS });
 
   const item1: ItemStatus = step >= 1 ? "complete" : "pending";
@@ -61,22 +61,24 @@ export const DemoTask = () => {
       caption={["Task", "TaskTrigger", "TaskContent", "TaskItem", "TaskItemFile"]}
       onReplay={replay}
       rootRef={ref}
+      title={title}
+      blurb={blurb}
     >
       <Message from="assistant">
         <Task defaultOpen>
-          <TaskTrigger title="Generating end-of-term reading summaries" />
+          <TaskTrigger title="Generating end-of-term progress reports" />
           <TaskContent>
             <TaskItem>
               <span className="flex items-center gap-2">
                 <StatusIcon status={item1} />
-                Loaded attendance records for Class 5A
+                Loaded attendance records for this cohort
               </span>
             </TaskItem>
             <TaskItem>
               <span className="flex items-center gap-2">
                 <StatusIcon status={item2} />
-                Retrieved running records
-                <TaskItemFile>5a-running-records-t2.csv</TaskItemFile>
+                Retrieved progress checks
+                <TaskItemFile>cohort-progress-checks-term.csv</TaskItemFile>
               </span>
             </TaskItem>
             <TaskItem>
@@ -85,7 +87,7 @@ export const DemoTask = () => {
                 {item3 === "active"
                   ? "Drafting summaries - 14 of 32 complete"
                   : item3 === "complete"
-                  ? "Drafted summaries for all 32 students"
+                  ? "Drafted summaries for all 32 learners"
                   : "Draft summaries"}
               </span>
             </TaskItem>
@@ -93,10 +95,10 @@ export const DemoTask = () => {
               <span className="flex items-center gap-2">
                 <StatusIcon status={item4} />
                 {item4 === "active"
-                  ? "Queuing parent notification emails"
+                  ? "Queuing guardian notification emails"
                   : item4 === "complete"
-                  ? "Queued 32 parent notification emails"
-                  : "Queue parent notification emails"}
+                  ? "Queued 32 guardian notification emails"
+                  : "Queue guardian notification emails"}
               </span>
             </TaskItem>
           </TaskContent>

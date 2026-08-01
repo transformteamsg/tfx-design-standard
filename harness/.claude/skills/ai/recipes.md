@@ -1,6 +1,6 @@
 # AI Elements recipes
 
-Component reference for AI features in Teacher & School products. Source:
+Component reference for AI features in education products. Source:
 `https://elements.ai-sdk.dev/` (researched 2026-07-15). Components install
 as copied source files, not versioned npm packages.
 
@@ -222,11 +222,11 @@ components), Voice (6), Workflow (7), Utilities (2). Voice, Workflow, and Utilit
 not appear in the routing table because teacher-facing use cases are speculative at this
 stage.
 
-- **Voice** — may fit dictation for CaseSync case notes or accessibility-driven input on
+- **Voice** - may fit dictation for case notes or accessibility-driven input on
   any product. Worth evaluating when a user-research finding points to hands-free or
   low-vision use cases.
-- **Workflow / Canvas** — fits admin and ops pipelines (for example, an attendance sync
-  visualisation or a CaseSync case-progression board), not classroom surfaces. Route here
+- **Workflow / Canvas** - fits admin and ops pipelines (for example, an attendance sync
+  visualisation or a records-progression board), not primary learning surfaces. Route here
   only when the task is clearly internal-tooling or admin.
 - **Utilities (Image, Open-In-Chat)** — situational. Use when an existing surface
   already has an image-heavy or chat-handoff context; don't add for novelty.
@@ -263,3 +263,24 @@ If you upgrade AI Elements, reapply this patch or the `tooltip` prop breaks hydr
 
 Human-readable component reference with routing guidance: `content/guidelines/ai-components.mdx`.
 Tables map each AI Elements component to the TFX routing table and list relevant TFX surfaces.
+
+## Patterns this standard does not ship
+
+Published by The Shape of AI and AIverse, but not shipped here. Listed so an agent can recognise them, cost them honestly, and see the gaps. Building one means designing it from primitives, not picking it off a shelf.
+
+| Pattern | Journey stage | Note |
+|---|---|---|
+| Structured prompt builder | Ask | Fields and pickers instead of a blank box. Worth it when requests repeat. |
+| Auto-fill from context | Ask | The AI fills a field from what it already knows, with no prompt at all. |
+| Nudges | Start | The AI speaks first when it spots something. High interruption cost in a classroom. |
+| Canvas | Read the answer | A side-by-side editing surface instead of a chat thread. |
+| Response variants | Check and fix | Two or three drafts shown together so a person picks. |
+| Steered regeneration | Check and fix | Redo with a named change: shorter, simpler, warmer. |
+| Escalate to a person | Check and fix | A route out of the AI when it is out of its depth. |
+| Refusal with a reason | Check and fix | The AI declines and says why, rather than answering badly. |
+| Capability disclosure | Start | A short statement of what the system can and cannot do, shown before first use. |
+| Watermark that survives export | Read the answer | The AI label stays attached when content leaves the product. |
+| Persistent memory | Remember (unshipped) | Facts carried between sessions. Needs a visible, editable record. |
+| Preference controls | Remember (unshipped) | A person sets tone, length, or reading level once and it holds. |
+| Do-not-remember mode | Remember (unshipped) | A session that leaves no trace. Matters for welfare and pastoral conversations. |
+| Retention and deletion controls | Remember (unshipped) | A person can see and erase what was stored about them. |

@@ -1,54 +1,142 @@
 ---
-title: Overview
-description: Where to start when you add AI to a Teacher & School product.
+title: Principles
+description: Nine checks that keep an AI feature useful and safe for learners, held together by four questions you can keep in your head.
 status: proposed
 ---
 
-> Reference: [Google PAIR Guidebook](https://pair.withgoogle.com/guidebook/), [Microsoft HAX Toolkit](https://www.microsoft.com/en-us/haxtoolkit/library/), [IBM Carbon for AI](https://carbondesignsystem.com/guidelines/carbon-for-ai/), [Vercel AI Elements](https://elements.ai-sdk.dev/). The rules here are distilled from these and adapted to TFX products.
+> Reference: [Google PAIR Guidebook](https://pair.withgoogle.com/guidebook/), [The Shape of AI](https://www.shapeof.ai/), [AIverse](https://www.aiverse.design/), [Vercel AI Elements](https://elements.ai-sdk.dev/), [MIT Human-AI Impact Bench](https://impactbench.media.mit.edu/). The rules here are distilled from these five.
 
-This page is for any designer adding AI to a product.
-Hold onto three principles, then jump to the use case that fits what you are building.
+Every AI feature in an education product has to clear the same nine checks.
+They sit under four questions, so you can hold the shape in your head and drill in when you build.
+One caution runs through all of them: "the person" is often two different people, so name which one you mean.
+The person operating the tool is frequently not the person it affects.
 
-## Three principles that always apply
+## Is AI the right call?
 
-Good AI does less work for the teacher, not more.
-These three principles hold everywhere.
+**Use the lightest tool that works.**
+Often the best AI is none.
+If a fixed rule gives the same result, use the rule; a student mid-draft wants one inline nudge, not a chat panel.
+Check: you can name what the AI adds that a simpler tool could not.
 
-**Fit it to the task.**
-Use the lightest AI that fits, and often that is none.
-A suggestion beats a chatbot when you already know what the teacher wants.
+## Is it honest?
 
-**Make it honest.**
-Mark what the AI wrote, show where it came from, and say how sure it is.
+**Be honest about what it is.**
+Mark AI output where it appears, and say what it cannot do before the person relies on it.
+Make an AI identity read as a tool, not a person, and the younger the user the more explicit that cue should be.
+A warm name and a friendly avatar make it harder for a child to hold onto what they are talking to.
 
-<DemoAiLabel />
+<DemoAiLabel title="Marking AI-generated text" blurb="A badge flags the draft as AI. Open it to see the source, or edit the text to reveal a one-tap revert." />
 
-**Keep the teacher in control.**
-The teacher edits, approves, and can undo.
-Nothing that sends, files, or changes a record happens without a clear yes.
+**Show the working.**
+Let the person see where an answer came from.
+Tie each claim to a source they can open, called grounding, and show the steps behind anything that matters.
+Check: a parent could open the record each sentence of a progress summary draws from.
 
-<DemoConfirmation />
+**Plan for wrong answers.**
+Some errors are invisible: a confident, wrong answer about something the person does not know.
+Design the recovery path, and do not rely on people to catch silent errors.
+The more the outcome matters, the more you need a check they cannot run themselves, not a friendlier error message.
+
+## Does the person stay in charge?
+
+**Keep people in control.**
+The person edits, approves, and can undo, and nothing that sends, files, or changes a record happens without a clear yes.
+This matters most with agents, meaning AI that carries out a multi-step task on someone's behalf rather than only drafting text.
+Check who steers and who is affected: an admissions officer may run a tool that scores an applicant who never touches it.
+
+<DemoConfirmation title="Confirm before it acts" blurb="A consequential action states its plain-language consequence and waits for a yes." />
+
+**Keep data where it belongs.**
+Data a person gives for one purpose should not quietly flow to another.
+Show the difference between "used to answer me now" and "used to train the model", and let a person keep a session out of memory.
+The stakes are sharpest when the data is a minor's.
+
+## Is it safe for the person it affects?
+
+These three carry the most weight.
+They are about the person the AI affects, who is often not the one operating it.
+
+**In learning, help beats answer.**
+Giving the answer can be the failure, not the service.
+MIT's Impact Bench scores `Direct Answer Provision` as a failure: giving the full solution when the person explicitly asked for guidance.
+So satisfaction and benefit pull apart, and the reply that feels most useful can be the one that teaches least.
+
+First ask who is learning, because it is often not the person typing.
+If the person asking is not the learner, answer them directly.
+A teacher asking for a lesson plan is using a work tool, and withholding it helps nobody.
+This principle applies only when the person asking is the one whose skill is at stake.
+
+Then, for that person, judge by task type, because "answer" means something different in each.
+
+| The person asks | What good looks like |
+| --- | --- |
+| A fact: "when is the deadline" | Answer it, immediately |
+| A procedure: "how do I submit this" | Answer it, and show the step |
+| Judgement or craft: "what should my thesis be" | Hold the answer back and help them reach it |
+
+For that third row, ask a guiding question, offer a scaffold, or prompt the person to explain their reasoning.
+Do not hand over a finished piece in their voice: a worked sample teaches, their essay written for them does not.
+
+**Work for everyone.**
+AI performs unevenly across groups, and "works well overall" can still fail specific people.
+Check performance broken down by group, not only in aggregate, and test with the range of people who will use it.
+An answer right for most learners but wrong for one dialect is not good enough in a product everyone must use.
+
+**Protect wellbeing.**
+The product should not manipulate the person, expose them to harmful or age-inappropriate content, maximise engagement, or pull them into a parasocial bond.
+Avoid sycophancy, a model's habit of telling people what pleases them over what is true.
+Weigh all of this hardest for the youngest users.
+A tool a lonely child prefers to a person is a harm, however much they like it.
+Check: no streak counters, variable-reward nudges, or endless feeds on a young-learner surface, and a content filter matched to the age band.
+
+### One failure mode sits outside the nine, on purpose
+
+Adversarial input is when someone crafts content to hijack the model, known as prompt injection.
+You defend it in the prompt, not the interface, so it is not one of the nine checks.
+It matters in education because a learner has a motive to try it, to change the answer they get.
+See [Prompts](/guidelines/ai-prompts) for how to defend against it.
+
+## The three tiers of review
+
+The nine checks sit at three levels, and each is proved by a different kind of evidence.
+That is why none can stand in for another.
+
+| Tier | The question | How you check it | When |
+| --- | --- | --- | --- |
+| The interface | How should this behave on screen? | Look at the screen; a design crit settles it | Every design review |
+| The product decision | Should this be AI at all, and what counts as success? | Instrumented data across a cohort, over time | Feature gate or research |
+| The engine | Is the model underneath safe for learners? | Test the model, not your UI (Impact Bench) | Procurement, and on every model version change |
+
+The tiers nest downward.
+The engine sets the ceiling on what the interface can achieve, and the interface decides whether the product intent is realised.
+A well-designed screen on a sycophantic model still harms learners.
+So a good model score is not product assurance, and a good design review cannot rescue a bad model.
+
+You own the interface tier outright.
+Raise the other two rather than settling them alone: the product decision needs research, and the engine needs procurement.
+If learners under 18 use your product, run the review again for that group, because performance and safety differ by age.
 
 ## What are you building?
 
-Find your situation, then open [AI patterns](/guidelines/ai-patterns) for how to build it.
+Find your situation, then open [Use cases](/guidelines/ai-patterns) for how to build it.
 
-| You are building | The pattern |
+| You are building | The use case |
 | --- | --- |
 | A hint or next step, inline | [Suggestions and next steps](/guidelines/ai-patterns#suggestions-and-next-steps) |
 | A first draft of a field or note | [Generating content](/guidelines/ai-patterns#generating-content) |
 | A short version of a long thing | [Summarising and transforming content](/guidelines/ai-patterns#summarising-and-transforming-content) |
 | An answer from records or documents | [Answering questions from your data](/guidelines/ai-patterns#answering-questions-from-your-data) |
 | A label, score, or flag on a record | [Classifying and flagging](/guidelines/ai-patterns#classifying-and-flagging) |
-| An action taken on the teacher's behalf | [Agents that take action](/guidelines/ai-patterns#agents-that-take-action) |
+| An action taken on someone's behalf | [Agents that take action](/guidelines/ai-patterns#agents-that-take-action) |
 | An open-ended chat | [Conversations](/guidelines/ai-patterns#conversations) |
 
 ## How these pages fit together
 
-- **Overview** - the three principles, and which use case fits your situation.
-- **[AI patterns](/guidelines/ai-patterns)** - what to build and how it should behave.
-- **[Using components](/guidelines/ai-components)** - the AI Elements pieces you build it with.
-- **[Writing prompts](/guidelines/ai-prompts)** - how to write the assistant's instructions.
+- **Principles** - this page: the nine checks and the three tiers of review.
+- **[Use cases](/guidelines/ai-patterns)** - the kinds of AI feature, and how each should behave.
+- **[Components](/guidelines/ai-components)** - the interface parts you assemble, and when not to reach for one.
+- **[Prompts](/guidelines/ai-prompts)** - the instructions that set how the AI behaves.
 
-AI patterns is the behaviour; Using components is the pieces.
-Start with the pattern, then pick the components it needs.
+Pick your use case, then the components it needs.
+
+Further reading: [Microsoft HAX Toolkit](https://www.microsoft.com/en-us/haxtoolkit/library/) and [IBM Carbon for AI](https://carbondesignsystem.com/guidelines/carbon-for-ai/).

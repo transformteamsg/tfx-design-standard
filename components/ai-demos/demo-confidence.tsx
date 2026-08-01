@@ -28,26 +28,26 @@ const CONFIG: Record<ConfidenceLevel, ConfidenceConfig> = {
   high: {
     label: "High confidence",
     variant: "secondary",
-    description: "based on 14 running records",
-    prediction: "Ahmad's predicted reading band for Term 3 is **Band 4**.",
+    description: "based on 14 progress checks",
+    prediction: "Mateo's predicted reading level for next term is **level 5**.",
   },
   medium: {
     label: "Medium confidence",
     variant: "outline",
-    description: "based on 6 records - more data will improve accuracy",
-    prediction: "Kenji's predicted reading band for Term 3 is **Band 3**.",
+    description: "based on 6 checks - more data will improve accuracy",
+    prediction: "Kenji's predicted reading level for next term is **level 4**.",
   },
   low: {
     label: "Low confidence",
     variant: "outline",
-    description: "only 2 records this term - treat as a starting point",
-    prediction: "Priya's predicted reading band for Term 3 is **Band 3**.",
+    description: "only 2 checks this term - treat as a starting point",
+    prediction: "Sofia's predicted reading level for next term is **level 4**.",
   },
 };
 
 const CYCLE: ConfidenceLevel[] = ["high", "medium", "low"];
 
-export const DemoConfidence = () => {
+export const DemoConfidence = ({ title, blurb }: { title?: string; blurb?: string }) => {
   const [level, setLevel] = useState<ConfidenceLevel>("high");
   const { ref } = useReplay({ steps: 1, stepMs: 300 });
 
@@ -62,6 +62,8 @@ export const DemoConfidence = () => {
     <DemoFrame
       caption={["Badge", "Message", "MessageResponse"]}
       rootRef={ref}
+      title={title}
+      blurb={blurb}
     >
       <div className="flex flex-col gap-4">
         <Message from="assistant">

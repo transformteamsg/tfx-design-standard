@@ -169,6 +169,12 @@ export const ConfirmationActions = ({
 
 export type ConfirmationActionProps = ComponentProps<typeof Button>;
 
+// `size="sm"` is Button's own compact variant (h-7 px-2.5 text-sm) — the
+// previous hardcoded `className="h-8 px-3 text-sm"` didn't match ANY real
+// size variant (h-8 is `default`'s height, px-3 matches none, text-sm is
+// `sm`'s text) and, sitting before `{...props}` with no `cn()` merge, fully
+// replaced rather than merged a caller-supplied className (CMP-7). Using the
+// real prop lets Button's own `cn(buttonVariants(...))` do the merging.
 export const ConfirmationAction = (props: ConfirmationActionProps) => (
-  <Button className="h-8 px-3 text-sm" type="button" {...props} />
+  <Button type="button" size="sm" {...props} />
 );

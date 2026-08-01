@@ -29,20 +29,20 @@ import { ChatShell, ChatShellMessages, ChatShellInput } from "./chat-shell";
 import { MockChatTransport } from "./mock-chat";
 import { useReplay } from "./use-replay";
 
-/* Demo attachment - a teacher's running records PDF. Toggled in/out by the
+/* Demo attachment - an enrolment form PDF. Toggled in/out by the
    Attach button so the affordance (attach + remove) is visible. */
 const DEMO_FILE: FileUIPart & { id: string } = {
   id: "att-1",
   type: "file",
   mediaType: "application/pdf",
-  filename: "5a-running-records-t2.pdf",
-  url: "https://casesync.school/records/5a/running-records-t2.pdf",
+  filename: "enrolment-forms-this-intake.pdf",
+  url: "https://school.example/admin/enrolment-forms-this-intake.pdf",
 };
 
 const SUGGESTIONS = [
-  "Draft a reading report",
-  "Flag students below Band 2",
-  "Summarise this week",
+  "List overdue consent forms",
+  "Summarise this week's absences",
+  "Draft an enrolment confirmation",
 ] as const;
 
 /* Canned fallback shown while streaming - the mock returns a real streamed
@@ -52,7 +52,7 @@ const SUGGESTIONS = [
    Anatomy: Suggestions render as siblings ABOVE the PromptInput.
    Attachments render inside the PromptInputHeader slot.
    On submit/chip, the user bubble appears and the assistant reply streams word-by-word. */
-export function DemoPromptInput() {
+export function DemoPromptInput({ title, blurb }: { title?: string; blurb?: string }) {
   const [userText, setUserText] = useState<string | null>(null);
   const [streamedReply, setStreamedReply] = useState("");
   const [status, setStatus] = useState<ChatStatus>("ready");
@@ -149,6 +149,8 @@ export function DemoPromptInput() {
       bleed
       onReplay={handleReplay}
       rootRef={rootRef}
+      title={title}
+      blurb={blurb}
       caption={["PromptInput", "PromptInputHeader", "Suggestion", "Attachments", "Message"]}
     >
       <ChatShell>
@@ -204,7 +206,7 @@ export function DemoPromptInput() {
 
             <PromptInputTextarea
               disabled={isStreaming}
-              placeholder={isStreaming ? "Waiting for response..." : "Ask about a student, class, or report..."}
+              placeholder={isStreaming ? "Waiting for response..." : "Ask about enrolment, forms, or records..."}
               aria-label={isStreaming ? "Prompt - disabled while streaming" : "Prompt"}
             />
 

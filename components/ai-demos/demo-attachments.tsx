@@ -30,29 +30,29 @@ const MOCK_FILES: AttachmentData[] = [
     id: "att-1",
     type: "file",
     mediaType: "application/pdf",
-    filename: "5a-running-records-t2.pdf",
-    url: "https://casesync.school/records/5a/running-records-t2.pdf",
+    filename: "childs-reading-log-term.pdf",
+    url: "https://school.example/records/child/reading-log-term.pdf",
   },
   {
     id: "att-2",
     type: "file",
     mediaType: "text/csv",
-    filename: "attendance-week9.csv",
-    url: "https://casesync.school/records/5a/attendance-week9.csv",
+    filename: "childs-attendance-week9.csv",
+    url: "https://school.example/records/child/attendance-week9.csv",
   },
   {
     id: "att-3",
     type: "file",
     mediaType: "image/png",
-    filename: "class-photo-5a.png",
-    url: "https://casesync.school/assets/5a-class-photo.png",
+    filename: "school-event-photo.png",
+    url: "https://school.example/assets/school-event-photo.png",
   },
 ];
 
 /* Illustrates Attachments in the "list" variant inside PromptInputHeader.
    The attach button cycles through the mock file pool so visitors can add files
    one by one; each file's remove button dismisses it from the list. */
-export const DemoAttachments = () => {
+export const DemoAttachments = ({ title, blurb }: { title?: string; blurb?: string }) => {
   const [attached, setAttached] = useState<AttachmentData[]>([MOCK_FILES[0]]);
 
   const remove = (id: string) =>
@@ -68,6 +68,8 @@ export const DemoAttachments = () => {
   return (
     <DemoFrame
       caption={["Attachments", "Attachment", "AttachmentPreview", "AttachmentInfo", "AttachmentRemove", "AttachmentHoverCard", "PromptInput"]}
+      title={title}
+      blurb={blurb}
     >
       <PromptInput onSubmit={() => {}}>
         {attached.length > 0 && (

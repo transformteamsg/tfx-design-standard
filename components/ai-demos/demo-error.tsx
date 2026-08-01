@@ -27,7 +27,7 @@ import { useReplay } from "./use-replay";
 
 type RetryState = "idle" | "retrying" | "resolved";
 
-export const DemoError = () => {
+export const DemoError = ({ title, blurb }: { title?: string; blurb?: string }) => {
   const [retryState, setRetryState] = useState<RetryState>("idle");
   const { ref } = useReplay({ steps: 1, stepMs: 400 });
 
@@ -46,11 +46,13 @@ export const DemoError = () => {
     <DemoFrame
       caption={["Alert", "AlertTitle", "AlertDescription", "AlertAction", "Button"]}
       rootRef={ref}
+      title={title}
+      blurb={blurb}
     >
       <div className="flex flex-col gap-3">
         <Message from="user">
           <MessageContent>
-            Pull up the CaseSync records for 5A before the meeting.
+            Pull up my child&apos;s progress records before the meeting.
           </MessageContent>
         </Message>
 
@@ -60,7 +62,7 @@ export const DemoError = () => {
               <AlertCircle className="text-success" aria-hidden="true" />
               <AlertTitle>Records loaded</AlertTitle>
               <AlertDescription>
-                CaseSync records for 5A are ready.{" "}
+                Your child&apos;s progress records are ready.{" "}
                 <button
                   type="button"
                   onClick={handleReset}
@@ -73,10 +75,9 @@ export const DemoError = () => {
           ) : (
             <Alert>
               <AlertCircle className="text-destructive" aria-hidden="true" />
-              <AlertTitle>CaseSync records did not load</AlertTitle>
+              <AlertTitle>Records did not load</AlertTitle>
               <AlertDescription>
-                Your draft is safe - nothing was sent.
-                Or open the records directly in CaseSync.
+                Nothing was sent - try again, or check back later.
               </AlertDescription>
               <AlertAction>
                 {retryState === "retrying" ? (

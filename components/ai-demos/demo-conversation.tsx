@@ -31,13 +31,15 @@ interface LocalMessage {
 }
 
 const SUGGESTIONS = [
-  "Draft a reading report",
-  "Flag students below Band 2",
-  "Summarise this week",
+  "How is my son doing this term?",
+  "What is he finding tricky?",
+  "What can we practise at home?",
 ] as const;
 
-/* Seed: first user message that appears when the demo enters view. */
-const SEED_MESSAGE = "Summarise Ahmad’s reading progress this term.";
+/* Seed: first user message that appears when the demo enters view.
+   This demo is seeded as a parent, so the assistant replies in plain
+   language with no education jargon. */
+const SEED_MESSAGE = "How is my daughter doing in reading this term?";
 
 /* ── Chunk reducer (text only, no reasoning/sources in this demo) ─────────── */
 
@@ -69,7 +71,7 @@ function applyChunk(parts: MsgPart[], chunk: UIMessageChunk): MsgPart[] {
 /* ── The conversation demo ───────────────────────────────────────────────── */
 /* Streams the initial assistant reply when the demo scrolls into view.        *
  * Suggestion chips and manual submit trigger additional streamed turns.       */
-export const DemoConversation = () => {
+export const DemoConversation = ({ title, blurb }: { title?: string; blurb?: string }) => {
   const [messages, setMessages] = useState<LocalMessage[]>([]);
   const [status, setStatus] = useState<ChatStatus>("ready");
   const abortRef = useRef<AbortController | null>(null);
@@ -187,6 +189,8 @@ export const DemoConversation = () => {
       bleed
       onReplay={handleReplay}
       rootRef={rootRef}
+      title={title}
+      blurb={blurb}
       caption={["Conversation", "ConversationContent", "Message", "MessageContent", "MessageResponse", "PromptInput", "Suggestion"]}
     >
       <ChatShell>
@@ -237,7 +241,7 @@ export const DemoConversation = () => {
           >
             <PromptInputTextarea
               disabled={isStreaming}
-              placeholder={isStreaming ? "Waiting for response..." : "Ask about your class..."}
+              placeholder={isStreaming ? "Waiting for response..." : "Ask about your child..."}
               aria-label={isStreaming ? "Prompt - disabled while streaming" : "Prompt"}
             />
             <PromptInputFooter>

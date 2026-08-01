@@ -1,13 +1,17 @@
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { getDoc } from "@/lib/content";
-import { sectionTopics } from "@/lib/directory";
+import { sectionTopics, sectionTopicGroups } from "@/lib/directory";
 import { sectionInk, TopicCard } from "@/components/thumbnails";
 import { Illo } from "@/components/illo";
 
-/* Apple HIG-style section landing: short intro, illustration, thumbnail grid. */
+/* Apple HIG-style section landing: short intro, illustration, thumbnail grid.
+   Most sections render one flat grid. Sections that declare `groups` in
+   content/map.json (currently Guidelines) render each group under its own
+   heading instead, matching how the sidebar clusters the same pages. */
 export function SectionIndex({ sectionKey }: { sectionKey: string }) {
   const doc = getDoc("sections", sectionKey);
   const topics = sectionTopics(sectionKey);
+  const groups = sectionTopicGroups(sectionKey);
   if (!doc) return null;
   return (
     <div className="max-w-[760px]">
@@ -30,11 +34,30 @@ export function SectionIndex({ sectionKey }: { sectionKey: string }) {
         </div>
       )}
       {doc.illustration && <Illo subject={doc.illustration} />}
-      <div className="mt-10 grid grid-cols-2 gap-x-5 gap-y-7 sm:grid-cols-3">
-        {topics.map((t) => (
-          <TopicCard key={t.href} topic={t} />
-        ))}
-      </div>
+      {groups ? (
+        <div className="mt-10 space-y-8">
+          {groups.map((group, i) => (
+            <div key={group.label ?? `standalone-${i}`}>
+              {group.label && (
+                <h2 className="text-xs font-semibold text-muted-foreground">{group.label}</h2>
+              )}
+              <div
+                className={`grid grid-cols-2 gap-x-5 gap-y-7 sm:grid-cols-3 ${group.label ? "mt-3" : ""}`}
+              >
+                {group.topics.map((t) => (
+                  <TopicCard key={t.href} topic={t} />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="mt-10 grid grid-cols-2 gap-x-5 gap-y-7 sm:grid-cols-3">
+          {topics.map((t) => (
+            <TopicCard key={t.href} topic={t} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

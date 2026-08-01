@@ -3,10 +3,10 @@ id: CMP-7
 source: TFX-DS
 title: Components stay consistent with their design-system defaults and with sibling-page usage — overriding a default's colour/contrast/shape, or breaking a control group's shared resting affordance, is a finding unless justified
 tier: L2
-check: judgment
+check: hybrid
 phase: [plan, implement, verify]
 applies_to: [page, component]
-verify: "Evaluator: the surface's components use their design-system defaults; any override of a default that changes colour, contrast, or shape is flagged (and its contrast re-checked under A11Y-1), the surface's component usage matches sibling pages, and a control group's members share one resting affordance; deterministic override-detection planned once the component manifest (CMP-1) is wired"
+verify: "Deterministic subset (checks/component-fidelity.py): a className fixed height/font-size sitting alongside a literal size= prop on a design-system component tag, an unscoped .prose descendant rule, and a bare global h1-h4 selector are script-enforced. Judgment: the evaluator confirms the surface's components use their design-system defaults where the manifest-dependent cases (no component manifest yet — CMP-1) aren't script-reachable, that the surface's component usage matches sibling pages, and that a control group's members share one resting affordance; contrast is re-checked under A11Y-1 on any colour/contrast override"
 waiver: rationale
 fails_when:
   - a design-system component default is overridden in a way that changes colour, contrast, or shape with no recorded reason

@@ -196,6 +196,18 @@ html { scroll-padding-top: 80px; }
   html { scroll-behavior: smooth; }
 }
 
+/* A11Y-5 (L1): global reduced-motion guard so no animation/transition (ours or
+   a vendor's) needs its own motion-reduce: variant. Near-zero, not 0, so
+   transitionend/animationend still fire. */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
@@ -204,7 +216,8 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-h1, h2 { font-family: "Plus Jakarta Sans Variable", system-ui, sans-serif; letter-spacing: -0.01em; }
+/* h1-h4 font-family moved into the scoped :where(...) rule below (was a bare
+   `h1, h2 { ... }` here — a global tag selector, unscoped, CMP-7 GLOBALH). */
 
 /* prose defaults for MDX — layered as components so Tailwind utilities on
    embedded UI (diagrams, figures) can override them.
@@ -218,7 +231,7 @@ h1, h2 { font-family: "Plus Jakarta Sans Variable", system-ui, sans-serif; lette
 @layer components {
   .prose { max-width: 70ch; line-height: 1.5; font-size: var(--text-base); }
   .not-prose { line-height: 1.5; }
-  .prose :where(h3, h4):not(.not-prose *) { font-family: "Plus Jakarta Sans Variable", system-ui, sans-serif; letter-spacing: -0.01em; }
+  .prose :where(h1, h2, h3, h4):not(.not-prose *) { font-family: "Plus Jakarta Sans Variable", system-ui, sans-serif; letter-spacing: -0.01em; }
   .prose h1:not(.not-prose *) { font-size: var(--text-3xl); font-weight: 600; margin: 0 0 16px; }
   .prose h2:not(.not-prose *) { font-size: var(--text-2xl); font-weight: 600; margin: 40px 0 12px; }
   .prose h3:not(.not-prose *) { font-size: var(--text-xl); font-weight: 600; margin: 28px 0 8px; }

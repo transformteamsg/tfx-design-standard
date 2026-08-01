@@ -11,13 +11,13 @@ import { DemoFrame } from "./demo-frame";
 import { useReplay } from "./use-replay";
 
 const ANSWER =
-  "Ahmad has attended 14 of 18 scheduled reading sessions this term. His running record places him at Band 3, on track for his year level. Comprehension responses show strong literal recall; inferential questioning is the current development focus.";
+  "You've completed 14 of 18 scheduled reading sessions this term. Your latest progress check places you at level 4, on track for your year level. Your comprehension answers show strong literal recall - inferential questioning is your current development focus.";
 
 const WORDS = ANSWER.split(" ");
 
 /* Sources appear after the assistant text finishes streaming.
    useReplay drives word-by-word streaming; Sources are shown once complete. */
-export const DemoSources = () => {
+export const DemoSources = ({ title, blurb }: { title?: string; blurb?: string }) => {
   const { step, replay, ref } = useReplay({ steps: WORDS.length, stepMs: 55 });
 
   const displayText = WORDS.slice(0, step).join(" ");
@@ -29,11 +29,13 @@ export const DemoSources = () => {
       caption={["Message", "MessageResponse", "Sources", "SourcesTrigger", "SourcesContent", "Source"]}
       onReplay={replay}
       rootRef={ref}
+      title={title}
+      blurb={blurb}
     >
       <div className="flex flex-col gap-4">
         <Message from="user">
           <MessageContent>
-            How is Ahmad tracking against year-level benchmarks?
+            How am I tracking against year-level benchmarks?
           </MessageContent>
         </Message>
 
@@ -48,15 +50,15 @@ export const DemoSources = () => {
                 <SourcesTrigger count={3} />
                 <SourcesContent>
                   <Source
-                    href="https://casesync.school/records/5a/reading"
-                    title="Term 2 reading records - Class 5A"
+                    href="https://school.example/records/class/reading"
+                    title="This term's reading records - your class"
                   />
                   <Source
-                    href="https://casesync.school/students/ahmad-hassan/running-records"
-                    title="Running records - Ahmad Hassan"
+                    href="https://school.example/students/me/progress-checks"
+                    title="Your progress checks"
                   />
                   <Source
-                    href="https://casesync.school/benchmarks/year5"
+                    href="https://school.example/benchmarks/year5"
                     title="Year 5 literacy benchmarks"
                   />
                 </SourcesContent>

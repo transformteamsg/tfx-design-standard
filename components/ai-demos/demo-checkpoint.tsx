@@ -17,7 +17,7 @@ import { cn } from "@/lib/utils";
    step 3 = second message appears */
 const STEP_MS = [0, 600, 800, 1000];
 
-export const DemoCheckpoint = () => {
+export const DemoCheckpoint = ({ title, blurb }: { title?: string; blurb?: string }) => {
   const { step, replay, ref } = useReplay({ steps: 3, stepMs: STEP_MS });
 
   return (
@@ -25,6 +25,8 @@ export const DemoCheckpoint = () => {
       caption={["Checkpoint", "CheckpointIcon", "CheckpointTrigger"]}
       onReplay={replay}
       rootRef={ref}
+      title={title}
+      blurb={blurb}
     >
       <div className="flex flex-col gap-4">
         <div
@@ -35,7 +37,7 @@ export const DemoCheckpoint = () => {
         >
           <Message from="assistant">
             <MessageResponse>
-              {"I've reviewed attendance records and running records for Class 5A. All data is current as of this morning's sync."}
+              {"I've reviewed attendance records and progress checks for this cohort. All data is current as of this morning's sync."}
             </MessageResponse>
           </Message>
         </div>
@@ -62,7 +64,7 @@ export const DemoCheckpoint = () => {
         >
           <Message from="assistant">
             <MessageResponse>
-              {"Here is the summary: 28 of 32 students are meeting or exceeding year-level benchmarks. Four students are flagged for support - I've drafted a note for each one."}
+              {"Here is the summary: 28 of 32 learners are meeting or exceeding year-level benchmarks. Four learners are flagged for support - I've drafted a note for each one."}
             </MessageResponse>
           </Message>
         </div>

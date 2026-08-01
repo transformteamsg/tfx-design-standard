@@ -17,13 +17,13 @@ import { useReplay } from "./use-replay";
 
 /* The fixed prompt that drives the streaming demo. "haven't submitted" hits
    the mock's "below / band" keyword path, streaming the three-student list. */
-const DEMO_QUESTION = "Which students in 5A haven't submitted their reading log this week?";
+const DEMO_QUESTION = "Can you write my essay conclusion on the water cycle?";
 
 /* Illustrates the streaming state: a partial assistant message with a Shimmer
    status line above, and a PromptInputSubmit locked in stop mode (square icon,
-   aria-label "Stop") so teachers can interrupt at any moment.
+   aria-label "Stop") so the person can interrupt at any moment.
    Stop actually aborts the stream; Replay restarts it from scratch. */
-export const DemoStreaming = () => {
+export const DemoStreaming = ({ title, blurb }: { title?: string; blurb?: string }) => {
   const [streamedText, setStreamedText] = useState("");
   const [status, setStatus] = useState<ChatStatus>("ready");
   const abortRef = useRef<AbortController | null>(null);
@@ -119,6 +119,8 @@ export const DemoStreaming = () => {
       caption={["MessageResponse", "Shimmer", "PromptInput", "PromptInputSubmit"]}
       onReplay={handleReplay}
       rootRef={rootRef}
+      title={title}
+      blurb={blurb}
     >
       <ChatShell>
         <ChatShellMessages>
@@ -136,7 +138,7 @@ export const DemoStreaming = () => {
               {isStreaming && (
                 <div className="mt-2 pl-1">
                   <Shimmer as="p">
-                    Retrieving final record from CaseSync...
+                    Retrieving the final record...
                   </Shimmer>
                 </div>
               )}
@@ -148,7 +150,7 @@ export const DemoStreaming = () => {
           <PromptInput onSubmit={() => {}}>
             <PromptInputTextarea
               disabled={isStreaming}
-              placeholder={isStreaming ? "Waiting for response..." : "Ask about your class..."}
+              placeholder={isStreaming ? "Waiting for response..." : "Ask for help with your work..."}
               aria-label={isStreaming ? "Prompt - disabled while streaming" : "Prompt"}
             />
             <PromptInputFooter>

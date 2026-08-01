@@ -62,9 +62,9 @@ import { MockChatTransport } from "./mock-chat";
 import { useReplay } from "./use-replay";
 
 const SUGGESTIONS = [
-  "Summarise Ahmad's reading progress",
-  "Flag students below Band 2",
-  "Draft an end-of-term comment",
+  "Summarise Mateo's reading progress",
+  "Flag students below benchmark",
+  "Draft a progress note",
 ] as const;
 
 const MODELS = [
@@ -89,7 +89,7 @@ interface LocalMessage {
 /* Wires directly to MockChatTransport (no network calls, no useChat hook).   *
  * Renders reasoning panels and source citations when present.                 *
  * Model picker is visual-only. Height is content-driven (max-h + scroll).   */
-export function DemoChatbot() {
+export function DemoChatbot({ title, blurb }: { title?: string; blurb?: string }) {
   const [model, setModel] = useState<string>("assist");
   const [webSearch, setWebSearch] = useState(false);
   const [messages, setMessages] = useState<LocalMessage[]>([]);
@@ -163,7 +163,7 @@ export function DemoChatbot() {
           );
         }
       } catch {
-        /* aborted or stream error — leave whatever we have */
+        /* aborted or stream error - leave whatever we have */
       } finally {
         reader.releaseLock();
       }
@@ -205,7 +205,7 @@ export function DemoChatbot() {
   );
 
   /* Retry: drop the trailing assistant turn and regenerate from the last
-     user message — the mock re-streams a fresh reply. */
+     user message - the mock re-streams a fresh reply. */
   const regenerate = useCallback(async () => {
     const lastUserIdx = messages.map((m) => m.role).lastIndexOf("user");
     if (lastUserIdx === -1) return;
@@ -242,6 +242,8 @@ export function DemoChatbot() {
       bleed
       onReplay={handleReplay}
       rootRef={rootRef}
+      title={title}
+      blurb={blurb}
       caption={[
         "Conversation",
         "ConversationEmptyState",
@@ -258,7 +260,7 @@ export function DemoChatbot() {
         "Suggestion",
       ]}
     >
-      {/* DemoFrame figure is the surface — no inner bordered box (SLP-4).
+      {/* DemoFrame figure is the surface - no inner bordered box (SLP-4).
           The flagship chatbot grows unboundedly, so it keeps an internal
           scroll region; Conversation provides stick-to-bottom while streaming. */}
       <ChatShell>
@@ -285,7 +287,7 @@ export function DemoChatbot() {
                   );
                 }
 
-                /* Assistant message — render reasoning, sources, then text. */
+                /* Assistant message - render reasoning, sources, then text. */
                 const reasoningPart = msg.parts.find((p) => p.type === "reasoning");
                 const sourceParts = msg.parts.filter((p) => p.type === "source-url");
                 const textPart = msg.parts.find((p) => p.type === "text");
@@ -298,7 +300,7 @@ export function DemoChatbot() {
 
                 return (
                   <Message key={msg.id} from="assistant">
-                    {/* Reasoning panel — auto-opens while streaming, collapses after */}
+                    {/* Reasoning panel - auto-opens while streaming, collapses after */}
                     {reasoningPart && reasoningPart.type === "reasoning" && (
                       <Reasoning isStreaming={isReasoningStreaming}>
                         <ReasoningTrigger />
@@ -334,7 +336,7 @@ export function DemoChatbot() {
                       </MessageResponse>
                     )}
 
-                    {/* Copy / Retry — on the last completed assistant turn only */}
+                    {/* Copy / Retry - on the last completed assistant turn only */}
                     {msg.id === lastMessageId &&
                       !isStreaming &&
                       textPart?.type === "text" &&
@@ -356,7 +358,7 @@ export function DemoChatbot() {
               })
             )}
 
-            {/* Pending indicator — shows in the window before the first token */}
+            {/* Pending indicator - shows in the window before the first token */}
             {status === "submitted" && <Loader />}
           </ConversationContent>
           <ConversationScrollButton />
@@ -364,7 +366,7 @@ export function DemoChatbot() {
 
         {/* Input area */}
         <ChatShellInput>
-          {/* Suggestion chips — only shown before the first message */}
+          {/* Suggestion chips - only shown before the first message */}
           {messages.length === 0 && (
             <div className="mb-2">
               <Suggestions>
@@ -394,7 +396,7 @@ export function DemoChatbot() {
 
             <PromptInputFooter>
               <PromptInputTools>
-                {/* Web-search toggle — when on, replies cite Sources (mirrors
+                {/* Web-search toggle - when on, replies cite Sources (mirrors
                     a search-enabled model). Off by default. */}
                 <PromptInputButton
                   type="button"
@@ -407,7 +409,7 @@ export function DemoChatbot() {
                   <span className="text-xs">Search</span>
                 </PromptInputButton>
 
-                {/* Model picker — visual only, not wired to transport */}
+                {/* Model picker - visual only, not wired to transport */}
                 <ModelSelector>
                   <ModelSelectorTrigger
                     render={
@@ -439,7 +441,7 @@ export function DemoChatbot() {
                 </ModelSelector>
               </PromptInputTools>
 
-              {/* Submit / stop — status drives the icon automatically */}
+              {/* Submit / stop - status drives the icon automatically */}
               <PromptInputSubmit status={status} onStop={stop} />
             </PromptInputFooter>
           </PromptInput>

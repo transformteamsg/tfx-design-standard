@@ -24,6 +24,16 @@
       "ai-patterns",
       "ai-components",
       "ai-prompts"
+    ],
+    "groups": [
+      {
+        "label": "Content",
+        "slugs": ["voice-tone", "ui-text", "grammar-mechanics", "text-patterns", "naming"]
+      },
+      {
+        "label": "AI",
+        "slugs": ["ai", "ai-patterns", "ai-components", "ai-prompts"]
+      }
     ]
   },
   "foundations": {

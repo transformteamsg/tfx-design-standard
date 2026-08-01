@@ -1,103 +1,121 @@
 ---
-title: AI patterns
-description: What to build for each AI use case, and how it should behave.
+title: Use cases
+description: The seven things AI actually does in a product, and how each should behave. Find yours, then build it from components.
 status: proposed
 ---
 
-> Reference: [The Shape of AI](https://www.shapeof.ai/), [Google PAIR Guidebook](https://pair.withgoogle.com/guidebook/), [Microsoft HAX Toolkit](https://www.microsoft.com/en-us/haxtoolkit/library/), [IBM Carbon for AI](https://carbondesignsystem.com/guidelines/carbon-for-ai/), [Vercel AI Elements](https://elements.ai-sdk.dev/). The rules here are distilled from these and adapted to TFX products.
+> Reference: [Google PAIR Guidebook](https://pair.withgoogle.com/guidebook/), [The Shape of AI](https://www.shapeof.ai/), [AIverse](https://www.aiverse.design/), [Vercel AI Elements](https://elements.ai-sdk.dev/), [MIT Human-AI Impact Bench](https://impactbench.media.mit.edu/). The rules here are distilled from these.
 
-This page is for designers who have picked a use case from the [Overview](/guidelines/ai) and want to know how to build it.
+AI does a handful of distinct jobs in a product, and each has its own rules for how it should behave.
+Find the job you are building below, follow its rules, and the demos show it working.
+Once you know the shape, [Components](/guidelines/ai-components) has the parts you assemble it from.
 
 ## Suggestions and next steps
 
-The AI proposes a small next action - think autocomplete, a next-step chip, or a field pre-filled from existing context.
-Use this when the teacher is mid-task and a single nudge would help without breaking their flow.
+The AI proposes one small next action: autocomplete, a next-step chip, or a field pre-filled from context already on screen.
+Use it when someone is mid-task and a nudge helps more than a new surface.
+The same pattern serves an administrator picking a category, a parent completing a form, or a teacher starting a note.
 
-- Fit the suggestion inside the existing flow - no modal, no panel.
-- Make it dismissible; the teacher should never feel forced.
-- Remove it once the teacher acts or types past it.
+- Fit the suggestion inside the existing flow. No modal, no panel.
+- Make it dismissible. Nobody should feel forced to take it.
+- Remove it once the person acts or types past it.
+- Suggest one thing. A list of five options is a menu, not a nudge.
 
-<DemoPromptInput />
+<DemoPromptInput title="A nudge inside the flow" blurb="Two or three named next steps offered where the person already is, that vanish once they type." />
 
 ## Generating content
 
-The AI writes a first draft the teacher owns - a case note, end-of-term comment, or goal statement.
-The teacher edits and submits; the AI never finalises on their behalf.
+The AI writes a first draft that the person owns and then edits.
+That might be a case note, a plain-language version of a policy, a reply to a parent, or a revision plan.
+The person edits and submits, and the AI never finalises on their behalf.
+Check first what the draft is for: drafting an administrative artefact saves real time, but drafting a learner's own writing removes the work.
 
-- Mark AI content where it appears. Remove the label once the teacher edits the field.
-- Show certainty in plain words - high, medium, or low - not as a percentage.
-- Stream from the first token, with a visible stop control throughout.
+- **Mark AI content where it appears,** and remove the label once the person edits the field.
+- **Say how sure it is in plain words** - high, medium, or low - never as a percentage.
+- **Stream the draft:** show it appearing progressively, token by token (the small text fragments the model emits), with a stop control visible.
+- **On a learning task, draft the scaffold and not the piece:** an outline, a question, or a worked example on other material.
 
-<DemoAiLabel />
+<DemoAiLabel title="A draft marked as AI" blurb="The badge flags AI text and clears the moment the person edits it, because then it is theirs." />
 
-<DemoStreaming />
+<DemoStreaming title="A draft that streams, with a stop" blurb="Text arrives progressively and can be halted from the first token. On a learning task it scaffolds rather than writing the piece." />
 
 ## Summarising and transforming content
 
-The AI distils or reshapes long material - a term of records into one paragraph, or notes into a parent update.
-Use this when the teacher needs orientation or a new format, not the full source text.
+The AI shortens or reshapes long material.
+A year of records becomes a paragraph, a policy document becomes a plain-language notice, meeting notes become an update.
+Use it when someone needs orientation or a different format, not the full source text.
 
-- Keep the summary beside the source so the teacher can check any claim without navigating away.
-- Every factual statement must be traceable to its source passage. Leave out what cannot be sourced.
+- Keep the summary beside the source so any claim can be checked without navigating away.
+- Every factual statement must trace back to a source passage. Leave out what cannot be traced.
+- Say what the summary covers and what it excludes - the date range, the record types, the documents read.
 
-<DemoSources />
+<DemoSources title="A summary you can trace" blurb="Every claim opens the source passage it came from, so nothing has to be taken on trust." />
 
 ## Answering questions from your data
 
-The teacher asks about a bounded set of records or documents and gets a cited answer.
-Examples: student records, a submitted piece of writing, or an uploaded assessment.
-[Google PAIR](https://pair.withgoogle.com/guidebook/patterns) calls this "grounded Q&A."
+Someone asks a question about a bounded set of records or documents and gets a cited answer.
+Engineers call this RAG, or retrieval-augmented generation - answering from a named set of sources rather than the model's general knowledge.
+The set might be a submitted piece of writing, a school's policy library, or one applicant's file.
 
-- Cite the passage the answer drew from.
-- Ask the teacher to clarify when intent or scope is unclear; do not guess and proceed.
+- **Cite the passage the answer drew from,** and let the citation open the source.
+- **Ask a clarifying question when intent or scope is unclear,** rather than proceeding on an assumption.
+- **Say when the answer is not there:** "I cannot find this in these records" beats a confident invention.
+- **Sort by question type:** facts get a direct answer, the person's own thinking gets a guiding question. Impact Bench, which tests models rather than interfaces, treats a direct answer as a failure on learning tasks.
 
-<DemoInlineCitation />
+<DemoInlineCitation title="An answer with inline citations" blurb="Each sentence carries the source it drew from, so the reader can check the claim in place." />
 
-<DemoClarify />
+<DemoClarify title="One question back before answering" blurb="When the request has two readings, the AI asks which one rather than guessing and wasting the work." />
 
 ## Classifying and flagging
 
-The AI labels, scores, or flags records - reading bands, students who may need a check-in, submissions that look incomplete.
+The AI labels, scores, or flags records: a support tier, an application that looks incomplete, a learner who may need a check-in.
+The person a label describes is usually not the person reading it, so design for both.
 
 | Do | Don't |
 | --- | --- |
-| Mark what the AI classified and where | Present a flag without attribution |
-| Show confidence in plain words | Use raw probability scores |
-| Acknowledge corrections at the point they are given | Ignore feedback and re-flag the same record |
+| Mark what the AI classified and where | Present a flag with no attribution |
+| Show confidence in plain words | Show a raw probability score |
+| Let the person the label describes see and contest it | Keep the label visible only to whoever operates the tool |
+| Acknowledge a correction and show what it changed | Collect a correction that changes nothing |
 
-<DemoConfidence />
+<DemoConfidence title="A flag with plain-language confidence" blurb="High, medium, or low, never a raw score, and only where low confidence changes what happens next." />
 
-<DemoFeedback />
+<DemoFeedback title="A correction the loop acts on" blurb="Feedback that visibly lands and changes something, not a rating that collects free labour." />
 
 ## Agents that take action
 
-The AI completes a whole task on the teacher's behalf - filing a referral, updating a record, scheduling, or sending a notification.
-The highest-stakes use case. [Microsoft HAX](https://www.microsoft.com/en-us/haxtoolkit/library/) requires explicit consent before any consequential action.
+The AI completes a whole task on someone's behalf: filing a referral, updating a record, booking a room, sending a notification.
+An agent is AI that runs a sequence of steps to finish a task, rather than only producing text.
+No pattern on this page carries more risk.
 
-- Show the full plan before any step runs. Let the teacher remove or reorder steps.
-- Require an explicit yes before anything that sends, files, or changes a record. Name the record, field, and proposed value - never a bare "Confirm?".
-- During execution, show which step is running and pause at anything unexpected.
-- Expose the agent's working as a collapsible chain, labelled as working - not a guarantee.
+- Show the full plan before any step runs. Let the person remove or reorder steps.
+- Require an explicit yes before anything that sends, files, or changes a record.
+- Name the record, the field, and the proposed value. Never a bare "Confirm?".
+- During execution, show which step is running, and pause at anything unexpected.
+- Expose the agent's working as a collapsible chain, labelled as working rather than as proof.
 
-<DemoConfirmation />
+<DemoConfirmation title="Approve before it acts" blurb="The exact record, field, and value named in plain words, waiting for a yes." />
 
-<DemoTask />
+<DemoTask title="Which step is running" blurb="Visible steps during execution, so a person can see where it is and which one failed." />
 
-<DemoChainOfThought />
+<DemoChainOfThought title="The working, labelled as working" blurb="A collapsible reasoning trail shown as narration, not offered as proof of a decision." />
 
 ## Conversations
 
-Open-ended chat is the last resort when a task genuinely cannot be scoped in advance.
-An embedded, task-specific control beats a chat panel when the job is known ahead of time.
+Open-ended chat is the last resort, for tasks that genuinely cannot be scoped in advance.
+When you already know the job, an embedded control beats a chat panel.
 
-- Bound the scope. Tell the teacher what the assistant can see and what it cannot, before they ask something outside that scope.
-- Error copy says what did not work and what to do next. No model or technical terminology in user-visible text.
+- Bound the scope out loud. Say what the assistant can see and what it cannot, before someone asks outside it.
+- Give the first move. An empty box asks the person to guess what the assistant is for.
+- Error copy says what did not work and what to do next. No model names or technical terms in user-visible text.
 
-<DemoChatbot />
+<DemoChatbot title="Open chat, the last resort" blurb="Only when the task cannot be scoped ahead of time. It opens with a first move, not a blank box." />
 
-<DemoError />
+<DemoError title="A failure with a way forward" blurb="Says what broke and the next move, in plain words, with no model names in sight." />
 
 ---
 
-For the components that build these patterns, see [Using components](/guidelines/ai-components).
-For how to write the assistant's instructions, see [Writing prompts](/guidelines/ai-prompts).
+For the parts that build these features, see [Components](/guidelines/ai-components).
+For how to write the assistant's instructions, see [Prompts](/guidelines/ai-prompts).
+
+Further reading: [IBM Carbon for AI](https://carbondesignsystem.com/guidelines/carbon-for-ai/) and the [Microsoft HAX Toolkit](https://www.microsoft.com/en-us/haxtoolkit/library/).

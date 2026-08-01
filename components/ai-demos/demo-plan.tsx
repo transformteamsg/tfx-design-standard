@@ -25,19 +25,19 @@ const STEP_MS = [0, 500, 600, 600];
 const STEPS = [
   {
     n: 1,
-    text: "Pull attendance and running-record data for all 32 students in Class 5A from CaseSync.",
+    text: "Pull my quiz results and reading log from this term.",
   },
   {
     n: 2,
-    text: "Draft an individual progress summary for each student, flagging anyone below year-level benchmarks.",
+    text: "Draft a progress summary highlighting where I'm ahead of or behind benchmark.",
   },
   {
     n: 3,
-    text: "Queue parent emails for your review - no messages sent until you confirm.",
+    text: "Queue it for my mentor's review - nothing sent until I approve.",
   },
 ];
 
-export const DemoPlan = () => {
+export const DemoPlan = ({ title, blurb }: { title?: string; blurb?: string }) => {
   const { step, replay, ref } = useReplay({ steps: 3, stepMs: STEP_MS });
 
   const visibleCount = step; // 0, 1, 2, 3
@@ -47,12 +47,14 @@ export const DemoPlan = () => {
       caption={["Plan", "PlanTitle", "PlanDescription", "PlanHeader", "PlanContent", "PlanTrigger", "PlanFooter"]}
       onReplay={replay}
       rootRef={ref}
+      title={title}
+      blurb={blurb}
     >
       <Message from="assistant">
         <Plan defaultOpen>
           <PlanHeader>
-            <PlanTitle>End-of-term reporting plan</PlanTitle>
-            <PlanDescription>3 steps - estimated 4 minutes</PlanDescription>
+            <PlanTitle>My progress summary plan</PlanTitle>
+            <PlanDescription>3 steps - estimated 2 minutes</PlanDescription>
             <PlanTrigger />
           </PlanHeader>
           <PlanContent>

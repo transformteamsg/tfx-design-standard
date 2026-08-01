@@ -80,7 +80,7 @@ design-harness/
 │   └── agents/
 │       └── evaluator.md      # reviewer subagent — generator/evaluator split;
 │                             # carries its own review procedure
-├── checks/                  # 10 check scripts + fixtures/ — see checks/README.md for coverage
+├── checks/                  # 11 check scripts + fixtures/ — see checks/README.md for coverage
 ├── evals/
 │   ├── golden/               # known-correct + planted-trap tasks that score loop output
 │   ├── routing/               # prompts.yaml — catches skill-description drift

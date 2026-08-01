@@ -16,12 +16,12 @@ import { useReplay } from "./use-replay";
 /* Steps:
    step 0 = header visible, panel open, no steps yet
    step 1 = first ChainOfThoughtStep (search) appears
-   step 2 = second step (running records + results) appears
+   step 2 = second step (progress checks + results) appears
    step 3 = third step (benchmarks) appears
    step 4 = panel stays open but final response appears below */
 const STEP_MS = [0, 700, 900, 900, 800];
 
-export const DemoChainOfThought = () => {
+export const DemoChainOfThought = ({ title, blurb }: { title?: string; blurb?: string }) => {
   const { step, replay, ref } = useReplay({ steps: 4, stepMs: STEP_MS });
 
   // Panel stays open while steps are streaming (steps 0-3); close hint on final state
@@ -39,29 +39,31 @@ export const DemoChainOfThought = () => {
       ]}
       onReplay={replay}
       rootRef={ref}
+      title={title}
+      blurb={blurb}
     >
       <Message from="assistant">
         <ChainOfThought open={isOpen} defaultOpen>
-          <ChainOfThoughtHeader>Checking reading records for 5A</ChainOfThoughtHeader>
+          <ChainOfThoughtHeader>Checking cohort records</ChainOfThoughtHeader>
           <ChainOfThoughtContent>
             {step >= 1 && (
               <ChainOfThoughtStep
                 icon={Search}
-                label="Looked up current enrolment for Class 5A"
-                description="Found 32 students active this term."
+                label="Looked up current enrolment for this cohort"
+                description="Found 32 learners active this term."
                 status={step >= 2 ? "complete" : "active"}
               />
             )}
             {step >= 2 && (
               <ChainOfThoughtStep
                 icon={BookOpen}
-                label="Retrieved running records from CaseSync"
-                description="28 of 32 students have at least one record this term."
+                label="Retrieved progress checks from the records system"
+                description="28 of 32 learners have at least one check this term."
                 status={step >= 3 ? "complete" : "active"}
               >
                 <ChainOfThoughtSearchResults>
-                  <ChainOfThoughtSearchResult>5a-running-records-t3.csv</ChainOfThoughtSearchResult>
-                  <ChainOfThoughtSearchResult>5a-running-records-t2.csv</ChainOfThoughtSearchResult>
+                  <ChainOfThoughtSearchResult>cohort-progress-checks-t3.csv</ChainOfThoughtSearchResult>
+                  <ChainOfThoughtSearchResult>cohort-progress-checks-t2.csv</ChainOfThoughtSearchResult>
                 </ChainOfThoughtSearchResults>
               </ChainOfThoughtStep>
             )}
@@ -69,7 +71,7 @@ export const DemoChainOfThought = () => {
               <ChainOfThoughtStep
                 icon={FileText}
                 label="Checked year-level benchmarks"
-                description="Mid-year Band 3 is the expected standard. 6 students are reading below benchmark."
+                description="Mid-year level 4 is the expected standard. 6 learners are reading below benchmark."
                 status="complete"
               />
             )}
@@ -77,7 +79,7 @@ export const DemoChainOfThought = () => {
         </ChainOfThought>
         {step >= 4 && (
           <MessageResponse>
-            {"28 of 32 students in Class 5A have running records this term. 6 students are reading below the mid-year Band 3 benchmark - I've flagged them for follow-up. Would you like a breakdown by student?"}
+            {"28 of 32 learners in this cohort have progress checks this term. 6 learners are reading below the mid-year level 4 benchmark - I've flagged them for follow-up. Would you like a breakdown by learner?"}
           </MessageResponse>
         )}
       </Message>

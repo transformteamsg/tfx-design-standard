@@ -1,58 +1,125 @@
 ---
-title: Using components
-description: The AI Elements pieces you reach for when building an AI feature in TFX.
+title: Components
+description: The interface parts you assemble to build an AI feature, in the order a person meets them. Which part does which job, and when to leave it out.
 status: proposed
 ---
 
-> Reference: [Vercel AI Elements](https://elements.ai-sdk.dev/), [Google PAIR Guidebook](https://pair.withgoogle.com/guidebook/), [Microsoft HAX Toolkit](https://www.microsoft.com/en-us/haxtoolkit/library/), [IBM Carbon for AI](https://carbondesignsystem.com/guidelines/carbon-for-ai/).
+> Reference: [Google PAIR Guidebook](https://pair.withgoogle.com/guidebook/), [The Shape of AI](https://www.shapeof.ai/), [AIverse](https://www.aiverse.design/), [Vercel AI Elements](https://elements.ai-sdk.dev/), [MIT Human-AI Impact Bench](https://impactbench.media.mit.edu/).
 
-This page is for designers who have chosen a use case and now need to know which components build it.
-[AI patterns](/guidelines/ai-patterns) is the behaviour and the design decision - this page is the actual pieces.
+[Use cases](/guidelines/ai-patterns) covers which kind of AI feature to build and how it should behave.
+This page is the parts you build one from, laid out along the five stages a person moves through.
+In each stage table, "reach for it when" and "don't use it when" are the whole decision.
+
+Most parts are AI Elements components, a library you copy into your codebase and then own and edit.
+A few are patterns with no component of their own.
+They are built from shadcn primitives (plain parts like Badge and Alert), or from a slot on an installed component.
+Your coding agent can install and wire all of it; this page is the judgement.
+
+<AiJourney />
+
+## Start
+
+Give a person their first move, before they have asked for anything.
+
+| Component | What it is | Reach for it when | Don't use it when | Built from |
+| --- | --- | --- | --- | --- |
+| Empty state | The opening panel of a chat, before anyone has typed. | The surface is open-ended and a first-time user would not know what to ask. | The surface does one job and could just do it. "Ask me anything" adds a step to something that should already run. | `ConversationEmptyState` slot, plus `Suggestions` |
+| [Suggestion](https://elements.ai-sdk.dev/components/suggestion) | Tappable chips offering a prompt or a next step. | You can name two or three moves genuinely useful to this person now. | You cannot. Generic chips like "Tell me more" train people to skip the row. | `Suggestions` around `Suggestion` chips |
+
+<DemoEmptyState title="An empty state that gets you moving" blurb="Two named suggestions beat a blank box a first-time user has to guess at." />
+
+## Ask
+
+How a person tells the AI what they want, and what it runs on.
+
+| Component | What it is | Reach for it when | Don't use it when | Built from |
+| --- | --- | --- | --- | --- |
+| [Prompt input](https://elements.ai-sdk.dev/components/prompt-input) | A text box with tools, attachments, and a send control that doubles as stop. | The request is genuinely open and you cannot list the options in advance. | The task has a known shape. A form with three fields beats a blank box someone must guess at. | `PromptInputBody` and `PromptInputFooter` |
+| [Attachments](https://elements.ai-sdk.dev/components/attachments) | A strip of files the person has added to the request. | The answer depends on a document only that person holds, such as a parent uploading a report. | The record already lives in your product. Reference it rather than asking for a re-upload. | `Attachments` with `Attachment` and `AttachmentRemove` |
+| Clarify | One question back from the AI before it acts. | The request has two plausible readings and guessing wrong would waste the person's work. | You can infer the answer from context you hold. A chain of clarifiers is a form in disguise, so build the form. | `Message` plus `Suggestions`, one chip per reading |
+
+A few more parts belong in this stage only when the situation calls for them.
+**Speech input** and **Transcription** turn talk into text, but not where saying a learner's name aloud is a disclosure.
+**Mic selector** belongs after a failed recording, not as a first-run setting.
+**Context**, **Model selector** and **Voice selector** expose the model itself.
+They earn their place only when the person genuinely manages cost, speed, or accent.
+Naming a model to someone with no basis to choose makes the outcome their fault.
+**Persona** is an animated character with listening and thinking states, for a voice surface.
+A face in a learning or assessment setting invites trust the system has not earned.
+
+<DemoPromptInput title="One open input, with attachments and suggestions" blurb="Reach for this only when the request is genuinely open; a form beats it for a known task." />
+
+## Watch it work
+
+Tell a person the AI is working, which step it is on, and what it has done.
+
+| Component | What it is | Reach for it when | Don't use it when | Built from |
+| --- | --- | --- | --- | --- |
+| [Shimmer](https://elements.ai-sdk.dev/components/shimmer) | A moving highlight over text while it streams, meaning arrives progressively. | Text is actively arriving and you want the eye to follow the leading edge. | Nothing is streaming. A shimmer with no text arriving reads as a stall. | `Shimmer` |
+| [Task](https://elements.ai-sdk.dev/components/task) | One step of work, with its own state and any files it touched. | Work runs in visible steps and someone may need to see which one failed. | There is only one step. A single row with a tick is ceremony. | `Task` with `TaskTrigger` and `TaskContent` |
+| [Plan](https://elements.ai-sdk.dev/components/plan) | The ordered steps an agent intends to run, before it runs them. | The steps are genuinely under review before anything happens. | They cannot be edited or refused. A plan nobody can change is a progress bar in costume. | `Plan` with `PlanContent`, `PlanAction` and `PlanFooter` |
+| [Tool](https://elements.ai-sdk.dev/components/tool) | A collapsible record of one tool call, where a tool reaches outside the model. | The call touched a real record or the outside world, so it doubles as evidence. | It is an internal call with no consequence. A wall of expanded tool calls is noise. | `ToolHeader` with its `state` prop, plus `ToolInput` and `ToolOutput` |
+
+Also here: **Loader** for a wait of a second or two.
+**Queue** holds stacked requests, though a visible backlog often advertises a wait you have not fixed.
+
+<DemoPlan title="An agent plan, awaiting approval" blurb="The steps stay editable and refusable until the person says go. Otherwise it is a progress bar in costume." />
+
+## Read the answer
+
+Show the result, mark it as AI, and let a person check where it came from.
+
+| Component | What it is | Reach for it when | Don't use it when | Built from |
+| --- | --- | --- | --- | --- |
+| [Message](https://elements.ai-sdk.dev/components/message) | One turn from a person or the AI, with its own toolbar. | The exchange is genuinely back and forth. | It is a one-shot draft inside a form. A chat bubble implies a conversation that is not there. | `Message` with `MessageContent` and `MessageResponse` |
+| [Sources](https://elements.ai-sdk.dev/components/sources) | A collapsible list of what an answer was grounded in, meaning drawn from named material. | The answer came from a bounded set the person can open and check. | The list was assembled afterwards. Sources that did not produce the answer borrow credibility they have not earned. | `Sources` with `SourcesTrigger`, then one `Source` per document |
+| [Inline citation](https://elements.ai-sdk.dev/components/inline-citation) | A citation marker sitting inside the sentence it supports. | Different sentences come from different places and the person must tell which is which. | One continuous claim comes from one source. A marker per sentence makes the text unreadable. | `InlineCitation` with `InlineCitationSource` |
+| Confidence | A plain-language band on a result: high, medium, or low. | Reliability genuinely varies and low confidence unlocks a different action, such as routing to a person. | There is no different action. A badge you cannot act on shifts blame to the reader. | `Badge` in a fixed set of bands, beside the `Message` |
+| AI label | A badge marking AI-produced content, with the explanation behind it. | Any AI output a person could mistake for their own work or a colleague's. | They have edited it. Once someone rewrites the text it is theirs, and a stale label misattributes their work. | `Badge` as a `Popover` trigger, plus a revert `Button` |
+
+A few more parts sit in this stage.
+**Conversation** holds the scrolling thread.
+**Code block** is for output someone will copy, and **Image** only where accuracy does not matter, since generated images invent text and faces.
+**Reasoning** and **Chain of thought** show the model's thinking, but that is narration, not a log.
+It cannot justify a decision about a person.
+**Open in chat** hands the query to an outside product, sending that text to a third party outside your data agreements.
+
+<DemoSources title="An answer you can check, not just trust" blurb="Sources open the material the answer drew from. Skip it when the list was assembled after the fact." />
+
+## Check and fix
+
+Approve before it acts, then correct what is wrong.
+
+| Component | What it is | Reach for it when | Don't use it when | Built from |
+| --- | --- | --- | --- | --- |
+| [Confirmation](https://elements.ai-sdk.dev/components/confirmation) | An approve-or-deny gate naming exactly what will happen. | Something sends, files, or changes a record about a person. | The action is small and reversible. Gating everything trains people to click through the one that matters. | `Confirmation` with `ConfirmationActions` and `ConfirmationAction` |
+| [Checkpoint](https://elements.ai-sdk.dev/components/checkpoint) | A named point in a long run that someone can return to. | The run is long or branching, and a wrong turn would cost real work. | The flow is short, or you cannot actually restore the state you offer. | `Checkpoint` with `CheckpointTrigger` |
+| Feedback | Thumbs up and down on a response, with an acknowledgement. | The loop visibly closes: the rating routes somewhere and the person sees it landed. | Nothing changes. A rating that goes nowhere collects free labour and teaches people to stop giving it. | `MessageToolbar` with `MessageAction`, plus a notice on the negative path |
+| Error | A failure notice saying what happened and what to do next. | The AI failed and there is a real next move, even if that move is to do it by hand. | Retrying cannot work. Do not offer "Try again" for a refusal or a missing permission. | `Alert` with a `Button` and `Spinner` for the retry |
+
+Error copy names the problem in the person's own terms.
+Never surface model or infrastructure wording such as rate limits or context length.
+
+<DemoConfirmation title="A gate before anything happens" blurb="The consequence is named in plain words, and nothing runs without a yes." />
+
+## The whole journey in one surface
+
+A chatbot puts all five stages on one screen.
+An empty state, an input, streaming while it works, a cited answer, and a stop control to stay in charge.
+
+<DemoChatbot title="All five stages, assembled" blurb="The same parts above, working together. Build the specific surface your use case needs, not this by default." />
+
+## One stage this standard does not ship yet
+
+The sixth thing AI does is remember across sessions, carrying what it learnt about a person from one visit to the next.
+Nothing here ships for it.
+Checkpoint restores a point inside one run and Context reports the current conversation, but both end when the session does.
+If you need memory, treat it as new work: design what gets stored, show the person that record, and let them edit and delete it.
+
+For the patterns this standard deliberately does not ship, and how to recognise and cost them, see the `ai` skill's reference notes.
 
 ---
 
-## What each component does
+Further reading: [Microsoft HAX Toolkit](https://www.microsoft.com/en-us/haxtoolkit/library/) and [IBM Carbon for AI](https://carbondesignsystem.com/guidelines/carbon-for-ai/).
 
-Each component is a copy-paste install from [elements.ai-sdk.dev](https://elements.ai-sdk.dev/components/).
-They sit on shadcn defaults and inherit TFX tokens.
-Your coding agent can install and compose them with the [AI Elements skill](https://elements.ai-sdk.dev/docs/skill), so you do not wire them by hand.
-This page adds the value on top: which component serves which pattern, and how it behaves in a TFX product.
-
-| Component | What it does | Use case it serves |
-| --- | --- | --- |
-| [AI Label](https://elements.ai-sdk.dev/components/ai-label) | Marks content as AI-generated | All use cases |
-| [Confidence](https://elements.ai-sdk.dev/components/confidence) | Shows how sure the AI is | [Classifying and flagging](/guidelines/ai-patterns#classifying-and-flagging), [Summarising and transforming content](/guidelines/ai-patterns#summarising-and-transforming-content) |
-| [Suggestion](https://elements.ai-sdk.dev/components/suggestion) | Chip or card for a next step or prompt | [Suggestions and next steps](/guidelines/ai-patterns#suggestions-and-next-steps) |
-| [Shimmer](https://elements.ai-sdk.dev/components/shimmer) | Animated skeleton while AI content generates | All use cases |
-| [Loader](https://elements.ai-sdk.dev/components/loader) | Lighter loading indicator for short waits | All use cases |
-| [Sources](https://elements.ai-sdk.dev/components/sources) | Source list at the end of a grounded response | [Summarising and transforming content](/guidelines/ai-patterns#summarising-and-transforming-content), [Answering questions from your data](/guidelines/ai-patterns#answering-questions-from-your-data) |
-| [Inline Citation](https://elements.ai-sdk.dev/components/inline-citation) | Superscript citation inside a response | [Summarising and transforming content](/guidelines/ai-patterns#summarising-and-transforming-content), [Answering questions from your data](/guidelines/ai-patterns#answering-questions-from-your-data) |
-| [Feedback](https://elements.ai-sdk.dev/components/feedback) | Thumbs up/down on a response | [Generating content](/guidelines/ai-patterns#generating-content), [Classifying and flagging](/guidelines/ai-patterns#classifying-and-flagging) |
-| [Clarify](https://elements.ai-sdk.dev/components/clarify) | Follow-up question before the AI proceeds | [Answering questions from your data](/guidelines/ai-patterns#answering-questions-from-your-data), [Agents that take action](/guidelines/ai-patterns#agents-that-take-action) |
-| [Confirmation](https://elements.ai-sdk.dev/components/confirmation) | Approve or deny gate before a consequential action | [Agents that take action](/guidelines/ai-patterns#agents-that-take-action) |
-| [Plan](https://elements.ai-sdk.dev/components/plan) | Ordered list of steps the agent intends to run | [Agents that take action](/guidelines/ai-patterns#agents-that-take-action) |
-| [Task](https://elements.ai-sdk.dev/components/task) | A single step in a plan, showing progress | [Agents that take action](/guidelines/ai-patterns#agents-that-take-action) |
-| [Checkpoint](https://elements.ai-sdk.dev/components/checkpoint) | Named save point in a long agent flow | [Agents that take action](/guidelines/ai-patterns#agents-that-take-action) |
-| [Reasoning](https://elements.ai-sdk.dev/components/reasoning) | Collapsible trace of the model's thinking | [Agents that take action](/guidelines/ai-patterns#agents-that-take-action), [Conversations](/guidelines/ai-patterns#conversations) |
-| [Prompt Input](https://elements.ai-sdk.dev/components/prompt-input) | Text input with send and attach | [Suggestions and next steps](/guidelines/ai-patterns#suggestions-and-next-steps), [Conversations](/guidelines/ai-patterns#conversations) |
-| [Conversation](https://elements.ai-sdk.dev/components/conversation) | Full chat thread - outer container for all turns | [Conversations](/guidelines/ai-patterns#conversations) |
-| [Message](https://elements.ai-sdk.dev/components/message) | A single user or assistant turn | [Conversations](/guidelines/ai-patterns#conversations) |
-| [Attachments](https://elements.ai-sdk.dev/components/attachments) | File or document strip below the input | [Answering questions from your data](/guidelines/ai-patterns#answering-questions-from-your-data), [Conversations](/guidelines/ai-patterns#conversations) |
-| [Empty State](https://elements.ai-sdk.dev/components/empty-state) | Prompt that helps the teacher start | [Conversations](/guidelines/ai-patterns#conversations) |
-| [Error](https://elements.ai-sdk.dev/components/error) | Clear message when the AI fails | All use cases |
-
-**Reasoning vs Chain of Thought** - use [Reasoning](https://elements.ai-sdk.dev/components/reasoning) for most cases.
-[Chain of Thought](https://elements.ai-sdk.dev/components/chain-of-thought) is for when the full step-by-step is itself the point - for example, a worked maths problem the teacher reviews.
-Both serve [Agents that take action](/guidelines/ai-patterns#agents-that-take-action).
-
-Voice, workflow-canvas, and code components exist for future needs and are not covered here.
-
----
-
-## A full chatbot, built from these pieces
-
-<DemoChatbot />
-
----
-
-See [AI patterns](/guidelines/ai-patterns) for behaviour rules and [Overview](/guidelines/ai) to pick the right use case for your situation.
+See [Use cases](/guidelines/ai-patterns) for how each kind of feature should behave, and [Principles](/guidelines/ai) for the nine checks and the three tiers of review.

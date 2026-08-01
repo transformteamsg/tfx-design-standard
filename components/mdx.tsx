@@ -2,6 +2,7 @@ import { isValidElement, type ReactNode } from "react";
 import { slugify } from "@/lib/toc";
 import { MotionScale } from "@/components/diagrams/motion-scale";
 import { OrbitLoop } from "@/components/diagrams/orbit-loop";
+import { AiJourney } from "@/components/diagrams/ai-journey";
 import { ColorRamp } from "@/components/foundations/color-ramp";
 import { PrimarySwatches } from "@/components/foundations/primary-swatches";
 import { FunctionalColours } from "@/components/foundations/functional-colours";
@@ -58,6 +59,7 @@ export const mdxComponents = {
   Term,
   MotionScale,
   OrbitLoop,
+  AiJourney,
   ColorRamp,
   PrimarySwatches,
   FunctionalColours,

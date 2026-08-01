@@ -10,6 +10,7 @@ type SectionDef = {
   label: string;
   slugs?: string[];
   pages?: Omit<Topic, "ink">[];
+  groups?: { label: string; slugs: string[] }[];
 };
 
 const chromePages: Record<string, Omit<Topic, "ink">[]> = {
@@ -29,9 +30,21 @@ export const sections: Record<string, SectionDef> = Object.fromEntries(
     .filter(([, def]) => !def.root)
     .map(([key, def]) => [
       key,
-      { label: def.label, slugs: def.slugs, pages: chromePages[key] },
+      { label: def.label, slugs: def.slugs, pages: chromePages[key], groups: def.groups },
     ]),
 );
+
+function topicFromSlug(key: string, slug: string, ink: string): Topic | null {
+  const doc = getDoc(key, slug);
+  if (!doc) return null;
+  return {
+    href: `/${key}/${slug}`,
+    title: doc.title,
+    description: doc.description,
+    artKey: `${key}/${slug}`,
+    ink,
+  };
+}
 
 export function sectionTopics(key: string): Topic[] {
   const section = sections[key];
@@ -39,17 +52,43 @@ export function sectionTopics(key: string): Topic[] {
   const ink = sectionInk[key] ?? "var(--foreground)";
   const fromPages = (section.pages ?? []).map((page) => ({ ...page, ink }));
   const fromSlugs = (section.slugs ?? []).flatMap((slug) => {
-    const doc = getDoc(key, slug);
-    if (!doc) return [];
-    return [
-      {
-        href: `/${key}/${slug}`,
-        title: doc.title,
-        description: doc.description,
-        artKey: `${key}/${slug}`,
-        ink,
-      },
-    ];
+    const topic = topicFromSlug(key, slug, ink);
+    return topic ? [topic] : [];
   });
   return [...fromPages, ...fromSlugs];
+}
+
+export type TopicGroup = { label: string | null; topics: Topic[] };
+
+/* Grouped view of a section's topics, for sections that declare `groups`
+   in content/map.json (currently just Guidelines' Content / AI clusters).
+   Returns null for sections without groups, so callers fall back to the
+   flat grid from sectionTopics unchanged. Slugs and chrome pages not
+   covered by a named group land in one trailing unlabelled group. */
+export function sectionTopicGroups(key: string): TopicGroup[] | null {
+  const section = sections[key];
+  if (!section?.groups?.length) return null;
+  const ink = sectionInk[key] ?? "var(--foreground)";
+
+  const named = section.groups.map((group) => ({
+    label: group.label,
+    topics: group.slugs.flatMap((slug) => {
+      const topic = topicFromSlug(key, slug, ink);
+      return topic ? [topic] : [];
+    }),
+  }));
+
+  const groupedSlugs = new Set(section.groups.flatMap((group) => group.slugs));
+  const standaloneSlugs = (section.slugs ?? []).filter((slug) => !groupedSlugs.has(slug));
+  const standaloneTopics = [
+    ...(section.pages ?? []).map((page) => ({ ...page, ink })),
+    ...standaloneSlugs.flatMap((slug) => {
+      const topic = topicFromSlug(key, slug, ink);
+      return topic ? [topic] : [];
+    }),
+  ];
+
+  return standaloneTopics.length
+    ? [...named, { label: null, topics: standaloneTopics }]
+    : named;
 }

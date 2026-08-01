@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 /* Shared layout for the AI chat demos so all four carry one rhythm.
 
    The DemoFrame figure IS the surface (border + radius + bg-surface), so the
-   shell adds NO border/background of its own — a second bordered box here would
+   shell adds NO border/background of its own - a second bordered box here would
    be a nested card (SLP-4). Structure comes from spacing and a single hairline
    divider between the message region and the input region.
 
@@ -46,7 +46,7 @@ export function ChatShellMessages({
   className,
 }: {
   children: ReactNode;
-  /** Flagship chatbot only — grows unboundedly, so cap height and scroll.
+  /** Flagship chatbot only - grows unboundedly, so cap height and scroll.
       Scripted demos leave this off and sit at natural height (no clip). */
   scroll?: boolean;
   className?: string;
