@@ -53,21 +53,10 @@ const easeInOutSine = (x: number) => -(Math.cos(Math.PI * x) - 1) / 2;
    inner surface change - the SVG breathes on the same paper. */
 function DiagramFrame({ children, caption }: { children: ReactNode; caption?: string }) {
   return (
-    <figure className="not-prose relative my-8 overflow-hidden rounded-lg border border-border bg-surface p-12">
-      {/* Warm vignette wash - almost invisible but gives paper depth */}
-      <div
-        className="pointer-events-none absolute inset-0"
-        aria-hidden="true"
-        style={{
-          background:
-            "radial-gradient(circle at 50% 40%, color-mix(in oklab, var(--color-tw-blue) 4%, transparent) 0%, transparent 70%)",
-        }}
-      />
-      <div className="relative flex items-center justify-center">
-        {children}
-      </div>
+    <figure className="not-prose my-8 rounded-lg border border-border bg-surface p-12">
+      <div className="flex items-center justify-center">{children}</div>
       {caption && (
-        <figcaption className="relative mt-6 text-center text-xs italic text-muted-foreground">
+        <figcaption className="mt-6 text-center text-xs italic text-muted-foreground">
           {caption}
         </figcaption>
       )}
@@ -81,11 +70,6 @@ const ACCENT_STROKE = 1.5;
 const MUTED = "var(--muted-foreground)";
 const FG = "var(--foreground)";
 const ACCENT = "var(--color-tw-blue)";
-/* Tonal shades - use these to build depth without introducing new hues.
-   Each is a low-opacity variant of a base already in the palette. */
-const ACCENT_WASH = "color-mix(in oklab, var(--color-tw-blue) 12%, transparent)";
-const ACCENT_MIST = "color-mix(in oklab, var(--color-tw-blue) 6%, transparent)";
-const MUTED_WASH = "color-mix(in oklab, var(--muted-foreground) 8%, transparent)";
 
 /* -------------------------------------------------------------------------- */
 
@@ -105,10 +89,6 @@ export function P1UseAIOnly() {
   return (
     <DiagramFrame caption="Reach for the simplest tool that solves the job.">
       <svg viewBox="0 0 480 240" className="w-full max-w-[480px]" role="img" aria-label="A vertical stack of five options: fixed rule, form field, filter, script, and AI. AI sits at the top, reached last.">
-        {/* Soft wash behind the whole stack - tonal ground */}
-        <rect x="120" y="40" width="240" height="180" rx="16" fill={MUTED_WASH} />
-        {/* A slightly darker wash on the AI row alone */}
-        <rect x="120" y="170" width="240" height="30" rx="8" fill={ACCENT_MIST} />
         {labels.map((label, i) => {
           const y = 60 + i * 30;
           const isAI = i === labels.length - 1;
@@ -194,9 +174,6 @@ export function P3OpenSource() {
   return (
     <DiagramFrame caption="Every claim, tethered to its source.">
       <svg viewBox="0 0 480 260" className="w-full max-w-[480px]" role="img" aria-label="A claim card above connected by a single arc to a source card below.">
-        {/* Soft wash behind each card - two tones give depth without adding hues */}
-        <rect x="146" y="56" width="188" height="56" rx="10" fill={MUTED_WASH} />
-        <rect x="216" y="191" width="108" height="62" rx="8" fill={ACCENT_MIST} />
         {/* Claim card - a short quoted line */}
         <g transform="translate(150 60)">
           <rect x="0" y="0" width="180" height="48" rx="8" fill="none" stroke={FG} strokeWidth={HAIRLINE} />
@@ -253,16 +230,6 @@ export function P4RecoveryNet() {
   return (
     <DiagramFrame caption="Two arcs of care - the outer catches what the inner cannot see.">
       <svg viewBox="0 0 480 240" className="w-full max-w-[480px]" role="img" aria-label="A narrow inner arc labelled user field of view, contained inside a wider outer arc labelled system catch.">
-        {/* Wash inside the outer arc - the safety net has volume */}
-        <path
-          d="M 110 130 A 140 140 0 0 1 370 130 L 370 200 L 110 200 Z"
-          fill={ACCENT_MIST}
-          opacity="0.7"
-        />
-        <path
-          d="M 175 140 A 80 80 0 0 1 305 140 L 305 200 L 175 200 Z"
-          fill={MUTED_WASH}
-        />
         <circle cx="240" cy="200" r="3" fill={FG} />
         <path
           d="M 175 140 A 80 80 0 0 1 305 140"
@@ -457,8 +424,6 @@ export function P8RangeNotAverage() {
   return (
     <DiagramFrame caption="Hold the bar at the lowest, not the average.">
       <svg viewBox="0 0 480 220" className="w-full max-w-[480px]" role="img" aria-label="Five circles at different heights; the lowest raises a horizontal bar all must meet.">
-        {/* Floor wash beneath the row - tonal ground */}
-        <rect x="80" y={lowest} width="320" height={180 - lowest} fill={ACCENT_MIST} opacity="0.6" />
         <line x1="80" y1={lowest} x2="400" y2={lowest} stroke={ACCENT} strokeWidth={HAIRLINE} strokeDasharray="4 4" opacity="0.7" />
         {heights.map((h, i) => {
           const isLowest = i === lowestIndex;
@@ -487,27 +452,40 @@ export function P8RangeNotAverage() {
 }
 
 /* P9 - We build a tool, not a companion.
-   A single hairline hand-and-pen silhouette. Object shapes, no face. */
+   Two objects side by side. Left, in accent: a plain hammer - a tool.
+   Right, in muted dashed line: a face silhouette (circle + two eye dots +
+   mouth arc), crossed through. Says "we ship the shape on the left, not
+   the one on the right." */
 export function P9HonestIdentity() {
   return (
-    <DiagramFrame caption="An object in the hand. Not a face in the room.">
-      <svg viewBox="0 0 480 240" className="w-full max-w-[480px]" role="img" aria-label="A hairline drawing of a hand holding a pen - an object, not a face.">
-        <line x1="260" y1="60" x2="180" y2="160" stroke={ACCENT} strokeWidth={ACCENT_STROKE} strokeLinecap="round" />
-        <path d="M 180 160 L 170 178 L 174 168 Z" fill={ACCENT} stroke={ACCENT} strokeWidth={HAIRLINE} strokeLinejoin="round" />
-        <path
-          d="M 240 110 Q 260 130 250 160 Q 240 180 220 180 Q 200 180 195 170"
-          stroke={FG}
-          strokeWidth={HAIRLINE}
-          fill="none"
-          strokeLinecap="round"
-        />
-        <path
-          d="M 195 170 Q 200 195 220 205"
-          stroke={FG}
-          strokeWidth={HAIRLINE}
-          fill="none"
-          strokeLinecap="round"
-        />
+    <DiagramFrame caption="We ship the shape on the left. Never the one on the right.">
+      <svg viewBox="0 0 480 240" className="w-full max-w-[480px]" role="img" aria-label="A hammer on the left in accent colour; a dashed face silhouette on the right, crossed through.">
+        {/* Left: hammer */}
+        <g transform="translate(140 120)">
+          {/* Head - a solid rounded rectangle */}
+          <rect x="-40" y="-40" width="70" height="26" rx="4" fill="none" stroke={ACCENT} strokeWidth={ACCENT_STROKE} strokeLinejoin="round" />
+          {/* Small claw indent */}
+          <path d="M -40 -30 L -46 -20 L -40 -20" fill="none" stroke={ACCENT} strokeWidth={ACCENT_STROKE} strokeLinejoin="round" />
+          {/* Handle */}
+          <line x1="0" y1="-14" x2="24" y2="60" stroke={ACCENT} strokeWidth={ACCENT_STROKE} strokeLinecap="round" />
+          {/* Grip end - tiny cap */}
+          <line x1="20" y1="58" x2="30" y2="62" stroke={ACCENT} strokeWidth={ACCENT_STROKE} strokeLinecap="round" />
+        </g>
+        <text x="140" y="220" textAnchor="middle" fontSize="10" fill={ACCENT} fontStyle="italic" opacity="0.85">tool</text>
+        {/* Divider */}
+        <line x1="240" y1="60" x2="240" y2="200" stroke={MUTED} strokeWidth={HAIRLINE} strokeDasharray="2 4" opacity="0.3" />
+        {/* Right: face silhouette, muted and crossed out */}
+        <g transform="translate(340 120)">
+          <circle cx="0" cy="0" r="44" fill="none" stroke={MUTED} strokeWidth={HAIRLINE} strokeDasharray="4 4" opacity="0.55" />
+          {/* Eyes */}
+          <circle cx="-15" cy="-8" r="2.5" fill={MUTED} opacity="0.55" />
+          <circle cx="15" cy="-8" r="2.5" fill={MUTED} opacity="0.55" />
+          {/* Smile */}
+          <path d="M -14 12 Q 0 22 14 12" fill="none" stroke={MUTED} strokeWidth={HAIRLINE} strokeLinecap="round" opacity="0.55" />
+          {/* Crossed out - one clean diagonal */}
+          <line x1="-40" y1="40" x2="40" y2="-40" stroke={MUTED} strokeWidth={HAIRLINE} strokeLinecap="round" opacity="0.6" />
+        </g>
+        <text x="340" y="220" textAnchor="middle" fontSize="10" fill={MUTED} fontStyle="italic" opacity="0.55">not a face</text>
       </svg>
     </DiagramFrame>
   );
@@ -534,8 +512,6 @@ export function P10NoEngagement() {
   return (
     <DiagramFrame caption="One fills patiently. The other accelerates.">
       <svg viewBox="0 0 480 240" className="w-full max-w-[480px]" role="img" aria-label="A jar being filled slowly by a trickle from above, beside a rotating spiralling drain accelerating inward.">
-        {/* Two grounds - patient side gets a calm wash, extractive side gets nothing */}
-        <rect x="80" y="50" width="120" height="160" rx="12" fill={ACCENT_MIST} opacity="0.6" />
         {/* Left: jar */}
         <g transform="translate(140 100)">
           <circle cx="0" cy={dropY - 100} r="2.5" fill={ACCENT} opacity={dropOpacity} />
