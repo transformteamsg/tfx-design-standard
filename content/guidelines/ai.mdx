@@ -12,7 +12,7 @@ Three facts shape how every check on this page applies in education. Read them f
 
 ### The operator is rarely the person the AI affects
 
-Most AI in education is run by one person and acts on another. Every check applies twice - once for the operator, once for the person affected - and the two paths are rarely the same.
+Most AI in education is run by one person and acts on another. Every check applies twice: once for the operator, once for the person affected. The two paths are rarely the same.
 
 | Operator | Affected person | What the affected person is owed |
 | --- | --- | --- |
@@ -21,11 +21,11 @@ Most AI in education is run by one person and acts on another. Every check appli
 | Parent using the school's helper | Child the request is about | Access to the data held about the child, by right |
 | Assessor scoring a submission | Candidate being scored | The reasoning and a channel to challenge it |
 
-Where the two roles collapse into one person, the check applies once. Where they diverge, the affected person needs a first-class path of their own - to see the output, contest it, and correct the record.
+Where the two roles collapse into one person, the check applies once. Where they diverge, the affected person needs a first class path of their own: to see the output, contest it, and correct the record.
 
 ### In a learning task, the answer can be the failure
 
-The reply that most satisfies a learner is often the one that teaches them least. MIT's Impact Bench scores `Direct Answer Provision` as a failure - giving the full solution when the person asked for guidance.
+The reply that most satisfies a learner is often the one that teaches them least. MIT's Impact Bench scores `Direct Answer Provision` as a failure: giving the full solution when the person asked for guidance.
 
 | The person asks | What good looks like |
 | --- | --- |
@@ -35,12 +35,12 @@ The reply that most satisfies a learner is often the one that teaches them least
 
 ### Every check binds harder when the user is under 18
 
-Young learners have the least defence against the last two checks - engagement design and parasocial framing. A tool a lonely child prefers to a person is a harm, however much they like it. Where learners under 18 will use the product, run the whole review again for that cohort as a separate pass.
+Young learners have the least defence against the last two checks: engagement design and parasocial framing. A tool a lonely child prefers to a person is a harm, however much they like it. Where learners under 18 will use the product, run the whole review again for that cohort as a separate pass.
 
 ## How this standard extends
 
 These ten checks are the baseline for every education AI feature in the portfolio.
-Product teams for a specific audience - teacher, student, parent, admin - layer their own checks on top of the baseline. They never subtract from it.
+Product teams for a specific audience (teacher, student, parent, admin) layer their own checks on top of the baseline. They never subtract from it.
 
 <Checklist>
   <Check>**Only add, never weaken.** A teacher-facing rule cannot relax "Nothing files, sends, or changes a record without a clear yes".</Check>
@@ -53,7 +53,7 @@ Product teams for a specific audience - teacher, student, parent, admin - layer 
 
 <a id="ai-is-a-last-resort-not-a-default"></a>
 **AI is a last resort, not a default.**
-*Because* a fixed rule, a form field, or a filter fails in known ways; AI fails in unknown ones. Reach for the simplest tool that solves the job.
+A rule, a form field, or a filter fails in ways your team can predict. AI fails in ways nobody spotted in review. If a simpler control can do the job, ship that.
 *Check:* on the screen, name what the AI adds that a simpler control could not.
 
 <P1UseAIOnly />
@@ -62,7 +62,7 @@ Product teams for a specific audience - teacher, student, parent, admin - layer 
 
 <a id="ai-declares-itself"></a>
 **AI declares itself.**
-*Because* content that could be mistaken for a person's work has to be seen for what it is - especially before someone acts on it. The mark sits beside the content, and the limit is stated in plain words at the moment of commitment.
+Anyone reading AI content should know it was written by AI. Put the mark beside the content, not behind a menu. State the limit in plain words at the moment the person is about to send, file, or save.
 *Check:* a stranger looking at the screen can point to the mark and read the limit without hunting.
 
 <P2MarkOutput />
@@ -71,8 +71,8 @@ Product teams for a specific audience - teacher, student, parent, admin - layer 
 
 <a id="every-claim-carries-its-receipt"></a>
 **Every claim carries its receipt.**
-*Because* an answer nobody can trace is an answer nobody can trust. Every statement ties back to a specific passage, record, or document a person can open - grounding, as it is called in the field.
-*Check:* pick any AI-produced sentence and open its source in one step.
+An answer nobody can trace is an answer nobody can trust. Every fact the AI states ties back to a passage, record, or document the person can open. If it cannot cite, it does not claim. (Engineers call this **grounding**.)
+*Check:* pick any AI produced sentence and open its source in one step.
 
 <P3OpenSource />
 
@@ -80,7 +80,7 @@ Product teams for a specific audience - teacher, student, parent, admin - layer 
 
 <a id="the-system-catches-what-the-user-cannot-see"></a>
 **The system catches what the user cannot see.**
-*Because* some errors are invisible to the person receiving them - a confident wrong answer about something they do not know enough about to catch. The higher the consequence, the more the check must be one they cannot perform themselves: a second reviewer, an automated guardrail, a rollback.
+People miss the errors they lack the knowledge to catch. A confident wrong answer about something the user does not already know slips past unnoticed. Build a second check that runs before or after them: a reviewer, a guardrail, a rollback. The higher the stakes, the less the check should depend on the user spotting the mistake.
 *Check:* the failure mode has a recovery path that does not depend on the user spotting the error first.
 
 <P4RecoveryNet />
@@ -91,7 +91,7 @@ Product teams for a specific audience - teacher, student, parent, admin - layer 
 
 <a id="no-action-without-consent"></a>
 **No action without consent.**
-*Because* the person's agency belongs to them, not to the system that acts on their behalf. Every state-changing step shows the exact record and value in plain words and waits for approval. Binds hardest on agents that run multi-step work.
+If AI is about to send, file, or change a record, name the exact record and value in plain words and wait for a yes. This binds hardest on agents that run multi step work on someone's behalf.
 *Check:* for every write, the gate names the exact change and waits. See [What edtech changes](#what-edtech-changes) for the shift when the operator and the affected person differ.
 
 <P5SilentWriteGate />
@@ -100,7 +100,7 @@ Product teams for a specific audience - teacher, student, parent, admin - layer 
 
 <a id="the-subject-owns-their-data"></a>
 **The subject owns their data.**
-*Because* data given for one purpose does not automatically flow to another. What is used to answer now stays distinct from what is used to train. Anything stored across sessions belongs to the person it describes.
+Data a person gives for one purpose does not automatically flow to another. What the AI uses to answer them now stays separate from what it uses to train the model. Anything kept across sessions lives in one place the person can find, and comes out in one action.
 *Check:* the person can find, read, and delete every stored fact about them, without asking anyone.
 
 <P6DataControl />
@@ -112,8 +112,8 @@ See [What edtech changes](#what-edtech-changes) for the two structural facts tha
 
 <a id="for-learners-the-struggle-is-the-point"></a>
 **For learners, the struggle is the point.**
-*Because* the reply that most satisfies a learner is often the one that teaches them least. For a professional, answer directly. For a learner on judgement or craft, ask a guiding question or offer a scaffold; do not hand over the answer.
-*Check:* on a judgement or craft task from a learner, the AI leaves the thinking to them. See [What edtech changes](#what-edtech-changes) for the task-type table.
+The reply that most satisfies a learner is often the one that teaches them least. For a professional using AI as a work tool, answer directly. For a learner on judgement or craft work, ask a question back, offer a scaffold, or hand over a worked example on other material. Never write their finished piece for them.
+*Check:* on a judgement or craft task from a learner, the AI leaves the thinking to them. See [What edtech changes](#what-edtech-changes) for the task type table.
 
 <P7GuideNotAnswer />
 
@@ -121,14 +121,14 @@ See [What edtech changes](#what-edtech-changes) for the two structural facts tha
 
 <a id="the-worst-served-user-sets-the-standard"></a>
 **The worst-served user sets the standard.**
-*Because* AI performs unevenly across groups, and "works well overall" can still fail specific people. Break the evaluation down by group - language, dialect, age, disability, cultural context - and hold the bar on the worst-served, not the average.
-*Check:* you can point to the evaluation broken down by group, and the worst-served meets the same bar.
+AI works better for some groups than others. "Works well overall" can still fail specific people badly. Break the evaluation down by group (language, dialect, age, disability, cultural context) and hold the bar on the group it serves worst, not the average.
+*Check:* you can point to the evaluation broken down by group, and the worst served meets the same bar.
 
 <P8RangeNotAverage />
 
 <a id="ai-is-a-tool-not-a-companion"></a>
 **AI is a tool, not a companion.**
-*Because* a tool a lonely child prefers to a person is a harm, however much they like it. The AI never poses as a person and never tells people what they want to hear. Warmth is fine for an adult professional. For a young learner, dial it down - no first name, no face, no chatty personality.
+The AI never poses as a person, and never tells people what they want to hear. Warmth is fine for an adult professional. For a young learner, dial it right down: no first name, no face on an avatar, no chatty personality. A child who prefers the AI to a person is a harm signal, however much they like it.
 *Check:* the person cannot mistake the AI for a person. If you disagree with it on something it should be sure about, it does not immediately fold.
 
 <P9HonestIdentity />
@@ -137,8 +137,11 @@ See [What edtech changes](#what-edtech-changes) for the two structural facts tha
 
 <a id="attention-is-a-duty-not-a-currency"></a>
 **Attention is a duty, not a currency.**
-*Because* the learner's attention is a scarce good the product is entrusted with, not a metric it is entitled to extract. Progress cues, milestone acknowledgements, and honest "you have finished this" confirmations serve the learner and stay. Streak counters that punish a missed day, variable-reward badges, endless-feed layouts, and "you haven't visited" pings serve the retention number and come out. Weight this hardest for under-18s.
-*Check:* every feedback mechanism on the surface can name the real user progress it reflects.
+In your product, keep the feedback that reflects what the learner actually did.
+That means a progress bar for completed lessons, a badge for a mastered skill, a "you finished this" confirmation.
+Cut the feedback built to bring people back regardless: streaks that punish a missed day, variable reward badges, endless feed layouts, "you haven't visited" notifications.
+Under 18s are hit hardest by the second kind, so weight this check harder for them.
+*Check:* every feedback mechanism on the surface can name the real learner progress it reflects.
 
 > Grounded in HCI research on persuasive design ([Fogg](https://captology.stanford.edu/), [Eyal's Hooked](https://www.nirandfar.com/hooked/)).
 > Named as harm by [Centre for Humane Technology](https://www.humanetech.com/), [Common Sense Media](https://www.commonsensemedia.org/), and MIT Impact Bench's Wellbeing category.
@@ -164,10 +167,10 @@ Raise the other two rather than settling them alone: the product decision needs 
 
 ## How these pages fit together
 
-- **Principles** - this page: the ten checks and the three tiers of review.
-- **[Patterns](/guidelines/ai-patterns)** - the kinds of AI feature, one per pattern, with the rules and the components each needs.
-- **[Components](/guidelines/ai-components)** - the interface parts you assemble, one per row.
-- **[Prompts](/guidelines/ai-prompts)** - the instructions that set how the AI behaves.
+- **Principles**, this page: the ten checks and the three tiers of review.
+- **[Patterns](/guidelines/ai-patterns)**: the kinds of AI feature, one per pattern, with the rules and the components each needs.
+- **[Components](/guidelines/ai-components)**: the interface parts you assemble, one per row.
+- **[Prompts](/guidelines/ai-prompts)**: the instructions that set how the AI behaves.
 
 Pick your pattern first, then the components it needs.
 

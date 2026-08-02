@@ -129,39 +129,49 @@ export function P2MarkOutput() {
 }
 
 /* P3 - Every claim carries its receipt.
-   A single sentence-line with a hairline thread trailing down to a small
-   receipt tag. The thread pulses along its length. */
+   A short claim card above, a source card below, connected by a single
+   quiet arc. Two shapes with an unbreakable relationship: the claim is
+   never allowed to float free of its source. */
 export function P3OpenSource() {
-  const reduced = useReducedMotion();
-  const t = useTime(!reduced);
-  const cycle = (t % 5) / 5;
-  const pathLen = 60;
-  const dashOffset = reduced ? 0 : pathLen * (1 - Math.min(1, cycle * 1.5));
   return (
-    <DiagramFrame caption="Every claim ties back to something a person can open.">
-      <svg viewBox="0 0 480 220" className="w-full max-w-[480px]" role="img" aria-label="A sentence line with a hairline thread trailing down to a small receipt tag.">
-        {/* Sentence line */}
-        <line x1="140" y1="80" x2="360" y2="80" stroke={FG} strokeWidth={HAIRLINE} strokeLinecap="round" />
-        {/* Thread - animated draw */}
+    <DiagramFrame caption="Every claim, tethered to its source.">
+      <svg viewBox="0 0 480 260" className="w-full max-w-[480px]" role="img" aria-label="A claim card above connected by a single arc to a source card below.">
+        {/* Claim card - a short quoted line */}
+        <g transform="translate(150 60)">
+          <rect x="0" y="0" width="180" height="48" rx="8" fill="none" stroke={FG} strokeWidth={HAIRLINE} />
+          <line x1="16" y1="20" x2="164" y2="20" stroke={FG} strokeWidth={HAIRLINE} strokeLinecap="round" opacity="0.55" />
+          <line x1="16" y1="32" x2="120" y2="32" stroke={FG} strokeWidth={HAIRLINE} strokeLinecap="round" opacity="0.55" />
+          {/* Small opening-quote glyph */}
+          <text x="8" y="14" fontSize="14" fill={ACCENT}>&ldquo;</text>
+        </g>
+        {/* Tether arc */}
         <path
-          d="M 250 82 L 250 140"
+          d="M 240 108 Q 200 155 220 195"
           stroke={ACCENT}
           strokeWidth={HAIRLINE}
           fill="none"
-          strokeDasharray={pathLen}
-          strokeDashoffset={dashOffset}
+          strokeLinecap="round"
         />
-        {/* Receipt tag */}
-        <g transform="translate(228 140)">
+        {/* Small anchor dot at the source end */}
+        <circle cx="220" cy="195" r="3" fill={ACCENT} />
+        {/* Source card, subtly different: a folded-corner document */}
+        <g transform="translate(220 195)">
           <path
-            d="M 0 0 L 44 0 L 44 26 L 22 34 L 0 26 Z"
+            d="M 0 0 L 82 0 L 100 18 L 100 54 L 0 54 Z"
             fill="none"
             stroke={ACCENT}
             strokeWidth={HAIRLINE}
             strokeLinejoin="round"
           />
-          <line x1="8" y1="12" x2="36" y2="12" stroke={ACCENT} strokeWidth={HAIRLINE * 0.9} opacity="0.5" strokeLinecap="round" />
-          <line x1="8" y1="20" x2="30" y2="20" stroke={ACCENT} strokeWidth={HAIRLINE * 0.9} opacity="0.5" strokeLinecap="round" />
+          <path
+            d="M 82 0 L 82 18 L 100 18"
+            fill="none"
+            stroke={ACCENT}
+            strokeWidth={HAIRLINE}
+            strokeLinejoin="round"
+          />
+          <line x1="14" y1="30" x2="70" y2="30" stroke={ACCENT} strokeWidth={HAIRLINE} strokeLinecap="round" opacity="0.55" />
+          <line x1="14" y1="40" x2="56" y2="40" stroke={ACCENT} strokeWidth={HAIRLINE} strokeLinecap="round" opacity="0.55" />
         </g>
       </svg>
     </DiagramFrame>
