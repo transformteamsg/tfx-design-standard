@@ -28,7 +28,7 @@ const ROWS: Row[] = [
   { n: 7, label: "For learners, the struggle is the point", anchor: "for-learners-the-struggle-is-the-point", icon: GraduationCap },
   { n: 8, label: "The worst-served user sets the standard", anchor: "the-worst-served-user-sets-the-standard", icon: Users },
   { n: 9, label: "AI is a tool, not a companion", anchor: "ai-is-a-tool-not-a-companion", icon: CircleUser },
-  { n: 10, label: "Attention is a duty, not a currency", anchor: "attention-is-a-duty-not-a-currency", icon: Timer },
+  { n: 10, label: "Time is entrusted, not extracted", anchor: "time-is-entrusted-not-extracted", icon: Timer },
 ];
 
 export function PrincipleGrid() {
