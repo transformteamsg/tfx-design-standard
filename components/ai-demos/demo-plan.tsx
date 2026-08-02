@@ -58,21 +58,21 @@ export const DemoPlan = ({ title, blurb }: { title?: string; blurb?: string }) =
             <PlanTrigger />
           </PlanHeader>
           <PlanContent>
-            <ol className="flex flex-col gap-3 text-sm text-foreground">
+            <ol className="flex flex-col gap-4 text-sm text-foreground">
               {STEPS.map(({ n, text }) => (
                 <li
                   key={n}
                   className={cn(
-                    "flex gap-2 transition-all duration-300",
+                    "flex items-start gap-3 transition-all duration-300",
                     visibleCount >= n
                       ? "opacity-100 translate-y-0"
                       : "opacity-0 translate-y-1 pointer-events-none select-none"
                   )}
                 >
-                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-semibold text-muted-foreground">
+                  <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-semibold text-muted-foreground">
                     {n}
                   </span>
-                  <span>{text}</span>
+                  <span className="leading-relaxed">{text}</span>
                 </li>
               ))}
             </ol>

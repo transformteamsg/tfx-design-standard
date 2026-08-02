@@ -19,7 +19,7 @@ type ConfidenceLevel = "high" | "medium" | "low";
 
 interface ConfidenceConfig {
   label: string;
-  variant: "secondary" | "outline";
+  className: string;
   description: string;
   prediction: string;
 }
@@ -27,19 +27,19 @@ interface ConfidenceConfig {
 const CONFIG: Record<ConfidenceLevel, ConfidenceConfig> = {
   high: {
     label: "High confidence",
-    variant: "secondary",
+    className: "bg-success-subtle text-success",
     description: "based on 14 progress checks",
     prediction: "Mateo's predicted reading level for next term is **level 5**.",
   },
   medium: {
     label: "Medium confidence",
-    variant: "outline",
+    className: "bg-warning-subtle text-warning",
     description: "based on 6 checks - more data will improve accuracy",
     prediction: "Kenji's predicted reading level for next term is **level 4**.",
   },
   low: {
     label: "Low confidence",
-    variant: "outline",
+    className: "bg-danger-subtle text-danger",
     description: "only 2 checks this term - treat as a starting point",
     prediction: "Sofia's predicted reading level for next term is **level 4**.",
   },
@@ -69,7 +69,7 @@ export const DemoConfidence = ({ title, blurb }: { title?: string; blurb?: strin
         <Message from="assistant">
           <MessageResponse>{config.prediction}</MessageResponse>
           <div className="mt-2 flex items-center gap-2">
-            <Badge variant={config.variant}>
+            <Badge className={config.className} variant="secondary">
               {config.label}
             </Badge>
             <span className="text-xs text-muted-foreground">

@@ -64,8 +64,21 @@ const statusIcons: Record<ToolPart["state"], ReactNode> = {
   "output-error": <XCircleIcon className="size-4 text-destructive" />,
 };
 
+const statusBadgeClass: Record<ToolPart["state"], string> = {
+  "approval-requested": "bg-warning-subtle text-warning",
+  "approval-responded": "bg-success-subtle text-success",
+  "input-available": "",
+  "input-streaming": "",
+  "output-available": "bg-success-subtle text-success",
+  "output-denied": "bg-danger-subtle text-danger",
+  "output-error": "bg-danger-subtle text-danger",
+};
+
 export const getStatusBadge = (status: ToolPart["state"]) => (
-  <Badge className="gap-1.5 rounded-full text-xs" variant="secondary">
+  <Badge
+    className={cn("gap-1.5 rounded-full text-xs", statusBadgeClass[status])}
+    variant="secondary"
+  >
     {statusIcons[status]}
     {statusLabels[status]}
   </Badge>
@@ -85,7 +98,7 @@ export const ToolHeader = ({
   return (
     <CollapsibleTrigger
       className={cn(
-        "flex w-full items-center justify-between gap-4 p-3",
+        "flex w-full cursor-pointer items-center justify-between gap-4 p-3 transition-colors hover:bg-muted/50 focus-visible:outline-none focus-visible:bg-muted/50",
         className
       )}
       {...props}

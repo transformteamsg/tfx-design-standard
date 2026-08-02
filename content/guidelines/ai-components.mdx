@@ -10,13 +10,7 @@ A few are patterns with no component of their own, built from shadcn primitives 
 
 Pick your feature type on [Patterns](/guidelines/ai-patterns) first, then look up each component here for the "when to use" and "when not to use" call.
 
-Components are grouped by what they do in the interface.
-**Input** is what someone gives the AI.
-**Output** is what the AI produces on screen.
-**Trust** is what the AI shows about how it got there.
-**Control** is how a person stays in charge.
-**State** is how the interface shows what is happening or has gone wrong.
-**Identity** is how the AI is framed as a tool, not a person.
+<GroupGrid />
 
 ## Composing a grounded answer for a learner
 
@@ -44,19 +38,31 @@ The ways someone gives the AI something to work on.
 
 *A text box with tools, attachments, and a send control that doubles as stop.*
 
-**When to use:** the request is genuinely open and you cannot list the options in advance.
-**When not to use:** the task has a known shape. A form with three fields beats a blank box someone must guess at.
+<DoDont
+  doLabel="When to use"
+  dontLabel="When not to use"
+  items={[
+    { kind: "do", text: "The request is genuinely open and you cannot list the options in advance." },
+    { kind: "dont", text: "The task has a known shape. A form with three fields beats a blank box someone must guess at." },
+  ]}
+/>
 
-[View on AI Elements ↗](https://elements.ai-sdk.dev/components/prompt-input)
+<SourceLink href="https://elements.ai-sdk.dev/components/prompt-input" />
 
 ### Attachments
 
 *A strip of files the person has added to the request.*
 
-**When to use:** the answer depends on a document only that person holds.
-**When not to use:** the record already lives in your product. Reference it rather than asking for a re-upload.
+<DoDont
+  doLabel="When to use"
+  dontLabel="When not to use"
+  items={[
+    { kind: "do", text: "The answer depends on a document only that person holds." },
+    { kind: "dont", text: "The record already lives in your product. Reference it rather than asking for a re-upload." },
+  ]}
+/>
 
-[View on AI Elements ↗](https://elements.ai-sdk.dev/components/attachments)
+<SourceLink href="https://elements.ai-sdk.dev/components/attachments" />
 
 ### Suggestion
 
@@ -73,25 +79,37 @@ The ways someone gives the AI something to work on.
   ]}
 />
 
-[View on AI Elements ↗](https://elements.ai-sdk.dev/components/suggestion)
+<SourceLink href="https://elements.ai-sdk.dev/components/suggestion" />
 
 ### Speech input
 
 *A record button that turns speech into text.*
 
-**When to use:** hands are busy or typing is slow.
-**When not to use:** the setting is shared. Saying a learner's name aloud in a staffroom is a disclosure.
+<DoDont
+  doLabel="When to use"
+  dontLabel="When not to use"
+  items={[
+    { kind: "do", text: "Hands are busy or typing is slow." },
+    { kind: "dont", text: "The setting is shared. Saying a learner's name aloud in a staffroom is a disclosure." },
+  ]}
+/>
 
-[View on AI Elements ↗](https://elements.ai-sdk.dev/components/speech-input)
+<SourceLink href="https://elements.ai-sdk.dev/components/speech-input" />
 
 ### Mic selector
 
 *A picker for which microphone to record from.*
 
-**When to use:** a recording has failed and the wrong input device is the likely cause.
-**When not to use:** it is the first run. Offer it after a failure, not as a setting nobody asked for.
+<DoDont
+  doLabel="When to use"
+  dontLabel="When not to use"
+  items={[
+    { kind: "do", text: "A recording has failed and the wrong input device is the likely cause." },
+    { kind: "dont", text: "It is the first run. Offer it after a failure, not as a setting nobody asked for." },
+  ]}
+/>
 
-[View on AI Elements ↗](https://elements.ai-sdk.dev/components/mic-selector)
+<SourceLink href="https://elements.ai-sdk.dev/components/mic-selector" />
 
 ---
 
@@ -103,37 +121,61 @@ The ways the AI shows what it produced.
 
 *One turn from a person or the AI, with its own toolbar.*
 
-**When to use:** the exchange is genuinely back and forth, inside a `Conversation`.
-**When not to use:** it is a one-shot draft inside a form. A chat bubble implies a conversation that is not there.
+<DoDont
+  doLabel="When to use"
+  dontLabel="When not to use"
+  items={[
+    { kind: "do", text: "The exchange is genuinely back and forth, inside a Conversation." },
+    { kind: "dont", text: "It is a one-shot draft inside a form. A chat bubble implies a conversation that is not there." },
+  ]}
+/>
 
-[View on AI Elements ↗](https://elements.ai-sdk.dev/components/message)
+<SourceLink href="https://elements.ai-sdk.dev/components/message" />
 
 ### Code block
 
 *Syntax-highlighted source code with a copy button.*
 
-**When to use:** the output is code, config, or a snippet meant to be copied and run somewhere else.
-**When not to use:** the output is prose. A code block on plain answers pushes non-technical readers away.
+<DoDont
+  doLabel="When to use"
+  dontLabel="When not to use"
+  items={[
+    { kind: "do", text: "The output is code, config, or a snippet meant to be copied and run somewhere else." },
+    { kind: "dont", text: "The output is prose. A code block on plain answers pushes non-technical readers away." },
+  ]}
+/>
 
-[View on AI Elements ↗](https://elements.ai-sdk.dev/components/code-block)
+<SourceLink href="https://elements.ai-sdk.dev/components/code-block" />
 
 ### Image
 
 *An AI-generated image rendered inline.*
 
-**When to use:** the image is decorative and nobody will read it as evidence.
-**When not to use:** accuracy matters. Generated images invent text, faces, counts, and diagram labels.
+<DoDont
+  doLabel="When to use"
+  dontLabel="When not to use"
+  items={[
+    { kind: "do", text: "The image is decorative and nobody will read it as evidence." },
+    { kind: "dont", text: "Accuracy matters. Generated images invent text, faces, counts, and diagram labels." },
+  ]}
+/>
 
-[View on AI Elements ↗](https://elements.ai-sdk.dev/components/image)
+<SourceLink href="https://elements.ai-sdk.dev/components/image" />
 
 ### Transcription
 
 *Recorded speech shown as text, split into segments you can jump to.*
 
-**When to use:** someone needs to scan or navigate a recording.
-**When not to use:** the transcript will stand as the record. Names, dialect, and subject vocabulary transcribe badly.
+<DoDont
+  doLabel="When to use"
+  dontLabel="When not to use"
+  items={[
+    { kind: "do", text: "Someone needs to scan or navigate a recording." },
+    { kind: "dont", text: "The transcript will stand as the record. Names, dialect, and subject vocabulary transcribe badly." },
+  ]}
+/>
 
-[View on AI Elements ↗](https://elements.ai-sdk.dev/components/transcription)
+<SourceLink href="https://elements.ai-sdk.dev/components/transcription" />
 
 ---
 
@@ -145,10 +187,16 @@ The ways the AI shows what it did and what it drew from.
 
 *A badge that marks AI-produced content and explains what produced it.*
 
-**When to use:** any AI output a person could mistake for their own work or a colleague's.
-**When not to use:** the person has edited the output. Once someone rewrites the text it is theirs.
+<DoDont
+  doLabel="When to use"
+  dontLabel="When not to use"
+  items={[
+    { kind: "do", text: "Any AI output a person could mistake for their own work or a colleague's." },
+    { kind: "dont", text: "The person has edited the output. Once someone rewrites the text it is theirs." },
+  ]}
+/>
 
-[View on shadcn ↗](https://ui.shadcn.com/docs/components/badge)
+<SourceLink href="https://ui.shadcn.com/docs/components/badge" label="shadcn Badge" />
 
 ### Confidence
 
@@ -165,52 +213,82 @@ The ways the AI shows what it did and what it drew from.
   ]}
 />
 
-[View on shadcn ↗](https://ui.shadcn.com/docs/components/badge)
+<SourceLink href="https://ui.shadcn.com/docs/components/badge" label="shadcn Badge" />
 
 ### Reasoning
 
 *A collapsible panel of the model narrating its own thinking, self-collapsing once the answer arrives.*
 
-**When to use:** someone wants a sense of how an answer formed, and the panel disappears once the answer lands.
-**When not to use:** you need evidence for a decision about a person. The trace is narration, not a log.
+<DoDont
+  doLabel="When to use"
+  dontLabel="When not to use"
+  items={[
+    { kind: "do", text: "Someone wants a sense of how an answer formed, and the panel disappears once the answer lands." },
+    { kind: "dont", text: "You need evidence for a decision about a person. The trace is narration, not a log." },
+  ]}
+/>
 
-[View on AI Elements ↗](https://elements.ai-sdk.dev/components/reasoning)
+<SourceLink href="https://elements.ai-sdk.dev/components/reasoning" />
 
 ### Chain of thought
 
 *A collapsible reasoning trail with a connector rail between steps.*
 
-**When to use:** an agent's working is worth showing as narration; a collapsed default keeps the surface calm.
-**When not to use:** you need proof of a decision. Use [Task](#task) instead when steps must be inspectable.
+<DoDont
+  doLabel="When to use"
+  dontLabel="When not to use"
+  items={[
+    { kind: "do", text: "An agent's working is worth showing as narration; a collapsed default keeps the surface calm." },
+    { kind: "dont", text: "You need proof of a decision. Use [Task](#task) instead when steps must be inspectable." },
+  ]}
+/>
 
-[View on AI Elements ↗](https://elements.ai-sdk.dev/components/chain-of-thought)
+<SourceLink href="https://elements.ai-sdk.dev/components/chain-of-thought" />
 
 ### Sources
 
 *A collapsible list of what an answer was grounded in.*
 
-**When to use:** the answer came from a bounded set the person can open and check.
-**When not to use:** the list was assembled afterwards. Sources that did not produce the answer borrow credibility they have not earned.
+<DoDont
+  doLabel="When to use"
+  dontLabel="When not to use"
+  items={[
+    { kind: "do", text: "The answer came from a bounded set the person can open and check." },
+    { kind: "dont", text: "The list was assembled afterwards. Sources that did not produce the answer borrow credibility they have not earned." },
+  ]}
+/>
 
-[View on AI Elements ↗](https://elements.ai-sdk.dev/components/sources)
+<SourceLink href="https://elements.ai-sdk.dev/components/sources" />
 
 ### Inline citation
 
 *A citation marker sitting inside the sentence it supports.*
 
-**When to use:** different sentences come from different places and the reader needs to tell which is which.
-**When not to use:** one continuous claim comes from one source. Use [Sources](#sources) collapsed below the message instead.
+<DoDont
+  doLabel="When to use"
+  dontLabel="When not to use"
+  items={[
+    { kind: "do", text: "Different sentences come from different places and the reader needs to tell which is which." },
+    { kind: "dont", text: "One continuous claim comes from one source. Use [Sources](#sources) collapsed below the message instead." },
+  ]}
+/>
 
-[View on AI Elements ↗](https://elements.ai-sdk.dev/components/inline-citation)
+<SourceLink href="https://elements.ai-sdk.dev/components/inline-citation" />
 
 ### Tool
 
 *A collapsible record of one tool call, where a tool is a function the model calls to reach outside itself.*
 
-**When to use:** the call touched a real record or the outside world, so it doubles as evidence.
-**When not to use:** it is an internal call with no consequence. A wall of expanded tool calls is noise.
+<DoDont
+  doLabel="When to use"
+  dontLabel="When not to use"
+  items={[
+    { kind: "do", text: "The call touched a real record or the outside world, so it doubles as evidence." },
+    { kind: "dont", text: "It is an internal call with no consequence. A wall of expanded tool calls is noise." },
+  ]}
+/>
 
-[View on AI Elements ↗](https://elements.ai-sdk.dev/components/tool)
+<SourceLink href="https://elements.ai-sdk.dev/components/tool" />
 
 ---
 
@@ -222,10 +300,16 @@ The ways a person stays in charge before, during, and after an action.
 
 *One question back from the AI before it acts.*
 
-**When to use:** the request has two plausible readings and guessing wrong would waste the person's work.
-**When not to use:** you can infer the answer from context you already hold. A chain of clarifiers is a form in disguise.
+<DoDont
+  doLabel="When to use"
+  dontLabel="When not to use"
+  items={[
+    { kind: "do", text: "The request has two plausible readings and guessing wrong would waste the person's work." },
+    { kind: "dont", text: "You can infer the answer from context you already hold. A chain of clarifiers is a form in disguise." },
+  ]}
+/>
 
-[View on AI Elements ↗](https://elements.ai-sdk.dev/components/suggestion)
+<SourceLink href="https://elements.ai-sdk.dev/components/suggestion" />
 
 ### Confirmation
 
@@ -242,43 +326,67 @@ The ways a person stays in charge before, during, and after an action.
   ]}
 />
 
-[View on AI Elements ↗](https://elements.ai-sdk.dev/components/confirmation)
+<SourceLink href="https://elements.ai-sdk.dev/components/confirmation" />
 
 ### Plan
 
 *The ordered steps an agent intends to run, before it runs them.*
 
-**When to use:** the steps are genuinely under review before anything happens.
-**When not to use:** the steps cannot be edited or refused. Use [Task](#task) for what is already running.
+<DoDont
+  doLabel="When to use"
+  dontLabel="When not to use"
+  items={[
+    { kind: "do", text: "The steps are genuinely under review before anything happens." },
+    { kind: "dont", text: "The steps cannot be edited or refused. Use [Task](#task) for what is already running." },
+  ]}
+/>
 
-[View on AI Elements ↗](https://elements.ai-sdk.dev/components/plan)
+<SourceLink href="https://elements.ai-sdk.dev/components/plan" />
 
 ### Task
 
 *One step of work, with its own state and any files it touched.*
 
-**When to use:** the work runs in visible steps and someone may need to see which one failed.
-**When not to use:** there is only one step. A single row with a tick is ceremony.
+<DoDont
+  doLabel="When to use"
+  dontLabel="When not to use"
+  items={[
+    { kind: "do", text: "The work runs in visible steps and someone may need to see which one failed." },
+    { kind: "dont", text: "There is only one step. A single row with a tick is ceremony." },
+  ]}
+/>
 
-[View on AI Elements ↗](https://elements.ai-sdk.dev/components/task)
+<SourceLink href="https://elements.ai-sdk.dev/components/task" />
 
 ### Checkpoint
 
 *A named point in a long run that someone can return to.*
 
-**When to use:** the run is long or branching, and a wrong turn would cost real work.
-**When not to use:** the flow is short, or you cannot actually restore the state you offer.
+<DoDont
+  doLabel="When to use"
+  dontLabel="When not to use"
+  items={[
+    { kind: "do", text: "The run is long or branching, and a wrong turn would cost real work." },
+    { kind: "dont", text: "The flow is short, or you cannot actually restore the state you offer." },
+  ]}
+/>
 
-[View on AI Elements ↗](https://elements.ai-sdk.dev/components/checkpoint)
+<SourceLink href="https://elements.ai-sdk.dev/components/checkpoint" />
 
 ### Queue
 
 *The list of requests waiting behind the one running now.*
 
-**When to use:** someone can legitimately stack work, such as batching letters.
-**When not to use:** you could remove the queue instead. A visible backlog draws attention to a wait you have not fixed.
+<DoDont
+  doLabel="When to use"
+  dontLabel="When not to use"
+  items={[
+    { kind: "do", text: "Someone can legitimately stack work, such as batching letters." },
+    { kind: "dont", text: "You could remove the queue instead. A visible backlog draws attention to a wait you have not fixed." },
+  ]}
+/>
 
-[View on AI Elements ↗](https://elements.ai-sdk.dev/components/queue)
+<SourceLink href="https://elements.ai-sdk.dev/components/queue" />
 
 ---
 
@@ -290,37 +398,61 @@ The ways the interface shows what is happening or what has gone wrong.
 
 *A small spinner for a short wait.*
 
-**When to use:** the wait is a second or two and nothing useful can be shown yet.
-**When not to use:** the wait is long enough to walk away from. Show progress or partial output with [Shimmer](#shimmer) and [Task](#task).
+<DoDont
+  doLabel="When to use"
+  dontLabel="When not to use"
+  items={[
+    { kind: "do", text: "The wait is a second or two and nothing useful can be shown yet." },
+    { kind: "dont", text: "The wait is long enough to walk away from. Show progress or partial output with [Shimmer](#shimmer) and [Task](#task)." },
+  ]}
+/>
 
-[View on AI Elements ↗](https://elements.ai-sdk.dev/components/loader)
+<SourceLink href="https://elements.ai-sdk.dev/components/loader" />
 
 ### Shimmer
 
 *A moving highlight over text while it streams.*
 
-**When to use:** text is actively arriving and you want the eye to follow the leading edge.
-**When not to use:** nothing is streaming. A shimmer with no text arriving reads as a stall.
+<DoDont
+  doLabel="When to use"
+  dontLabel="When not to use"
+  items={[
+    { kind: "do", text: "Text is actively arriving and you want the eye to follow the leading edge." },
+    { kind: "dont", text: "Nothing is streaming. A shimmer with no text arriving reads as a stall." },
+  ]}
+/>
 
-[View on AI Elements ↗](https://elements.ai-sdk.dev/components/shimmer)
+<SourceLink href="https://elements.ai-sdk.dev/components/shimmer" />
 
 ### Empty state
 
 *The opening panel of a chat, before anyone has typed.*
 
-**When to use:** the surface is open-ended and a first-time user would not know what to ask.
-**When not to use:** the surface does one job and could do it directly. "Ask me anything" adds a step to something that should already run.
+<DoDont
+  doLabel="When to use"
+  dontLabel="When not to use"
+  items={[
+    { kind: "do", text: "The surface is open-ended and a first-time user would not know what to ask." },
+    { kind: "dont", text: "The surface does one job and could do it directly. 'Ask me anything' adds a step to something that should already run." },
+  ]}
+/>
 
-[View on AI Elements ↗](https://elements.ai-sdk.dev/components/conversation)
+<SourceLink href="https://elements.ai-sdk.dev/components/conversation" />
 
 ### Error
 
 *A failure notice that says what happened and what to do next.*
 
-**When to use:** the AI failed and there is a real next move, even if that move is to do the task by hand.
-**When not to use:** retrying cannot work. Do not offer "Try again" for a refusal or a missing permission.
+<DoDont
+  doLabel="When to use"
+  dontLabel="When not to use"
+  items={[
+    { kind: "do", text: "The AI failed and there is a real next move, even if that move is manual." },
+    { kind: "dont", text: "Retrying cannot work. Do not offer 'Try again' for a refusal or a missing permission." },
+  ]}
+/>
 
-[View on shadcn ↗](https://ui.shadcn.com/docs/components/alert)
+<SourceLink href="https://ui.shadcn.com/docs/components/alert" label="shadcn Alert" />
 
 ### Feedback
 
@@ -337,7 +469,7 @@ The ways the interface shows what is happening or what has gone wrong.
   ]}
 />
 
-[View on AI Elements ↗](https://elements.ai-sdk.dev/components/message)
+<SourceLink href="https://elements.ai-sdk.dev/components/message" />
 
 ---
 
@@ -360,52 +492,82 @@ The ways the AI is framed as a tool, not a person.
   ]}
 />
 
-[View on AI Elements ↗](https://elements.ai-sdk.dev/components/persona)
+<SourceLink href="https://elements.ai-sdk.dev/components/persona" />
 
 ### Voice selector
 
 *A picker for the synthesised voice that reads answers aloud.*
 
-**When to use:** more than one voice is approved, and accent or pace is an accessibility need.
-**When not to use:** only one voice is approved. Never let a chosen voice imply expertise the system does not have.
+<DoDont
+  doLabel="When to use"
+  dontLabel="When not to use"
+  items={[
+    { kind: "do", text: "More than one voice is approved, and accent or pace is an accessibility need." },
+    { kind: "dont", text: "Only one voice is approved. Never let a chosen voice imply expertise the system does not have." },
+  ]}
+/>
 
-[View on AI Elements ↗](https://elements.ai-sdk.dev/components/voice-selector)
+<SourceLink href="https://elements.ai-sdk.dev/components/voice-selector" />
 
 ### Model selector
 
 *A picker for which underlying model answers.*
 
-**When to use:** the person has a real basis to choose, such as trading speed against depth.
-**When not to use:** they have no basis. Naming models makes the choice their responsibility and the outcome their fault.
+<DoDont
+  doLabel="When to use"
+  dontLabel="When not to use"
+  items={[
+    { kind: "do", text: "The person has a real basis to choose, such as trading speed against depth." },
+    { kind: "dont", text: "They have no basis. Naming models makes the choice their responsibility and the outcome their fault." },
+  ]}
+/>
 
-[View on AI Elements ↗](https://elements.ai-sdk.dev/components/model-selector)
+<SourceLink href="https://elements.ai-sdk.dev/components/model-selector" />
 
 ### Open in chat
 
 *A menu that hands the current query to an outside chat product.*
 
-**When to use:** the content is public and someone wants to keep exploring elsewhere.
-**When not to use:** the query could carry personal or record data. This sends that text to a third party.
+<DoDont
+  doLabel="When to use"
+  dontLabel="When not to use"
+  items={[
+    { kind: "do", text: "The content is public and someone wants to keep exploring elsewhere." },
+    { kind: "dont", text: "The query could carry personal or record data. This sends that text to a third party." },
+  ]}
+/>
 
-[View on AI Elements ↗](https://elements.ai-sdk.dev/components/open-in-chat)
+<SourceLink href="https://elements.ai-sdk.dev/components/open-in-chat" />
 
 ### Context
 
 *A hover-card readout of the current conversation's size in tokens.*
 
-**When to use:** you are building for developers or operators who need to see how full the context window is.
-**When not to use:** the reader does not manage cost or context. To a student or parent, a token count reads as noise.
+<DoDont
+  doLabel="When to use"
+  dontLabel="When not to use"
+  items={[
+    { kind: "do", text: "You are building for developers or operators who need to see how full the context window is." },
+    { kind: "dont", text: "The reader does not manage cost or context. To a student or parent, a token count reads as noise." },
+  ]}
+/>
 
-[View on AI Elements ↗](https://elements.ai-sdk.dev/components/context)
+<SourceLink href="https://elements.ai-sdk.dev/components/context" />
 
 ### Conversation
 
 *The scrolling thread that holds a back-and-forth of messages.*
 
-**When to use:** the exchange genuinely spans several turns and follow-ups are the point.
-**When not to use:** the task is known. A conversation panel makes someone compose a request your form could have asked for.
+<DoDont
+  doLabel="When to use"
+  dontLabel="When not to use"
+  items={[
+    { kind: "do", text: "The exchange genuinely spans several turns and follow-ups are the point." },
+    { kind: "dont", text: "The task is known. A conversation panel makes someone compose a request your form could have asked for." },
+  ]}
+/>
 
-[View on AI Elements ↗](https://elements.ai-sdk.dev/components/conversation)
+<SourceLink href="https://elements.ai-sdk.dev/components/conversation" />
 
 ---
 
@@ -423,7 +585,7 @@ For the patterns this standard deliberately does not ship, see the `ai` skill's 
 For the kinds of AI feature these components assemble into, see [Patterns](/guidelines/ai-patterns).
 For how to write the assistant's instructions, see [Prompts](/guidelines/ai-prompts).
 
-## Sources
+## References
 
 > Reference: [Google PAIR Guidebook](https://pair.withgoogle.com/guidebook/), [The Shape of AI](https://www.shapeof.ai/), [AIverse](https://www.aiverse.design/), [Vercel AI Elements](https://elements.ai-sdk.dev/), [MIT Human-AI Impact Bench](https://impactbench.media.mit.edu/).
 

@@ -8,16 +8,16 @@ A pattern is a way to solve one kind of AI need in a product, built from the [co
 Each pattern below is a job an AI feature does for someone.
 Pick the one that matches your task, follow its rules, and build it from the components it names.
 
-## Which pattern do I need?
+## Which AI pattern does your user need?
 
 <Checklist>
-  <Check>**Nudging someone toward the next step.** [Suggesting a next step](#suggesting-a-next-step)</Check>
-  <Check>**Producing a draft someone will edit.** [Generating a first draft](#generating-a-first-draft)</Check>
-  <Check>**Making sense of long material fast.** [Summarising long material](#summarising-long-material)</Check>
-  <Check>**Answering a specific question from records.** [Answering from your own records](#answering-from-your-own-records)</Check>
-  <Check>**Adding a label, score, or flag to many records.** [Classifying a record](#classifying-a-record)</Check>
-  <Check>**Running a multi-step task on someone's behalf.** [Running an agent on someone's behalf](#running-an-agent-on-someones-behalf)</Check>
-  <Check>**Working through a fuzzy problem you cannot yet scope.** [Exploring an open-ended problem](#exploring-an-open-ended-problem)</Check>
+  <Check>**User needs AI to nudge them toward a next step.** [Suggesting a next step](#suggesting-a-next-step)</Check>
+  <Check>**User needs AI to give them a draft they will edit.** [Generating a first draft](#generating-a-first-draft)</Check>
+  <Check>**User needs AI to summarise long material fast.** [Summarising long material](#summarising-long-material)</Check>
+  <Check>**User needs AI to answer a specific question from records.** [Answering from your own records](#answering-from-your-own-records)</Check>
+  <Check>**User needs AI to label, score, or flag many records.** [Classifying a record](#classifying-a-record)</Check>
+  <Check>**User needs AI to run a multi-step task on their behalf.** [Running an agent on someone's behalf](#running-an-agent-on-someones-behalf)</Check>
+  <Check>**User needs AI to explore a fuzzy problem they cannot yet scope.** [Exploring an open-ended problem](#exploring-an-open-ended-problem)</Check>
 </Checklist>
 
 ## Suggesting a next step
@@ -46,14 +46,10 @@ Pick the one that matches your task, follow its rules, and build it from the com
   <Check>**Offer one thing, not five.** A long list of options is a menu, and menus belong on a different surface.</Check>
 </Checklist>
 
-**Components used:**
-- [Suggestion](/guidelines/ai-components#suggestion)
-- [Prompt input](/guidelines/ai-components#prompt-input)
+<ComponentsUsed items={["Suggestion", "Prompt input"]} />
 
 **Watch out for:**
 A suggestion that reappears the moment it is dismissed. Nobody feels in control.
-
-### See it
 
 <DemoInlineSuggest title="A suggestion right inside the field" blurb="No panel, no thread. The AI sits next to the input; accept, edit, or reject in place." />
 
@@ -85,15 +81,10 @@ A suggestion that reappears the moment it is dismissed. Nobody feels in control.
   <Check>**On a learning task, scaffold rather than write.** Draft an outline, a question, or a worked example on other material, not the piece the learner should write.</Check>
 </Checklist>
 
-**Components used:**
-- [Message](/guidelines/ai-components#message)
-- [Shimmer](/guidelines/ai-components#shimmer)
-- [AI label](/guidelines/ai-components#ai-label)
+<ComponentsUsed items={["Message", "Shimmer", "AI label"]} />
 
 **Watch out for:**
 A learner's essay written for them in their voice. The teaching disappears.
-
-### See it
 
 <DemoAiLabel title="A draft marked as AI" blurb="The badge flags AI text and clears the moment the person edits it, because then it is theirs." />
 
@@ -124,15 +115,10 @@ A learner's essay written for them in their voice. The teaching disappears.
   <Check>**Say what the summary covers and what it excludes.** Name the date range, the record types, the documents read.</Check>
 </Checklist>
 
-**Components used:**
-- [Message](/guidelines/ai-components#message)
-- [Sources](/guidelines/ai-components#sources)
-- [Inline citation](/guidelines/ai-components#inline-citation)
+<ComponentsUsed items={["Message", "Sources", "Inline citation"]} />
 
 **Watch out for:**
 A summary that reads clean because it dropped the caveats and hedges from the source.
-
-### See it
 
 <DemoSources title="A summary you can trace" blurb="Every claim opens the source passage it came from, so nothing has to be taken on trust." />
 
@@ -165,16 +151,10 @@ The set might be a submitted piece of writing, a school's policy library, or one
   <Check>**Sort the reply by task type.** Facts get a direct answer; the person's own thinking gets a guiding question.</Check>
 </Checklist>
 
-**Components used:**
-- [Message](/guidelines/ai-components#message)
-- [Inline citation](/guidelines/ai-components#inline-citation)
-- [Sources](/guidelines/ai-components#sources)
-- [Clarify](/guidelines/ai-components#clarify)
+<ComponentsUsed items={["Message", "Inline citation", "Sources", "Clarify"]} />
 
 **Watch out for:**
 A confident answer when the answer is not in the records.
-
-### See it
 
 <DemoInlineCitation title="An answer with inline citations" blurb="Each sentence carries the source it drew from, so the reader can check the claim in place." />
 
@@ -208,15 +188,10 @@ The person the label describes is usually not the person reading it, so design f
   <Check>**Acknowledge a correction and show what it changed.** A correction that changes nothing is theatre.</Check>
 </Checklist>
 
-**Components used:**
-- [Confidence](/guidelines/ai-components#confidence)
-- [AI label](/guidelines/ai-components#ai-label)
-- [Feedback](/guidelines/ai-components#feedback)
+<ComponentsUsed items={["Confidence", "AI label", "Feedback"]} />
 
 **Watch out for:**
 A flag visible to the operator but not to the person the label describes.
-
-### See it
 
 <DemoClassifierRow title="A flagged row on a table" blurb="The person the label describes can read the reason and correct it in place, without ever entering a chat." />
 
@@ -254,16 +229,10 @@ No pattern on this page carries more risk.
   <Check>**Expose the agent's working as a collapsible chain.** Labelled as working, not as proof of a decision.</Check>
 </Checklist>
 
-**Components used:**
-- [Plan](/guidelines/ai-components#plan)
-- [Confirmation](/guidelines/ai-components#confirmation)
-- [Task](/guidelines/ai-components#task)
-- [Chain of thought](/guidelines/ai-components#chain-of-thought)
+<ComponentsUsed items={["Plan", "Confirmation", "Task", "Chain of thought"]} />
 
 **Watch out for:**
 A "Confirm?" gate that does not name the record, the field, or the value.
-
-### See it
 
 <DemoAgentQueue title="Agent runs as a work queue" blurb="Plans and gates on a standalone surface, not inside a chat. Approve or deny each pending run independently." />
 
@@ -303,16 +272,10 @@ If a task fits any of the six above, build that instead - an embedded control be
   <Check>**Write errors in plain words.** Say what did not work and what to do next. No model names or technical terms.</Check>
 </Checklist>
 
-**Components used:**
-- [Conversation](/guidelines/ai-components#conversation)
-- [Message](/guidelines/ai-components#message)
-- [Prompt input](/guidelines/ai-components#prompt-input)
-- [Error](/guidelines/ai-components#error)
+<ComponentsUsed items={["Conversation", "Message", "Prompt input", "Error"]} />
 
 **Watch out for:**
 A chat panel opened for a task any of the six above would do better.
-
-### See it
 
 <DemoChatbot title="Open chat, the last resort" blurb="Only when the task cannot be scoped ahead of time. It opens with a first move, not a blank box." />
 
@@ -323,7 +286,7 @@ A chat panel opened for a task any of the six above would do better.
 For the parts that build these patterns, see [Components](/guidelines/ai-components).
 For how to write the assistant's instructions, see [Prompts](/guidelines/ai-prompts).
 
-## Sources
+## References
 
 > Reference: [Google PAIR Guidebook](https://pair.withgoogle.com/guidebook/), [The Shape of AI](https://www.shapeof.ai/), [AIverse](https://www.aiverse.design/), [Vercel AI Elements](https://elements.ai-sdk.dev/), [MIT Human-AI Impact Bench](https://impactbench.media.mit.edu/). The rules here are distilled from these five.
 

@@ -7,6 +7,18 @@ export const standardMdxComponentImporters: MdxComponentImporters = {
     const { DoDont } = await import("@/components/foundations/do-dont");
     return { DoDont };
   },
+  ComponentsUsed: async () => {
+    const { ComponentsUsed } = await import("@/components/foundations/components-used");
+    return { ComponentsUsed };
+  },
+  GroupGrid: async () => {
+    const { GroupGrid } = await import("@/components/foundations/group-grid");
+    return { GroupGrid };
+  },
+  SourceLink: async () => {
+    const { SourceLink } = await import("@/components/foundations/source-link");
+    return { SourceLink };
+  },
   Checklist: async () => {
     const { Checklist, Check } = await import("@/components/foundations/checklist");
     return { Checklist, Check };

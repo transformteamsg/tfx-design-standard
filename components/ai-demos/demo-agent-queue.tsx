@@ -116,7 +116,7 @@ export const DemoAgentQueue = ({
                         "inline-block h-2 w-2 shrink-0 rounded-full",
                         status === "approved"
                           ? "bg-success-9"
-                          : "bg-muted-foreground/40"
+                          : "bg-danger-9"
                       )}
                     />
                     <span className="font-medium text-foreground">

@@ -1389,7 +1389,7 @@ export const PromptInputTabItem = ({
 }: PromptInputTabItemProps) => (
   <div
     className={cn(
-      "flex items-center gap-2 px-3 py-2 text-xs hover:bg-accent",
+      "flex cursor-pointer items-center gap-2 px-3 py-2 text-xs transition-colors hover:bg-accent",
       className
     )}
     {...props}

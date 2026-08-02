@@ -69,10 +69,10 @@ const CONFIDENCE_LABEL: Record<Confidence, string> = {
   low: "Low",
 };
 
-const CONFIDENCE_VARIANT: Record<Confidence, "secondary" | "outline"> = {
-  high: "secondary",
-  medium: "outline",
-  low: "outline",
+const CONFIDENCE_CLASS: Record<Confidence, string> = {
+  high: "bg-success-subtle text-success",
+  medium: "bg-warning-subtle text-warning",
+  low: "bg-danger-subtle text-danger",
 };
 
 export const DemoClassifierRow = ({
@@ -123,7 +123,7 @@ export const DemoClassifierRow = ({
               return (
                 <tr
                   key={row.id}
-                  className="border-b border-border last:border-b-0 align-top"
+                  className="border-b border-border last:border-b-0 align-top transition-colors hover:bg-muted/50"
                 >
                   <td className="px-3 py-3 font-medium text-foreground">
                     {row.applicant}
@@ -133,7 +133,7 @@ export const DemoClassifierRow = ({
                   </td>
                   <td className="px-3 py-3">
                     <div className="flex items-center gap-1.5">
-                      <Badge variant={CONFIDENCE_VARIANT[row.confidence]}>
+                      <Badge className={CONFIDENCE_CLASS[row.confidence]} variant="secondary">
                         {CONFIDENCE_LABEL[row.confidence]}
                       </Badge>
                       {isLow && (

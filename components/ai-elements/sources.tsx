@@ -29,13 +29,16 @@ export const SourcesTrigger = ({
   ...props
 }: SourcesTriggerProps) => (
   <CollapsibleTrigger
-    className={cn("flex items-center gap-2", className)}
+    className={cn(
+      "group flex cursor-pointer items-center gap-2 text-muted-foreground transition-colors hover:text-foreground focus-visible:text-foreground focus-visible:outline-none",
+      className
+    )}
     {...props}
   >
     {children ?? (
       <>
         <span className="font-medium">Used {count} sources</span>
-        <ChevronDownIcon className="h-4 w-4" />
+        <ChevronDownIcon className="size-4 transition-transform group-data-[state=open]:rotate-180" />
       </>
     )}
   </CollapsibleTrigger>
@@ -59,9 +62,18 @@ export const SourcesContent = ({
 
 export type SourceProps = ComponentProps<"a">;
 
-export const Source = ({ href, title, children, ...props }: SourceProps) => (
+export const Source = ({
+  href,
+  title,
+  children,
+  className,
+  ...props
+}: SourceProps) => (
   <a
-    className="flex items-center gap-2"
+    className={cn(
+      "flex cursor-pointer items-center gap-2 transition-colors hover:text-foreground focus-visible:text-foreground focus-visible:outline-none",
+      className
+    )}
     href={href}
     rel="noreferrer"
     target="_blank"
