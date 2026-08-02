@@ -52,11 +52,11 @@ export function DemoFrame({
       <div className="flex items-start gap-3 rounded-t-lg border-b border-border bg-muted/30 px-5 py-3">
         <div className="flex flex-1 flex-col gap-1">
           <span className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
-            Live demo
             <span
               aria-hidden="true"
               className="inline-block h-1.5 w-1.5 shrink-0 animate-pulse rounded-full bg-(--color-tw-blue)"
             />
+            Live demo
           </span>
           <span className="text-base font-semibold leading-tight text-foreground">
             {title ?? "Live pattern demo"}
