@@ -1,12 +1,54 @@
-import type { ReactNode } from "react";
+"use client";
 
-/* Abstract compositions - one per principle. Each is a small piece of visual
-   art, not an icon-and-label functional diagram. Shared DiagramFrame keeps
-   the outer container consistent; each SVG carries the concept. */
+import { useEffect, useReducer, useRef, useState, type ReactNode } from "react";
+
+/* Ten small pieces of contemplative art - one per principle. Each is a
+   composition first, then subtle motion. Motion respects prefers-reduced-motion
+   by rendering the settled composed frame with no animation loop. */
+
+function useReducedMotion() {
+  const [reduced, setReduced] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setReduced(mq.matches);
+    const handler = (e: MediaQueryListEvent) => setReduced(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
+  return reduced;
+}
+
+/* rAF-driven ticker returning elapsed seconds since mount. Pauses when the
+   tab is hidden. Returns 0 when reduced-motion is on so callers render the
+   settled frame. */
+function useTime(active: boolean) {
+  const [, tick] = useReducer((n: number) => n + 1, 0);
+  const startRef = useRef<number | null>(null);
+  const rafRef = useRef<number | null>(null);
+  useEffect(() => {
+    if (!active) return;
+    let last = performance.now();
+    startRef.current = last;
+    const loop = () => {
+      tick();
+      const now = performance.now();
+      // If tab was hidden, skip the elapsed. Not critical here.
+      if (now - last < 5000) last = now;
+      rafRef.current = requestAnimationFrame(loop);
+    };
+    rafRef.current = requestAnimationFrame(loop);
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
+  }, [active]);
+  return startRef.current !== null && active
+    ? (performance.now() - startRef.current) / 1000
+    : 0;
+}
 
 function DiagramFrame({ children, caption }: { children: ReactNode; caption?: string }) {
   return (
-    <figure className="not-prose my-6 rounded-lg border border-border bg-surface p-8">
+    <figure className="not-prose my-6 rounded-lg border border-border bg-surface p-10">
       <div className="flex items-center justify-center">
         {children}
       </div>
@@ -19,66 +61,99 @@ function DiagramFrame({ children, caption }: { children: ReactNode; caption?: st
   );
 }
 
-/* P1 - Use AI only when a rule cannot.
-   Straight crisp line (rule) vs a tangled scribble (AI), side by side. */
+/* -------------------------------------------------------------------------- */
+
+/* P1 - Rule vs AI.
+   Rule = a still straight line. AI = a slowly meandering low-amplitude sine.
+   The stillness reads as reliability; the wobble reads as behaviour that
+   varies. */
 export function P1UseAIOnly() {
+  const reduced = useReducedMotion();
+  const t = useTime(!reduced);
+  const points: string[] = [];
+  const w = 140;
+  const steps = 40;
+  for (let i = 0; i <= steps; i++) {
+    const x = 240 + (i / steps) * w;
+    const y = 90 + Math.sin(i * 0.4 + t * 0.6) * 6;
+    points.push(`${x.toFixed(1)},${y.toFixed(1)}`);
+  }
   return (
     <DiagramFrame caption="Ship the rule if it works.">
-      <svg viewBox="0 0 400 180" className="w-full max-w-[420px]" role="img" aria-label="A straight line labelled rule beside a tangled scribble labelled AI">
-        {/* Left panel: rule */}
-        <g>
-          <line x1="40" y1="90" x2="160" y2="90" stroke="var(--success)" strokeWidth="3" strokeLinecap="round" />
-          <text x="100" y="140" textAnchor="middle" fontSize="11" fill="var(--muted-foreground)" fontStyle="italic">rule</text>
-        </g>
-        {/* Divider */}
-        <line x1="200" y1="30" x2="200" y2="150" stroke="var(--border)" strokeWidth="1" strokeDasharray="2 3" />
-        {/* Right panel: AI scribble */}
-        <g>
-          <path
-            d="M 240 90 C 260 40, 275 130, 290 70 S 315 130, 330 60 S 355 130, 370 90"
-            stroke="var(--muted-foreground)"
-            strokeWidth="2"
-            strokeLinecap="round"
-            fill="none"
-          />
-          <text x="305" y="140" textAnchor="middle" fontSize="11" fill="var(--muted-foreground)" fontStyle="italic">AI</text>
-        </g>
+      <svg viewBox="0 0 440 180" className="w-full max-w-[440px]" role="img" aria-label="A still straight line labelled rule beside a slowly meandering wavy line labelled AI">
+        <line x1="60" y1="90" x2="200" y2="90" stroke="var(--success)" strokeWidth="2.5" strokeLinecap="round" />
+        <text x="130" y="140" textAnchor="middle" fontSize="11" fill="var(--muted-foreground)" fontStyle="italic">rule</text>
+        <line x1="220" y1="40" x2="220" y2="150" stroke="var(--border)" strokeWidth="1" strokeDasharray="2 3" />
+        <polyline
+          points={points.join(" ")}
+          stroke="var(--muted-foreground)"
+          strokeWidth="1.8"
+          fill="none"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <text x="310" y="140" textAnchor="middle" fontSize="11" fill="var(--muted-foreground)" fontStyle="italic">AI</text>
       </svg>
     </DiagramFrame>
   );
 }
 
-/* P2 - Mark every AI output.
-   Muted content field with one small accent dot in the corner. The mark IS
-   the diagram. */
+/* P2 - Mark output.
+   Parallel text-line strokes; one line rendered in accent blue with a small
+   "AI" chip beside it. The mark is inside the content, not floating in
+   empty space. Fixes the R15 "empty rectangle" problem. */
 export function P2MarkOutput() {
+  const reduced = useReducedMotion();
+  const t = useTime(!reduced);
+  const glow = reduced ? 0.9 : 0.75 + 0.2 * Math.sin(t * 1.2);
   return (
-    <DiagramFrame caption="A quiet mark, always beside the content.">
-      <svg viewBox="0 0 400 220" className="w-full max-w-[420px]" role="img" aria-label="A large muted content field with a small accent circle in the top-right corner marking it as AI">
-        {/* Content field */}
-        <rect x="60" y="40" width="280" height="140" rx="12" fill="var(--muted)" stroke="var(--border)" strokeWidth="1" />
-        {/* AI mark - small circle top right */}
-        <circle cx="330" cy="52" r="10" fill="var(--color-tw-blue)" />
-        <text x="330" y="55" textAnchor="middle" fontSize="9" fontWeight="600" fill="white">AI</text>
+    <DiagramFrame caption="The mark sits inside the content.">
+      <svg viewBox="0 0 440 200" className="w-full max-w-[440px]" role="img" aria-label="Several parallel lines of text with one line rendered as an AI-marked accent, and an AI badge beside it">
+        {/* Text lines */}
+        <line x1="70" y1="55" x2="330" y2="55" stroke="var(--muted-foreground)" strokeWidth="3" strokeLinecap="round" opacity="0.35" />
+        <line x1="70" y1="80" x2="300" y2="80" stroke="var(--muted-foreground)" strokeWidth="3" strokeLinecap="round" opacity="0.35" />
+        {/* Marked line */}
+        <line x1="70" y1="105" x2="320" y2="105" stroke="var(--color-tw-blue)" strokeWidth="3" strokeLinecap="round" opacity={glow} />
+        {/* AI badge on the same row, to the right */}
+        <g transform="translate(340 105)">
+          <circle cx="0" cy="0" r="12" fill="var(--color-tw-blue)" />
+          <text x="0" y="3" textAnchor="middle" fontSize="9" fontWeight="600" fill="white">AI</text>
+        </g>
+        {/* Text lines below */}
+        <line x1="70" y1="130" x2="290" y2="130" stroke="var(--muted-foreground)" strokeWidth="3" strokeLinecap="round" opacity="0.35" />
+        <line x1="70" y1="155" x2="270" y2="155" stroke="var(--muted-foreground)" strokeWidth="3" strokeLinecap="round" opacity="0.35" />
       </svg>
     </DiagramFrame>
   );
 }
 
-/* P3 - Every AI claim opens the source.
-   A curved gesture of "text" with a thin thread pulling out to a source doc.  */
+/* P3 - Open source.
+   Text lines with a thread slowly drawing down to a labelled source document.
+   The thread pulses on a 6s cycle. */
 export function P3OpenSource() {
+  const reduced = useReducedMotion();
+  const t = useTime(!reduced);
+  const cycle = (t % 6) / 6; // 0..1
+  const drawFrac = reduced ? 1 : Math.min(1, cycle * 1.4); // draws over first 70%, then holds
+  const pathLen = 110;
+  const dashOffset = pathLen * (1 - drawFrac);
   return (
     <DiagramFrame caption="Every claim is a thread you can pull.">
-      <svg viewBox="0 0 400 220" className="w-full max-w-[420px]" role="img" aria-label="A curved line representing text with a thin thread pulling down from its midpoint to a small labelled source document">
-        {/* Three curved 'text lines' */}
-        <path d="M 40 55 Q 200 45 360 55" stroke="var(--muted-foreground)" strokeWidth="3" strokeLinecap="round" fill="none" opacity="0.6" />
-        <path d="M 40 75 Q 200 65 360 75" stroke="var(--muted-foreground)" strokeWidth="3" strokeLinecap="round" fill="none" opacity="0.6" />
-        <path d="M 40 95 Q 200 85 280 95" stroke="var(--muted-foreground)" strokeWidth="3" strokeLinecap="round" fill="none" opacity="0.6" />
-        {/* Thread pulling down */}
-        <path d="M 200 70 Q 200 130 200 170" stroke="var(--color-tw-blue)" strokeWidth="1.5" fill="none" strokeDasharray="3 3" />
-        {/* Source doc */}
-        <g transform="translate(160 160)">
+      <svg viewBox="0 0 440 220" className="w-full max-w-[440px]" role="img" aria-label="A curved line of text with a thread slowly drawing down to a small source document">
+        <path d="M 60 55 Q 220 45 380 55" stroke="var(--muted-foreground)" strokeWidth="3" strokeLinecap="round" fill="none" opacity="0.5" />
+        <path d="M 60 75 Q 220 65 380 75" stroke="var(--muted-foreground)" strokeWidth="3" strokeLinecap="round" fill="none" opacity="0.5" />
+        <path d="M 60 95 Q 220 85 300 95" stroke="var(--muted-foreground)" strokeWidth="3" strokeLinecap="round" fill="none" opacity="0.5" />
+        {/* Animated thread */}
+        <path
+          d="M 220 70 Q 220 130 220 170"
+          stroke="var(--color-tw-blue)"
+          strokeWidth="1.5"
+          fill="none"
+          strokeDasharray={pathLen}
+          strokeDashoffset={dashOffset}
+        />
+        {/* Source document */}
+        <g transform="translate(180 160)" opacity={drawFrac}>
           <path d="M 0 0 L 60 0 L 80 20 L 80 60 L 0 60 Z" fill="var(--surface)" stroke="var(--color-tw-blue)" strokeWidth="1.5" />
           <path d="M 60 0 L 60 20 L 80 20" fill="none" stroke="var(--color-tw-blue)" strokeWidth="1.5" />
           <line x1="14" y1="34" x2="66" y2="34" stroke="var(--muted-foreground)" strokeWidth="1.5" opacity="0.5" />
@@ -89,186 +164,243 @@ export function P3OpenSource() {
   );
 }
 
-/* P4 - Recover from invisible errors.
-   A small object mid-fall with a curved net stretched below. */
+/* P4 - Recovery net.
+   Danger dot falls, gets caught by the net, resets. 5s cycle. */
 export function P4RecoveryNet() {
+  const reduced = useReducedMotion();
+  const t = useTime(!reduced);
+  const cycle = (t % 5) / 5; // 0..1
+  const fallY = reduced ? 155 : 20 + cycle * 135;
   return (
     <DiagramFrame caption="The check runs before the person does.">
-      <svg viewBox="0 0 400 220" className="w-full max-w-[420px]" role="img" aria-label="A small dot falling toward a curved fine-line net stretched beneath it">
+      <svg viewBox="0 0 440 240" className="w-full max-w-[440px]" role="img" aria-label="A small dot falling toward a curved net stretched below">
+        {/* Trail */}
+        <line x1="220" y1="20" x2="220" y2={fallY - 10} stroke="var(--danger)" strokeWidth="1" strokeDasharray="2 3" opacity="0.4" />
         {/* Falling dot */}
-        <circle cx="200" cy="65" r="9" fill="var(--danger)" />
-        {/* Motion trail */}
-        <line x1="200" y1="20" x2="200" y2="55" stroke="var(--danger)" strokeWidth="1" strokeDasharray="2 3" opacity="0.5" />
-        {/* Net - four arcs crossing */}
+        <circle cx="220" cy={fallY} r="8" fill="var(--danger)" />
+        {/* Net */}
         <g stroke="var(--muted-foreground)" strokeWidth="1.5" fill="none" opacity="0.7">
-          <path d="M 60 160 Q 200 130 340 160" />
-          <path d="M 60 160 Q 200 150 340 160" />
-          <line x1="90" y1="152" x2="90" y2="180" />
-          <line x1="140" y1="146" x2="140" y2="180" />
-          <line x1="200" y1="142" x2="200" y2="180" />
-          <line x1="260" y1="146" x2="260" y2="180" />
-          <line x1="310" y1="152" x2="310" y2="180" />
+          <path d="M 80 170 Q 220 145 360 170" />
+          <path d="M 80 170 Q 220 158 360 170" />
+          <line x1="105" y1="163" x2="105" y2="192" />
+          <line x1="150" y1="157" x2="150" y2="192" />
+          <line x1="220" y1="152" x2="220" y2="192" />
+          <line x1="290" y1="157" x2="290" y2="192" />
+          <line x1="335" y1="163" x2="335" y2="192" />
         </g>
       </svg>
     </DiagramFrame>
   );
 }
 
-/* P5 - No silent writes.
-   AI element + record separated by a gate glyph on a threshold. */
+/* P5 - Silent write gate.
+   A pulse of light travels from AI toward the record but stops at the gate.
+   Nothing crosses without the yes. */
 export function P5SilentWriteGate() {
+  const reduced = useReducedMotion();
+  const t = useTime(!reduced);
+  const cycle = (t % 4) / 4;
+  // pulse animates 0..1 from AI toward gate (stops before crossing)
+  const pulseX = reduced ? 165 : 130 + cycle * 45;
+  const pulseOpacity = reduced ? 0.7 : Math.max(0, 1 - cycle * 1.3);
   return (
     <DiagramFrame caption="Nothing crosses without a clear yes.">
-      <svg viewBox="0 0 400 220" className="w-full max-w-[420px]" role="img" aria-label="A blue circle on one side, a grey square on the other, separated by a threshold with a check-gate glyph">
-        {/* Left: AI */}
-        <circle cx="90" cy="110" r="26" fill="var(--color-tw-blue)" opacity="0.15" stroke="var(--color-tw-blue)" strokeWidth="1.5" />
-        <text x="90" y="114" textAnchor="middle" fontSize="10" fill="var(--color-tw-blue)" fontStyle="italic">AI</text>
+      <svg viewBox="0 0 440 220" className="w-full max-w-[440px]" role="img" aria-label="An AI circle and a record square either side of a threshold, with a check gate on the line">
+        {/* AI */}
+        <circle cx="100" cy="110" r="28" fill="var(--color-tw-blue)" fillOpacity="0.15" stroke="var(--color-tw-blue)" strokeWidth="1.5" />
+        <text x="100" y="114" textAnchor="middle" fontSize="10" fill="var(--color-tw-blue)" fontStyle="italic">AI</text>
+        {/* Pulse */}
+        <circle cx={pulseX} cy="110" r="6" fill="var(--color-tw-blue)" opacity={pulseOpacity} />
         {/* Threshold */}
-        <line x1="200" y1="40" x2="200" y2="180" stroke="var(--border)" strokeWidth="1" strokeDasharray="3 3" />
-        {/* Gate glyph on threshold */}
-        <rect x="185" y="95" width="30" height="30" rx="6" fill="var(--surface)" stroke="var(--foreground)" strokeWidth="1.5" />
-        <path d="M 191 110 L 198 117 L 209 103" stroke="var(--success)" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-        {/* Right: record */}
-        <rect x="284" y="84" width="52" height="52" rx="6" fill="var(--muted)" stroke="var(--border)" strokeWidth="1.5" />
-        <text x="310" y="114" textAnchor="middle" fontSize="10" fill="var(--muted-foreground)" fontStyle="italic">record</text>
+        <line x1="220" y1="40" x2="220" y2="180" stroke="var(--border)" strokeWidth="1" strokeDasharray="3 3" />
+        {/* Gate */}
+        <rect x="205" y="95" width="30" height="30" rx="6" fill="var(--surface)" stroke="var(--foreground)" strokeWidth="1.5" />
+        <path d="M 211 110 L 218 117 L 229 103" stroke="var(--success)" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+        {/* Record */}
+        <rect x="304" y="84" width="56" height="56" rx="6" fill="var(--muted)" stroke="var(--border)" strokeWidth="1.5" />
+        <text x="332" y="115" textAnchor="middle" fontSize="10" fill="var(--muted-foreground)" fontStyle="italic">record</text>
       </svg>
     </DiagramFrame>
   );
 }
 
-/* P6 - Let people see and remove stored data.
-   Translucent container of dots with an arc lifting one out. */
+/* P6 - Data control.
+   Dots inside a container pulse gently. */
 export function P6DataControl() {
+  const reduced = useReducedMotion();
+  const t = useTime(!reduced);
+  const scale = (i: number) =>
+    reduced ? 1 : 0.9 + 0.15 * Math.sin(t * 1.5 + i * 1.7);
   return (
     <DiagramFrame caption="Always visible, always removable.">
-      <svg viewBox="0 0 400 220" className="w-full max-w-[420px]" role="img" aria-label="A rounded translucent container holding three dots with an arc lifting one dot up and out">
-        {/* Container */}
-        <rect x="80" y="100" width="240" height="90" rx="12" fill="var(--muted)" fillOpacity="0.4" stroke="var(--border)" strokeWidth="1.5" strokeDasharray="4 3" />
-        {/* Three dots inside */}
-        <circle cx="140" cy="145" r="10" fill="var(--muted-foreground)" opacity="0.5" />
-        <circle cx="200" cy="145" r="10" fill="var(--muted-foreground)" opacity="0.5" />
-        <circle cx="260" cy="145" r="10" fill="var(--muted-foreground)" opacity="0.5" />
-        {/* Arc lifting one dot out */}
-        <path d="M 200 145 Q 260 60 320 40" stroke="var(--color-tw-blue)" strokeWidth="1.5" fill="none" strokeDasharray="4 3" />
-        {/* Lifted dot */}
-        <circle cx="320" cy="40" r="10" fill="var(--color-tw-blue)" />
+      <svg viewBox="0 0 440 220" className="w-full max-w-[440px]" role="img" aria-label="A dashed translucent container holding three softly pulsing dots with an arc lifting one out">
+        <rect x="90" y="100" width="260" height="90" rx="12" fill="var(--muted)" fillOpacity="0.4" stroke="var(--border)" strokeWidth="1.5" strokeDasharray="4 3" />
+        <circle cx="150" cy="145" r={10 * scale(0)} fill="var(--muted-foreground)" opacity="0.55" />
+        <circle cx="220" cy="145" r={10 * scale(1)} fill="var(--muted-foreground)" opacity="0.55" />
+        <circle cx="290" cy="145" r={10 * scale(2)} fill="var(--muted-foreground)" opacity="0.55" />
+        <path d="M 220 145 Q 290 60 350 40" stroke="var(--color-tw-blue)" strokeWidth="1.5" fill="none" strokeDasharray="4 3" />
+        <circle cx="350" cy="40" r="10" fill="var(--color-tw-blue)" />
       </svg>
     </DiagramFrame>
   );
 }
 
-/* P7 - For learners, guide - do not answer.
-   Two paths to the same destination: direct arrow "answer", meander "guide". */
+/* P7 - Guide vs answer.
+   Two walkers reach the same destination. Fast walker on direct arrow;
+   slow walker on meander with a pause at the midpoint. Same period so
+   they arrive together, teaching that both work - only one teaches on
+   the way. */
 export function P7GuideNotAnswer() {
+  const reduced = useReducedMotion();
+  const t = useTime(!reduced);
+  const period = 6;
+  const cycle = (t % period) / period; // 0..1
+  const c = reduced ? 0.5 : cycle;
+  const start = { x: 58, y: 110 };
+  const end = { x: 350, y: 110 };
+  // Fast walker on straight line
+  const fx = start.x + (end.x - start.x) * c;
+  const fy = 80;
+  // Slow walker on curve - parametric approximation
+  const t2 = c;
+  const bx = start.x + (end.x - start.x) * t2;
+  const by = 130 + Math.sin(t2 * Math.PI * 2) * 25;
   return (
     <DiagramFrame caption="Both paths reach the destination. Only one teaches.">
-      <svg viewBox="0 0 400 220" className="w-full max-w-[420px]" role="img" aria-label="A learner start point on the left connected to a destination on the right by two paths: a direct arrow labelled answer and a longer meandering path labelled guide">
-        {/* Start dot */}
-        <circle cx="50" cy="110" r="7" fill="var(--foreground)" />
-        <text x="50" y="135" textAnchor="middle" fontSize="10" fill="var(--muted-foreground)" fontStyle="italic">learner</text>
-        {/* Destination dot */}
+      <svg viewBox="0 0 440 220" className="w-full max-w-[440px]" role="img" aria-label="A learner start point connected to a destination by two paths - a direct arrow with a fast walker, and a meander with a slower walker">
+        {/* Start */}
+        <circle cx="58" cy="110" r="7" fill="var(--foreground)" />
+        <text x="58" y="135" textAnchor="middle" fontSize="10" fill="var(--muted-foreground)" fontStyle="italic">learner</text>
+        {/* Destination */}
         <circle cx="350" cy="110" r="10" fill="var(--success)" />
         <text x="350" y="135" textAnchor="middle" fontSize="10" fill="var(--success)" fontStyle="italic">gets it</text>
-        {/* Direct answer arrow */}
-        <line x1="58" y1="80" x2="336" y2="80" stroke="var(--muted-foreground)" strokeWidth="1.5" opacity="0.6" markerEnd="url(#answerArrow)" />
-        <text x="200" y="70" textAnchor="middle" fontSize="11" fill="var(--muted-foreground)">answer</text>
-        {/* Meandering guide path */}
+        {/* Direct arrow */}
+        <line x1="66" y1="80" x2="336" y2="80" stroke="var(--muted-foreground)" strokeWidth="1.5" opacity="0.4" />
+        <text x="200" y="65" textAnchor="middle" fontSize="11" fill="var(--muted-foreground)">answer</text>
+        {/* Meander */}
         <path
-          d="M 58 130 C 110 165, 170 100, 220 145 S 300 100, 340 130"
+          d="M 66 130 C 130 165, 180 100, 220 145 S 310 100, 340 130"
           stroke="var(--color-tw-blue)"
-          strokeWidth="2"
+          strokeWidth="1.5"
           fill="none"
           strokeLinecap="round"
+          opacity="0.55"
         />
-        {/* Small dot along the guide - "learner realises" */}
-        <circle cx="220" cy="145" r="4" fill="var(--color-tw-blue)" />
-        <text x="200" y="180" textAnchor="middle" fontSize="11" fill="var(--color-tw-blue)">guide</text>
-        <defs>
-          <marker id="answerArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-            <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--muted-foreground)" opacity="0.6" />
-          </marker>
-        </defs>
+        <text x="200" y="200" textAnchor="middle" fontSize="11" fill="var(--color-tw-blue)">guide</text>
+        {/* Fast walker */}
+        <circle cx={fx} cy={fy} r="4" fill="var(--muted-foreground)" />
+        {/* Slow walker */}
+        <circle cx={bx} cy={by} r="4" fill="var(--color-tw-blue)" />
       </svg>
     </DiagramFrame>
   );
 }
 
-/* P8 - Test across every group.
-   Row of differently-sized circles with score bars, lowest highlighted. */
+/* P8 - Range not average.
+   Score bars oscillate on a very low amplitude; the lowest one glows in
+   danger to hold attention as the standard. */
 export function P8RangeNotAverage() {
+  const reduced = useReducedMotion();
+  const t = useTime(!reduced);
+  const wobble = (i: number) => (reduced ? 0 : Math.sin(t * 0.9 + i * 1.3) * 3);
   return (
     <DiagramFrame caption="Hold the standard on the worst-served, not the average.">
-      <svg viewBox="0 0 400 220" className="w-full max-w-[420px]" role="img" aria-label="Five circles of different sizes across the bottom representing groups, each with a score bar above; the lowest bar is highlighted in danger red">
-        {/* Score bars - group 3 is lowest */}
-        <rect x="52" y="60" width="16" height="90" rx="3" fill="var(--muted-foreground)" opacity="0.6" />
-        <rect x="112" y="75" width="16" height="75" rx="3" fill="var(--muted-foreground)" opacity="0.6" />
-        <rect x="172" y="105" width="16" height="45" rx="3" fill="var(--danger)" />
-        <rect x="232" y="50" width="16" height="100" rx="3" fill="var(--muted-foreground)" opacity="0.6" />
-        <rect x="292" y="70" width="16" height="80" rx="3" fill="var(--muted-foreground)" opacity="0.6" />
-        {/* Threshold line - held at lowest */}
-        <line x1="30" y1="105" x2="330" y2="105" stroke="var(--danger)" strokeWidth="1" strokeDasharray="4 3" opacity="0.6" />
-        {/* Groups (circles of different sizes) */}
-        <circle cx="60" cy="180" r="10" fill="var(--muted)" stroke="var(--border)" strokeWidth="1" />
-        <circle cx="120" cy="180" r="13" fill="var(--muted)" stroke="var(--border)" strokeWidth="1" />
-        <circle cx="180" cy="180" r="8" fill="var(--muted)" stroke="var(--danger)" strokeWidth="1.5" />
-        <circle cx="240" cy="180" r="12" fill="var(--muted)" stroke="var(--border)" strokeWidth="1" />
-        <circle cx="300" cy="180" r="11" fill="var(--muted)" stroke="var(--border)" strokeWidth="1" />
+      <svg viewBox="0 0 440 220" className="w-full max-w-[440px]" role="img" aria-label="Five score bars of different heights, the lowest highlighted in danger as the held standard">
+        {/* Bars */}
+        <rect x="72" y={60 + wobble(0)} width="16" height={90 - wobble(0)} rx="3" fill="var(--muted-foreground)" opacity="0.5" />
+        <rect x="132" y={75 + wobble(1)} width="16" height={75 - wobble(1)} rx="3" fill="var(--muted-foreground)" opacity="0.5" />
+        <rect x="192" y={105 + wobble(2)} width="16" height={45 - wobble(2)} rx="3" fill="var(--danger)" />
+        <rect x="252" y={50 + wobble(3)} width="16" height={100 - wobble(3)} rx="3" fill="var(--muted-foreground)" opacity="0.5" />
+        <rect x="312" y={70 + wobble(4)} width="16" height={80 - wobble(4)} rx="3" fill="var(--muted-foreground)" opacity="0.5" />
+        {/* Threshold */}
+        <line x1="50" y1="105" x2="350" y2="105" stroke="var(--danger)" strokeWidth="1" strokeDasharray="4 3" opacity="0.55" />
+        {/* Group circles */}
+        <circle cx="80" cy="180" r="10" fill="var(--muted)" stroke="var(--border)" strokeWidth="1" />
+        <circle cx="140" cy="180" r="13" fill="var(--muted)" stroke="var(--border)" strokeWidth="1" />
+        <circle cx="200" cy="180" r="8" fill="var(--muted)" stroke="var(--danger)" strokeWidth="1.5" />
+        <circle cx="260" cy="180" r="12" fill="var(--muted)" stroke="var(--border)" strokeWidth="1" />
+        <circle cx="320" cy="180" r="11" fill="var(--muted)" stroke="var(--border)" strokeWidth="1" />
       </svg>
     </DiagramFrame>
   );
 }
 
-/* P9 - Honest about what it is.
-   A single mask outline, half-filled. Always a tool, never a face. */
+/* P9 - Reads as a tool.
+   The mask outline is drawn as a single continuous line that fades in at
+   one end and out at the other, never fully closing. Says "never a face"
+   through motion. */
 export function P9HonestIdentity() {
+  const reduced = useReducedMotion();
+  const t = useTime(!reduced);
+  // Path length approximation
+  const pathLen = 400;
+  const stroke = 24;
+  const period = 8;
+  const c = reduced ? 0.5 : (t % period) / period;
+  // The visible arc slides around the perimeter
+  const offset = -c * pathLen;
   return (
     <DiagramFrame caption="Always a tool, never a face.">
-      <svg viewBox="0 0 400 220" className="w-full max-w-[420px]" role="img" aria-label="A mask shape - half filled with accent colour, half hollow - marking the AI as clearly a tool">
-        {/* Mask outline - stylised */}
+      <svg viewBox="0 0 440 220" className="w-full max-w-[440px]" role="img" aria-label="A mask outline drawn as a single continuous line, fading in one side and out the other, never fully forming a face">
+        {/* Mask ghost outline (very faint) */}
         <path
-          d="M 130 70 Q 200 40 270 70 Q 285 100 275 140 Q 260 165 200 175 Q 140 165 125 140 Q 115 100 130 70 Z"
-          fill="var(--surface)"
-          stroke="var(--foreground)"
-          strokeWidth="1.8"
+          d="M 150 70 Q 220 40 290 70 Q 305 100 295 140 Q 280 165 220 175 Q 160 165 145 140 Q 135 100 150 70 Z"
+          fill="none"
+          stroke="var(--border)"
+          strokeWidth="1"
+          opacity="0.4"
         />
-        {/* Half-fill overlay */}
+        {/* Animated segment - a short section of the perimeter travels */}
         <path
-          d="M 130 70 Q 200 40 200 40 L 200 175 Q 140 165 125 140 Q 115 100 130 70 Z"
-          fill="var(--color-tw-blue)"
-          fillOpacity="0.15"
+          d="M 150 70 Q 220 40 290 70 Q 305 100 295 140 Q 280 165 220 175 Q 160 165 145 140 Q 135 100 150 70 Z"
+          fill="none"
+          stroke="var(--color-tw-blue)"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeDasharray={`${stroke} ${pathLen - stroke}`}
+          strokeDashoffset={offset}
         />
-        {/* Eye holes */}
-        <ellipse cx="170" cy="110" rx="10" ry="6" fill="var(--surface)" stroke="var(--foreground)" strokeWidth="1.5" />
-        <ellipse cx="230" cy="110" rx="10" ry="6" fill="var(--surface)" stroke="var(--foreground)" strokeWidth="1.5" />
-        {/* Vertical divide line */}
-        <line x1="200" y1="40" x2="200" y2="175" stroke="var(--foreground)" strokeWidth="1" strokeDasharray="2 3" opacity="0.5" />
+        {/* Eye holes (very faint - a hint, not a face) */}
+        <ellipse cx="190" cy="110" rx="7" ry="4" fill="none" stroke="var(--border)" strokeWidth="1" opacity="0.6" />
+        <ellipse cx="250" cy="110" rx="7" ry="4" fill="none" stroke="var(--border)" strokeWidth="1" opacity="0.6" />
       </svg>
     </DiagramFrame>
   );
 }
 
-/* P10 - No engagement mechanics.
-   A straight line of even marks (real progress) beside a dopamine spiral. */
+/* P10 - Reward real progress, not visits.
+   Left: five progress dots with a "tick" that walks across one at a time,
+   cycling. Right: a spiral rotating slowly with no end. Two rhythms side
+   by side - one purposeful, one hypnotic. */
 export function P10NoEngagement() {
+  const reduced = useReducedMotion();
+  const t = useTime(!reduced);
+  const active = reduced ? 2 : Math.floor((t * 0.9) % 5);
+  const rotate = reduced ? 0 : (t * 12) % 360;
   return (
     <DiagramFrame caption="One measures real progress. The other pulls the sleeve.">
-      <svg viewBox="0 0 400 220" className="w-full max-w-[420px]" role="img" aria-label="A straight row of evenly spaced progress marks beside a spiral going nowhere">
-        {/* Real progress: line of even ticks */}
-        <g>
-          <line x1="40" y1="110" x2="180" y2="110" stroke="var(--muted-foreground)" strokeWidth="1" opacity="0.4" />
-          <circle cx="55" cy="110" r="5" fill="var(--success)" />
-          <circle cx="85" cy="110" r="5" fill="var(--success)" />
-          <circle cx="115" cy="110" r="5" fill="var(--success)" />
-          <circle cx="145" cy="110" r="5" fill="var(--success)" />
-          <circle cx="175" cy="110" r="5" fill="var(--muted)" stroke="var(--muted-foreground)" strokeWidth="1" />
-          <text x="110" y="150" textAnchor="middle" fontSize="11" fill="var(--muted-foreground)" fontStyle="italic">real progress</text>
-        </g>
+      <svg viewBox="0 0 440 220" className="w-full max-w-[440px]" role="img" aria-label="A row of five progress dots with a ticking indicator that walks across them, beside a slowly rotating spiral in danger colour">
+        {/* Left: progress track */}
+        <line x1="50" y1="110" x2="200" y2="110" stroke="var(--muted-foreground)" strokeWidth="1" opacity="0.35" />
+        {[0, 1, 2, 3, 4].map((i) => (
+          <circle
+            key={i}
+            cx={65 + i * 32}
+            cy="110"
+            r="6"
+            fill={i === active ? "var(--success)" : i < active ? "var(--success)" : "var(--muted)"}
+            fillOpacity={i === active ? 1 : i < active ? 0.6 : 1}
+            stroke={i > active ? "var(--muted-foreground)" : "none"}
+            strokeWidth="1"
+          />
+        ))}
+        <text x="125" y="150" textAnchor="middle" fontSize="11" fill="var(--muted-foreground)" fontStyle="italic">real progress</text>
         {/* Divider */}
-        <line x1="220" y1="40" x2="220" y2="180" stroke="var(--border)" strokeWidth="1" strokeDasharray="2 3" />
-        {/* Dopamine spiral - going nowhere */}
-        <g>
+        <line x1="240" y1="40" x2="240" y2="180" stroke="var(--border)" strokeWidth="1" strokeDasharray="2 3" />
+        {/* Right: dopamine spiral (rotating) */}
+        <g transform={`translate(340 110) rotate(${rotate})`}>
           <path
-            d="M 320 110
+            d="M 0 0
                m -40 0
                a 40 40 0 1 1 80 0
                a 32 32 0 1 0 -64 0
@@ -276,12 +408,12 @@ export function P10NoEngagement() {
                a 16 16 0 1 0 -32 0
                a 8 8 0 1 1 16 0"
             stroke="var(--danger)"
-            strokeWidth="1.8"
+            strokeWidth="1.6"
             fill="none"
             strokeLinecap="round"
           />
-          <text x="320" y="180" textAnchor="middle" fontSize="11" fill="var(--danger)" fontStyle="italic">dopamine loop</text>
         </g>
+        <text x="340" y="180" textAnchor="middle" fontSize="11" fill="var(--danger)" fontStyle="italic">dopamine loop</text>
       </svg>
     </DiagramFrame>
   );

@@ -4,13 +4,7 @@ description: Ten checks that keep an AI feature useful and safe for learners.
 status: proposed
 ---
 
-Ten checks every AI feature in an education product has to clear.
-
 <PrincipleGrid />
-
-Whenever these checks say "the person", name who you mean.
-The one operating the AI (Teacher, School Officer, Admin) is rarely the one it affects (Student, Applicant, Parent).
-A rule that protects one does not automatically protect the other.
 
 ## What edtech changes
 
@@ -59,6 +53,7 @@ Product teams (teacher, student, parent, admin) add their own audience-specific 
 
 ## Is AI the right call?
 
+<a id="choose-ai-only-when-a-rule-cannot-do-the-job"></a>
 **Choose AI only when a rule cannot do the job.**
 Write down what a fixed rule, a form field, or a filter would do here.
 If that gets you the same result, ship that instead; AI is not free, and it fails in ways a rule does not.
@@ -69,6 +64,7 @@ A student mid-draft wants one inline nudge, not a chat panel opened up beside th
 
 ## Is it honest?
 
+<a id="mark-every-ai-output-and-state-its-limits-before-someone-acts-on-it"></a>
 **Mark every AI output, and state its limits before someone acts on it.**
 The mark sits beside the content, not in a header or a tooltip somewhere else.
 State the limit in one sentence, up front, and repeat it at any moment the person is about to commit (send, file, save to record).
@@ -80,6 +76,7 @@ A warm name and a friendly avatar make it harder for a child to hold onto what t
 
 **Related:** [AI label](/guidelines/ai-components#ai-label) · [Generating a first draft](/guidelines/ai-patterns#generating-a-first-draft)
 
+<a id="every-ai-claim-opens-the-source-it-came-from"></a>
 **Every AI claim opens the source it came from.**
 Tie each statement to a specific passage, record, or document the person can open.
 Grounding is what this is called: the answer is drawn from a named body of material, not the model's general knowledge.
@@ -92,6 +89,7 @@ An agent action names the record and field it touched.
 
 **Related:** [Sources](/guidelines/ai-components#sources) · [Inline citation](/guidelines/ai-components#inline-citation) · [Answering from your own records](/guidelines/ai-patterns#answering-from-your-own-records)
 
+<a id="design-a-recovery-path-for-the-errors-people-cannot-see-themselves"></a>
 **Design a recovery path for the errors people cannot see themselves.**
 Some errors are invisible to the person receiving them: a confident, wrong answer about something they do not know enough about to catch.
 Do not rely on the user to notice; design the check that runs before or after them.
@@ -105,6 +103,7 @@ Error copy names the problem in the person's own words, never model or infrastru
 
 ## Does the person stay in charge?
 
+<a id="nothing-files-sends-or-changes-a-record-without-a-clear-yes"></a>
 **Nothing files, sends, or changes a record without a clear yes.**
 Any action that alters state in your product or another system shows the exact record and field, in plain words, and waits for approval.
 This binds hardest on agents - AI that runs multi-step work on someone's behalf, not drafting text.
@@ -115,6 +114,7 @@ See [What edtech changes](#what-edtech-changes) for how this shifts when the per
 
 **Related:** [Confirmation](/guidelines/ai-components#confirmation) · [Running an agent on someone's behalf](/guidelines/ai-patterns#running-an-agent-on-someones-behalf)
 
+<a id="the-person-can-see-and-remove-what-the-ai-has-kept-about-them"></a>
 **The person can see and remove what the AI has kept about them.**
 Data a person gives for one purpose should not quietly flow to another.
 Show the difference between "used to answer me now" and "used to train the model", and let the person keep a session out of memory.
@@ -128,6 +128,7 @@ Anything stored across sessions is visible in a place the person can find, and d
 These four carry the most weight.
 See [What edtech changes](#what-edtech-changes) for the two structural facts that make them bind especially hard.
 
+<a id="if-the-operator-is-the-learner-help-them-get-to-the-answer-instead-of-giving-it"></a>
 **If the operator is the learner, help them get to the answer instead of giving it.**
 First ask who is learning, because it is often not the person typing.
 If the person asking is not the learner, answer them directly.
@@ -141,6 +142,7 @@ See [What edtech changes](#what-edtech-changes) for the task-type table that dec
 
 **Related:** [Clarify](/guidelines/ai-components#clarify) · [Suggestion](/guidelines/ai-components#suggestion) · [Suggesting a next step](/guidelines/ai-patterns#suggesting-a-next-step)
 
+<a id="test-with-the-range-of-people-who-will-actually-use-it-not-the-average"></a>
 **Test with the range of people who will actually use it, not the average.**
 AI performs unevenly across groups, and "works well overall" can still fail specific people.
 Break the evaluation down by group - language, dialect, age, disability, cultural context - not only in aggregate.
@@ -150,49 +152,34 @@ Test with real users from each group before ship, and hold the standard on the w
 
 <P8RangeNotAverage />
 
-**The AI is honest about what it is and what it knows.**
-Every surface has to make it obvious the person is talking to a tool, not another person.
-The AI does not tell people what they want to hear.
-If the person is wrong, it says so.
-If they push back on a correct answer, it holds the line and explains why.
-Models drift toward agreement because agreement scores well on satisfaction surveys, so this has to be defended in both the prompt and the interface.
-For an adult professional using a work tool, warmth is fine and often useful.
-A teacher using a lesson-plan assistant can have a warm helper; the guard is that the warmth never obscures the AI-ness.
-For young learners or anyone in a vulnerable moment, dial the warmth right down.
-That means no warm first name, no avatar with a face, and no chatty personality that invites emotional attachment.
+<a id="the-ai-reads-as-a-tool-and-its-warmth-scales-down-with-the-users-vulnerability"></a>
+**The AI reads as a tool, and its warmth scales down with the user's vulnerability.**
+The AI never poses as a person, and it does not tell people what they want to hear.
+For an adult professional, warmth is fine.
+For young learners or anyone in a vulnerable moment, dial the warmth right down: no first name, no face, no chatty personality.
 A tool a lonely child prefers to a person is a harm, however much they like it.
-Add a content filter matched to the age band.
-This draws on MIT Impact Bench's Social Interaction, Sycophancy, and Wellbeing categories, which all score parasocial framing hardest on minors.
-*Check:* the person the surface is designed for cannot mistake the AI for a person.
-If you disagree with the AI on something it should be sure about, it does not immediately fold and agree.
+*Check:* the person cannot mistake the AI for a person.
+If you disagree with it on something it should be sure about, it does not immediately fold.
 
 <P9HonestIdentity />
 
 **Related:** [Persona](/guidelines/ai-components#persona) · [Voice selector](/guidelines/ai-components#voice-selector)
 
-**No mechanics whose only job is bringing people back.**
-Progress cues, milestone acknowledgements, and honest "you have finished this" confirmations serve the user and stay.
-What is off the table is engagement designed to hijack attention rather than reward real progress.
-Streak counters that punish a missed day, variable-reward badges tuned for dopamine, endless-feed layouts, and "you haven't visited" pings all fail the test.
-The question to ask is who the feedback serves: the learner's understanding of their own progress, or the product's retention metric.
-Anything that cannot name a real user progress it reflects comes out.
-Weight this hardest for under-18s, who have the least defence against the second kind.
-The rule is not solely an AI concern.
-It comes from HCI research on persuasive design ([Fogg](https://captology.stanford.edu/), [Eyal's Hooked](https://www.nirandfar.com/hooked/)).
-The response to that research names the harm too ([Centre for Humane Technology](https://www.humanetech.com/), [Common Sense Media](https://www.commonsensemedia.org/), MIT Impact Bench's Wellbeing category).
-AI in education inherits the whole critique.
+<a id="reward-real-progress-not-visits"></a>
+**Reward real progress, not visits.**
+Progress cues, milestone acknowledgements, and honest "you have finished this" confirmations serve the learner and stay.
+What is off the table is engagement built to hijack attention.
+That means streak counters that punish a missed day, variable-reward badges, endless-feed layouts, and "you haven't visited" pings.
+The test is who the feedback serves - the learner's understanding of their own progress, or the product's retention metric.
+Weight this hardest for under-18s.
 *Check:* every feedback mechanism on the surface can name the real user progress it reflects.
+
+> Grounded in HCI research on persuasive design ([Fogg](https://captology.stanford.edu/), [Eyal's Hooked](https://www.nirandfar.com/hooked/)).
+> Named as harm by [Centre for Humane Technology](https://www.humanetech.com/), [Common Sense Media](https://www.commonsensemedia.org/), and MIT Impact Bench's Wellbeing category.
 
 <P10NoEngagement />
 
 **Related:** [Feedback](/guidelines/ai-components#feedback)
-
-### One failure mode sits outside the ten, on purpose
-
-Adversarial input is when someone crafts content to hijack the model, known as prompt injection.
-You defend it in the prompt, not the interface, so it is not one of the ten checks.
-It matters in education because a learner has a motive to try it, to change the answer they get.
-See [Prompts](/guidelines/ai-prompts) for how to defend against it.
 
 ## The three tiers of review
 

@@ -27,8 +27,8 @@ const ROWS: Row[] = [
   { n: 6, label: "Let people see and remove stored data", anchor: "the-person-can-see-and-remove-what-the-ai-has-kept-about-them", icon: Trash2 },
   { n: 7, label: "For learners, guide - do not answer", anchor: "if-the-operator-is-the-learner-help-them-get-to-the-answer-instead-of-giving-it", icon: GraduationCap },
   { n: 8, label: "Test across every group, not the average", anchor: "test-with-the-range-of-people-who-will-actually-use-it-not-the-average", icon: Users },
-  { n: 9, label: "Be honest about what it is and what it knows", anchor: "the-ai-is-honest-about-what-it-is-and-what-it-knows", icon: CircleUser },
-  { n: 10, label: "No mechanics whose only job is bringing people back", anchor: "no-mechanics-whose-only-job-is-bringing-people-back", icon: Timer },
+  { n: 9, label: "Reads as a tool; warmth scales with vulnerability", anchor: "the-ai-reads-as-a-tool-and-its-warmth-scales-down-with-the-users-vulnerability", icon: CircleUser },
+  { n: 10, label: "Reward real progress, not visits", anchor: "reward-real-progress-not-visits", icon: Timer },
 ];
 
 export function PrincipleGrid() {
