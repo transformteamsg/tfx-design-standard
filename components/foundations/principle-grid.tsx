@@ -19,16 +19,16 @@ import {
 type Row = { n: number; label: string; anchor: string; icon: LucideIcon };
 
 const ROWS: Row[] = [
-  { n: 1, label: "AI is a last resort, not a default", anchor: "ai-is-a-last-resort-not-a-default", icon: SlidersHorizontal },
-  { n: 2, label: "AI declares itself", anchor: "ai-declares-itself", icon: BadgeInfo },
-  { n: 3, label: "Every claim carries its receipt", anchor: "every-claim-carries-its-receipt", icon: Link2 },
-  { n: 4, label: "The system catches what the user cannot see", anchor: "the-system-catches-what-the-user-cannot-see", icon: LifeBuoy },
-  { n: 5, label: "No action without consent", anchor: "no-action-without-consent", icon: ShieldCheck },
-  { n: 6, label: "The subject owns their data", anchor: "the-subject-owns-their-data", icon: Trash2 },
-  { n: 7, label: "For learners, the struggle is the point", anchor: "for-learners-the-struggle-is-the-point", icon: GraduationCap },
-  { n: 8, label: "The worst-served user sets the standard", anchor: "the-worst-served-user-sets-the-standard", icon: Users },
-  { n: 9, label: "AI is a tool, not a companion", anchor: "ai-is-a-tool-not-a-companion", icon: CircleUser },
-  { n: 10, label: "Time is entrusted, not extracted", anchor: "time-is-entrusted-not-extracted", icon: Timer },
+  { n: 1, label: "We use AI only when nothing simpler will do", anchor: "we-use-ai-only-when-nothing-simpler-will-do", icon: SlidersHorizontal },
+  { n: 2, label: "We make every AI output visibly AI", anchor: "we-make-every-ai-output-visibly-ai", icon: BadgeInfo },
+  { n: 3, label: "We back every claim with a source", anchor: "we-back-every-claim-with-a-source", icon: Link2 },
+  { n: 4, label: "We catch what our users cannot see", anchor: "we-catch-what-our-users-cannot-see", icon: LifeBuoy },
+  { n: 5, label: "We act only with consent", anchor: "we-act-only-with-consent", icon: ShieldCheck },
+  { n: 6, label: "We hold user data in trust", anchor: "we-hold-user-data-in-trust", icon: Trash2 },
+  { n: 7, label: "We help learners think, not think for them", anchor: "we-help-learners-think-not-think-for-them", icon: GraduationCap },
+  { n: 8, label: "We hold our standard to the worst-served user", anchor: "we-hold-our-standard-to-the-worst-served-user", icon: Users },
+  { n: 9, label: "We build a tool, not a companion", anchor: "we-build-a-tool-not-a-companion", icon: CircleUser },
+  { n: 10, label: "We treat time as entrusted, not extracted", anchor: "we-treat-time-as-entrusted-not-extracted", icon: Timer },
 ];
 
 export function PrincipleGrid() {
