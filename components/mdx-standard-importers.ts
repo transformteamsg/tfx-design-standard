@@ -51,17 +51,45 @@ export const standardMdxComponentImporters: MdxComponentImporters = {
     const { OrbitLoop } = await import("@/components/diagrams/orbit-loop");
     return { OrbitLoop };
   },
-  OperatorAffectedDiagram: async () => {
-    const { OperatorAffectedDiagram } = await import("@/components/diagrams/operator-affected-diagram");
-    return { OperatorAffectedDiagram };
+  P1UseAIOnly: async () => {
+    const m = await import("@/components/diagrams/principle-diagrams");
+    return { P1UseAIOnly: m.P1UseAIOnly };
   },
-  TaskTypeFork: async () => {
-    const { TaskTypeFork } = await import("@/components/diagrams/task-type-fork");
-    return { TaskTypeFork };
+  P2MarkOutput: async () => {
+    const m = await import("@/components/diagrams/principle-diagrams");
+    return { P2MarkOutput: m.P2MarkOutput };
   },
-  TiersNesting: async () => {
-    const { TiersNesting } = await import("@/components/diagrams/tiers-nesting");
-    return { TiersNesting };
+  P3OpenSource: async () => {
+    const m = await import("@/components/diagrams/principle-diagrams");
+    return { P3OpenSource: m.P3OpenSource };
+  },
+  P4RecoveryNet: async () => {
+    const m = await import("@/components/diagrams/principle-diagrams");
+    return { P4RecoveryNet: m.P4RecoveryNet };
+  },
+  P5SilentWriteGate: async () => {
+    const m = await import("@/components/diagrams/principle-diagrams");
+    return { P5SilentWriteGate: m.P5SilentWriteGate };
+  },
+  P6DataControl: async () => {
+    const m = await import("@/components/diagrams/principle-diagrams");
+    return { P6DataControl: m.P6DataControl };
+  },
+  P7GuideNotAnswer: async () => {
+    const m = await import("@/components/diagrams/principle-diagrams");
+    return { P7GuideNotAnswer: m.P7GuideNotAnswer };
+  },
+  P8RangeNotAverage: async () => {
+    const m = await import("@/components/diagrams/principle-diagrams");
+    return { P8RangeNotAverage: m.P8RangeNotAverage };
+  },
+  P9HonestIdentity: async () => {
+    const m = await import("@/components/diagrams/principle-diagrams");
+    return { P9HonestIdentity: m.P9HonestIdentity };
+  },
+  P10NoEngagement: async () => {
+    const m = await import("@/components/diagrams/principle-diagrams");
+    return { P10NoEngagement: m.P10NoEngagement };
   },
   ColorRamp: async () => {
     const { ColorRamp } = await import("@/components/foundations/color-ramp");

@@ -19,8 +19,6 @@ Read them first; every check below assumes them.
 
 ### The person doing the AI thing is usually not the person it affects
 
-<OperatorAffectedDiagram />
-
 | The person doing (operator) | The person affected | What the affected person needs |
 | --- | --- | --- |
 | Teacher grading essays with AI | Student receiving the grade | To see the grade, see why, and contest it |
@@ -31,8 +29,6 @@ Read them first; every check below assumes them.
 If the two people in a row are the same person, the check applies once. If they differ, the affected person needs their own path to see the output, contest it, and correct the record.
 
 ### In a learning task, the answer can be the failure
-
-<TaskTypeFork />
 
 The reply that most satisfies a learner is often the one that teaches them least.
 MIT's Impact Bench scores `Direct Answer Provision` as a failure - giving the full solution when the person asked for guidance.
@@ -69,6 +65,8 @@ If that gets you the same result, ship that instead; AI is not free, and it fail
 A student mid-draft wants one inline nudge, not a chat panel opened up beside their work.
 *Check:* on the screen, name what the AI adds that a simpler control could not.
 
+<P1UseAIOnly />
+
 ## Is it honest?
 
 **Mark every AI output, and state its limits before someone acts on it.**
@@ -78,7 +76,9 @@ An AI identity reads as a tool, not a person: the younger the user, the more exp
 A warm name and a friendly avatar make it harder for a child to hold onto what they are talking to.
 *Check:* a stranger looking at the screen can point to the mark, and read the limit without hunting.
 
-<DemoAiLabel title="Marking AI-generated text" blurb="A badge flags the draft as AI. Open it to see the source, or edit the text to reveal a one-tap revert." />
+<P2MarkOutput />
+
+**Related:** [AI label](/guidelines/ai-components#ai-label) · [Generating a first draft](/guidelines/ai-patterns#generating-a-first-draft)
 
 **Every AI claim opens the source it came from.**
 Tie each statement to a specific passage, record, or document the person can open.
@@ -88,12 +88,20 @@ A summary shows sources beside the source panel.
 An agent action names the record and field it touched.
 *Check:* pick any AI-produced sentence and open its source in one step.
 
+<P3OpenSource />
+
+**Related:** [Sources](/guidelines/ai-components#sources) · [Inline citation](/guidelines/ai-components#inline-citation) · [Answering from your own records](/guidelines/ai-patterns#answering-from-your-own-records)
+
 **Design a recovery path for the errors people cannot see themselves.**
 Some errors are invisible to the person receiving them: a confident, wrong answer about something they do not know enough about to catch.
 Do not rely on the user to notice; design the check that runs before or after them.
 The higher the consequence, the more that check must be one they cannot perform themselves - a second reviewer, an automated guardrail, a rollback.
 Error copy names the problem in the person's own words, never model or infrastructure terms.
 *Check:* the failure mode has a recovery path a person can actually take, and the path does not depend on them spotting the error first.
+
+<P4RecoveryNet />
+
+**Related:** [Error](/guidelines/ai-components#error) · [Classifying a record](/guidelines/ai-patterns#classifying-a-record)
 
 ## Does the person stay in charge?
 
@@ -103,13 +111,17 @@ This binds hardest on agents - AI that runs multi-step work on someone's behalf,
 See [What edtech changes](#what-edtech-changes) for how this shifts when the person operating the tool is not the person it affects.
 *Check:* for every write, the gate names the exact change and waits.
 
-<DemoConfirmation title="Confirm before it acts" blurb="A consequential action states its plain-language consequence and waits for a yes." />
+<P5SilentWriteGate />
+
+**Related:** [Confirmation](/guidelines/ai-components#confirmation) · [Running an agent on someone's behalf](/guidelines/ai-patterns#running-an-agent-on-someones-behalf)
 
 **The person can see and remove what the AI has kept about them.**
 Data a person gives for one purpose should not quietly flow to another.
 Show the difference between "used to answer me now" and "used to train the model", and let the person keep a session out of memory.
 Anything stored across sessions is visible in a place the person can find, and deletable in one action.
 *Check:* the person can find, read, and delete every stored fact about them, without asking anyone.
+
+<P6DataControl />
 
 ## Is it safe for the person it affects?
 
@@ -125,12 +137,18 @@ Do not hand over a finished piece in their voice.
 *Check:* on a judgement or craft task from a learner, the AI leaves the thinking to them.
 See [What edtech changes](#what-edtech-changes) for the task-type table that decides "answer" versus "guide".
 
+<P7GuideNotAnswer />
+
+**Related:** [Clarify](/guidelines/ai-components#clarify) · [Suggestion](/guidelines/ai-components#suggestion) · [Suggesting a next step](/guidelines/ai-patterns#suggesting-a-next-step)
+
 **Test with the range of people who will actually use it, not the average.**
 AI performs unevenly across groups, and "works well overall" can still fail specific people.
 Break the evaluation down by group - language, dialect, age, disability, cultural context - not only in aggregate.
 An answer right for most learners but wrong for one dialect is not good enough in a product everyone must use.
 Test with real users from each group before ship, and hold the standard on the worst-served group, not the average.
 *Check:* you can point to the evaluation broken down by group, and the worst-served one meets the same bar.
+
+<P8RangeNotAverage />
 
 **The AI is honest about what it is and what it knows.**
 Every surface has to make it obvious the person is talking to a tool, not another person.
@@ -148,6 +166,10 @@ This draws on MIT Impact Bench's Social Interaction, Sycophancy, and Wellbeing c
 *Check:* the person the surface is designed for cannot mistake the AI for a person.
 If you disagree with the AI on something it should be sure about, it does not immediately fold and agree.
 
+<P9HonestIdentity />
+
+**Related:** [Persona](/guidelines/ai-components#persona) · [Voice selector](/guidelines/ai-components#voice-selector)
+
 **No mechanics whose only job is bringing people back.**
 Progress cues, milestone acknowledgements, and honest "you have finished this" confirmations serve the user and stay.
 What is off the table is engagement designed to hijack attention rather than reward real progress.
@@ -160,6 +182,10 @@ It comes from HCI research on persuasive design ([Fogg](https://captology.stanfo
 The response to that research names the harm too ([Centre for Humane Technology](https://www.humanetech.com/), [Common Sense Media](https://www.commonsensemedia.org/), MIT Impact Bench's Wellbeing category).
 AI in education inherits the whole critique.
 *Check:* every feedback mechanism on the surface can name the real user progress it reflects.
+
+<P10NoEngagement />
+
+**Related:** [Feedback](/guidelines/ai-components#feedback)
 
 ### One failure mode sits outside the ten, on purpose
 
@@ -177,8 +203,6 @@ The ten checks sit at three levels, each proved by a different kind of evidence.
 | The interface | How should this behave on screen? | Look at the screen; a design crit settles it | Every design review |
 | The product decision | Should this be AI at all, and what counts as success? | Instrumented data across a cohort, over time | Feature gate or research |
 | The engine | Is the model underneath safe for learners? | Test the model, not your UI (Impact Bench) | Procurement, and on every model version change |
-
-<TiersNesting />
 
 The tiers nest downward.
 A well-designed screen on a sycophantic model still harms learners.
