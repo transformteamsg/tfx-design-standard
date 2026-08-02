@@ -15,20 +15,36 @@ A few are patterns with no component of their own.
 They are built from shadcn primitives (plain parts like Badge and Alert), or from a slot on an installed component.
 Your coding agent can install and wire all of it; this page is the judgement.
 
+## Shapes AI takes in a product
+
+An AI feature shows up in a product in more than one shape.
+The same parts below serve every shape; the shape you build decides which parts do the most work.
+
+- **Chat** - a back-and-forth thread. Most demos on this page use it because the parts show up all at once. → [Conversations](/guidelines/ai-patterns#conversations)
+- **Inline** - the AI lives inside another surface: autocomplete in a field, a "suggest" button that fills a form, a next-step chip beside your work. → [Suggestions and next steps](/guidelines/ai-patterns#suggestions-and-next-steps)
+- **Agent or workflow** - a multi-step task the AI runs on someone's behalf, with a plan and gates, sometimes with no chat surface at all. → [Agents that take action](/guidelines/ai-patterns#agents-that-take-action)
+- **Classifier** - the AI adds a label, score, or flag to a record. The interface is usually a table row, not a conversation. → [Classifying and flagging](/guidelines/ai-patterns#classifying-and-flagging)
+- **Summariser panel** - the AI condenses source material, shown beside or above the source. → [Summarising and transforming content](/guidelines/ai-patterns#summarising-and-transforming-content)
+- **Voice** - hands-free, with a record button and a transcript view. Fits some accessibility and dictation cases.
+
+The stages below apply across all of them.
+An inline suggestion has a Discover and an Oversight; a classifier has an Output and an Oversight; an agent has a Progress and an Oversight.
+The shape decides how each stage is expressed.
+
 <AiJourney />
 
-## Start
+## Discover
 
 Give a person their first move, before they have asked for anything.
 
 | Component | What it is | Reach for it when | Don't use it when | Built from |
 | --- | --- | --- | --- | --- |
 | Empty state | The opening panel of a chat, before anyone has typed. | The surface is open-ended and a first-time user would not know what to ask. | The surface does one job and could just do it. "Ask me anything" adds a step to something that should already run. | `ConversationEmptyState` slot, plus `Suggestions` |
-| [Suggestion](https://elements.ai-sdk.dev/components/suggestion) | Tappable chips offering a prompt or a next step. | You can name two or three moves genuinely useful to this person now. | You cannot. Generic chips like "Tell me more" train people to skip the row. | `Suggestions` around `Suggestion` chips |
+| [Suggestion](https://elements.ai-sdk.dev/components/suggestion) | Tappable chips offering a prompt or a next step. In a chat, they open the exchange; inline, they fill a form field or nudge the next move. | You can name two or three moves genuinely useful to this person now. | You cannot. Generic chips like "Tell me more" train people to skip the row. | `Suggestions` around `Suggestion` chips |
 
 <DemoEmptyState title="An empty state that gets you moving" blurb="Two named suggestions beat a blank box a first-time user has to guess at." />
 
-## Ask
+## Instruct
 
 How a person tells the AI what they want, and what it runs on.
 
@@ -49,7 +65,7 @@ A face in a learning or assessment setting invites trust the system has not earn
 
 <DemoPromptInput title="One open input, with attachments and suggestions" blurb="Reach for this only when the request is genuinely open; a form beats it for a known task." />
 
-## Watch it work
+## Progress
 
 Tell a person the AI is working, which step it is on, and what it has done.
 
@@ -57,7 +73,7 @@ Tell a person the AI is working, which step it is on, and what it has done.
 | --- | --- | --- | --- | --- |
 | [Shimmer](https://elements.ai-sdk.dev/components/shimmer) | A moving highlight over text while it streams, meaning arrives progressively. | Text is actively arriving and you want the eye to follow the leading edge. | Nothing is streaming. A shimmer with no text arriving reads as a stall. | `Shimmer` |
 | [Task](https://elements.ai-sdk.dev/components/task) | One step of work, with its own state and any files it touched. | Work runs in visible steps and someone may need to see which one failed. | There is only one step. A single row with a tick is ceremony. | `Task` with `TaskTrigger` and `TaskContent` |
-| [Plan](https://elements.ai-sdk.dev/components/plan) | The ordered steps an agent intends to run, before it runs them. | The steps are genuinely under review before anything happens. | They cannot be edited or refused. A plan nobody can change is a progress bar in costume. | `Plan` with `PlanContent`, `PlanAction` and `PlanFooter` |
+| [Plan](https://elements.ai-sdk.dev/components/plan) | The ordered steps an agent intends to run, before it runs them. Works inside a chat, and equally well on a standalone approval queue for a workflow. | The steps are genuinely under review before anything happens. | They cannot be edited or refused. A plan nobody can change is a progress bar in costume. | `Plan` with `PlanContent`, `PlanAction` and `PlanFooter` |
 | [Tool](https://elements.ai-sdk.dev/components/tool) | A collapsible record of one tool call, where a tool reaches outside the model. | The call touched a real record or the outside world, so it doubles as evidence. | It is an internal call with no consequence. A wall of expanded tool calls is noise. | `ToolHeader` with its `state` prop, plus `ToolInput` and `ToolOutput` |
 
 Also here: **Loader** for a wait of a second or two.
@@ -65,17 +81,17 @@ Also here: **Loader** for a wait of a second or two.
 
 <DemoPlan title="An agent plan, awaiting approval" blurb="The steps stay editable and refusable until the person says go. Otherwise it is a progress bar in costume." />
 
-## Read the answer
+## Output
 
 Show the result, mark it as AI, and let a person check where it came from.
 
 | Component | What it is | Reach for it when | Don't use it when | Built from |
 | --- | --- | --- | --- | --- |
 | [Message](https://elements.ai-sdk.dev/components/message) | One turn from a person or the AI, with its own toolbar. | The exchange is genuinely back and forth. | It is a one-shot draft inside a form. A chat bubble implies a conversation that is not there. | `Message` with `MessageContent` and `MessageResponse` |
-| [Sources](https://elements.ai-sdk.dev/components/sources) | A collapsible list of what an answer was grounded in, meaning drawn from named material. | The answer came from a bounded set the person can open and check. | The list was assembled afterwards. Sources that did not produce the answer borrow credibility they have not earned. | `Sources` with `SourcesTrigger`, then one `Source` per document |
+| [Sources](https://elements.ai-sdk.dev/components/sources) | A collapsible list of what an answer was grounded in, meaning drawn from named material. Sits under a chat reply, or beside a summary panel next to the source document. | The answer came from a bounded set the person can open and check. | The list was assembled afterwards. Sources that did not produce the answer borrow credibility they have not earned. | `Sources` with `SourcesTrigger`, then one `Source` per document |
 | [Inline citation](https://elements.ai-sdk.dev/components/inline-citation) | A citation marker sitting inside the sentence it supports. | Different sentences come from different places and the person must tell which is which. | One continuous claim comes from one source. A marker per sentence makes the text unreadable. | `InlineCitation` with `InlineCitationSource` |
-| Confidence | A plain-language band on a result: high, medium, or low. | Reliability genuinely varies and low confidence unlocks a different action, such as routing to a person. | There is no different action. A badge you cannot act on shifts blame to the reader. | `Badge` in a fixed set of bands, beside the `Message` |
-| AI label | A badge marking AI-produced content, with the explanation behind it. | Any AI output a person could mistake for their own work or a colleague's. | They have edited it. Once someone rewrites the text it is theirs, and a stale label misattributes their work. | `Badge` as a `Popover` trigger, plus a revert `Button` |
+| Confidence | A plain-language band on a result: high, medium, or low. Reads beside a chat reply, but earns its keep on a classifier row where low confidence routes to a person for review. | Reliability genuinely varies and low confidence unlocks a different action, such as routing to a person. | There is no different action. A badge you cannot act on shifts blame to the reader. | `Badge` in a fixed set of bands, beside the `Message` or the flagged record |
+| AI label | A badge marking AI-produced content, with the explanation behind it. Sits on a chat reply, a drafted field, a table row's AI-set column, or any surface where a person might mistake AI output for their own. | Any AI output a person could mistake for their own work or a colleague's. | They have edited it. Once someone rewrites the text it is theirs, and a stale label misattributes their work. | `Badge` as a `Popover` trigger, plus a revert `Button` |
 
 A few more parts sit in this stage.
 **Conversation** holds the scrolling thread.
@@ -86,21 +102,33 @@ It cannot justify a decision about a person.
 
 <DemoSources title="An answer you can check, not just trust" blurb="Sources open the material the answer drew from. Skip it when the list was assembled after the fact." />
 
-## Check and fix
+## Oversight
 
 Approve before it acts, then correct what is wrong.
 
 | Component | What it is | Reach for it when | Don't use it when | Built from |
 | --- | --- | --- | --- | --- |
-| [Confirmation](https://elements.ai-sdk.dev/components/confirmation) | An approve-or-deny gate naming exactly what will happen. | Something sends, files, or changes a record about a person. | The action is small and reversible. Gating everything trains people to click through the one that matters. | `Confirmation` with `ConfirmationActions` and `ConfirmationAction` |
+| [Confirmation](https://elements.ai-sdk.dev/components/confirmation) | An approve-or-deny gate naming exactly what will happen. Wraps an agent action in chat, or gates a workflow step on a standalone approval queue. | Something sends, files, or changes a record about a person. | The action is small and reversible. Gating everything trains people to click through the one that matters. | `Confirmation` with `ConfirmationActions` and `ConfirmationAction` |
 | [Checkpoint](https://elements.ai-sdk.dev/components/checkpoint) | A named point in a long run that someone can return to. | The run is long or branching, and a wrong turn would cost real work. | The flow is short, or you cannot actually restore the state you offer. | `Checkpoint` with `CheckpointTrigger` |
-| Feedback | Thumbs up and down on a response, with an acknowledgement. | The loop visibly closes: the rating routes somewhere and the person sees it landed. | Nothing changes. A rating that goes nowhere collects free labour and teaches people to stop giving it. | `MessageToolbar` with `MessageAction`, plus a notice on the negative path |
+| Feedback | Thumbs up and down on a response, with an acknowledgement. Sits on a chat reply's toolbar, or on a classifier row so the person the label describes can correct it. | The loop visibly closes: the rating routes somewhere and the person sees it landed. | Nothing changes. A rating that goes nowhere collects free labour and teaches people to stop giving it. | `MessageToolbar` with `MessageAction`, plus a notice on the negative path |
 | Error | A failure notice saying what happened and what to do next. | The AI failed and there is a real next move, even if that move is to do it by hand. | Retrying cannot work. Do not offer "Try again" for a refusal or a missing permission. | `Alert` with a `Button` and `Spinner` for the retry |
 
 Error copy names the problem in the person's own terms.
 Never surface model or infrastructure wording such as rate limits or context length.
 
 <DemoConfirmation title="A gate before anything happens" blurb="The consequence is named in plain words, and nothing runs without a yes." />
+
+## The same parts, outside a chat
+
+Not every AI feature is a chat.
+The same components below appear on tables, forms, and workflow queues.
+These three demos show the same parts working outside a message thread.
+
+<DemoClassifierRow title="A flagged application row" blurb="AI confidence and its reasoning sit inline on the record. The person the flag describes can correct it in place." />
+
+<DemoInlineSuggest title="An AI suggestion inside a form" blurb="The suggestion sits next to the field, not in a chat panel. Accept, edit, or reject; the AI mark clears the moment you make it your own." />
+
+<DemoAgentQueue title="An approval queue for agent runs" blurb="Plans and gates as a work surface, not a message thread. Approve or deny each proposed task independently." />
 
 ## The whole journey in one surface
 

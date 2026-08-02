@@ -18,3 +18,6 @@ export { DemoFeedback } from "./demo-feedback";
 export { DemoClarify } from "./demo-clarify";
 export { DemoError } from "./demo-error";
 export { DemoChainOfThought } from "./demo-chain-of-thought";
+export { DemoClassifierRow } from "./demo-classifier-row";
+export { DemoInlineSuggest } from "./demo-inline-suggest";
+export { DemoAgentQueue } from "./demo-agent-queue";

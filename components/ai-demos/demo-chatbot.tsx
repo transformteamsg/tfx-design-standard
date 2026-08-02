@@ -91,6 +91,7 @@ interface LocalMessage {
  * Model picker is visual-only. Height is content-driven (max-h + scroll).   */
 export function DemoChatbot({ title, blurb }: { title?: string; blurb?: string }) {
   const [model, setModel] = useState<string>("assist");
+  const [modelPickerOpen, setModelPickerOpen] = useState(false);
   const [webSearch, setWebSearch] = useState(false);
   const [messages, setMessages] = useState<LocalMessage[]>([]);
   const [status, setStatus] = useState<ChatStatus>("ready");
@@ -409,11 +410,15 @@ export function DemoChatbot({ title, blurb }: { title?: string; blurb?: string }
                   <span className="text-xs">Search</span>
                 </PromptInputButton>
 
-                {/* Model picker - visual only, not wired to transport */}
-                <ModelSelector>
+                {/* Model picker - visual only, not wired to transport.
+                    size="sm" is explicit because PromptInputButton auto-picks
+                    icon-sm when it has a single child, which would squash a
+                    text label into a 32x32 square. Controlled open/onOpenChange
+                    so onSelect closes the dialog. */}
+                <ModelSelector open={modelPickerOpen} onOpenChange={setModelPickerOpen}>
                   <ModelSelectorTrigger
                     render={
-                      <PromptInputButton type="button" aria-label="Select model">
+                      <PromptInputButton type="button" size="sm" aria-label="Select model">
                         <span>{MODELS.find((m) => m.value === model)?.label}</span>
                       </PromptInputButton>
                     }
@@ -427,7 +432,10 @@ export function DemoChatbot({ title, blurb }: { title?: string; blurb?: string }
                           <ModelSelectorItem
                             key={m.value}
                             value={m.value}
-                            onSelect={() => setModel(m.value)}
+                            onSelect={() => {
+                              setModel(m.value);
+                              setModelPickerOpen(false);
+                            }}
                           >
                             <span className="flex-1 truncate text-left">{m.label}</span>
                             {model === m.value && (

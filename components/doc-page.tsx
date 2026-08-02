@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import type { MDXComponents } from "mdx/types";
 import { compileMDX } from "next-mdx-remote/rsc";
 import remarkGfm from "remark-gfm";
 import type { Doc } from "@/lib/content";
@@ -7,32 +8,7 @@ import { Toc } from "@/components/toc";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { PageActions } from "@/components/page-actions";
 import { ToolCard, type Tool } from "@/components/tool-card";
-import { mdxComponents } from "@/components/mdx";
-import dynamic from "next/dynamic";
-
-/* Demos are heavy client components (streamdown, motion). Loading them lazily
-   per-file keeps them out of the production bundle of demo-free pages. Import
-   each demo's own file, not the barrel (the barrel would re-bundle everything
-   and defeat the split). */
-const DemoChatbot = dynamic(() => import("@/components/ai-demos/demo-chatbot").then((m) => ({ default: m.DemoChatbot })));
-const DemoConversation = dynamic(() => import("@/components/ai-demos/demo-conversation").then((m) => ({ default: m.DemoConversation })));
-const DemoStreaming = dynamic(() => import("@/components/ai-demos/demo-streaming").then((m) => ({ default: m.DemoStreaming })));
-const DemoSources = dynamic(() => import("@/components/ai-demos/demo-sources").then((m) => ({ default: m.DemoSources })));
-const DemoInlineCitation = dynamic(() => import("@/components/ai-demos/demo-inline-citation").then((m) => ({ default: m.DemoInlineCitation })));
-const DemoConfirmation = dynamic(() => import("@/components/ai-demos/demo-confirmation").then((m) => ({ default: m.DemoConfirmation })));
-const DemoTask = dynamic(() => import("@/components/ai-demos/demo-task").then((m) => ({ default: m.DemoTask })));
-const DemoPlan = dynamic(() => import("@/components/ai-demos/demo-plan").then((m) => ({ default: m.DemoPlan })));
-const DemoCheckpoint = dynamic(() => import("@/components/ai-demos/demo-checkpoint").then((m) => ({ default: m.DemoCheckpoint })));
-const DemoAttachments = dynamic(() => import("@/components/ai-demos/demo-attachments").then((m) => ({ default: m.DemoAttachments })));
-const DemoReasoning = dynamic(() => import("@/components/ai-demos/demo-reasoning").then((m) => ({ default: m.DemoReasoning })));
-const DemoChainOfThought = dynamic(() => import("@/components/ai-demos/demo-chain-of-thought").then((m) => ({ default: m.DemoChainOfThought })));
-const DemoPromptInput = dynamic(() => import("@/components/ai-demos/demo-prompt-input").then((m) => ({ default: m.DemoPromptInput })));
-const DemoAiLabel = dynamic(() => import("@/components/ai-demos/demo-ai-label").then((m) => ({ default: m.DemoAiLabel })));
-const DemoEmptyState = dynamic(() => import("@/components/ai-demos/demo-empty-state").then((m) => ({ default: m.DemoEmptyState })));
-const DemoConfidence = dynamic(() => import("@/components/ai-demos/demo-confidence").then((m) => ({ default: m.DemoConfidence })));
-const DemoFeedback = dynamic(() => import("@/components/ai-demos/demo-feedback").then((m) => ({ default: m.DemoFeedback })));
-const DemoClarify = dynamic(() => import("@/components/ai-demos/demo-clarify").then((m) => ({ default: m.DemoClarify })));
-const DemoError = dynamic(() => import("@/components/ai-demos/demo-error").then((m) => ({ default: m.DemoError })));
+import { baseMdxComponents } from "@/components/mdx";
 
 /* Sections whose docs live at /{section}/{slug} and get a breadcrumb back to
    the section root. Single-doc sections (governance) and start pages don't. */
@@ -47,43 +23,53 @@ const sectionCrumbs: Record<string, { label: string; href: string }> = {
   "getting-started": { label: "Start with code", href: "/getting-started" },
 };
 
-/* MDX component map, built once at module scope so it isn't rebuilt per render.
-   Spreads the shared map from components/mdx (headings, CodeBlock, DoDont,
-   Checklist, the foundations specimens) and adds the AI demos on top. */
-const MDX_COMPONENTS = {
-  ...mdxComponents,
-  DemoChatbot,
-  DemoConversation,
-  DemoStreaming,
-  DemoSources,
-  DemoInlineCitation,
-  DemoConfirmation,
-  DemoTask,
-  DemoPlan,
-  DemoCheckpoint,
-  DemoAttachments,
-  DemoReasoning,
-  DemoChainOfThought,
-  DemoPromptInput,
-  DemoAiLabel,
-  DemoEmptyState,
-  DemoConfidence,
-  DemoFeedback,
-  DemoClarify,
-  DemoError,
-};
+export type MdxComponentImporter = () => Promise<MDXComponents>;
+export type MdxComponentImporters = Record<string, MdxComponentImporter>;
+
+function sourceUsesComponent(source: string, name: string) {
+  return new RegExp(`<${name}(\\s|/|>)`).test(source);
+}
+
+function sourceUsesCodeBlock(source: string) {
+  return source.includes("```") || sourceUsesComponent(source, "CodeBlock");
+}
+
+async function componentsForSource(
+  source: string,
+  componentImporters: MdxComponentImporters,
+): Promise<MDXComponents> {
+  const components: MDXComponents = { ...baseMdxComponents };
+  if (sourceUsesCodeBlock(source) && componentImporters.CodeBlock) {
+    Object.assign(components, await componentImporters.CodeBlock());
+  }
+  const componentNames = Object.keys(componentImporters);
+  await Promise.all(
+    componentNames.map(async (name) => {
+      if (name !== "CodeBlock" && sourceUsesComponent(source, name)) {
+        Object.assign(components, await componentImporters[name]());
+      }
+    }),
+  );
+  return components;
+}
 
 /* Compiled-MDX memo. compileMDX runs at request time, so without this every
    navigation recompiles the same source — the main dev-nav lag. Keyed by the
    raw MDX string, the compiled tree is reused across navigations in a warm
    server. Editing a doc changes the source -> new key -> recompiles. */
 const mdxMemo = new Map<string, ReactNode>();
-async function compileDoc(source: string): Promise<ReactNode> {
-  const hit = mdxMemo.get(source);
+async function compileDoc(
+  source: string,
+  componentImporters: MdxComponentImporters,
+): Promise<ReactNode> {
+  const importerKey = Object.keys(componentImporters).sort().join(",");
+  const memoKey = `${importerKey}\n${source}`;
+  const hit = mdxMemo.get(memoKey);
   if (hit) return hit;
+  const components = await componentsForSource(source, componentImporters);
   const { content } = await compileMDX({
     source,
-    components: MDX_COMPONENTS,
+    components,
     // blockJS defaults to true, which strips JS expression-container
     // attributes (e.g. `items={[...]}`) entirely — needed for DoDont's
     // inline array prop. blockDangerousJS stays on (its default) so
@@ -91,11 +77,19 @@ async function compileDoc(source: string): Promise<ReactNode> {
     // is first-party (content/), not user-supplied.
     options: { mdxOptions: { remarkPlugins: [remarkGfm] }, blockJS: false },
   });
-  mdxMemo.set(source, content);
+  mdxMemo.set(memoKey, content);
   return content;
 }
 
-export async function DocPage({ doc, children }: { doc: Doc; children?: ReactNode }) {
+export async function DocPage({
+  doc,
+  children,
+  componentImporters = {},
+}: {
+  doc: Doc;
+  children?: ReactNode;
+  componentImporters?: MdxComponentImporters;
+}) {
   const crumb = sectionCrumbs[doc.section];
   const headings = extractHeadings(doc.content);
   const tools = (doc.data.tools ?? []) as Tool[];
@@ -107,7 +101,7 @@ export async function DocPage({ doc, children }: { doc: Doc; children?: ReactNod
   let rendered: ReactNode = null;
   let rawFallback = false;
   try {
-    rendered = await compileDoc(doc.content);
+    rendered = await compileDoc(doc.content, componentImporters);
   } catch (err) {
     rawFallback = true;
     console.warn(

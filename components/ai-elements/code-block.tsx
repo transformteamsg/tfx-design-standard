@@ -27,7 +27,6 @@ import type {
   HighlighterGeneric,
   ThemedToken,
 } from "shiki";
-import { createHighlighter } from "shiki";
 
 // Shiki uses bitflags for font styles: 1=italic, 2=bold, 4=underline
 // oxlint-disable-next-line eslint(no-bitwise)
@@ -155,10 +154,16 @@ const getHighlighter = (
     return cached;
   }
 
-  const highlighterPromise = createHighlighter({
-    langs: [language],
-    themes: ["github-light", "github-dark"],
-  });
+  // Dynamic import: shiki is heavy (~200KB+ with grammars/themes) and users
+  // almost never see a code block on the AI pages before scrolling. Deferring
+  // this to first use keeps it out of the initial page bundle.
+  // oxlint-disable-next-line eslint-plugin-promise(prefer-await-to-then)
+  const highlighterPromise = import("shiki").then(({ createHighlighter }) =>
+    createHighlighter({
+      langs: [language],
+      themes: ["github-light", "github-dark"],
+    })
+  );
 
   highlighterCache.set(language, highlighterPromise);
   return highlighterPromise;

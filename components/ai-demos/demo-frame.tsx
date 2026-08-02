@@ -18,7 +18,14 @@ import { cn } from "@/lib/utils";
 
    `bleed` drops the content padding so a child (the ChatShell) can own its
    own p-4 inset and run an edge-to-edge divider - used by the chat demos so
-   they don't nest a second bordered box inside this figure (SLP-4). */
+   they don't nest a second bordered box inside this figure (SLP-4).
+
+   `minHeight` reserves vertical space on the content wrapper so demos that
+   progressively mount elements ({step >= N && ...}) or grow streaming text
+   do not shift the page below them once the animation starts. Pass the
+   measured final-state height in pixels (e.g. 480) - not a magic number,
+   observed at desktop width in the browser. Only needed for animated demos
+   whose height changes after the observer fires; static demos leave it off. */
 
 export function DemoFrame({
   children,
@@ -28,6 +35,7 @@ export function DemoFrame({
   rootRef,
   title,
   blurb,
+  minHeight,
 }: {
   children: ReactNode;
   caption?: string[];
@@ -36,6 +44,7 @@ export function DemoFrame({
   rootRef?: RefObject<HTMLElement | null>;
   title?: string;
   blurb?: string;
+  minHeight?: number;
 }) {
   return (
     <figure ref={rootRef as RefObject<HTMLElement> | undefined} className="not-prose my-8 rounded-lg border border-border bg-surface">
@@ -67,8 +76,14 @@ export function DemoFrame({
       </div>
 
       {/* Demo content - interior canvas is page background; components carry their own surfaces.
-          `bleed` removes the inset so a ChatShell child can own padding + a full-bleed divider. */}
-      <div className={cn(bleed ? "p-0" : "p-5 sm:p-6")}>{children}</div>
+          `bleed` removes the inset so a ChatShell child can own padding + a full-bleed divider.
+          `minHeight` reserves space so animated demos do not shift content below them. */}
+      <div
+        className={cn(bleed ? "p-0" : "p-5 sm:p-6")}
+        style={minHeight ? { minHeight: `${minHeight}px` } : undefined}
+      >
+        {children}
+      </div>
 
       {/* Caption: component name chips */}
       {caption && caption.length > 0 && (

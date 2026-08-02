@@ -21,7 +21,9 @@ The same pattern serves an administrator picking a category, a parent completing
 - Remove it once the person acts or types past it.
 - Suggest one thing. A list of five options is a menu, not a nudge.
 
-<DemoPromptInput title="A nudge inside the flow" blurb="Two or three named next steps offered where the person already is, that vanish once they type." />
+<DemoInlineSuggest title="A suggestion right inside the field" blurb="No panel, no thread. The AI sits next to the input; accept, edit, or reject in place." />
+
+<DemoPromptInput title="A nudge inside a chat flow" blurb="Two or three named next steps offered where the person already is, that vanish once they type." />
 
 ## Generating content
 
@@ -78,6 +80,8 @@ The person a label describes is usually not the person reading it, so design for
 | Let the person the label describes see and contest it | Keep the label visible only to whoever operates the tool |
 | Acknowledge a correction and show what it changed | Collect a correction that changes nothing |
 
+<DemoClassifierRow title="A flagged row on a table" blurb="The person the label describes can read the reason and correct it in place, without ever entering a chat." />
+
 <DemoConfidence title="A flag with plain-language confidence" blurb="High, medium, or low, never a raw score, and only where low confidence changes what happens next." />
 
 <DemoFeedback title="A correction the loop acts on" blurb="Feedback that visibly lands and changes something, not a rating that collects free labour." />
@@ -93,6 +97,10 @@ No pattern on this page carries more risk.
 - Name the record, the field, and the proposed value. Never a bare "Confirm?".
 - During execution, show which step is running, and pause at anything unexpected.
 - Expose the agent's working as a collapsible chain, labelled as working rather than as proof.
+
+<DemoAgentQueue title="Agent runs as a work queue" blurb="Plans and gates on a standalone surface, not inside a chat. Approve or deny each pending run independently." />
+
+<DemoPlan title="The steps an agent proposes" blurb="Visible, editable, refusable. A plan you cannot change is a progress bar in costume." />
 
 <DemoConfirmation title="Approve before it acts" blurb="The exact record, field, and value named in plain words, waiting for a yes." />
 

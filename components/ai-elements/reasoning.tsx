@@ -7,9 +7,6 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { cn } from "@/lib/utils";
-import { cjk } from "@streamdown/cjk";
-import { code } from "@streamdown/code";
-import { math } from "@streamdown/math";
 import { BrainIcon, ChevronDownIcon } from "lucide-react";
 import type { ComponentProps, ReactNode } from "react";
 import {
@@ -22,7 +19,11 @@ import {
   useRef,
   useState,
 } from "react";
+import { cjk } from "@streamdown/cjk";
+import { code } from "@streamdown/code";
+import { math } from "@streamdown/math";
 import { Streamdown } from "streamdown";
+import type { StreamdownProps } from "streamdown";
 
 import { Shimmer } from "./shimmer";
 
@@ -204,10 +205,11 @@ export type ReasoningContentProps = ComponentProps<
 };
 
 /* mermaid deliberately omitted, and the cast works around the shiki version
-   skew - see the note in message.tsx for both. */
-const streamdownPlugins = { cjk, code, math } as ComponentProps<
-  typeof Streamdown
->["plugins"];
+   skew - see the note in message.tsx for both. Streamdown itself is imported
+   statically because dynamic import trips Next.js production build on the
+   package's exports field (only `import` condition, no `default`). Perf win
+   preserved via the dynamic shiki import in code-block.tsx (R7-D-3). */
+const streamdownPlugins = { cjk, code, math } as StreamdownProps["plugins"];
 
 export const ReasoningContent = memo(
   ({ className, children, ...props }: ReasoningContentProps) => (

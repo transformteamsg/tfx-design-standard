@@ -12,9 +12,6 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
-import { cjk } from "@streamdown/cjk";
-import { code } from "@streamdown/code";
-import { math } from "@streamdown/math";
 import type { UIMessage } from "ai";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import type { ComponentProps, HTMLAttributes, ReactElement } from "react";
@@ -27,7 +24,11 @@ import {
   useMemo,
   useState,
 } from "react";
+import { cjk } from "@streamdown/cjk";
+import { code } from "@streamdown/code";
+import { math } from "@streamdown/math";
 import { Streamdown } from "streamdown";
+import type { StreamdownProps } from "streamdown";
 
 export type MessageProps = HTMLAttributes<HTMLDivElement> & {
   from: UIMessage["role"];
@@ -327,28 +328,36 @@ export const MessageBranchPage = ({
   );
 };
 
-export type MessageResponseProps = ComponentProps<typeof Streamdown>;
+export type MessageResponseProps = StreamdownProps;
 
 /* mermaid is deliberately omitted: @streamdown/mermaid statically imports the
    83 MB mermaid package, which every demo importing this file then drags into
    the dev module graph. No doc content renders mermaid diagrams. If one ever
    does, load it via next/dynamic in a wrapper rather than at module scope.
 
+   Streamdown + its plugins (cjk / code / math) are dynamically imported below
+   so the markdown + KaTeX + syntax-highlighter machinery does not ship in the
+   critical path. Plugins are moved inside the dynamic import factory so they
+   load lazily too.
+
    The cast works around an upstream version skew: @streamdown/code pins shiki 3
    while the root resolves shiki 4, so their BundledLanguage unions differ. The
    runtime shape is identical; only the language literal union disagrees. */
-const streamdownPlugins = { cjk, code, math } as ComponentProps<
-  typeof Streamdown
->["plugins"];
+/* Static imports here: dynamic import of `streamdown` fails Next.js
+   production builds because the package's exports field only defines an
+   `import` condition, which webpack production cannot resolve on `import()`.
+   Kept static until a workaround lands upstream. Perf win preserved via
+   the dynamic shiki import in code-block.tsx (R7-D-3). */
+const streamdownPlugins = { cjk, code, math } as StreamdownProps["plugins"];
 
 export const MessageResponse = memo(
-  ({ className, ...props }: MessageResponseProps) => (
+  ({ className, plugins, ...props }: MessageResponseProps) => (
     <Streamdown
       className={cn(
         "size-full [&>*:first-child]:mt-0 [&>*:last-child]:mb-0",
         className
       )}
-      plugins={streamdownPlugins}
+      plugins={plugins ?? streamdownPlugins}
       {...props}
     />
   ),

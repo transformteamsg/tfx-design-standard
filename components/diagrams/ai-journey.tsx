@@ -5,11 +5,11 @@
    them (desktop) reads it as one journey. */
 
 const STAGES = [
-  { n: 1, label: "Start", href: "#start", hint: "Give the first move" },
-  { n: 2, label: "Ask", href: "#ask", hint: "Take the request" },
-  { n: 3, label: "Watch it work", href: "#watch-it-work", hint: "Show it working" },
-  { n: 4, label: "Read the answer", href: "#read-the-answer", hint: "Present and cite" },
-  { n: 5, label: "Check and fix", href: "#check-and-fix", hint: "Approve and correct" },
+  { n: 1, label: "Discover", href: "#discover", hint: "Give the first move" },
+  { n: 2, label: "Instruct", href: "#instruct", hint: "Take the request" },
+  { n: 3, label: "Progress", href: "#progress", hint: "Show it working" },
+  { n: 4, label: "Output", href: "#output", hint: "Present and cite" },
+  { n: 5, label: "Oversight", href: "#oversight", hint: "Approve and correct" },
 ] as const;
 
 export function AiJourney() {
