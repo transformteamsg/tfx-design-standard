@@ -15,6 +15,14 @@ export const standardMdxComponentImporters: MdxComponentImporters = {
     const { GroupGrid } = await import("@/components/foundations/group-grid");
     return { GroupGrid };
   },
+  PrincipleGrid: async () => {
+    const { PrincipleGrid } = await import("@/components/foundations/principle-grid");
+    return { PrincipleGrid };
+  },
+  PatternGrid: async () => {
+    const { PatternGrid } = await import("@/components/foundations/pattern-grid");
+    return { PatternGrid };
+  },
   SourceLink: async () => {
     const { SourceLink } = await import("@/components/foundations/source-link");
     return { SourceLink };

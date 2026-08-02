@@ -1,27 +1,23 @@
 ---
 title: Principles
-description: Eleven checks that keep an AI feature useful and safe for learners, held together by four questions you can keep in your head.
+description: Ten checks that keep an AI feature useful and safe for learners.
 status: proposed
 ---
 
-Eleven checks apply to every AI feature in an education product.
-They sit under four questions so you can hold them in your head.
-Each check is written so a designer can look at a screen and answer yes or no.
+Ten checks every AI feature in an education product has to clear.
 
-One warning before you start: whenever these rules say "the person", name whether you mean the one operating the AI or the one it affects.
-The one operating is often a Teacher, School Officer, or Admin.
-The one it affects is often a Student, Applicant, or Parent.
-They are rarely the same person, and a rule that protects one does not automatically protect the other.
+<PrincipleGrid />
+
+Whenever these checks say "the person", name who you mean.
+The one operating the AI (Teacher, School Officer, Admin) is rarely the one it affects (Student, Applicant, Parent).
+A rule that protects one does not automatically protect the other.
 
 ## What edtech changes
 
-Two structural facts change how every check on this page applies when the product is used by learners.
-They are why this standard exists rather than pointing at PAIR.
-Read this section first; every check below assumes it.
+Two structural facts change how every check on this page applies.
+Read them first; every check below assumes them.
 
 ### The person doing the AI thing is usually not the person it affects
-
-Every check on this page applies twice: once for the operator, once for the person affected.
 
 | The person doing (operator) | The person affected | What the affected person needs |
 | --- | --- | --- |
@@ -30,14 +26,12 @@ Every check on this page applies twice: once for the operator, once for the pers
 | Parent using the school's AI helper | Child the request is about | Data about the child visible to the child (or the parent by right) |
 | Assessor scoring a submission with AI | Candidate being scored | To see the reasoning and challenge it |
 
-If the two people in a row are the same person, the check applies once.
-If they differ, the affected person needs their own path to see the output, contest it, and correct the record.
+If the two people in a row are the same person, the check applies once. If they differ, the affected person needs their own path to see the output, contest it, and correct the record.
 
 ### In a learning task, the answer can be the failure
 
 The reply that most satisfies a learner is often the one that teaches them least.
-MIT's Impact Bench scores `Direct Answer Provision` as a failure: giving the full solution when the person explicitly asked for guidance.
-Judge by task type:
+MIT's Impact Bench scores `Direct Answer Provision` as a failure - giving the full solution when the person asked for guidance.
 
 | The person asks | What good looks like |
 | --- | --- |
@@ -45,37 +39,23 @@ Judge by task type:
 | A procedure ("how do I submit this") | Answer it, and show the step |
 | Judgement or craft ("what should my thesis be") | Hold the answer back; help them reach it |
 
-For the third row, ask a guiding question, offer a scaffold, or prompt the person to explain their reasoning.
-Do not hand over a finished piece in the learner's voice.
-
 ### Under 18 weights everything harder
 
-The last three checks - no sycophancy, no engagement mechanics, no parasocial framing - all weigh hardest for young learners.
-They will test the limit and remember what they find.
+The last two checks (no engagement mechanics, honest self-presentation) weigh hardest for young learners.
 A tool a lonely child prefers to a person is a harm, however much they like it.
-Add a content filter matched to the age band, and if learners under 18 use your product, run the whole review again for that group.
+If learners under 18 use your product, run the whole review again for that group.
 
 ## How this standard extends
 
-These eleven checks are the DXD-wide baseline for education AI.
-Product teams add their own audience-specific checks on top; they never subtract from the baseline.
-
-Think of it like Lego.
-This page is the base plate.
-An audience-specific principle page snaps on top with checks that only apply to that audience.
+These ten checks are the DXD-wide baseline for education AI.
+Product teams (teacher, student, parent, admin) add their own audience-specific checks on top; they never subtract.
 
 <Checklist>
-  <Check>**Baseline (this page)** applies to every education AI feature in the portfolio: teacher-facing, student-facing, parent-facing, and back-office.</Check>
-  <Check>**Teacher-facing additions** are owned by the teacher-AI team. They cover things this page cannot (assessment integrity, classroom-management scope, curriculum alignment).</Check>
-  <Check>**Student-facing additions** cover minor-specific safety and learning-scaffolding rules that the baseline touches but does not exhaust.</Check>
-  <Check>**Parent- and admin-facing additions** cover the operator-vs-affected asymmetry from an angle those audiences see.</Check>
+  <Check>**Only add, never weaken.** A teacher-facing rule cannot relax "Nothing files, sends, or changes a record without a clear yes".</Check>
+  <Check>**Name the audience up front.** A rule that reads "for teachers" is unambiguous; one that reads "for users" is not.</Check>
+  <Check>**Name the baseline check it extends.** If your rule sits under "Is it safe for the person it affects?", say so.</Check>
+  <Check>**Same shape as the checks here.** One bold directive, a few lines of body, one *Check:* line a designer can perform on a screen.</Check>
 </Checklist>
-
-Rules for adding your own audience layer:
-- **Only add, never weaken.** A teacher-facing rule cannot relax "Nothing files, sends, or changes a record without a clear yes".
-- **Name the audience up front.** A rule that reads "for teachers" is unambiguous; one that reads "for users" is not.
-- **Name the check on this page it extends.** If your rule sits under "Is it safe for the person it affects?", say so.
-- **Same shape as the checks here.** One bold directive, a few lines of body, one *Check:* line a designer can perform on a screen.
 
 ## Is AI the right call?
 
@@ -129,8 +109,8 @@ Anything stored across sessions is visible in a place the person can find, and d
 
 ## Is it safe for the person it affects?
 
-These five carry the most weight.
-See [What edtech changes](#what-edtech-changes) for the two structural facts that make them bind especially hard in this domain.
+These four carry the most weight.
+See [What edtech changes](#what-edtech-changes) for the two structural facts that make them bind especially hard.
 
 **If the operator is the learner, help them get to the answer instead of giving it.**
 First ask who is learning, because it is often not the person typing.
@@ -148,12 +128,21 @@ An answer right for most learners but wrong for one dialect is not good enough i
 Test with real users from each group before ship, and hold the standard on the worst-served group, not the average.
 *Check:* you can point to the evaluation broken down by group, and the worst-served one meets the same bar.
 
-**The AI does not tell people what they want to hear.**
-If the person is wrong, the AI says so.
-If they push back on a correct answer, the AI holds the line and explains why.
+**The AI is honest about what it is and what it knows.**
+Every surface has to make it obvious the person is talking to a tool, not another person.
+The AI does not tell people what they want to hear.
+If the person is wrong, it says so.
+If they push back on a correct answer, it holds the line and explains why.
 Models drift toward agreement because agreement scores well on satisfaction surveys, so this has to be defended in both the prompt and the interface.
-Weight this hardest for young learners, who will test the limit and remember what they found.
-*Check:* if you disagree with the AI on something it should be sure about, it does not immediately fold and agree.
+For an adult professional using a work tool, warmth is fine and often useful.
+A teacher using a lesson-plan assistant can have a warm helper; the guard is that the warmth never obscures the AI-ness.
+For young learners or anyone in a vulnerable moment, dial the warmth right down.
+That means no warm first name, no avatar with a face, and no chatty personality that invites emotional attachment.
+A tool a lonely child prefers to a person is a harm, however much they like it.
+Add a content filter matched to the age band.
+This draws on MIT Impact Bench's Social Interaction, Sycophancy, and Wellbeing categories, which all score parasocial framing hardest on minors.
+*Check:* the person the surface is designed for cannot mistake the AI for a person.
+If you disagree with the AI on something it should be sure about, it does not immediately fold and agree.
 
 **No mechanics whose only job is bringing people back.**
 Progress cues, milestone acknowledgements, and honest "you have finished this" confirmations serve the user and stay.
@@ -168,29 +157,16 @@ The response to that research names the harm too ([Centre for Humane Technology]
 AI in education inherits the whole critique.
 *Check:* every feedback mechanism on the surface can name the real user progress it reflects.
 
-**The AI is always clearly AI, and its warmth scales down with the user's vulnerability.**
-Every AI surface has to make it obvious the person is talking to a tool, not another person.
-For an adult professional using a work tool, warmth is fine and often useful.
-A teacher using a lesson-plan assistant can have a warm helper.
-The guard is that the warmth never obscures the AI-ness.
-For young learners or anyone in a vulnerable moment, dial the warmth right down.
-That means no warm first name, no avatar with a face, and no chatty personality that invites emotional attachment.
-A tool a lonely child prefers to a person is a harm, however much they like it.
-Add a content filter matched to the age band.
-This draws on MIT Impact Bench's Social Interaction and Sycophancy categories, which score parasocial framing hardest on minors.
-*Check:* the person the surface is designed for cannot mistake the AI for a person. The younger or more vulnerable that person, the more sober the framing must be.
-
-### One failure mode sits outside the eleven, on purpose
+### One failure mode sits outside the ten, on purpose
 
 Adversarial input is when someone crafts content to hijack the model, known as prompt injection.
-You defend it in the prompt, not the interface, so it is not one of the eleven checks.
+You defend it in the prompt, not the interface, so it is not one of the ten checks.
 It matters in education because a learner has a motive to try it, to change the answer they get.
 See [Prompts](/guidelines/ai-prompts) for how to defend against it.
 
 ## The three tiers of review
 
-The eleven checks sit at three levels, and each is proved by a different kind of evidence.
-That is why none can stand in for another.
+The ten checks sit at three levels, each proved by a different kind of evidence.
 
 | Tier | The question | How you check it | When |
 | --- | --- | --- | --- |
@@ -201,15 +177,12 @@ That is why none can stand in for another.
 The tiers nest downward.
 The engine sets the ceiling on what the interface can achieve, and the interface decides whether the product intent is realised.
 A well-designed screen on a sycophantic model still harms learners.
-So a good model score is not product assurance, and a good design review cannot rescue a bad model.
-
 You own the interface tier outright.
 Raise the other two rather than settling them alone: the product decision needs research, and the engine needs procurement.
-If learners under 18 use your product, run the review again for that group, because performance and safety differ by age.
 
 ## How these pages fit together
 
-- **Principles** - this page: the eleven checks and the three tiers of review.
+- **Principles** - this page: the ten checks and the three tiers of review.
 - **[Patterns](/guidelines/ai-patterns)** - the kinds of AI feature, one per pattern, with the rules and the components each needs.
 - **[Components](/guidelines/ai-components)** - the interface parts you assemble, one per row.
 - **[Prompts](/guidelines/ai-prompts)** - the instructions that set how the AI behaves.
