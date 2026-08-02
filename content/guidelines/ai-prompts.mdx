@@ -4,7 +4,7 @@ description: A system prompt is the fixed instructions the model reads before ev
 status: proposed
 ---
 
-> Reference: [Google PAIR Guidebook](https://pair.withgoogle.com/guidebook/), [The Shape of AI](https://www.shapeof.ai/), [AIverse](https://www.aiverse.design/), [Vercel AI Elements](https://elements.ai-sdk.dev/), [MIT Human-AI Impact Bench](https://impactbench.media.mit.edu/).
+A **system prompt** helps you set how the AI behaves in your product.
 
 A system prompt is the fixed instructions the model reads before every user message.
 It sets who the assistant is, what it may do, and how it sounds.
@@ -45,6 +45,15 @@ Wrap each in an XML tag, a plain angle-bracket label, so a later section cannot 
 Show 3 to 5 labelled examples, including one correct reply and one that misses the tone.
 A labelled example teaches tone faster than any description of it.
 
+### When to use
+
+Add labelled examples when tone or output shape is hard to describe in words alone.
+
+### When not to use
+
+Skip examples for narrow tasks where one clear rule covers every case.
+Use [state constraints with the reason](#state-constraints-with-the-reason) instead.
+
 | Do | Don't |
 | --- | --- |
 | Label one example `<example type="correct">` and one `<example type="too-clinical">`, then show the same reply to a worried parent in each. | Write "Use a warm, professional tone" with no examples. |
@@ -72,8 +81,15 @@ Content a learner submits is a live route for this, because the learner has a mo
 
 ## Ask for reasoning only when it helps
 
+### When to use
+
 Tell the model to think before it answers on a multi-step or high-stakes task.
-Skip the reasoning step for routine output, such as a short draft or a one-line summary, where it adds delay without benefit.
+Weighing an applicant's goal, prior results, and entry requirements before a course recommendation is a good fit.
+
+### When not to use
+
+Skip the reasoning step for routine output where it adds delay without benefit.
+A one-line rewrite, a short summary, or a tag suggestion does not need it.
 
 | Do | Don't |
 | --- | --- |
@@ -94,3 +110,7 @@ Check tone, scope limits, and what happens when the assistant cannot answer.
 For the behaviour the prompt supports, how the AI surface looks and acts in the product, see [AI patterns](/guidelines/ai-patterns).
 
 Further reading: [Anthropic prompt engineering](https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview), [OpenAI prompt engineering](https://platform.openai.com/docs/guides/prompt-engineering), [Microsoft HAX Toolkit](https://www.microsoft.com/en-us/haxtoolkit/library/), [IBM Carbon for AI](https://carbondesignsystem.com/guidelines/carbon-for-ai/).
+
+## Sources
+
+Reference: [Google PAIR Guidebook](https://pair.withgoogle.com/guidebook/), [The Shape of AI](https://www.shapeof.ai/), [AIverse](https://www.aiverse.design/), [Vercel AI Elements](https://elements.ai-sdk.dev/), [MIT Human-AI Impact Bench](https://impactbench.media.mit.edu/).

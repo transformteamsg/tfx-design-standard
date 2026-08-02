@@ -5,10 +5,6 @@ import { standardMdxComponentImporters } from "@/components/mdx-standard-importe
 
 const aiMdxComponentImporters: MdxComponentImporters = {
   ...standardMdxComponentImporters,
-  AiJourney: async () => {
-    const { AiJourney } = await import("@/components/diagrams/ai-journey");
-    return { AiJourney };
-  },
   DemoChatbot: async () => {
     const { DemoChatbot } = await import("@/components/ai-demos/demo-chatbot");
     return { DemoChatbot };

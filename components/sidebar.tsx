@@ -84,7 +84,7 @@ const nav: NavGroup[] = [
         label: "AI",
         items: [
           { href: "/guidelines/ai", title: "Principles" },
-          { href: "/guidelines/ai-patterns", title: "Use cases" },
+          { href: "/guidelines/ai-patterns", title: "Patterns" },
           { href: "/guidelines/ai-components", title: "Components" },
           { href: "/guidelines/ai-prompts", title: "Prompts" },
         ],

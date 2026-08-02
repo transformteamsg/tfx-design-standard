@@ -1,84 +1,222 @@
 ---
-title: Use cases
-description: The seven things AI actually does in a product, and how each should behave. Find yours, then build it from components.
+title: Patterns
+description: The seven kinds of AI feature this standard covers, each with the components to build it and the rules for how it should behave.
 status: proposed
 ---
 
-> Reference: [Google PAIR Guidebook](https://pair.withgoogle.com/guidebook/), [The Shape of AI](https://www.shapeof.ai/), [AIverse](https://www.aiverse.design/), [Vercel AI Elements](https://elements.ai-sdk.dev/), [MIT Human-AI Impact Bench](https://impactbench.media.mit.edu/). The rules here are distilled from these.
+A pattern is a way to solve one kind of AI need in a product, built from the [components](/guidelines/ai-components) on the components page.
+Each pattern below is a job an AI feature does for someone.
+Pick the one that matches your task, follow its rules, and build it from the components it names.
 
-AI does a handful of distinct jobs in a product, and each has its own rules for how it should behave.
-Find the job you are building below, follow its rules, and the demos show it working.
-Once you know the shape, [Components](/guidelines/ai-components) has the parts you assemble it from.
+## Which pattern do I need?
 
-## Suggestions and next steps
+<Checklist>
+  <Check>**Nudging someone toward the next step.** [Suggesting a next step](#suggesting-a-next-step)</Check>
+  <Check>**Producing a draft someone will edit.** [Generating a first draft](#generating-a-first-draft)</Check>
+  <Check>**Making sense of long material fast.** [Summarising long material](#summarising-long-material)</Check>
+  <Check>**Answering a specific question from records.** [Answering from your own records](#answering-from-your-own-records)</Check>
+  <Check>**Adding a label, score, or flag to many records.** [Classifying a record](#classifying-a-record)</Check>
+  <Check>**Running a multi-step task on someone's behalf.** [Running an agent on someone's behalf](#running-an-agent-on-someones-behalf)</Check>
+  <Check>**Working through a fuzzy problem you cannot yet scope.** [Exploring an open-ended problem](#exploring-an-open-ended-problem)</Check>
+</Checklist>
 
-The AI proposes one small next action: autocomplete, a next-step chip, or a field pre-filled from context already on screen.
-Use it when someone is mid-task and a nudge helps more than a new surface.
-The same pattern serves an administrator picking a category, a parent completing a form, or a teacher starting a note.
+## Suggesting a next step
 
-- Fit the suggestion inside the existing flow. No modal, no panel.
-- Make it dismissible. Nobody should feel forced to take it.
-- Remove it once the person acts or types past it.
-- Suggest one thing. A list of five options is a menu, not a nudge.
+*A suggestion helps someone keep moving without breaking their flow.*
+
+<DoDont
+  doLabel="When to use"
+  dontLabel="When not to use"
+  items={[
+    { kind: "do", text: "Someone is mid-task and a nudge helps more than a new surface." },
+    { kind: "do", text: "You can name two or three next moves that are genuinely useful right now." },
+    { kind: "do", text: "The suggestion sits inside a form, an editor, or a workflow the person is already in." },
+    { kind: "dont", text: "The surface has no known next step. Use [Exploring an open-ended problem](#exploring-an-open-ended-problem) instead." },
+    { kind: "dont", text: "You want to offer five or more options. That is a menu, not a suggestion." },
+    { kind: "dont", text: "The task is drafting something a person will own and edit. Use [Generating a first draft](#generating-a-first-draft)." },
+  ]}
+/>
+
+**How it works:**
+
+<Checklist>
+  <Check>**Fit it into the existing flow.** No modal, no panel that pulls the person out of what they were doing.</Check>
+  <Check>**Make it dismissible.** Nobody should feel forced to take it.</Check>
+  <Check>**Clear it once the person acts.** Remove the suggestion the moment they accept, edit past it, or ignore it.</Check>
+  <Check>**Offer one thing, not five.** A long list of options is a menu, and menus belong on a different surface.</Check>
+</Checklist>
+
+**Components used:**
+- [Suggestion](/guidelines/ai-components#suggestion)
+- [Prompt input](/guidelines/ai-components#prompt-input)
+
+**Watch out for:**
+A suggestion that reappears the moment it is dismissed. Nobody feels in control.
+
+### See it
 
 <DemoInlineSuggest title="A suggestion right inside the field" blurb="No panel, no thread. The AI sits next to the input; accept, edit, or reject in place." />
 
 <DemoPromptInput title="A nudge inside a chat flow" blurb="Two or three named next steps offered where the person already is, that vanish once they type." />
 
-## Generating content
+## Generating a first draft
 
-The AI writes a first draft that the person owns and then edits.
-That might be a case note, a plain-language version of a policy, a reply to a parent, or a revision plan.
-The person edits and submits, and the AI never finalises on their behalf.
-Check first what the draft is for: drafting an administrative artefact saves real time, but drafting a learner's own writing removes the work.
+*A first draft helps someone start from a written version they can edit rather than a blank page.*
 
-- **Mark AI content where it appears,** and remove the label once the person edits the field.
-- **Say how sure it is in plain words** - high, medium, or low - never as a percentage.
-- **Stream the draft:** show it appearing progressively, token by token (the small text fragments the model emits), with a stop control visible.
-- **On a learning task, draft the scaffold and not the piece:** an outline, a question, or a worked example on other material.
+<DoDont
+  doLabel="When to use"
+  dontLabel="When not to use"
+  items={[
+    { kind: "do", text: "The person owns, edits, and submits the output: a note, a reply, a plan, a policy in plain language." },
+    { kind: "do", text: "The draft is admin work where writing the first version saves real time." },
+    { kind: "do", text: "A person will always read the draft before it goes anywhere." },
+    { kind: "dont", text: "The task is the person's own creative or learning work. Use [Suggesting a next step](#suggesting-a-next-step) with a prompt or a worked example on other material." },
+    { kind: "dont", text: "The output is a label on a record. Use [Classifying a record](#classifying-a-record)." },
+    { kind: "dont", text: "Every claim must be quoted from source material. Use [Summarising long material](#summarising-long-material) or [Answering from your own records](#answering-from-your-own-records) instead." },
+  ]}
+/>
+
+**How it works:**
+
+<Checklist>
+  <Check>**Mark AI content where it appears.** Remove the label the moment the person edits the field.</Check>
+  <Check>**Say how sure the AI is in plain words.** High, medium, or low. Never as a percentage.</Check>
+  <Check>**Stream the draft with a stop control.** Text appears progressively, and a stop button is visible from the first character.</Check>
+  <Check>**On a learning task, scaffold rather than write.** Draft an outline, a question, or a worked example on other material, not the piece the learner should write.</Check>
+</Checklist>
+
+**Components used:**
+- [Message](/guidelines/ai-components#message)
+- [Shimmer](/guidelines/ai-components#shimmer)
+- [AI label](/guidelines/ai-components#ai-label)
+
+**Watch out for:**
+A learner's essay written for them in their voice. The teaching disappears.
+
+### See it
 
 <DemoAiLabel title="A draft marked as AI" blurb="The badge flags AI text and clears the moment the person edits it, because then it is theirs." />
 
 <DemoStreaming title="A draft that streams, with a stop" blurb="Text arrives progressively and can be halted from the first token. On a learning task it scaffolds rather than writing the piece." />
 
-## Summarising and transforming content
+## Summarising long material
 
-The AI shortens or reshapes long material.
-A year of records becomes a paragraph, a policy document becomes a plain-language notice, meeting notes become an update.
-Use it when someone needs orientation or a different format, not the full source text.
+*A summary helps someone orient in long material without reading it all.*
 
-- Keep the summary beside the source so any claim can be checked without navigating away.
-- Every factual statement must trace back to a source passage. Leave out what cannot be traced.
-- Say what the summary covers and what it excludes - the date range, the record types, the documents read.
+<DoDont
+  doLabel="When to use"
+  dontLabel="When not to use"
+  items={[
+    { kind: "do", text: "Someone needs the shape of long material fast, such as a year of records into a paragraph." },
+    { kind: "do", text: "The source stays reachable beside the summary so any claim can be checked." },
+    { kind: "do", text: "The person will act on the shape, not on individual facts." },
+    { kind: "dont", text: "Every fact must be quotable and defensible. Use [Answering from your own records](#answering-from-your-own-records) so each claim carries a citation." },
+    { kind: "dont", text: "The material is short enough to read directly. Read it." },
+    { kind: "dont", text: "The source cannot be shown alongside for legal or privacy reasons. A summary without its source cannot be checked." },
+  ]}
+/>
+
+**How it works:**
+
+<Checklist>
+  <Check>**Keep the summary beside the source.** Any claim should be checkable without navigating away.</Check>
+  <Check>**Trace every factual statement to a source passage.** Leave out what cannot be traced.</Check>
+  <Check>**Say what the summary covers and what it excludes.** Name the date range, the record types, the documents read.</Check>
+</Checklist>
+
+**Components used:**
+- [Message](/guidelines/ai-components#message)
+- [Sources](/guidelines/ai-components#sources)
+- [Inline citation](/guidelines/ai-components#inline-citation)
+
+**Watch out for:**
+A summary that reads clean because it dropped the caveats and hedges from the source.
+
+### See it
 
 <DemoSources title="A summary you can trace" blurb="Every claim opens the source passage it came from, so nothing has to be taken on trust." />
 
-## Answering questions from your data
+## Answering from your own records
 
-Someone asks a question about a bounded set of records or documents and gets a cited answer.
-Engineers call this RAG, or retrieval-augmented generation - answering from a named set of sources rather than the model's general knowledge.
+*A grounded answer helps someone get a specific answer from records they hold, with the source in reach.*
+
+Engineers call this **RAG**, or retrieval-augmented generation: answering from a named set of sources rather than the model's general knowledge.
 The set might be a submitted piece of writing, a school's policy library, or one applicant's file.
 
-- **Cite the passage the answer drew from,** and let the citation open the source.
-- **Ask a clarifying question when intent or scope is unclear,** rather than proceeding on an assumption.
-- **Say when the answer is not there:** "I cannot find this in these records" beats a confident invention.
-- **Sort by question type:** facts get a direct answer, the person's own thinking gets a guiding question. Impact Bench, which tests models rather than interfaces, treats a direct answer as a failure on learning tasks.
+<DoDont
+  doLabel="When to use"
+  dontLabel="When not to use"
+  items={[
+    { kind: "do", text: "The question is specific and the answer lives in a bounded set of records or documents." },
+    { kind: "do", text: "The person can open the cited passage and check it for themselves." },
+    { kind: "do", text: "The record set stays under your product's control, not the model's." },
+    { kind: "dont", text: "The question is fuzzy or open-ended. Use [Exploring an open-ended problem](#exploring-an-open-ended-problem)." },
+    { kind: "dont", text: "The answer is the person's own thinking on a learning task. Use [Suggesting a next step](#suggesting-a-next-step) and guide, don't answer." },
+    { kind: "dont", text: "The record set is unbounded or public web content. Grounding cannot help here." },
+  ]}
+/>
+
+**How it works:**
+
+<Checklist>
+  <Check>**Cite the passage each claim came from.** Let the citation open the source in one tap.</Check>
+  <Check>**Ask one clarifying question when intent is unclear.** Better than proceeding on the wrong reading.</Check>
+  <Check>**Say when the answer is not there.** "I cannot find this in these records" beats a confident invention.</Check>
+  <Check>**Sort the reply by task type.** Facts get a direct answer; the person's own thinking gets a guiding question.</Check>
+</Checklist>
+
+**Components used:**
+- [Message](/guidelines/ai-components#message)
+- [Inline citation](/guidelines/ai-components#inline-citation)
+- [Sources](/guidelines/ai-components#sources)
+- [Clarify](/guidelines/ai-components#clarify)
+
+**Watch out for:**
+A confident answer when the answer is not in the records.
+
+### See it
 
 <DemoInlineCitation title="An answer with inline citations" blurb="Each sentence carries the source it drew from, so the reader can check the claim in place." />
 
 <DemoClarify title="One question back before answering" blurb="When the request has two readings, the AI asks which one rather than guessing and wasting the work." />
 
-## Classifying and flagging
+## Classifying a record
 
-The AI labels, scores, or flags records: a support tier, an application that looks incomplete, a learner who may need a check-in.
-The person a label describes is usually not the person reading it, so design for both.
+*A classification helps someone triage many records by adding a label, score, or flag to each.*
 
-| Do | Don't |
-| --- | --- |
-| Mark what the AI classified and where | Present a flag with no attribution |
-| Show confidence in plain words | Show a raw probability score |
-| Let the person the label describes see and contest it | Keep the label visible only to whoever operates the tool |
-| Acknowledge a correction and show what it changed | Collect a correction that changes nothing |
+The person the label describes is usually not the person reading it, so design for both.
+
+<DoDont
+  doLabel="When to use"
+  dontLabel="When not to use"
+  items={[
+    { kind: "do", text: "The record set is larger than one person can read, and a label helps them triage." },
+    { kind: "do", text: "The person the label describes can see it and contest it in place." },
+    { kind: "do", text: "Low confidence unlocks a different action, such as routing to a person for review." },
+    { kind: "dont", text: "A fixed rule can set the same label. Use the rule and skip the AI." },
+    { kind: "dont", text: "The label decides a consequential outcome the person cannot appeal. Do not build this." },
+    { kind: "dont", text: "The classifier's reasons cannot be shown. A label a person cannot understand is one they cannot contest." },
+  ]}
+/>
+
+**How it works:**
+
+<Checklist>
+  <Check>**Mark what the AI classified and where.** Never present a flag with no attribution.</Check>
+  <Check>**Show confidence in plain words.** High, medium, or low. Never a raw score.</Check>
+  <Check>**Let the person the label describes see it.** They should be able to read the reason and correct it in place.</Check>
+  <Check>**Acknowledge a correction and show what it changed.** A correction that changes nothing is theatre.</Check>
+</Checklist>
+
+**Components used:**
+- [Confidence](/guidelines/ai-components#confidence)
+- [AI label](/guidelines/ai-components#ai-label)
+- [Feedback](/guidelines/ai-components#feedback)
+
+**Watch out for:**
+A flag visible to the operator but not to the person the label describes.
+
+### See it
 
 <DemoClassifierRow title="A flagged row on a table" blurb="The person the label describes can read the reason and correct it in place, without ever entering a chat." />
 
@@ -86,17 +224,46 @@ The person a label describes is usually not the person reading it, so design for
 
 <DemoFeedback title="A correction the loop acts on" blurb="Feedback that visibly lands and changes something, not a rating that collects free labour." />
 
-## Agents that take action
+## Running an agent on someone's behalf
 
-The AI completes a whole task on someone's behalf: filing a referral, updating a record, booking a room, sending a notification.
-An agent is AI that runs a sequence of steps to finish a task, rather than only producing text.
+*An agent helps someone finish a whole multi-step task without doing the steps by hand, while keeping them in control at each gate.*
+
+An **agent** is AI that runs a sequence of steps to finish a task, rather than only producing text.
 No pattern on this page carries more risk.
 
-- Show the full plan before any step runs. Let the person remove or reorder steps.
-- Require an explicit yes before anything that sends, files, or changes a record.
-- Name the record, the field, and the proposed value. Never a bare "Confirm?".
-- During execution, show which step is running, and pause at anything unexpected.
-- Expose the agent's working as a collapsible chain, labelled as working rather than as proof.
+<DoDont
+  doLabel="When to use"
+  dontLabel="When not to use"
+  items={[
+    { kind: "do", text: "The task is repetitive, multi-step, and the person genuinely wants to delegate it." },
+    { kind: "do", text: "Every step that changes state can be named up front and gated." },
+    { kind: "do", text: "A person can approve, deny, or edit each step before it runs." },
+    { kind: "dont", text: "Any step is unrecoverable and cannot be gated. Do not automate it." },
+    { kind: "dont", text: "The task is fuzzy or cannot be planned ahead. Use [Exploring an open-ended problem](#exploring-an-open-ended-problem) or [Suggesting a next step](#suggesting-a-next-step)." },
+    { kind: "dont", text: "The person cannot verify what the agent did after it ran. If you cannot show the record and field it touched, do not build this." },
+  ]}
+/>
+
+**How it works:**
+
+<Checklist>
+  <Check>**Show the full plan before any step runs.** The person can remove or reorder steps.</Check>
+  <Check>**Require an explicit yes before anything that sends, files, or changes a record.** No silent action.</Check>
+  <Check>**Name the record, the field, and the proposed value.** Never a bare "Confirm?".</Check>
+  <Check>**Show which step is running during execution.** Pause at anything unexpected.</Check>
+  <Check>**Expose the agent's working as a collapsible chain.** Labelled as working, not as proof of a decision.</Check>
+</Checklist>
+
+**Components used:**
+- [Plan](/guidelines/ai-components#plan)
+- [Confirmation](/guidelines/ai-components#confirmation)
+- [Task](/guidelines/ai-components#task)
+- [Chain of thought](/guidelines/ai-components#chain-of-thought)
+
+**Watch out for:**
+A "Confirm?" gate that does not name the record, the field, or the value.
+
+### See it
 
 <DemoAgentQueue title="Agent runs as a work queue" blurb="Plans and gates on a standalone surface, not inside a chat. Approve or deny each pending run independently." />
 
@@ -108,14 +275,44 @@ No pattern on this page carries more risk.
 
 <DemoChainOfThought title="The working, labelled as working" blurb="A collapsible reasoning trail shown as narration, not offered as proof of a decision." />
 
-## Conversations
+## Exploring an open-ended problem
 
-Open-ended chat is the last resort, for tasks that genuinely cannot be scoped in advance.
-When you already know the job, an embedded control beats a chat panel.
+*Open chat helps someone work through a question whose shape cannot be scoped ahead of time.*
 
-- Bound the scope out loud. Say what the assistant can see and what it cannot, before someone asks outside it.
-- Give the first move. An empty box asks the person to guess what the assistant is for.
-- Error copy says what did not work and what to do next. No model names or technical terms in user-visible text.
+Chat is the fallback pattern.
+If a task fits any of the six above, build that instead - an embedded control beats a chat panel every time.
+
+<DoDont
+  doLabel="When to use"
+  dontLabel="When not to use"
+  items={[
+    { kind: "do", text: "The task is genuinely fuzzy: someone does not yet know what they are asking for." },
+    { kind: "do", text: "The answer needs several turns of clarification before it lands." },
+    { kind: "do", text: "You have ruled out every other pattern above." },
+    { kind: "dont", text: "The task is a nudge or autocomplete. Use [Suggesting a next step](#suggesting-a-next-step)." },
+    { kind: "dont", text: "The task produces a written artefact. Use [Generating a first draft](#generating-a-first-draft)." },
+    { kind: "dont", text: "The task adds a label to a record. Use [Classifying a record](#classifying-a-record)." },
+  ]}
+/>
+
+**How it works:**
+
+<Checklist>
+  <Check>**Bound the scope out loud.** Say what the assistant can see and what it cannot, before someone asks outside it.</Check>
+  <Check>**Give the first move.** An empty box asks the person to guess what the assistant is for.</Check>
+  <Check>**Write errors in plain words.** Say what did not work and what to do next. No model names or technical terms.</Check>
+</Checklist>
+
+**Components used:**
+- [Conversation](/guidelines/ai-components#conversation)
+- [Message](/guidelines/ai-components#message)
+- [Prompt input](/guidelines/ai-components#prompt-input)
+- [Error](/guidelines/ai-components#error)
+
+**Watch out for:**
+A chat panel opened for a task any of the six above would do better.
+
+### See it
 
 <DemoChatbot title="Open chat, the last resort" blurb="Only when the task cannot be scoped ahead of time. It opens with a first move, not a blank box." />
 
@@ -123,7 +320,11 @@ When you already know the job, an embedded control beats a chat panel.
 
 ---
 
-For the parts that build these features, see [Components](/guidelines/ai-components).
+For the parts that build these patterns, see [Components](/guidelines/ai-components).
 For how to write the assistant's instructions, see [Prompts](/guidelines/ai-prompts).
+
+## Sources
+
+> Reference: [Google PAIR Guidebook](https://pair.withgoogle.com/guidebook/), [The Shape of AI](https://www.shapeof.ai/), [AIverse](https://www.aiverse.design/), [Vercel AI Elements](https://elements.ai-sdk.dev/), [MIT Human-AI Impact Bench](https://impactbench.media.mit.edu/). The rules here are distilled from these five.
 
 Further reading: [IBM Carbon for AI](https://carbondesignsystem.com/guidelines/carbon-for-ai/) and the [Microsoft HAX Toolkit](https://www.microsoft.com/en-us/haxtoolkit/library/).

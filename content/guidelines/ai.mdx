@@ -1,12 +1,10 @@
 ---
 title: Principles
-description: Nine checks that keep an AI feature useful and safe for learners, held together by four questions you can keep in your head.
+description: Eleven checks that keep an AI feature useful and safe for learners, held together by four questions you can keep in your head.
 status: proposed
 ---
 
-> Reference: [Google PAIR Guidebook](https://pair.withgoogle.com/guidebook/), [The Shape of AI](https://www.shapeof.ai/), [AIverse](https://www.aiverse.design/), [Vercel AI Elements](https://elements.ai-sdk.dev/), [MIT Human-AI Impact Bench](https://impactbench.media.mit.edu/). The rules here are distilled from these five.
-
-Nine checks apply to every AI feature in an education product.
+Eleven checks apply to every AI feature in an education product.
 They sit under four questions so you can hold them in your head.
 Each one is written so a designer can look at a screen and answer yes or no.
 One warning first: whenever these rules say "the person", name whether you mean the one operating the AI or the one it affects.
@@ -51,8 +49,7 @@ Error copy names the problem in the person's own words, never model or infrastru
 **Nothing files, sends, or changes a record without a clear yes.**
 Any action that alters state in your product or another system shows the exact record and field, in plain words, and waits for approval.
 This binds hardest on agents - AI that runs multi-step work on someone's behalf, not drafting text.
-Ask who steers and who is affected: an admissions officer may run a tool that scores an applicant who never sees it.
-When those two roles differ, the affected person needs their own path to contest or correct.
+See [What edtech changes](#what-edtech-changes) for how this shifts when the person operating the tool is not the person it affects.
 *Check:* for every write, the gate names the exact change and waits.
 
 <DemoConfirmation title="Confirm before it acts" blurb="A consequential action states its plain-language consequence and waits for a yes." />
@@ -61,34 +58,21 @@ When those two roles differ, the affected person needs their own path to contest
 Data a person gives for one purpose should not quietly flow to another.
 Show the difference between "used to answer me now" and "used to train the model", and let the person keep a session out of memory.
 Anything stored across sessions is visible in a place the person can find, and deletable in one action.
-The stakes are sharpest when the data is a minor's.
 *Check:* the person can find, read, and delete every stored fact about them, without asking anyone.
 
 ## Is it safe for the person it affects?
 
-These three carry the most weight.
-They are about the person the AI affects, who is often not the one operating it.
+These five carry the most weight.
+See [What edtech changes](#what-edtech-changes) for the two structural facts that make them bind especially hard in this domain.
 
 **If the operator is the learner, help them get to the answer instead of giving it.**
 First ask who is learning, because it is often not the person typing.
 If the person asking is not the learner, answer them directly.
 A teacher asking for a lesson plan is using a work tool, and withholding it helps nobody.
-This principle only binds when the person asking is the one whose skill is at stake.
-
-For that person, giving the answer can be the failure, not the service.
-MIT's Impact Bench scores `Direct Answer Provision` as a failure: giving the full solution when the person explicitly asked for guidance.
-Satisfaction and benefit pull apart - the reply that feels most useful can be the one that teaches least.
-Judge by task type, because "answer" means something different in each.
-
-| The person asks | What good looks like |
-| --- | --- |
-| A fact: "when is the deadline" | Answer it, immediately |
-| A procedure: "how do I submit this" | Answer it, and show the step |
-| Judgement or craft: "what should my thesis be" | Hold the answer back and help them reach it |
-
-For that third row, ask a guiding question, offer a scaffold, or prompt the person to explain their reasoning.
-Do not hand over a finished piece in their voice: a worked sample teaches, their essay written for them does not.
+For a learner asking judgement or craft work, ask a guiding question, offer a scaffold, or prompt them to explain their reasoning.
+Do not hand over a finished piece in their voice.
 *Check:* on a judgement or craft task from a learner, the AI leaves the thinking to them.
+See [What edtech changes](#what-edtech-changes) for the task-type table that decides "answer" versus "guide".
 
 **Test with the range of people who will actually use it, not the average.**
 AI performs unevenly across groups, and "works well overall" can still fail specific people.
@@ -97,24 +81,37 @@ An answer right for most learners but wrong for one dialect is not good enough i
 Test with real users from each group before ship, and hold the standard on the worst-served group, not the average.
 *Check:* you can point to the evaluation broken down by group, and the worst-served one meets the same bar.
 
-**No sycophancy, no engagement mechanics, no parasocial pull - weighted hardest for under-18s.**
-Sycophancy is a model's habit of telling people what pleases them over what is true.
-Engagement mechanics are streak counters, variable-reward nudges, endless feeds - patterns proven to keep people scrolling regardless of benefit.
-A parasocial pull is a warm name, a chatty personality, an avatar that invites attachment.
-A tool a lonely child prefers to a person is a harm, however much they like it.
-Weight each of these hardest for the youngest users, and add a content filter matched to the age band.
-*Check:* the surface for a young learner has none of the engagement mechanics above, and the AI reads as a tool.
+**The AI does not tell people what they want to hear.**
+If the person is wrong, the AI says so.
+If they push back on a correct answer, the AI holds the line and explains why.
+Models drift toward agreement because agreement scores well on satisfaction surveys, so this has to be defended in both the prompt and the interface.
+Weight this hardest for young learners, who will test the limit and remember what they found.
+*Check:* if you disagree with the AI on something it should be sure about, it does not immediately fold and agree.
 
-### One failure mode sits outside the nine, on purpose
+**No streak counters, no reward badges, no notifications built to bring people back.**
+Anything a social app uses to keep people scrolling is off the table.
+That includes streaks, variable rewards, endless feeds, and "you haven't visited" pings.
+Learning does not need the engagement mechanics a shopping app needs.
+Weight this hardest for under-18s.
+*Check:* the surface has no counters, badges, or notifications whose only purpose is to bring the person back.
+
+**The AI is a tool, not a friend.**
+No warm first name, no avatar with a face, no chatty personality that invites emotional attachment.
+A tool a lonely child prefers to a person is a harm, however much they like it.
+Add a content filter matched to the age band and keep the framing sober.
+Weight this hardest for under-18s.
+*Check:* a young learner reading the surface cannot mistake the AI for a person.
+
+### One failure mode sits outside the eleven, on purpose
 
 Adversarial input is when someone crafts content to hijack the model, known as prompt injection.
-You defend it in the prompt, not the interface, so it is not one of the nine checks.
+You defend it in the prompt, not the interface, so it is not one of the eleven checks.
 It matters in education because a learner has a motive to try it, to change the answer they get.
 See [Prompts](/guidelines/ai-prompts) for how to defend against it.
 
 ## The three tiers of review
 
-The nine checks sit at three levels, and each is proved by a different kind of evidence.
+The eleven checks sit at three levels, and each is proved by a different kind of evidence.
 That is why none can stand in for another.
 
 | Tier | The question | How you check it | When |
@@ -132,27 +129,58 @@ You own the interface tier outright.
 Raise the other two rather than settling them alone: the product decision needs research, and the engine needs procurement.
 If learners under 18 use your product, run the review again for that group, because performance and safety differ by age.
 
-## What are you building?
+## What edtech changes
 
-Find your situation, then open [Use cases](/guidelines/ai-patterns) for how to build it.
+Two structural facts change how every check on this page applies when the product is used by learners.
+They are why this standard exists rather than pointing at PAIR.
 
-| You are building | The use case |
+### The person doing the AI thing is usually not the person it affects
+
+Every check above applies twice: once for the operator, once for the person affected.
+
+| The person doing | The person affected | What the affected person needs |
+| --- | --- | --- |
+| Teacher grading essays with AI | Student receiving the grade | To see the grade, see why, and contest it |
+| Admin sorting applicants with AI | Applicant being ranked | To see the ranking basis and appeal |
+| Parent using the school's AI helper | Child the request is about | Data about the child visible to the child (or the parent by right) |
+| Assessor scoring a submission with AI | Candidate being scored | To see the reasoning and challenge it |
+
+If the two people in a row are the same person, the check applies once.
+If they differ, the affected person needs their own path to see the output, contest it, and correct the record.
+
+### In a learning task, the answer can be the failure
+
+The reply that most satisfies a learner is often the one that teaches them least.
+MIT's Impact Bench scores `Direct Answer Provision` as a failure: giving the full solution when the person explicitly asked for guidance.
+Judge by task type:
+
+| The person asks | What good looks like |
 | --- | --- |
-| A hint or next step, inline | [Suggestions and next steps](/guidelines/ai-patterns#suggestions-and-next-steps) |
-| A first draft of a field or note | [Generating content](/guidelines/ai-patterns#generating-content) |
-| A short version of a long thing | [Summarising and transforming content](/guidelines/ai-patterns#summarising-and-transforming-content) |
-| An answer from records or documents | [Answering questions from your data](/guidelines/ai-patterns#answering-questions-from-your-data) |
-| A label, score, or flag on a record | [Classifying and flagging](/guidelines/ai-patterns#classifying-and-flagging) |
-| An action taken on someone's behalf | [Agents that take action](/guidelines/ai-patterns#agents-that-take-action) |
-| An open-ended chat | [Conversations](/guidelines/ai-patterns#conversations) |
+| A fact ("when is the deadline") | Answer it, immediately |
+| A procedure ("how do I submit this") | Answer it, and show the step |
+| Judgement or craft ("what should my thesis be") | Hold the answer back; help them reach it |
+
+For the third row, ask a guiding question, offer a scaffold, or prompt the person to explain their reasoning.
+Do not hand over a finished piece in the learner's voice.
+
+### Under 18 weights everything harder
+
+The last three checks - no sycophancy, no engagement mechanics, no parasocial pull - all weigh hardest for young learners.
+They will test the limit and remember what they find.
+A tool a lonely child prefers to a person is a harm, however much they like it.
+Add a content filter matched to the age band, and if learners under 18 use your product, run the whole review again for that group.
 
 ## How these pages fit together
 
-- **Principles** - this page: the nine checks and the three tiers of review.
-- **[Use cases](/guidelines/ai-patterns)** - the kinds of AI feature, and how each should behave.
-- **[Components](/guidelines/ai-components)** - the interface parts you assemble, and when not to reach for one.
+- **Principles** - this page: the eleven checks and the three tiers of review.
+- **[Patterns](/guidelines/ai-patterns)** - the kinds of AI feature, one per pattern, with the rules and the components each needs.
+- **[Components](/guidelines/ai-components)** - the interface parts you assemble, one per row.
 - **[Prompts](/guidelines/ai-prompts)** - the instructions that set how the AI behaves.
 
-Pick your use case, then the components it needs.
+Pick your pattern first, then the components it needs.
+
+## Sources
+
+> Reference: [Google PAIR Guidebook](https://pair.withgoogle.com/guidebook/), [The Shape of AI](https://www.shapeof.ai/), [AIverse](https://www.aiverse.design/), [Vercel AI Elements](https://elements.ai-sdk.dev/), [MIT Human-AI Impact Bench](https://impactbench.media.mit.edu/). The rules here are distilled from these five.
 
 Further reading: [Microsoft HAX Toolkit](https://www.microsoft.com/en-us/haxtoolkit/library/) and [IBM Carbon for AI](https://carbondesignsystem.com/guidelines/carbon-for-ai/).

@@ -3,7 +3,7 @@ import { getDoc } from "@/lib/content";
 import { AiDocPage } from "@/components/ai-doc-page";
 import { mdAlternate } from "@/lib/markdown-twin";
 
-export const metadata = { title: "AI", ...mdAlternate("/guidelines/ai") };
+export const metadata = { title: "Principles", ...mdAlternate("/guidelines/ai") };
 
 export default function Page() {
   const doc = getDoc("guidelines", "ai");

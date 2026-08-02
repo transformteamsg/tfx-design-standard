@@ -55,7 +55,7 @@ export function DemoFrame({
           className="mt-1 inline-block h-2 w-2 shrink-0 rounded-full bg-success-9 opacity-80"
         />
         <div className="flex flex-col gap-0.5">
-          <span className="text-xs font-semibold text-muted-foreground">
+          <span className="text-sm font-semibold text-foreground">
             {title ?? "Live pattern demo"}
           </span>
           {blurb && (
