@@ -8,24 +8,24 @@ status: proposed
 
 ## What edtech changes
 
-Two structural facts change how every check on this page applies.
-Read them first; every check below assumes them.
+Three facts shape how every check on this page applies in education. Read them first.
 
-### The person doing the AI thing is usually not the person it affects
+### The operator is rarely the person the AI affects
 
-| The person doing (operator) | The person affected | What the affected person needs |
+Most AI in education is run by one person and acts on another. Every check applies twice - once for the operator, once for the person affected - and the two paths are rarely the same.
+
+| Operator | Affected person | What the affected person is owed |
 | --- | --- | --- |
-| Teacher grading essays with AI | Student receiving the grade | To see the grade, see why, and contest it |
-| School Officer sorting applicants with AI | Applicant being ranked | To see the ranking basis and appeal |
-| Parent using the school's AI helper | Child the request is about | Data about the child visible to the child (or the parent by right) |
-| Assessor scoring a submission with AI | Candidate being scored | To see the reasoning and challenge it |
+| Teacher grading essays with AI | Student receiving the grade | The grade, its reasoning, and a route to contest it |
+| School Officer sorting applicants | Applicant being ranked | The basis for the ranking and a route to appeal |
+| Parent using the school's helper | Child the request is about | Access to the data held about the child, by right |
+| Assessor scoring a submission | Candidate being scored | The reasoning and a channel to challenge it |
 
-If the two people in a row are the same person, the check applies once. If they differ, the affected person needs their own path to see the output, contest it, and correct the record.
+Where the two roles collapse into one person, the check applies once. Where they diverge, the affected person needs a first-class path of their own - to see the output, contest it, and correct the record.
 
 ### In a learning task, the answer can be the failure
 
-The reply that most satisfies a learner is often the one that teaches them least.
-MIT's Impact Bench scores `Direct Answer Provision` as a failure - giving the full solution when the person asked for guidance.
+The reply that most satisfies a learner is often the one that teaches them least. MIT's Impact Bench scores `Direct Answer Provision` as a failure - giving the full solution when the person asked for guidance.
 
 | The person asks | What good looks like |
 | --- | --- |
@@ -33,16 +33,14 @@ MIT's Impact Bench scores `Direct Answer Provision` as a failure - giving the fu
 | A procedure ("how do I submit this") | Answer it, and show the step |
 | Judgement or craft ("what should my thesis be") | Hold the answer back; help them reach it |
 
-### Under 18 weights everything harder
+### Every check binds harder when the user is under 18
 
-The last two checks (no engagement mechanics, honest self-presentation) weigh hardest for young learners.
-A tool a lonely child prefers to a person is a harm, however much they like it.
-If learners under 18 use your product, run the whole review again for that group.
+Young learners have the least defence against the last two checks - engagement design and parasocial framing. A tool a lonely child prefers to a person is a harm, however much they like it. Where learners under 18 will use the product, run the whole review again for that cohort as a separate pass.
 
 ## How this standard extends
 
-These ten checks are the DXD-wide baseline for education AI.
-Product teams (teacher, student, parent, admin) add their own audience-specific checks on top; they never subtract.
+These ten checks are the baseline for every education AI feature in the portfolio.
+Product teams for a specific audience - teacher, student, parent, admin - layer their own checks on top of the baseline. They never subtract from it.
 
 <Checklist>
   <Check>**Only add, never weaken.** A teacher-facing rule cannot relax "Nothing files, sends, or changes a record without a clear yes".</Check>
@@ -128,13 +126,12 @@ Anything stored across sessions is visible in a place the person can find, and d
 These four carry the most weight.
 See [What edtech changes](#what-edtech-changes) for the two structural facts that make them bind especially hard.
 
-<a id="if-the-operator-is-the-learner-help-them-get-to-the-answer-instead-of-giving-it"></a>
-**If the operator is the learner, help them get to the answer instead of giving it.**
-First ask who is learning, because it is often not the person typing.
-If the person asking is not the learner, answer them directly.
-A teacher asking for a lesson plan is using a work tool, and withholding it helps nobody.
-For a learner asking judgement or craft work, ask a guiding question, offer a scaffold, or prompt them to explain their reasoning.
-Do not hand over a finished piece in their voice.
+<a id="when-the-learner-is-the-operator-guide-do-not-answer"></a>
+**When the learner is the operator, guide - do not answer.**
+First identify who is learning; it is often not the person typing.
+For a professional using AI as a work tool, answer directly - withholding helps nobody.
+For a learner on a judgement or craft task, ask a guiding question, offer a scaffold, or prompt them to explain their reasoning.
+Never hand over a finished piece in the learner's voice.
 *Check:* on a judgement or craft task from a learner, the AI leaves the thinking to them.
 See [What edtech changes](#what-edtech-changes) for the task-type table that decides "answer" versus "guide".
 
