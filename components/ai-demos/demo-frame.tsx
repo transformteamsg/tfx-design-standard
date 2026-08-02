@@ -48,18 +48,21 @@ export function DemoFrame({
 }) {
   return (
     <figure ref={rootRef as RefObject<HTMLElement> | undefined} className="not-prose my-8 rounded-lg border border-border bg-surface">
-      {/* Title + live demo marker + optional replay */}
-      <div className="flex items-start gap-2 rounded-t-lg border-b border-border px-4 py-2.5">
-        <span
-          aria-hidden="true"
-          className="mt-1 inline-block h-2 w-2 shrink-0 rounded-full bg-success-9 opacity-80"
-        />
-        <div className="flex flex-col gap-0.5">
-          <span className="text-sm font-semibold text-foreground">
+      {/* Section header - clearly labelled so a scanner knows this is a demo block */}
+      <div className="flex items-start gap-3 rounded-t-lg border-b border-border bg-muted/30 px-5 py-3">
+        <div className="flex flex-1 flex-col gap-1">
+          <span className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+            <span
+              aria-hidden="true"
+              className="inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-success-9"
+            />
+            Live demo
+          </span>
+          <span className="text-base font-semibold leading-tight text-foreground">
             {title ?? "Live pattern demo"}
           </span>
           {blurb && (
-            <span className="text-xs text-muted-foreground/80">{blurb}</span>
+            <span className="text-sm text-muted-foreground">{blurb}</span>
           )}
         </div>
         {onReplay && (
@@ -67,7 +70,7 @@ export function DemoFrame({
             type="button"
             aria-label="Replay demo"
             onClick={onReplay}
-            className="ml-auto flex shrink-0 items-center gap-1 rounded px-1.5 py-0.5 text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue)"
+            className="mt-0.5 flex shrink-0 cursor-pointer items-center gap-1 rounded px-2 py-1 text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue)"
           >
             <RotateCcw size={12} aria-hidden="true" />
             Replay

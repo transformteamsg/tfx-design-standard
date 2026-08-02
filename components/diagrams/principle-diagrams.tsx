@@ -458,7 +458,7 @@ export function P8RangeNotAverage() {
    the one on the right." */
 export function P9HonestIdentity() {
   return (
-    <DiagramFrame caption="We ship the shape on the left. Never the one on the right.">
+    <DiagramFrame caption="A tool, not a face.">
       <svg viewBox="0 0 480 240" className="w-full max-w-[480px]" role="img" aria-label="A hammer on the left in accent colour; a dashed face silhouette on the right, crossed through.">
         {/* Left: hammer */}
         <g transform="translate(140 120)">
