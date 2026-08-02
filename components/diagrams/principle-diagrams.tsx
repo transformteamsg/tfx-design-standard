@@ -154,9 +154,9 @@ export function P2MarkOutput() {
 }
 
 /* P3 - We back every claim with a source.
-   A short claim card above, a source card below, connected by a single
-   quiet arc. Motion: the arc slowly draws in from the claim to the source,
-   holds, then resets - the tether re-affirms itself. */
+   Two hairline rules: the claim above, the source below. A single thin
+   tether connects them. Motion: the tether draws in slowly, holds, then
+   redraws - the link re-affirms itself. */
 export function P3OpenSource() {
   const reduced = useReducedMotion();
   const t = useTime(!reduced);
@@ -168,49 +168,30 @@ export function P3OpenSource() {
     else if (cycle < 0.9) drawProgress = 1;
     else drawProgress = 1 - (cycle - 0.9) / 0.1;
   }
-  const pathLen = 110;
+  const pathLen = 80;
   const dashOffset = pathLen * (1 - drawProgress);
   const anchorOpacity = reduced ? 1 : Math.max(0, drawProgress - 0.1);
   return (
-    <DiagramFrame caption="Every claim, tethered to its source.">
-      <svg viewBox="0 0 480 260" className="w-full max-w-[480px]" role="img" aria-label="A claim card above connected by a single arc to a source card below.">
-        {/* Claim card - a short quoted line */}
-        <g transform="translate(150 60)">
-          <rect x="0" y="0" width="180" height="48" rx="8" fill="none" stroke={FG} strokeWidth={HAIRLINE} />
-          <line x1="16" y1="20" x2="164" y2="20" stroke={FG} strokeWidth={HAIRLINE} strokeLinecap="round" opacity="0.55" />
-          <line x1="16" y1="32" x2="120" y2="32" stroke={FG} strokeWidth={HAIRLINE} strokeLinecap="round" opacity="0.55" />
-          <text x="8" y="14" fontSize="14" fill={ACCENT}>&ldquo;</text>
-        </g>
-        {/* Tether arc - progressively drawn */}
-        <path
-          d="M 240 108 Q 200 155 220 195"
+    <DiagramFrame caption="A claim, tethered to its source.">
+      <svg viewBox="0 0 480 200" className="w-full max-w-[480px]" role="img" aria-label="A short line representing a claim, tethered by a single thin line to a shorter line representing its source.">
+        {/* Claim - accent line */}
+        <line x1="180" y1="60" x2="300" y2="60" stroke={ACCENT} strokeWidth={ACCENT_STROKE} strokeLinecap="round" />
+        {/* Tether - draws in over time */}
+        <line
+          x1="240"
+          y1="60"
+          x2="240"
+          y2="140"
           stroke={ACCENT}
           strokeWidth={HAIRLINE}
-          fill="none"
           strokeLinecap="round"
           strokeDasharray={pathLen}
           strokeDashoffset={dashOffset}
         />
-        <circle cx="220" cy="195" r="3" fill={ACCENT} opacity={anchorOpacity} />
-        {/* Source card */}
-        <g transform="translate(220 195)">
-          <path
-            d="M 0 0 L 82 0 L 100 18 L 100 54 L 0 54 Z"
-            fill="none"
-            stroke={ACCENT}
-            strokeWidth={HAIRLINE}
-            strokeLinejoin="round"
-          />
-          <path
-            d="M 82 0 L 82 18 L 100 18"
-            fill="none"
-            stroke={ACCENT}
-            strokeWidth={HAIRLINE}
-            strokeLinejoin="round"
-          />
-          <line x1="14" y1="30" x2="70" y2="30" stroke={ACCENT} strokeWidth={HAIRLINE} strokeLinecap="round" opacity="0.55" />
-          <line x1="14" y1="40" x2="56" y2="40" stroke={ACCENT} strokeWidth={HAIRLINE} strokeLinecap="round" opacity="0.55" />
-        </g>
+        {/* Source - shorter muted line */}
+        <line x1="200" y1="140" x2="280" y2="140" stroke={MUTED} strokeWidth={HAIRLINE} strokeLinecap="round" opacity="0.65" />
+        {/* Anchor dot where tether meets source */}
+        <circle cx="240" cy="140" r="3" fill={ACCENT} opacity={anchorOpacity} />
       </svg>
     </DiagramFrame>
   );
@@ -451,41 +432,25 @@ export function P8RangeNotAverage() {
   );
 }
 
-/* P9 - We build a tool, not a companion.
-   Two objects side by side. Left, in accent: a plain hammer - a tool.
-   Right, in muted dashed line: a face silhouette (circle + two eye dots +
-   mouth arc), crossed through. Says "we ship the shape on the left, not
-   the one on the right." */
+/* P9 - A tool, not a companion.
+   Two identical circles side by side. The left is a plain object (accent).
+   The right is the same object with two small eye-dots inside - a face
+   silhouette - drawn muted and dashed, crossed through with one clean
+   diagonal. Minimal contrast: same shape, one has personhood added, one
+   doesn't. We ship the plain one. */
 export function P9HonestIdentity() {
   return (
     <DiagramFrame caption="A tool, not a face.">
-      <svg viewBox="0 0 480 240" className="w-full max-w-[480px]" role="img" aria-label="A hammer on the left in accent colour; a dashed face silhouette on the right, crossed through.">
-        {/* Left: hammer */}
-        <g transform="translate(140 120)">
-          {/* Head - a solid rounded rectangle */}
-          <rect x="-40" y="-40" width="70" height="26" rx="4" fill="none" stroke={ACCENT} strokeWidth={ACCENT_STROKE} strokeLinejoin="round" />
-          {/* Small claw indent */}
-          <path d="M -40 -30 L -46 -20 L -40 -20" fill="none" stroke={ACCENT} strokeWidth={ACCENT_STROKE} strokeLinejoin="round" />
-          {/* Handle */}
-          <line x1="0" y1="-14" x2="24" y2="60" stroke={ACCENT} strokeWidth={ACCENT_STROKE} strokeLinecap="round" />
-          {/* Grip end - tiny cap */}
-          <line x1="20" y1="58" x2="30" y2="62" stroke={ACCENT} strokeWidth={ACCENT_STROKE} strokeLinecap="round" />
+      <svg viewBox="0 0 480 200" className="w-full max-w-[480px]" role="img" aria-label="Two identical circles: the left plain in accent, the right with two eye-dots inside and dashed, crossed through.">
+        {/* Left: plain object */}
+        <circle cx="170" cy="100" r="38" fill="none" stroke={ACCENT} strokeWidth={ACCENT_STROKE} />
+        {/* Right: same shape, with a face, muted + dashed + crossed through */}
+        <g>
+          <circle cx="310" cy="100" r="38" fill="none" stroke={MUTED} strokeWidth={HAIRLINE} strokeDasharray="3 3" opacity="0.55" />
+          <circle cx="298" cy="94" r="2" fill={MUTED} opacity="0.6" />
+          <circle cx="322" cy="94" r="2" fill={MUTED} opacity="0.6" />
+          <line x1="274" y1="136" x2="346" y2="64" stroke={MUTED} strokeWidth={HAIRLINE} strokeLinecap="round" opacity="0.55" />
         </g>
-        <text x="140" y="220" textAnchor="middle" fontSize="10" fill={ACCENT} fontStyle="italic" opacity="0.85">tool</text>
-        {/* Divider */}
-        <line x1="240" y1="60" x2="240" y2="200" stroke={MUTED} strokeWidth={HAIRLINE} strokeDasharray="2 4" opacity="0.3" />
-        {/* Right: face silhouette, muted and crossed out */}
-        <g transform="translate(340 120)">
-          <circle cx="0" cy="0" r="44" fill="none" stroke={MUTED} strokeWidth={HAIRLINE} strokeDasharray="4 4" opacity="0.55" />
-          {/* Eyes */}
-          <circle cx="-15" cy="-8" r="2.5" fill={MUTED} opacity="0.55" />
-          <circle cx="15" cy="-8" r="2.5" fill={MUTED} opacity="0.55" />
-          {/* Smile */}
-          <path d="M -14 12 Q 0 22 14 12" fill="none" stroke={MUTED} strokeWidth={HAIRLINE} strokeLinecap="round" opacity="0.55" />
-          {/* Crossed out - one clean diagonal */}
-          <line x1="-40" y1="40" x2="40" y2="-40" stroke={MUTED} strokeWidth={HAIRLINE} strokeLinecap="round" opacity="0.6" />
-        </g>
-        <text x="340" y="220" textAnchor="middle" fontSize="10" fill={MUTED} fontStyle="italic" opacity="0.55">not a face</text>
       </svg>
     </DiagramFrame>
   );

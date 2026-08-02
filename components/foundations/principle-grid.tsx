@@ -27,7 +27,7 @@ const ROWS: Row[] = [
   { n: 6, label: "We hold user data in trust", anchor: "we-hold-user-data-in-trust", icon: Trash2 },
   { n: 7, label: "We help learners think, not think for them", anchor: "we-help-learners-think-not-think-for-them", icon: GraduationCap },
   { n: 8, label: "We hold our standard to the worst-served user", anchor: "we-hold-our-standard-to-the-worst-served-user", icon: Users },
-  { n: 9, label: "We build a tool, not a companion", anchor: "we-build-a-tool-not-a-companion", icon: CircleUser },
+  { n: 9, label: "A tool, not a companion", anchor: "a-tool-not-a-companion", icon: CircleUser },
   { n: 10, label: "We treat time as entrusted, not extracted", anchor: "we-treat-time-as-entrusted-not-extracted", icon: Timer },
 ];
 
