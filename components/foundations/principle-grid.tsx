@@ -19,16 +19,16 @@ import {
 type Row = { n: number; label: string; anchor: string; icon: LucideIcon };
 
 const ROWS: Row[] = [
-  { n: 1, label: "Use AI only when a rule cannot", anchor: "choose-ai-only-when-a-rule-cannot-do-the-job", icon: SlidersHorizontal },
-  { n: 2, label: "Mark every AI output", anchor: "mark-every-ai-output-and-state-its-limits-before-someone-acts-on-it", icon: BadgeInfo },
-  { n: 3, label: "Open the source for every claim", anchor: "every-ai-claim-opens-the-source-it-came-from", icon: Link2 },
-  { n: 4, label: "Recover from invisible errors", anchor: "design-a-recovery-path-for-the-errors-people-cannot-see-themselves", icon: LifeBuoy },
-  { n: 5, label: "No silent writes", anchor: "nothing-files-sends-or-changes-a-record-without-a-clear-yes", icon: ShieldCheck },
-  { n: 6, label: "Let people see and remove stored data", anchor: "the-person-can-see-and-remove-what-the-ai-has-kept-about-them", icon: Trash2 },
-  { n: 7, label: "For learners, guide - do not answer", anchor: "when-the-learner-is-the-operator-guide-do-not-answer", icon: GraduationCap },
-  { n: 8, label: "Test across every group, not the average", anchor: "test-with-the-range-of-people-who-will-actually-use-it-not-the-average", icon: Users },
-  { n: 9, label: "Reads as a tool; warmth scales with vulnerability", anchor: "the-ai-reads-as-a-tool-and-its-warmth-scales-down-with-the-users-vulnerability", icon: CircleUser },
-  { n: 10, label: "Reward real progress, not visits", anchor: "reward-real-progress-not-visits", icon: Timer },
+  { n: 1, label: "AI is a last resort, not a default", anchor: "ai-is-a-last-resort-not-a-default", icon: SlidersHorizontal },
+  { n: 2, label: "AI declares itself", anchor: "ai-declares-itself", icon: BadgeInfo },
+  { n: 3, label: "Every claim carries its receipt", anchor: "every-claim-carries-its-receipt", icon: Link2 },
+  { n: 4, label: "The system catches what the user cannot see", anchor: "the-system-catches-what-the-user-cannot-see", icon: LifeBuoy },
+  { n: 5, label: "No action without consent", anchor: "no-action-without-consent", icon: ShieldCheck },
+  { n: 6, label: "The subject owns their data", anchor: "the-subject-owns-their-data", icon: Trash2 },
+  { n: 7, label: "For learners, the struggle is the point", anchor: "for-learners-the-struggle-is-the-point", icon: GraduationCap },
+  { n: 8, label: "The worst-served user sets the standard", anchor: "the-worst-served-user-sets-the-standard", icon: Users },
+  { n: 9, label: "AI is a tool, not a companion", anchor: "ai-is-a-tool-not-a-companion", icon: CircleUser },
+  { n: 10, label: "Attention is a duty, not a currency", anchor: "attention-is-a-duty-not-a-currency", icon: Timer },
 ];
 
 export function PrincipleGrid() {
