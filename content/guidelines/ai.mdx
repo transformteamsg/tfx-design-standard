@@ -19,6 +19,8 @@ Read them first; every check below assumes them.
 
 ### The person doing the AI thing is usually not the person it affects
 
+<OperatorAffectedDiagram />
+
 | The person doing (operator) | The person affected | What the affected person needs |
 | --- | --- | --- |
 | Teacher grading essays with AI | Student receiving the grade | To see the grade, see why, and contest it |
@@ -29,6 +31,8 @@ Read them first; every check below assumes them.
 If the two people in a row are the same person, the check applies once. If they differ, the affected person needs their own path to see the output, contest it, and correct the record.
 
 ### In a learning task, the answer can be the failure
+
+<TaskTypeFork />
 
 The reply that most satisfies a learner is often the one that teaches them least.
 MIT's Impact Bench scores `Direct Answer Provision` as a failure - giving the full solution when the person asked for guidance.
@@ -174,8 +178,9 @@ The ten checks sit at three levels, each proved by a different kind of evidence.
 | The product decision | Should this be AI at all, and what counts as success? | Instrumented data across a cohort, over time | Feature gate or research |
 | The engine | Is the model underneath safe for learners? | Test the model, not your UI (Impact Bench) | Procurement, and on every model version change |
 
+<TiersNesting />
+
 The tiers nest downward.
-The engine sets the ceiling on what the interface can achieve, and the interface decides whether the product intent is realised.
 A well-designed screen on a sycophantic model still harms learners.
 You own the interface tier outright.
 Raise the other two rather than settling them alone: the product decision needs research, and the engine needs procurement.

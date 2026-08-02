@@ -51,6 +51,18 @@ export const standardMdxComponentImporters: MdxComponentImporters = {
     const { OrbitLoop } = await import("@/components/diagrams/orbit-loop");
     return { OrbitLoop };
   },
+  OperatorAffectedDiagram: async () => {
+    const { OperatorAffectedDiagram } = await import("@/components/diagrams/operator-affected-diagram");
+    return { OperatorAffectedDiagram };
+  },
+  TaskTypeFork: async () => {
+    const { TaskTypeFork } = await import("@/components/diagrams/task-type-fork");
+    return { TaskTypeFork };
+  },
+  TiersNesting: async () => {
+    const { TiersNesting } = await import("@/components/diagrams/tiers-nesting");
+    return { TiersNesting };
+  },
   ColorRamp: async () => {
     const { ColorRamp } = await import("@/components/foundations/color-ramp");
     return { ColorRamp };

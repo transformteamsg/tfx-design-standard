@@ -51,6 +51,7 @@ export function useReplay({
   const [token, restart] = useReducer((n: number) => n + 1, 0);
   const [step, setStep] = useState(0);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const dwellTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const observerRef = useRef<IntersectionObserver | null>(null);
   const ref = useRef<HTMLElement | null>(null);
   const hasStartedRef = useRef(false);
@@ -110,11 +111,19 @@ export function useReplay({
       return;
     }
 
+    // Dwell 1.5s in view before firing; scrolling past should NOT trigger.
     observerRef.current = new IntersectionObserver(
       (entries) => {
-        if (entries.some((e) => e.isIntersecting)) {
-          start();
-          observerRef.current?.disconnect();
+        const isIn = entries.some((e) => e.isIntersecting);
+        if (isIn && !dwellTimerRef.current && !hasStartedRef.current) {
+          dwellTimerRef.current = setTimeout(() => {
+            dwellTimerRef.current = null;
+            start();
+            observerRef.current?.disconnect();
+          }, 1500);
+        } else if (!isIn && dwellTimerRef.current) {
+          clearTimeout(dwellTimerRef.current);
+          dwellTimerRef.current = null;
         }
       },
       { threshold: 0.25 }
@@ -124,11 +133,14 @@ export function useReplay({
     return () => {
       observerRef.current?.disconnect();
       if (timerRef.current) clearTimeout(timerRef.current);
+      if (dwellTimerRef.current) clearTimeout(dwellTimerRef.current);
     };
   }, [token, runSequence]);
 
   const replay = useCallback(() => {
     if (timerRef.current) clearTimeout(timerRef.current);
+    if (dwellTimerRef.current) clearTimeout(dwellTimerRef.current);
+    dwellTimerRef.current = null;
     hasStartedRef.current = false;
     restart();
   }, []);
