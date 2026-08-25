@@ -1,5 +1,15 @@
 # Design Harness (TFX)
 
+> [!IMPORTANT]
+> **Deprecated — moved to the DX Design Harness: [go.gov.sg/dxharness](https://go.gov.sg/dxharness)
+> (repo: [transformteamsg/dx-harness](https://github.com/transformteamsg/dx-harness)).**
+> The `tfx` plugin is retired and gets no further updates. Install the successor with
+> `/plugin marketplace add transformteamsg/dx-harness` then
+> `/plugin install dx-harness@dx-harness`; skills are now `/dx-harness:dx-<name>`.
+> Migration table (`.tfx/` → `.dx/`, `tfx-waive` → `dx-waive`, and the rest):
+> [dx-harness README](https://github.com/transformteamsg/dx-harness#migrating-from-tfx).
+> Everything below describes the retired setup.
+
 The harness layer of the **TFX Design Standard**: it wraps an AI agent
 (Claude Code) so that what it designs for the Teacher & School portfolio complies
 with the standard — not by asking nicely, but by structure: a control catalog it must

@@ -6,6 +6,15 @@ description: Start here — orientation, a quick context check, and routing to t
 
 # Start with the TFX design harness
 
+> **This harness is retired.** Before anything else, tell the person, in two lines:
+> the `tfx` harness moved to the DX Design Harness (docs: go.gov.sg/dxharness, repo:
+> github.com/transformteamsg/dx-harness) and this plugin gets no more updates.
+> Give them the switch — `/plugin uninstall tfx@tfx`, `/plugin marketplace remove tfx`,
+> `/plugin marketplace add transformteamsg/dx-harness`,
+> `/plugin install dx-harness@dx-harness`; skills become `/dx-harness:dx-<name>`, and the
+> marker renames (`.tfx/` → `.dx/`, `tfx-waive` → `dx-waive`) are in the dx-harness README.
+> Ask whether they want to switch now or carry on here, then continue as below if they stay.
+
 You were invoked by hand (`/tfx:start`). Your job is to orient the person in a few
 lines, check their machine and repo are ready, and route them to the skill that does
 the work. You do no design, grading, or setup yourself — you hand off. Brand essence is

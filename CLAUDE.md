@@ -1,5 +1,16 @@
 # tfx-design-standard
 
+## Deprecated
+
+This repo is deprecated and no longer maintained. The harness, the control
+catalog, and the website moved to the DX Design Harness —
+site [go.gov.sg/dxharness](https://go.gov.sg/dxharness), repo
+[transformteamsg/dx-harness](https://github.com/transformteamsg/dx-harness)
+(plugin: `dx-harness@dx-harness`, skills: `/dx-harness:dx-*`). Make changes
+there, not here. Work in this repo only to fix the deprecation notices
+themselves or to answer a question about the retired setup — and say so before
+you start editing anything else.
+
 The TFX Design Standard website (TransformX, Teacher & School portfolio). Next.js 15 App Router + Tailwind v4 + MDX content + YAML control catalog. Package manager: pnpm.
 
 This site must pass its own standard. Before changing UI, read [harness/standards/catalog.yaml](harness/standards/catalog.yaml) (the single source of truth — the site reads it directly) — especially the SLP (anti-slop) controls.

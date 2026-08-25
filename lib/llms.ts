@@ -3,6 +3,19 @@ import { getDoc } from "@/lib/content";
 import { getCatalogMeta } from "@/lib/catalog";
 import { allTwins } from "@/lib/markdown-twin";
 
+/* This standard is retired: the harness, the catalog, and this site moved to
+   github.com/transformteamsg/dx-harness. Agent readers get told first, before
+   they treat anything below as current. */
+const DEPRECATION_NOTICE = [
+  "> [!IMPORTANT]",
+  "> Deprecated. This standard, its control catalog, and the harness moved to the DX",
+  "> Design Harness: https://go.gov.sg/dxharness (repo:",
+  "> https://github.com/transformteamsg/dx-harness, Claude Code plugin",
+  "> `dx-harness@dx-harness`, skills `/dx-harness:dx-*`). Nothing here is updated any",
+  "> more — read the catalog at `plugins/dx-harness/standards/` in that repo instead.",
+  "",
+];
+
 /* /llms.txt is a curated llmstxt.org-style index: one H1, a mission blockquote,
    then each section linking the per-page `.md` twins. Built from contentMap +
    getDoc titles/descriptions so it stays in sync with the site and the `.md`
@@ -13,6 +26,7 @@ export function llmsIndex(): string {
   const lines: string[] = [];
   lines.push("# TFX Design Standard");
   lines.push("");
+  lines.push(...DEPRECATION_NOTICE);
   lines.push(
     "> Make the quality bar independent of staffing. Brand essence: Kind Utility —",
   );
@@ -109,6 +123,7 @@ export function llmsFull(): string {
   const lines = [
     "# TFX Design Standard — full Markdown corpus",
     "",
+    ...DEPRECATION_NOTICE,
     "> Complete corpus generated from the site's Markdown twins. Each source is delimited by its canonical Markdown path.",
     "",
   ];

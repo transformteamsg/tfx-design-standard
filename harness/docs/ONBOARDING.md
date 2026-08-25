@@ -1,5 +1,15 @@
 # Adopting the TFX design harness — product team guide
 
+> [!IMPORTANT]
+> **Deprecated — moved to the DX Design Harness: [go.gov.sg/dxharness](https://go.gov.sg/dxharness)
+> (repo: [transformteamsg/dx-harness](https://github.com/transformteamsg/dx-harness)).**
+> The `tfx` plugin is retired and gets no further updates. Install the successor with
+> `/plugin marketplace add transformteamsg/dx-harness` then
+> `/plugin install dx-harness@dx-harness`; skills are now `/dx-harness:dx-<name>`.
+> Migration table (`.tfx/` → `.dx/`, `tfx-waive` → `dx-waive`, and the rest):
+> [dx-harness README](https://github.com/transformteamsg/dx-harness#migrating-from-tfx).
+> Everything below describes the retired setup.
+
 **Audience:** an engineer or designer on Teacher Workspace, CaseSync, or Glow making
 their repo "harness-ready".
 

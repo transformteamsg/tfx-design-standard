@@ -3,6 +3,31 @@
 Notable changes to the TFX Design Harness plugin. Versioning tracks
 `.claude-plugin/plugin.json`.
 
+## [0.7.1] — 2026-08-25
+
+Deprecation release. The harness moved to the DX Design Harness
+([go.gov.sg/dxharness](https://go.gov.sg/dxharness), repo
+[transformteamsg/dx-harness](https://github.com/transformteamsg/dx-harness)) and
+this plugin is retired — no further controls, skills, or fixes land here.
+
+### Changed
+- **Plugin metadata** — `displayName` and `description` mark the plugin deprecated so
+  `/plugin` shows where it went; the marketplace description does the same.
+- **Docs** — `README.md`, `CONTRIBUTING.md`, `docs/UPDATING.md`, and
+  `docs/ONBOARDING.md` open with a migration notice.
+
+### Migrating
+```
+/plugin uninstall tfx@tfx
+/plugin marketplace remove tfx
+/plugin marketplace add transformteamsg/dx-harness
+/plugin install dx-harness@dx-harness
+```
+Skills become `/dx-harness:dx-<name>`. Rename repo markers: `.tfx/` → `.dx/`,
+`tfx-waive` → `dx-waive`, `tfx-sync` → `dx-sync`, `tfx-tokens` → `dx-tokens`,
+`TFX-DS` → `DX-DS`. Full table:
+[dx-harness README](https://github.com/transformteamsg/dx-harness#migrating-from-tfx).
+
 ## [0.7.0] — 2026-07-08
 
 Ratchet-and-enforcement pass: the catalog grows from 53 to 57 controls (CMP-4
