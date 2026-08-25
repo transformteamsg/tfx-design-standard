@@ -1,5 +1,31 @@
 # TFX Design Standard
 
+> [!IMPORTANT]
+> **Deprecated — moved to the DX Design Harness: [go.gov.sg/dxharness](https://go.gov.sg/dxharness).**
+> This repo is no longer maintained: the `tfx` harness, the control catalog, and
+> this website all live in
+> [transformteamsg/dx-harness](https://github.com/transformteamsg/dx-harness) now,
+> alongside the engineering-workflow skills, under one `dx-` prefix. Nothing here
+> gets new controls or fixes.
+>
+> Switch in two commands:
+>
+> ```bash
+> /plugin marketplace add transformteamsg/dx-harness
+> /plugin install dx-harness@dx-harness
+> ```
+>
+> Already on `tfx`? Uninstall it (`/plugin uninstall tfx@tfx`, then
+> `/plugin marketplace remove tfx`) and rename the markers in your product repo
+> — `/tfx:<skill>` → `/dx-harness:dx-<skill>`, `.tfx/` → `.dx/`, `tfx-waive` →
+> `dx-waive`, `tfx-sync` → `dx-sync`, `tfx-tokens` → `dx-tokens`, `TFX-DS` →
+> `DX-DS`. The full table and a one-shot `sed` sweep are in the
+> [dx-harness README](https://github.com/transformteamsg/dx-harness#migrating-from-tfx).
+> Gitty, the git-buddy plugin, did not move — install it from
+> [tashayip/git-buddy](https://github.com/tashayip/git-buddy).
+>
+> Everything below describes the retired setup, kept for reference.
+
 The design standard website for **TransformX** (Teacher & School portfolio, GovTech Singapore) — for human builders **and** AI agents.
 
 - Live site: (connect to Vercel — see below)

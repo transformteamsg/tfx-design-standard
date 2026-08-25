@@ -321,6 +321,21 @@ td code { white-space: normal; overflow-wrap: break-word; }
 <main class="content" id="main">
 <div class="content__inner">
 
+<div class="callout callout--warn">
+  <p><b>Deprecated — moved to the DX Design Harness.</b> The <span class="mono">tfx</span> plugin is
+  retired and gets no further updates. Its docs now live at
+  <a href="https://go.gov.sg/dxharness">go.gov.sg/dxharness</a> and its source at
+  <a href="https://github.com/transformteamsg/dx-harness">github.com/transformteamsg/dx-harness</a>:
+  install with <span class="mono">/plugin marketplace add transformteamsg/dx-harness</span> then
+  <span class="mono">/plugin install dx-harness@dx-harness</span>, and invoke skills as
+  <span class="mono">/dx-harness:dx-&lt;name&gt;</span>.</p>
+  <p>Migrating an existing repo? The marker renames
+  (<span class="mono">.tfx/</span> → <span class="mono">.dx/</span>,
+  <span class="mono">tfx-waive</span> → <span class="mono">dx-waive</span>, and the rest) are in the
+  <a href="https://github.com/transformteamsg/dx-harness#migrating-from-tfx">dx-harness README</a>.
+  Everything below describes the retired setup.</p>
+</div>
+
 <div class="pill-row">
   <span class="pill pill--accent">The harness</span>
   <span class="pill">70 controls</span>

@@ -1,5 +1,15 @@
 # Contributing to the TFX design harness
 
+> [!IMPORTANT]
+> **Deprecated — moved to the DX Design Harness: [go.gov.sg/dxharness](https://go.gov.sg/dxharness)
+> (repo: [transformteamsg/dx-harness](https://github.com/transformteamsg/dx-harness)).**
+> The `tfx` plugin is retired and gets no further updates. Install the successor with
+> `/plugin marketplace add transformteamsg/dx-harness` then
+> `/plugin install dx-harness@dx-harness`; skills are now `/dx-harness:dx-<name>`.
+> Migration table (`.tfx/` → `.dx/`, `tfx-waive` → `dx-waive`, and the rest):
+> [dx-harness README](https://github.com/transformteamsg/dx-harness#migrating-from-tfx).
+> Everything below describes the retired setup.
+
 This document covers **process**: how changes reach this repository, who approves
 them, and what a proposal looks like. It does not restate content rules — those live
 in the authoritative source for each layer.

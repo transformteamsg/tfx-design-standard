@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "@fontsource-variable/inter";
 import "@fontsource-variable/plus-jakarta-sans";
 import "./globals.css";
+import { DeprecationBanner } from "@/components/deprecation-banner";
 import { AppSidebar } from "@/components/sidebar";
 import { TopBar } from "@/components/topbar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
@@ -26,6 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           className="flex-col"
           style={{ "--header-height": "3.5rem" } as React.CSSProperties}
         >
+          <DeprecationBanner />
           <TopBar />
           <div className="flex w-full flex-1">
             <AppSidebar />

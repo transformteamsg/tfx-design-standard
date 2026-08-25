@@ -12,12 +12,16 @@ The skill writes a full plan: background, stakeholders, hypotheses, goals, succe
 
 ## Install in Claude Code
 
-Run these two commands in your Claude Code session:
+The skill moved to the [DX Design Harness](https://go.gov.sg/dxharness) plugin,
+where it is `dx-design-research-brief`. Run these two commands in your Claude Code session:
 
 ```
-/plugin marketplace add transformteamsg/tfx-design-standard
-/plugin install research@tfx
+/plugin marketplace add transformteamsg/dx-harness
+/plugin install dx-harness@dx-harness
 ```
+
+Then invoke it as `/dx-harness:dx-design-research-brief`. The old
+`research@tfx` plugin is no longer maintained.
 
 ## Add it to Claude, no code needed
 

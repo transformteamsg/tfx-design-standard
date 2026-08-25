@@ -1,12 +1,15 @@
 ---
 title: Install
-description: Two commands put the skills, the evaluator, and the control catalog in your Claude Code session.
+description: The harness moved to go.gov.sg/dxharness — install dx-harness@dx-harness, then migrate your repo's tfx markers.
 status: settled
 ---
 
-The harness ships as a Claude Code plugin. Install it once per product repo;
-everyone who opens Claude Code in that repo gets the same skills, the same
-evaluator, and the same control catalog.
+The `tfx` harness is retired. Everything it did — the design loop, the control
+catalog, the evaluator, voice and tone — now ships in **dx-harness**, together
+with the engineering-workflow skills, under one `dx-` prefix. This site is the
+old home and is no longer updated; the standard now lives at
+[go.gov.sg/dxharness](https://go.gov.sg/dxharness) (repo:
+[transformteamsg/dx-harness](https://github.com/transformteamsg/dx-harness)).
 
 ## Before you start
 
@@ -19,35 +22,63 @@ read the repo they run in, and a session opened deeper may not trigger them.
 Run these two commands in your Claude Code session:
 
 ```
-/plugin marketplace add transformteamsg/tfx-design-standard
-/plugin install tfx@tfx
+/plugin marketplace add transformteamsg/dx-harness
+/plugin install dx-harness@dx-harness
 ```
 
-The first registers the standard's repository as a plugin marketplace. The
-second installs the `tfx` plugin from it: the eleven [skills](/harness/skills),
-the evaluator agent, and the [control catalog](/standards/catalog). The catalog
-ships inside the plugin, so your repo never carries its own copy of the
-standard.
+Skills appear as `/dx-harness:dx-<name>` — `/dx-harness:dx-design` opens the
+design loop, `/dx-harness:dx-code-review` reviews a branch. The catalog ships
+inside the plugin, so your repo never carries its own copy of the standard.
 
 ## Check it worked
 
-Type `/tfx:start`. It orients you and routes you to the right skill; if it
-responds, the install worked.
+Type `/dx-harness:dx-design`. It routes you to the right pass; if it responds,
+the install worked.
 
 If nothing happens:
 
-- Run `/plugin` and confirm `tfx` appears and is enabled.
+- Run `/plugin` and confirm `dx-harness` appears and is enabled.
 - Confirm your session is open at the repo root, not a subdirectory.
 - Restart Claude Code and try again.
 
+## Already on the tfx harness?
+
+Remove the old plugin and marketplace, then install the new one:
+
+```
+/plugin uninstall tfx@tfx
+/plugin marketplace remove tfx
+/plugin marketplace add transformteamsg/dx-harness
+/plugin install dx-harness@dx-harness
+```
+
+Then rename the markers in your product repo. Nothing `tfx`-prefixed resolves
+any more:
+
+| Old | New | Where it lives |
+| --- | --- | --- |
+| `/tfx:<skill>` | `/dx-harness:dx-<skill>` | how you invoke a skill |
+| `.tfx/` | `.dx/` | `config.json`, `design.json`, `component-manifest.json` |
+| `tfx-waive CTL-1` | `dx-waive CTL-1` | inline waiver comments in source |
+| `<!-- tfx-sync:… -->` | `<!-- dx-sync:… -->` | fragment-parity markers in docs |
+| `tfx-tokens` | `dx-tokens` | token-region markers in stylesheets |
+| `TFX-DS` | `DX-DS` | the control catalog's name in prose |
+
+A one-shot sweep for a product repo:
+
+```
+grep -rl 'tfx' . | xargs sed -i '' 's/tfx-waive/dx-waive/g; s/tfx-sync/dx-sync/g; s/tfx-tokens/dx-tokens/g; s/\.tfx/.dx/g; s/TFX-DS/DX-DS/g'
+git mv .tfx .dx
+```
+
 ## Set up your machine, once per person
 
-The plugin is per-repo; three tools are per-person. Run `/tfx:start` once and
-the setup skill checks and installs them:
+The plugin is per-repo; the tools it drives are per-person. Run
+`/dx-harness:dx-design-setup` and it checks and installs them:
 
 - **agent-browser** — captures the screenshots the verify phase grades.
-- **`gh`, authenticated** — lets `/tfx:feedback` file an issue the moment the
-  harness confuses you.
+- **`gh`, authenticated** — lets `/dx-harness:dx-design-feedback` file an issue
+  the moment the harness confuses you.
 - **Python with PyYAML** — runs the deterministic check scripts.
 
 ## Stay current
@@ -56,21 +87,22 @@ Plugin updates are manual — third-party marketplaces don't update themselves.
 When the catalog or the skills change, run:
 
 ```
-/plugin marketplace update tfx
+/plugin marketplace update dx-harness
 /reload-plugins
 ```
 
-The skills and the catalog are versioned together, so one update moves both.
-Full steps, including the auto-update setting, are in
-[UPDATING.md](https://github.com/transformteamsg/tfx-design-standard/blob/main/harness/docs/UPDATING.md).
+Claude Code installs an update only when the version in `plugin.json` changes.
+Full steps, including what to do when an update reports no changes, are in the
+[dx-harness README](https://github.com/transformteamsg/dx-harness#install).
 
 ## Adopting the harness for a whole product repo?
 
 Installing gives you the tools. Making a repo harness-ready is six more items:
 the fixed stack, a component manifest, skills verified, deterministic checks,
-record locations, and a named waiver approver. Work through the
-[team onboarding guide](https://github.com/transformteamsg/tfx-design-standard/blob/main/harness/docs/ONBOARDING.md)
-once per repo.
+record locations, and a named waiver approver. Run
+`/dx-harness:dx-design-setup` once per repo and it walks the list.
 
-Working on the harness itself? Open Claude Code in the harness repo and skip
-all of this — its skills load automatically from the repo.
+Working on the harness itself? Open Claude Code in the
+[dx-harness repo](https://github.com/transformteamsg/dx-harness) and skip all of
+this — its skills load automatically from the repo. The docs for everything above
+live at [go.gov.sg/dxharness](https://go.gov.sg/dxharness).
